@@ -35,12 +35,12 @@ func (c *CorrectDLCPermissionsCommand) Execute(log *log.Logger) error {
 	log.Printf("Start CorrectDLCPermissionsCommand Execute")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "chown", []string{"-R", "dlcservice:dlcservice", common_utils.DlcCacheDir}); err != nil {
-		return fmt.Errorf("unable to set owner for DLC cache (%s), %s", common_utils.DlcCacheDir, err)
+		return fmt.Errorf("unable to set owner for DLC cache (%s), %w", common_utils.DlcCacheDir, err)
 	}
 	log.Printf("CorrectDLCPermissionsCommand chown completed")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "chmod", []string{"-R", "0755", common_utils.DlcCacheDir}); err != nil {
-		return fmt.Errorf("unable to set permissions for DLC cache (%s), %s", common_utils.DlcCacheDir, err)
+		return fmt.Errorf("unable to set permissions for DLC cache (%s), %w", common_utils.DlcCacheDir, err)
 	}
 	log.Printf("CorrectDLCPermissionsCommand Success")
 

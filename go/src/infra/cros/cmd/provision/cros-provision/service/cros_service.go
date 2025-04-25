@@ -141,7 +141,7 @@ func (c *CrOSService) InstallZstdCompressedFile(ctx context.Context, remoteImage
 func unpackMetadata(req *api.InstallRequest) (*api.CrOSProvisionMetadata, error) {
 	m := api.CrOSProvisionMetadata{}
 	if err := req.Metadata.UnmarshalTo(&m); err != nil {
-		return &m, fmt.Errorf("improperly formatted input proto metadata, %s", err)
+		return &m, fmt.Errorf("improperly formatted input proto metadata, %w", err)
 	}
 	return &m, nil
 }

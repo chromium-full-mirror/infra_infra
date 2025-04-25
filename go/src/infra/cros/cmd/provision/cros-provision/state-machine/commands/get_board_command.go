@@ -34,7 +34,7 @@ func (c *GetBoardCommand) Execute(log *log.Logger) error {
 	log.Printf("RUNNING GetBoardCommand Execute")
 	board, err := c.getBoard()
 	if err != nil {
-		return fmt.Errorf("failed to get board, %s", err)
+		return fmt.Errorf("failed to get board, %w", err)
 	}
 
 	c.cs.MachineMetadata.Board = board

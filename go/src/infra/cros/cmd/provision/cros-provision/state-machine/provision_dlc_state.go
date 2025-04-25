@@ -32,11 +32,11 @@ func (s CrOSProvisionDLCState) Execute(ctx context.Context, log *log.Logger) (*a
 	defer commands.NewStartDLCServiceCommand(ctx, s.service).Execute(log)
 
 	if err := commands.NewInstallDLCsCommand(ctx, s.service).Execute(log); err != nil {
-		return nil, commands.NewInstallDLCsCommand(ctx, s.service).GetStatus(), fmt.Errorf("failed to install the following DLCs (%s)", err)
+		return nil, commands.NewInstallDLCsCommand(ctx, s.service).GetStatus(), fmt.Errorf("failed to install the following DLCs (%w)", err)
 	}
 
 	if err := commands.NewCorrectDLCPermissionsCommand(ctx, s.service).Execute(log); err != nil {
-		return nil, commands.NewCorrectDLCPermissionsCommand(ctx, s.service).GetStatus(), fmt.Errorf("failed to correct DLC permissions, %s", err)
+		return nil, commands.NewCorrectDLCPermissionsCommand(ctx, s.service).GetStatus(), fmt.Errorf("failed to correct DLC permissions, %w", err)
 	}
 	log.Printf("State: CrOSProvisionDLCState Completed")
 

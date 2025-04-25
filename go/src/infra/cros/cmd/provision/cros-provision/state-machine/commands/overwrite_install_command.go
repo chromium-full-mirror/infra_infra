@@ -42,12 +42,12 @@ func (c *OverwriteInstalCommand) Execute(log *log.Logger) error {
 
 	err := c.cs.Connection.PipeData(c.ctx, c.cs.OverwritePayload.GetPath(), "tar xf - -C /")
 	if err != nil {
-		return fmt.Errorf("failed to download and untar file, %s", err)
+		return fmt.Errorf("failed to download and untar file, %w", err)
 	}
 	log.Printf("OverwriteInstalCommand OverwritePayload.GetPath() Completed")
 
 	if err := c.cs.Connection.Restart(c.ctx); err != nil {
-		return fmt.Errorf("failed to restart dut, %s", err)
+		return fmt.Errorf("failed to restart dut, %w", err)
 	}
 	log.Printf("OverwriteInstalCommand Restart Completed")
 	log.Printf("InstallPartitionsCommand Success")

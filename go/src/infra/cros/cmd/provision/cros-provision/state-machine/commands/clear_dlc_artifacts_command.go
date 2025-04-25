@@ -32,7 +32,7 @@ func (c *ClearDLCArtifactsCommand) Execute(log *log.Logger) error {
 	log.Printf("Start ClearDLCArtifactsCommand Execute")
 	exists, err := c.cs.Connection.PathExists(c.ctx, common_utils.DlcLibDir)
 	if err != nil {
-		return fmt.Errorf("failed path existance, %s", err)
+		return fmt.Errorf("failed path existance, %w", err)
 	}
 	if !exists {
 		return fmt.Errorf("DLC path does not exist")
@@ -54,7 +54,7 @@ func (c *ClearDLCArtifactsCommand) Execute(log *log.Logger) error {
 	}
 	_, err = c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-f", path.Join(common_utils.DlcCacheDir, "*", "*", string(inactiveSlot), common_utils.DlcVerified)})
 	if err != nil {
-		return fmt.Errorf("failed remove inactive verified DLCs, %s", err)
+		return fmt.Errorf("failed remove inactive verified DLCs, %w", err)
 	}
 	log.Printf("ClearDLCArtifactsCommand Success")
 

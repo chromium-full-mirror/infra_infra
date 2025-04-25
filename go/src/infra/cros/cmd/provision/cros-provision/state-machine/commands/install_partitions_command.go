@@ -38,7 +38,7 @@ func (c *InstallPartitionsCommand) Execute(log *log.Logger) error {
 		log.Printf("InstallPartitionsCommand full_KERN.bin.zst failed CONTINUING")
 		err = c.cs.InstallZippedImage(c.ctx, "full_dev_part_KERN.bin.gz", c.cs.MachineMetadata.RootInfo.PartitionInfo.InactiveKernel)
 		if err != nil {
-			return fmt.Errorf("install kernel: %s", err)
+			return fmt.Errorf("install kernel: %w", err)
 		}
 		log.Printf("InstallPartitionsCommand full_dev_part_KERN.bin.gz COMPLETED")
 	}
@@ -50,7 +50,7 @@ func (c *InstallPartitionsCommand) Execute(log *log.Logger) error {
 		log.Printf("InstallPartitionsCommand full_ROOT.bin.zst failed CONTINUING")
 		err := c.cs.InstallZippedImage(c.ctx, "full_dev_part_ROOT.bin.gz", c.cs.MachineMetadata.RootInfo.PartitionInfo.InactiveRoot)
 		if err != nil {
-			return fmt.Errorf("install root: %s", err)
+			return fmt.Errorf("install root: %w", err)
 		}
 		log.Printf("InstallPartitionsCommand full_dev_part_ROOT.bin.gz COMPLETED")
 	}

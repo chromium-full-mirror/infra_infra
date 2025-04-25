@@ -33,18 +33,18 @@ func (c *EnableChargeLimitCommand) Execute(log *log.Logger) error {
 	// If this is run on a DUT without a battery (or even just a backup battery
 	// for Chromebases), this will effectively do nothing.
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "echo", []string{"\"1\"", ">", "/var/lib/power_manager/charge_limit_enabled"}); err != nil {
-		return fmt.Errorf("failed to create charge_limit_enabled pref, %s", err)
+		return fmt.Errorf("failed to create charge_limit_enabled pref, %w", err)
 	}
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "echo", []string{"\"3\"", ">", "/var/lib/power_manager/adaptive_charging_hold_delta_percent"}); err != nil {
-		return fmt.Errorf("failed to create adaptive_charging_hold_delta_percent pref, %s", err)
+		return fmt.Errorf("failed to create adaptive_charging_hold_delta_percent pref, %w", err)
 	}
 
 	if stdout, err := c.cs.Connection.RunCmd(c.ctx, "stop", []string{"powerd", "2>&1"}); err != nil {
 		// Typical failure is that powerd is not running, which is fine. We
 		// only need to ensure that it starts after we wrote the above prefs.
 		if !strings.Contains(stdout, "stop: Unknown instance") {
-			return fmt.Errorf("failed to stop powerd: %s: %s", err, stdout)
+			return fmt.Errorf("failed to stop powerd: %w: %s", err, stdout)
 		}
 	}
 
@@ -53,7 +53,7 @@ func (c *EnableChargeLimitCommand) Execute(log *log.Logger) error {
 		// the time we stopped it and when we tried to start it again. In that case
 		// the goal has succeeded, because it was restarted.
 		if !strings.Contains(stdout, "start: Job is already running") {
-			return fmt.Errorf("failed to start powerd: %s: %s", err, stdout)
+			return fmt.Errorf("failed to start powerd: %w: %s", err, stdout)
 		}
 	}
 
@@ -66,11 +66,11 @@ func (c *EnableChargeLimitCommand) Revert() error {
 	log.Printf("Start EnableChargeLimitCommand Revert")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"/var/lib/power_manager/charge_limit_enabled"}); err != nil {
-		return fmt.Errorf("failed to remove charge_limit_enabled pref, %s", err)
+		return fmt.Errorf("failed to remove charge_limit_enabled pref, %w", err)
 	}
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"/var/lib/power_manager/adaptive_charging_hold_delta_percent"}); err != nil {
-		return fmt.Errorf("failed to remove adaptive_charging_hold_delta_percent pref, %s", err)
+		return fmt.Errorf("failed to remove adaptive_charging_hold_delta_percent pref, %w", err)
 	}
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "stop", []string{"powerd"}); err != nil {
@@ -78,7 +78,7 @@ func (c *EnableChargeLimitCommand) Revert() error {
 	}
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "start", []string{"powerd"}); err != nil {
-		return fmt.Errorf("failed to start powerd, %s", err)
+		return fmt.Errorf("failed to start powerd, %w", err)
 	}
 
 	log.Printf("EnableChargeLimitCommand Revert Success")

@@ -127,7 +127,7 @@ func (s *ServoHostAdapter) RunAllDutControls(ctx context.Context, cmdFragments [
 func (s ServoHostAdapter) PathExists(ctx context.Context, path string) (bool, error) {
 	exists, err := s.RunCmd(ctx, "", []string{"[", "-e", path, "]", "&&", "echo", "-n", "1", "||", "echo", "-n", "0"})
 	if err != nil {
-		return false, fmt.Errorf("path exists: failed to check if %s exists, %s", path, err)
+		return false, fmt.Errorf("path exists: failed to check if %s exists, %w", path, err)
 	}
 	return exists == "1", nil
 }

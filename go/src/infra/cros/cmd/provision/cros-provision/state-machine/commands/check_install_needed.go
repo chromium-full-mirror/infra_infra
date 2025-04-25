@@ -125,7 +125,7 @@ func trimPath(s string) string {
 func getTargetBuilderPath(targetPath string) (string, error) {
 	u, uErr := url.Parse(targetPath)
 	if uErr != nil {
-		return "", fmt.Errorf("failed to parse image path, %s", uErr)
+		return "", fmt.Errorf("failed to parse image path, %w", uErr)
 	}
 	p := trimPath(u.Path)
 

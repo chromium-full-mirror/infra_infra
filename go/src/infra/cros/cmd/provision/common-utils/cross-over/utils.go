@@ -131,7 +131,7 @@ func callServodRetry(ctx context.Context, log *log.Logger, key, value string, pa
 	if err != nil && strings.Contains(err.Error(), connectionResetErr) {
 		log.Println("Got connection reset error in CallServod, restarting servod process and trying again. ", err)
 		if err = startServod(ctx, log, params.ServoNexusClient, params.Dut); err != nil && !strings.Contains(err.Error(), jobRunning) {
-			return fmt.Errorf("failed to restart servod %v", err)
+			return fmt.Errorf("failed to restart servod %w", err)
 		}
 		params.StopServo = true
 		return callServodSET(ctx, log, key, value, params)

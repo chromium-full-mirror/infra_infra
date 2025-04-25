@@ -34,10 +34,10 @@ func (s CrOSInstallMiniOSState) Execute(ctx context.Context, log *log.Logger) (*
 		if err != nil {
 			for ; i >= 0; i-- {
 				if innerErr := comms[i].Revert(); innerErr != nil {
-					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %s: %s", err, innerErr)
+					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %w: %w", err, innerErr)
 				}
 			}
-			return nil, comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return nil, comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 		}
 	}
 	log.Printf("State: CrOSInstallMiniOSState Completed")

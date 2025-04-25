@@ -46,7 +46,7 @@ func (c *InstallDLCsCommand) Execute(log *log.Logger) error {
 		if errTmp == nil {
 			continue
 		}
-		err = fmt.Errorf("%s, %s", err, errTmp)
+		err = fmt.Errorf("%w, %w", err, errTmp)
 	}
 	log.Printf("InstallDLCsCommand Success")
 	return err
@@ -62,7 +62,7 @@ func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvi
 	dlcOutputDir := path.Join(common_utils.DlcCacheDir, dlcID, common_utils.DlcPackage)
 	verified, err := c.isDLCVerified(ctx, spec.GetId(), slot)
 	if err != nil {
-		return fmt.Errorf("failed is DLC verified check, %s", err)
+		return fmt.Errorf("failed is DLC verified check, %w", err)
 	}
 
 	// Skip installing the DLC if already verified.
@@ -79,10 +79,10 @@ func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvi
 	dlcOutputSlotDir := path.Join(dlcOutputDir, string(slot))
 	dlcOutputImage := path.Join(dlcOutputSlotDir, common_utils.DlcImage)
 	if err := c.cs.Connection.CreateDirectories(ctx, []string{dlcOutputSlotDir}); err != nil {
-		return fmt.Errorf("failed to create DLC directories %s, %s", dlcID, err)
+		return fmt.Errorf("failed to create DLC directories %s, %w", dlcID, err)
 	}
 	if err := c.cs.Connection.CopyData(ctx, dlcURL, dlcOutputImage); err != nil {
-		return fmt.Errorf("failed to download DLCs, %s", err)
+		return fmt.Errorf("failed to download DLCs, %w", err)
 	}
 
 	return nil
@@ -92,7 +92,7 @@ func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvi
 func (c *InstallDLCsCommand) isDLCVerified(ctx context.Context, dlcID, slot string) (bool, error) {
 	verified, err := c.cs.Connection.PathExists(ctx, path.Join(common_utils.DlcLibDir, dlcID, slot, common_utils.DlcVerified))
 	if err != nil {
-		return false, fmt.Errorf("failed to check if DLC %s is verified, %s", dlcID, err)
+		return false, fmt.Errorf("failed to check if DLC %s is verified, %w", dlcID, err)
 	}
 	return verified, nil
 }

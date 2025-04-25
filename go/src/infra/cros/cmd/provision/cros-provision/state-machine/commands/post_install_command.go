@@ -34,28 +34,28 @@ func (c *PostInstallCommand) Execute(log *log.Logger) error {
 
 	tmpMnt, err := c.cs.Connection.RunCmd(c.ctx, "mktemp", []string{"-d"})
 	if err != nil {
-		return fmt.Errorf("failed to create temporary directory, %s", err)
+		return fmt.Errorf("failed to create temporary directory, %w", err)
 	}
 	log.Printf("PostInstallCommand mktemp Completed")
 
 	tmpMnt = strings.TrimSpace(tmpMnt)
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "mount", []string{"-o", "ro", c.cs.MachineMetadata.RootInfo.PartitionInfo.InactiveRoot, tmpMnt}); err != nil {
-		return fmt.Errorf("failed to mount inactive root, %s", err)
+		return fmt.Errorf("failed to mount inactive root, %w", err)
 	}
 	log.Printf("PostInstallCommand mount Completed")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, fmt.Sprintf("%s/postinst", tmpMnt), []string{c.cs.MachineMetadata.RootInfo.PartitionInfo.InactiveRoot}); err != nil {
-		return fmt.Errorf("failed to postinst from inactive root, %s", err)
+		return fmt.Errorf("failed to postinst from inactive root, %w", err)
 	}
 	log.Printf("PostInstallCommand postinst Completed")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "umount", []string{tmpMnt}); err != nil {
-		return fmt.Errorf("failed to umount temporary directory, %s", err)
+		return fmt.Errorf("failed to umount temporary directory, %w", err)
 	}
 	log.Printf("PostInstallCommand umount Completed")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "rmdir", []string{tmpMnt}); err != nil {
-		return fmt.Errorf("failed to remove temporary directory, %s", err)
+		return fmt.Errorf("failed to remove temporary directory, %w", err)
 	}
 	log.Printf("PostInstallCommand rmdir Completed")
 	log.Printf("PostInstallCommand Success")

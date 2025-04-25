@@ -188,7 +188,7 @@ func (s LocalDutServiceAdapter) ForceReconnectWithBackoff(ctx context.Context) e
 func downloadFile(ctx context.Context, object string, destFileName string) error {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return fmt.Errorf("storage.NewClient: %v", err)
+		return fmt.Errorf("storage.NewClient: %w", err)
 	}
 	defer client.Close()
 
@@ -197,21 +197,21 @@ func downloadFile(ctx context.Context, object string, destFileName string) error
 
 	f, err := os.Create(destFileName)
 	if err != nil {
-		return fmt.Errorf("os.Create: %v", err)
+		return fmt.Errorf("os.Create: %w", err)
 	}
 
 	rc, err := client.Bucket(common.GSPackageBucketName).Object(object).NewReader(ctx)
 	if err != nil {
-		return fmt.Errorf("Object(%q).NewReader: %v", object, err)
+		return fmt.Errorf("Object(%q).NewReader: %w", object, err)
 	}
 	defer rc.Close()
 
 	if _, err := io.Copy(f, rc); err != nil {
-		return fmt.Errorf("io.Copy: %v", err)
+		return fmt.Errorf("io.Copy: %w", err)
 	}
 
 	if err = f.Close(); err != nil {
-		return fmt.Errorf("f.Close: %v", err)
+		return fmt.Errorf("f.Close: %w", err)
 	}
 	fmt.Fprintf(f, "Blob %v downloaded to local file %v\n", object, destFileName)
 	return nil

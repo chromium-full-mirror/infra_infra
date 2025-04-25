@@ -60,21 +60,21 @@ func (c *VerifyFirmwareCommand) Execute(log *log.Logger) error {
 func (c *VerifyFirmwareCommand) getAvailableFirmwareVersion() (string, error) {
 	out, err := c.cs.Connection.RunCmd(c.ctx, common_utils.FirmwareUpdaterPath, []string{"--manifest"})
 	if err != nil {
-		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware manifest, %s", err)
+		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware manifest, %w", err)
 	}
 	var manifest common_utils.FirmwareManifest
 	if err := json.Unmarshal([]byte(out), &manifest); err != nil {
-		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to unmarshal firmware manifest, %s", err)
+		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to unmarshal firmware manifest, %w", err)
 	}
 	fwModel, err := c.getFirmwareTarget()
 	if err != nil {
-		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware target %s", err)
+		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware target %w", err)
 	}
 	if data, ok := manifest[fwModel]; ok {
 		log.Printf("Available firmware from the new OS: %s.", data.Host.Versions.Rw)
 		return data.Host.Versions.Rw, nil
 	}
-	return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware data of key %s from manifest, %s", fwModel, err)
+	return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware data of key %s from manifest, %w", fwModel, err)
 }
 
 // getFirmwareTarget returns firmware target of the DUT, which will be used to as key to fetch expected firmware from manifest.
@@ -94,7 +94,7 @@ func (c *VerifyFirmwareCommand) getFirmwareTarget() (string, error) {
 func (c *VerifyFirmwareCommand) getCurrentFirmwareVersion() (string, error) {
 	out, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{"fwid"})
 	if err != nil {
-		return "", fmt.Errorf("getCurrentFirmwareVersion: failed to read current system firmware, %s", err)
+		return "", fmt.Errorf("getCurrentFirmwareVersion: failed to read current system firmware, %w", err)
 	}
 	log.Printf("Current firmware on DUT: %s.", out)
 	return out, nil

@@ -43,7 +43,7 @@ func NewProvisionServer(options *metadata.ServerMetadata, executor ProvisionExec
 	if options.DutAddress != "" {
 		dutConn, err := grpc.Dial(options.DutAddress, grpc.WithInsecure())
 		if err != nil {
-			return nil, ps.closeProvisionServer, fmt.Errorf("failed to connect to dut-service, %s", err)
+			return nil, ps.closeProvisionServer, fmt.Errorf("failed to connect to dut-service, %w", err)
 		}
 		ps.conns = append(ps.conns, dutConn)
 		ps.dutClient = api.NewDutServiceClient(dutConn)
@@ -97,7 +97,7 @@ func (ps *ProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStartu
 	dutConn, err := grpc.Dial(ps.options.DutAddress, grpc.WithInsecure())
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_STARTUP_FAILED
-		return &response, fmt.Errorf("failed to connect to dut-service, %s", err)
+		return &response, fmt.Errorf("failed to connect to dut-service, %w", err)
 	}
 	ps.conns = append(ps.conns, dutConn)
 	ps.dutClient = api.NewDutServiceClient(dutConn)

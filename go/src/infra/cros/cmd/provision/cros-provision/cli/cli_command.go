@@ -92,7 +92,7 @@ func (cc *CLICommand) Init(args []string) error {
 
 	cc.inputProto, err = common_utils.ParseCrosProvisionRequest(cc.inputFile)
 	if err != nil {
-		return fmt.Errorf("unable to parse CrosProvisionRequest proto: %s", err)
+		return fmt.Errorf("unable to parse CrosProvisionRequest proto: %w", err)
 	}
 
 	return nil
@@ -123,7 +123,7 @@ func (cc *CLICommand) Run() error {
 	dutConn, err := grpc.Dial(dutAddr, grpc.WithInsecure())
 	if err != nil {
 		cc.log.Printf("DutConn Failed!")
-		return fmt.Errorf("failed to connect to dut-service, %s", err)
+		return fmt.Errorf("failed to connect to dut-service, %w", err)
 	}
 	cc.log.Printf("Dut Conn Established")
 
@@ -150,7 +150,7 @@ func (cc *CLICommand) Run() error {
 			},
 		}
 		cc.log.Printf("State Machine Failed %s.", err)
-		return fmt.Errorf("failed to provision, %s", err)
+		return fmt.Errorf("failed to provision, %w", err)
 	}
 	cc.log.Printf("Finished Successfuly!")
 	return nil

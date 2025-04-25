@@ -35,17 +35,17 @@ func (c *GetRootInfoCommand) Execute(log *log.Logger) error {
 	log.Printf("Start GetRootInfoCommand Execute")
 	root, err := c.getRoot()
 	if err != nil {
-		return fmt.Errorf("failed to get root, %s", err)
+		return fmt.Errorf("failed to get root, %w", err)
 	}
 	log.Printf("GetRootInfoCommand got root")
 	rootDisk, err := c.getRootDisk()
 	if err != nil {
-		return fmt.Errorf("failed to get root disk, %s", err)
+		return fmt.Errorf("failed to get root disk, %w", err)
 	}
 	log.Printf("GetRootInfoCommand got root disk")
 	rootPartNum, err := c.getRootPartNumber(root)
 	if err != nil {
-		return fmt.Errorf("failed to get root part number, %s", err)
+		return fmt.Errorf("failed to get root part number, %w", err)
 	}
 	log.Printf("GetRootInfoCommand got part number")
 
@@ -74,7 +74,7 @@ func (c *GetRootInfoCommand) getRoot() (string, error) {
 	// Example 2: "/dev/sda3"
 	curRoot, err := c.cs.Connection.RunCmd(c.ctx, "rootdev", []string{"-s"})
 	if err != nil {
-		return "", fmt.Errorf("failed to get current root, %s", err)
+		return "", fmt.Errorf("failed to get current root, %w", err)
 	}
 	return strings.TrimSpace(curRoot), nil
 }
@@ -85,7 +85,7 @@ func (c *GetRootInfoCommand) getRootDisk() (string, error) {
 	// Example 2: "/dev/sda"
 	rootDisk, err := c.cs.Connection.RunCmd(c.ctx, "rootdev", []string{"-s", "-d"})
 	if err != nil {
-		return "", fmt.Errorf("failed to get root disk, %s", err)
+		return "", fmt.Errorf("failed to get root disk, %w", err)
 	}
 	return strings.TrimSpace(rootDisk), nil
 }

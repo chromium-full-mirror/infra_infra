@@ -39,49 +39,49 @@ func (c *SwapStatefulPartitionCommand) Execute(log *log.Logger) error {
 
 	tmpMnt, err := c.cs.Connection.RunCmd(c.ctx, "/usr/bin/mktemp", []string{"-d"})
 	if err != nil {
-		return fmt.Errorf("failed to create temporary directory, %s", err)
+		return fmt.Errorf("failed to create temporary directory, %w", err)
 	}
 	tmpMnt = strings.TrimSpace(tmpMnt)
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/dd", []string{"if=/dev/zero", fmt.Sprintf("of=%s/fs", tmpMnt), "bs=512M", "count=1"})
 	if err != nil {
-		return fmt.Errorf("failed to create zero file, %s", err)
+		return fmt.Errorf("failed to create zero file, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/sbin/mkfs.ext4", []string{"-O", "none,has_journal", tmpMnt + "/fs"})
 	if err != nil {
-		return fmt.Errorf("failed to create powerwash filesystem, %s", err)
+		return fmt.Errorf("failed to create powerwash filesystem, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/mkdir", []string{tmpMnt + "/mnt"})
 	if err != nil {
-		return fmt.Errorf("failed to create mount directory, %s", err)
+		return fmt.Errorf("failed to create mount directory, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/mount", []string{tmpMnt + "/fs", tmpMnt + "/mnt"})
 	if err != nil {
-		return fmt.Errorf("failed to mount powerwash filesystem, %s", err)
+		return fmt.Errorf("failed to mount powerwash filesystem, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/echo", []string{"-n", "\"fast safe keepimg\"", ">", tmpMnt + "/mnt/factory_install_reset"})
 	if err != nil {
-		return fmt.Errorf("failed to write reset file, %s", err)
+		return fmt.Errorf("failed to write reset file, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/umount", []string{tmpMnt + "/mnt"})
 	if err != nil {
-		return fmt.Errorf("failed to unmount powerwash filesystem, %s", err)
+		return fmt.Errorf("failed to unmount powerwash filesystem, %w", err)
 	}
 
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/sbin/fsfreeze", []string{"-f", "/mnt/stateful_partition"})
 	if err != nil {
-		return fmt.Errorf("failed to freeze stateful filesystem, %s", err)
+		return fmt.Errorf("failed to freeze stateful filesystem, %w", err)
 	}
 
 	pi := common_utils.GetPartitionInfo(c.cs.MachineMetadata.RootInfo.Root, c.cs.MachineMetadata.RootInfo.RootDisk, c.cs.MachineMetadata.RootInfo.RootPartNum)
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/dd", []string{fmt.Sprintf("if=%s/fs", tmpMnt), fmt.Sprintf("of=%s", pi.Stateful), "bs=1M", "conv=fsync"})
 	if err != nil {
-		return fmt.Errorf("failed to unmount powerwash filesystem, %s", err)
+		return fmt.Errorf("failed to unmount powerwash filesystem, %w", err)
 	}
 
 	return nil

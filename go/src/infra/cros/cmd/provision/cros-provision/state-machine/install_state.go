@@ -42,11 +42,11 @@ func (s CrOSInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 			for ; i >= 0; i-- {
 				log.Printf("CrOSInstallState REVERT CALLED")
 				if innerErr := comms[i].Revert(); innerErr != nil {
-					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %s: %s", err, innerErr)
+					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %w: %w", err, innerErr)
 				}
 			}
 			log.Printf("- Execute CrOSInstallState failure %s\n", err)
-			return nil, comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return nil, comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 
 		}
 	}

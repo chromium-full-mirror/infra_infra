@@ -32,12 +32,12 @@ type AbstractCommand interface {
 // SetUpLog sets up the golang default logging, and returns the logger
 func SetUpLog(dir string) (*log.Logger, error) {
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create directory %v: %v", dir, err)
+		return nil, fmt.Errorf("failed to create directory %v: %w", dir, err)
 	}
 	lfp := filepath.Join(dir, "log.txt")
 	lf, err := os.Create(lfp)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create file %v: %v", lfp, err)
+		return nil, fmt.Errorf("failed to create file %v: %w", lfp, err)
 	}
 	newLog := log.Default()
 	newLog.SetOutput(io.MultiWriter(lf, os.Stderr))
@@ -68,7 +68,7 @@ func ParseInputs() (AbstractCommand, error) {
 		options = append(options, cmd.Name())
 		if cmd.Is(subcommand) {
 			if err := cmd.Init(os.Args[2:]); err != nil {
-				return nil, fmt.Errorf("failed to initialize cli command, %s", err)
+				return nil, fmt.Errorf("failed to initialize cli command, %w", err)
 			}
 			return cmd, nil
 		}

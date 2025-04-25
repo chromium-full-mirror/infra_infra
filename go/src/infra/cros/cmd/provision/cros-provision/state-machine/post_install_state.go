@@ -44,10 +44,10 @@ func (s CrOSPostInstallState) Execute(ctx context.Context, log *log.Logger) (*an
 			for ; i >= 0; i-- {
 				log.Printf("CrOSPostInstallState REVERT CALLED")
 				if innerErr := comms[i].Revert(); innerErr != nil {
-					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %s: %s", err, innerErr)
+					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %w: %w", err, innerErr)
 				}
 			}
-			return nil, comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return nil, comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 		}
 	}
 	log.Printf("State: CrOSPostInstallState Completed")

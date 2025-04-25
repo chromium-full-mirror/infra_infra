@@ -192,7 +192,7 @@ func (s ServiceAdapter) Restart(ctx context.Context) error {
 func (s ServiceAdapter) PathExists(ctx context.Context, path string) (bool, error) {
 	exists, err := s.RunCmd(ctx, "", []string{"[", "-e", path, "]", "&&", "echo", "-n", "1", "||", "echo", "-n", "0"})
 	if err != nil {
-		return false, fmt.Errorf("path exists: failed to check if %s exists, %s", path, err)
+		return false, fmt.Errorf("path exists: failed to check if %s exists, %w", path, err)
 	}
 	return exists == "1", nil
 }
@@ -221,7 +221,7 @@ func (s ServiceAdapter) PipeData(ctx context.Context, sourceUrl string, pipeComm
 
 	op, err := s.dutClient.Cache(ctx, &req)
 	if err != nil {
-		return fmt.Errorf("execution failure: %v", err)
+		return fmt.Errorf("execution failure: %w", err)
 	}
 
 	for !op.Done {
@@ -261,7 +261,7 @@ func (s ServiceAdapter) CopyData(ctx context.Context, sourceUrl string, destPath
 
 	op, err := s.dutClient.Cache(ctx, &req)
 	if err != nil {
-		return fmt.Errorf("execution failure: %v", err)
+		return fmt.Errorf("execution failure: %w", err)
 	}
 
 	for !op.Done {

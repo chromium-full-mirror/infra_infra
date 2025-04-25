@@ -35,7 +35,7 @@ func (c *InstallMiniOSCommand) Execute(log *log.Logger) error {
 			log.Printf("InstallMiniOSCommand device does not support MiniOS, skipping installation.")
 			return nil
 		} else if err != nil {
-			return fmt.Errorf("failed to determine miniOS suport, %s", err)
+			return fmt.Errorf("failed to determine miniOS suport, %w", err)
 		}
 	}
 	log.Printf("InstallMiniOSCommand Running Install")
@@ -51,7 +51,7 @@ func (c *InstallMiniOSCommand) Revert() error {
 func (c *InstallMiniOSCommand) isMiniOSPartitionSupported(rootPart string) (bool, error) {
 	guidPartition, err := c.cs.Connection.RunCmd(c.ctx, "cgpt", []string{"show", "-t", c.cs.MachineMetadata.RootInfo.RootDisk, "-i", rootPart})
 	if err != nil {
-		return false, fmt.Errorf("failed to get partition type, %s\n %s", err, guidPartition)
+		return false, fmt.Errorf("failed to get partition type, %w\n %s", err, guidPartition)
 	}
 
 	return strings.TrimSpace(guidPartition) == common_utils.MiniOSUnsupportedGUIDPartition, nil
@@ -60,11 +60,11 @@ func (c *InstallMiniOSCommand) isMiniOSPartitionSupported(rootPart string) (bool
 // InstallMiniOS downloads and installs the minios images
 func (c *InstallMiniOSCommand) installMiniOS(log *log.Logger) error {
 	if err := c.cs.InstallZippedImage(c.ctx, "full_dev_part_MINIOS.bin.gz", c.cs.MachineMetadata.RootInfo.PartitionInfo.MiniOSA); err != nil {
-		return fmt.Errorf("install MiniOS A: %s", err)
+		return fmt.Errorf("install MiniOS A: %w", err)
 	}
 	log.Printf("InstallMiniOSCommand installed full_dev_part_MINIOS MiniOSA")
 	if err := c.cs.InstallZippedImage(c.ctx, "full_dev_part_MINIOS.bin.gz", c.cs.MachineMetadata.RootInfo.PartitionInfo.MiniOSB); err != nil {
-		return fmt.Errorf("install MiniOS B: %s", err)
+		return fmt.Errorf("install MiniOS B: %w", err)
 	}
 	log.Printf("InstallMiniOSCommand installed full_dev_part_MINIOS MiniOSB")
 	log.Printf("InstallMiniOSCommand Success")

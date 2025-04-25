@@ -31,7 +31,7 @@ func (c *RunFirmwareUpdaterCommand) Execute(log *log.Logger) error {
 	log.Printf("Start RunFirmwareUpdaterCommand Execute")
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, common_utils.FirmwareUpdaterPath, []string{"--wp=1", "--mode=autoupdate"}); err != nil {
-		return fmt.Errorf("run firmware updater: %s", err)
+		return fmt.Errorf("run firmware updater: %w", err)
 	}
 
 	log.Printf("RunFirmwareUpdaterCommand Success")

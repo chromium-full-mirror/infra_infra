@@ -44,7 +44,7 @@ func (s CrOSPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	for _, comm := range comms {
 		err := comm.Execute(log)
 		if err != nil {
-			return nil, comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return nil, comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 		}
 	}
 

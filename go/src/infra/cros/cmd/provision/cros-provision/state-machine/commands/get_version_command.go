@@ -37,7 +37,7 @@ func (c *GetVersionCommand) Execute(log *log.Logger) error {
 	log.Printf("RUNNING GetVersionCommand Execute")
 	version, err := c.getVersion()
 	if err != nil {
-		return fmt.Errorf("failed to get board, %s", err)
+		return fmt.Errorf("failed to get board, %w", err)
 	}
 
 	log.Printf("Retrieved version=%s", version)

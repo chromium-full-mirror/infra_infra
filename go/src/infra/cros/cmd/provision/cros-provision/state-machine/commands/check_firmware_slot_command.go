@@ -33,14 +33,14 @@ func (c *CheckFirmwareSlotCommand) Execute(log *log.Logger) error {
 
 	current, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{common_utils.CrossystemCurrentFirmwareSlotKey})
 	if err != nil {
-		return fmt.Errorf("check current firmware slot: %s", err)
+		return fmt.Errorf("check current firmware slot: %w", err)
 	}
 	log.Printf("Current firmware slot: %s", current)
 
 	next, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{common_utils.CrossystemNextFirmwareSlotKey})
 
 	if err != nil {
-		return fmt.Errorf("check next firmware slot: %s", err)
+		return fmt.Errorf("check next firmware slot: %w", err)
 	}
 	log.Printf("Next firmware slot: %s", next)
 
