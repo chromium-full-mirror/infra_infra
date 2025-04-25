@@ -6,24 +6,12 @@ found in the LICENSE file.
 
 # Kron
 
-Kron is the partial rewrite of the suite scheduler cron scheduler
-before we fully re-imagine the service. This service will offer just the core
-services of SuiteScheduler and not implement pipelines such as android build,
-firmware builds, nor multi-dut builds.
+Kron is the rewrite of the SuiteScheduler cron scheduling service. It fully
+duplicates the core logic that SuiteScheduler provided and added on some extra
+layers of debuggability. Configs for this service are still located in the
+infra/config-internal repo where SuiteScheduler originally had stored them.
 
-More information can be found at: go/suitescheduler-v15
-
-## Current State: WIP
-
-The current project is capable of fetching the configuration files, ingesting
-them into memory, and building CTP requests.
-
-As the project stands, it can fetch builds from the release pipeline but it does
-not yet have the ability to store the information long term. Once the
-architecture designed in go/sv15-storage-addendum is built, we will then be able
-to store the build images.
-
-To interact with the current project use the CLI explained in the below section.
+More information can be found at: go/kron-dd.
 
 ## Installation
 
@@ -32,7 +20,7 @@ To interact with the current project use the CLI explained in the below section.
 If you have CIPD set up you can fetch the package from there using:
 
 ```bash
-cipd install chromiumos/infra/suite_scheduler/linux-amd64 latest
+cipd install chromiumos/infra/kron/linux-amd64 latest
 ```
 
 If not you will need to set up CIPD:
@@ -49,7 +37,7 @@ cipd init -force
 echo "export PATH=\$PATH:$(pwd)" >> ~/.bashrc && source ~/.bashrc
 
 # Install the package
-cipd install chromiumos/infra/suite_scheduler/linux-amd64 latest
+cipd install chromiumos/infra/kron/linux-amd64 latest
 ```
 
 Once installed use the command by calling:
@@ -76,12 +64,26 @@ using:
 
 ## CLI
 
-SuiteScheduler v1.5 is made as a CLI application. To run the program use one of
+Kron is made as a CLI application. To run the program use one of
 the below commands to access the project.
 
-### Commands
+Before using any command you'll need to gather your authentication tokens using:
 
-#### Configs
+```
+kron auth-login
+```
+
+This will direct you to a G Cloud browser login screen where you'll sign in with
+your google credentials. If you are not a Google full time employee (FTE) it is
+unlikely that Kron will work given the need for access to internal files and
+resources. Please reach out to the TSE team if you encounter this and must use
+Kron for your work.
+
+## Commands
+
+### Configs
+---
+<br>
 
 ```bash
 kron configs <flags>
@@ -95,7 +97,7 @@ criteria. To see all flags, and information about their usage, enter:
 kron help configs
 ```
 
-### Filters
+#### Filters
 
 When ingesting and searching for configs the application defines two types of
 filters, top and bottom level filters.
@@ -111,17 +113,31 @@ top-level filters. This reduces the amount of expensive filtering that is
 performed making the CLI run faster when working through large amounts of
 configurations.
 
-## Testing
+### Run
+---
+<br>
 
-Currently the main function has some integration tests that can be validated by
-reading the output. To confirm the correctness of the CTP Requests. The output
-given was tossed into a LED test (with the build image information copied over
-from a valid CTP run) and verified.
+**This command is primarily intended for BuildBucket builder use only as it
+has the ability to launch real testing requests. Please reach out to the TSE team
+before using.**
 
-Example run:
+```bash
+kron run <flags>
+```
 
-<https://chromeos-swarming.appspot.com/task?id=65bf847779131c10>
 
-Original Run:
+The run command is the entry point to the core scheduling service. This command
+will fetch the configs from storage and run the passed in trigger type. The
+supported triggers currently are:
 
-[go/bbid/8765603166160534657](https://goto2.corp.google.com/bbid/8765603166160534657)
+* NEW_BUILD
+* TIMED_EVENTS (DAILY, WEEKLY, FORTNIGHTLY, and N_DAYS)
+* MULTI_DUT
+* NEW_BUILDS_3D
+
+When running locally use the `-test` flag to ensure that we are not launching
+mass amounts of staging traffic nor clearing the release image pub/sub.
+
+```
+kron run -test <flags>
+```
