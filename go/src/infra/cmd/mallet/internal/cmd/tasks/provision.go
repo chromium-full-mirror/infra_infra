@@ -8,6 +8,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
@@ -19,6 +20,7 @@ import (
 
 	"go.chromium.org/infra/cmd/mallet/internal/site"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/recovery/config"
 	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
@@ -107,11 +109,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	if c.latest {
 		v = buildbucket.CIPDLatest
 	}
-	plan, err := c.createPlan()
-	if err != nil {
-		return errors.Annotate(err, "custom provision run").Err()
-	}
-	configuration := b64.StdEncoding.EncodeToString([]byte(plan))
+	configuration := b64.StdEncoding.EncodeToString(c.createPlan())
 	for _, unit := range args {
 		unit = heuristics.NormalizeBotNameToDeviceName(unit)
 		pools, err := device.GetPools(ctx, uc, unit)
@@ -157,62 +155,20 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 	return nil
 }
 
-// Custom plan to execute provision
-// TODO(otabek): Replace by build plan on fly.
-const customProvisionPlanStart = `
-{
-	"plan_names": [
-		"cros"
-	],
-	"plans": {
-		"cros": {
-			"critical_actions": [
-				"cros_ssh",
-				"Custom provision"
-			],
-			"actions": {
-				"cros_ssh": {
-					"dependencies": [
-						"dut_has_name",
-						"dut_has_board_name",
-						"dut_has_model_name",
-						"cros_ping"
-					],
-					"exec_name": "cros_ssh"
-				},
-				"Custom provision": {
-					"docs": [
-						"Provision device to the custom os version"
-					],
-					"exec_name": "cros_provision",
-					"exec_extra_args": `
-const customProvisionPlanTail = `,
-					"exec_timeout": {
-						"seconds": 3600
-					}
-				}
-			}
-		}
-	}
-}`
-
-func (c *customProvisionRun) createPlan() (string, error) {
-	customArg := []string{}
+func (c *customProvisionRun) createPlan() []byte {
+	provisionArgs := []string{}
 	if c.osPath != "" {
-		customArg = append(customArg, fmt.Sprintf("os_image_path:%s", c.osPath))
+		provisionArgs = append(provisionArgs, fmt.Sprintf("os_image_path:%s", c.osPath))
 	} else if c.osName != "" {
-		customArg = append(customArg, fmt.Sprintf("os_name:%s", c.osName))
+		provisionArgs = append(provisionArgs, fmt.Sprintf("os_name:%s", c.osName))
 	}
 	if c.noReboot {
-		customArg = append(customArg, "no_reboot")
+		provisionArgs = append(provisionArgs, "no_reboot")
 	}
-	if len(customArg) > 0 {
-		j, err := json.Marshal(customArg)
-		if err != nil {
-			return "", errors.Annotate(err, "create plan").Err()
-		}
-		return fmt.Sprintf("%s%s%s", customProvisionPlanStart, string(j), customProvisionPlanTail), nil
-	} else {
-		return fmt.Sprintf("%s%s%s", customProvisionPlanStart, "[]", customProvisionPlanTail), nil
+	cfg := config.ClassicProvisionConfig(provisionArgs)
+	b, err := json.Marshal(cfg)
+	if err != nil {
+		log.Fatalf("Failed to create JSON config: %v", err)
 	}
+	return b
 }

@@ -88,6 +88,13 @@ func TestBtpeerProvisionConfig(t *testing.T) {
 	verifyConfig("btpeer-provision", t, config.ProvisionBtpeerConfig("test_url"))
 }
 
+// TestClassicProvisionConfig verifies the classic provision config.
+func TestClassicProvisionConfig(t *testing.T) {
+	t.Parallel()
+	provisionArgs := []string{"os_name:a-release/R100.00000.0.0", "no_reboot"}
+	verifyConfig("classic-provision", t, config.ClassicProvisionConfig(provisionArgs))
+}
+
 func mustCreateConfigJSON(c *config.Configuration) io.Reader {
 	b, err := json.Marshal(c)
 	if err != nil {

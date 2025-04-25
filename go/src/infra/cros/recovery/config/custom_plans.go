@@ -291,3 +291,40 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 		},
 	}
 }
+
+// ClassicProvisionConfig provision target device(DUT/labstation) to a target version of classic OS.
+func ClassicProvisionConfig(provisionArgs []string) *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOS,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Device is accessible",
+					"Classic provision",
+				},
+				Actions: map[string]*Action{
+					"Device is accessible": {
+						Docs: []string{
+							"This verifier checks whether the host is accessible over ssh.",
+						},
+						ExecName:      "cros_access",
+						ExecTimeout:   &durationpb.Duration{Seconds: 30},
+						RunControl:    RunControl_ALWAYS_RUN,
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Classic provision": {
+						Docs: []string{
+							"Provision device to the custom classic os version",
+						},
+						ExecName:      "cros_provision",
+						ExecTimeout:   &durationpb.Duration{Seconds: 3600},
+						ExecExtraArgs: provisionArgs,
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+				},
+			},
+		},
+	}
+}
