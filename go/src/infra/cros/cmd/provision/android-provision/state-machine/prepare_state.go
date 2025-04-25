@@ -47,7 +47,7 @@ func (s PrepareState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any,
 					break
 				}
 			}
-			return nil, c.GetStatus(), fmt.Errorf("%s: %s", c.GetErrorMessage(), err)
+			return nil, c.GetStatus(), fmt.Errorf("%s: %w", c.GetErrorMessage(), err)
 		}
 	}
 	log.Println("State: AndroidPrepareState Completed")

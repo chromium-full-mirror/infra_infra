@@ -319,7 +319,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("failed to generate invocation ID: %v", err)
+		return fmt.Errorf("failed to generate invocation ID: %w", err)
 	}
 	invocationID := inv.InvocationId
 	logging.Infof(ctx, "generated invocationID: %s\n", invocationID)

@@ -300,7 +300,7 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 
 	logFile, err := common.CreateLogFile(filepath.Join(a.logPath, name, t.Format("20060102-150405")))
 	if err != nil {
-		return fmt.Errorf("failed to create log file: %s", err)
+		return fmt.Errorf("failed to create log file: %w", err)
 	}
 	defer logFile.Close()
 
@@ -309,18 +309,18 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
-		return fmt.Errorf("failed to create a net listener: %s", err)
+		return fmt.Errorf("failed to create a net listener: %w", err)
 	}
 	// Write port number to ~/.cftmeta for go/cft-port-discovery
 	err = portdiscovery.WriteServiceMetadata(name, l.Addr().String(), logger)
 	if err != nil {
-		return fmt.Errorf("failed to write metadata port: %s", err)
+		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
 	server := NewServer(logger, a.logPath, name, &commonParams, executor)
 
 	err = server.Serve(l)
 	if err != nil {
-		return fmt.Errorf("failed to initialize server: %s", err)
+		return fmt.Errorf("failed to initialize server: %w", err)
 	}
 	logger.Println("Starting generic filter service on port ", a.port)
 

@@ -46,7 +46,7 @@ var execLookPath = exec.LookPath
 func FetchXtsSuite(testType string, branch string, target string, buildId int) (string, error) {
 	cache, err := NewDiskCache(DiskCacheSize, localCacheDir)
 	if err != nil {
-		return "", fmt.Errorf("failed initializing disk cache: %v", err)
+		return "", fmt.Errorf("failed initializing disk cache: %w", err)
 	}
 
 	zipName := fmt.Sprintf("android-%s.zip", testType)

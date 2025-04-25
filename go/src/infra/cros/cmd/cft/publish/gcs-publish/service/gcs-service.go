@@ -42,7 +42,7 @@ func NewGcsPublishService(ctx context.Context, req *api.PublishRequest) (*GcsPub
 	gsClient, err := storage.NewGSClient(ctx, serviceAccountPath)
 	if err != nil {
 		log.Printf("error while creating new gs client: %s", err)
-		return nil, fmt.Errorf("error while creating new gs client: %s", err)
+		return nil, fmt.Errorf("error while creating new gs client: %w", err)
 	}
 
 	retryCount := 0
@@ -64,7 +64,7 @@ func NewGcsPublishService(ctx context.Context, req *api.PublishRequest) (*GcsPub
 func (gs *GcsPublishService) UploadToGS(ctx context.Context) error {
 	if err := gs.Client.Upload(ctx, gs.LocalArtifactPath, gs.GcsPath); err != nil {
 		log.Printf("error in gcs upload: %s", err)
-		return fmt.Errorf("error in gcs upload: %s", err)
+		return fmt.Errorf("error in gcs upload: %w", err)
 	}
 	return nil
 }
@@ -131,7 +131,7 @@ func (gs *GcsPublishService) ArchiveXTSResults(ctx context.Context) error {
 func unpackMetadata(req *api.PublishRequest) (*api.PublishGcsMetadata, error) {
 	var m api.PublishGcsMetadata
 	if err := req.Metadata.UnmarshalTo(&m); err != nil {
-		return &m, fmt.Errorf("improperly formatted input proto metadata, %s", err)
+		return &m, fmt.Errorf("improperly formatted input proto metadata, %w", err)
 	}
 	return &m, nil
 }

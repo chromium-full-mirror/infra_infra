@@ -38,14 +38,14 @@ func (s *RdbPublishService) Publish(ctx context.Context, log *log.Logger, req *a
 		log.Printf("failed to create new rdb publish service: %s", err)
 		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
 		out.Message = fmt.Sprintf("failed to create new rdb publish service: %s", err.Error())
-		return out, fmt.Errorf("failed to create new rdb publish service: %s", err)
+		return out, fmt.Errorf("failed to create new rdb publish service: %w", err)
 	}
 
 	if err := gps.UploadToRdb(context.Background()); err != nil {
 		log.Printf("upload to rdb failed: %s", err)
 		out.Status = api.PublishResponse_STATUS_FAILURE
 		out.Message = fmt.Sprintf("failed upload to rdb: %s", err.Error())
-		return out, fmt.Errorf("failed upload to rdb: %s", err)
+		return out, fmt.Errorf("failed upload to rdb: %w", err)
 	}
 
 	log.Println("Finished Successfuly!")

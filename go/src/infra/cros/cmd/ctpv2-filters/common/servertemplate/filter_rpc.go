@@ -68,7 +68,7 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 	s.ServerLogger.Printf("Creating Log File at %s", logPath)
 	logFile, err := common.CreateLogFile(logPath)
 	if err != nil {
-		err = fmt.Errorf("failed to create log file: %s", err)
+		err = fmt.Errorf("failed to create log file: %w", err)
 		s.ServerLogger.Println(err.Error())
 		return req, err
 	}

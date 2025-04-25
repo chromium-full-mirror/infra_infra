@@ -32,14 +32,14 @@ func (s *CpconPublishService) Publish(ctx context.Context, log *log.Logger, req 
 		log.Printf("failed to create new cpcon publish service: %s", err)
 		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
 		out.Message = fmt.Sprintf("failed to create new cpcon publish service: %s", err.Error())
-		return out, fmt.Errorf("failed to create new cpcon publish service: %s", err)
+		return out, fmt.Errorf("failed to create new cpcon publish service: %w", err)
 	}
 
 	if err := gps.UploadToCpcon(context.Background()); err != nil {
 		log.Printf("upload to cpcon failed: %s", err)
 		out.Status = api.PublishResponse_STATUS_FAILURE
 		out.Message = fmt.Sprintf("failed upload to cpcon: %s", err.Error())
-		return out, fmt.Errorf("failed upload to cpcon: %s", err)
+		return out, fmt.Errorf("failed upload to cpcon: %w", err)
 	}
 
 	log.Println("Finished Successfuly!")

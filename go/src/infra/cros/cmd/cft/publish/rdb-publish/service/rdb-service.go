@@ -235,7 +235,7 @@ func UnpackMetadata(req *api.PublishRequest) (*metadata.PublishRdbMetadata, erro
 
 	var m metadata.PublishRdbMetadata
 	if err := req.Metadata.UnmarshalTo(&m); err != nil {
-		return &m, fmt.Errorf("improperly formatted input proto metadata, %s", err)
+		return &m, fmt.Errorf("improperly formatted input proto metadata, %w", err)
 	}
 	return &m, nil
 }
@@ -313,14 +313,14 @@ func isChromiumTest(testResult *artifact.TestResult) bool {
 func extractBaseChromiumRDBConfig(testArgs map[string]string) (map[string]interface{}, error) {
 	rdbSettingsBytes, err := base64.StdEncoding.DecodeString(testArgs["resultdb_settings"])
 	if err != nil {
-		return nil, fmt.Errorf("error decoding the resultdb config base64 string for chromium results: %v", err)
+		return nil, fmt.Errorf("error decoding the resultdb config base64 string for chromium results: %w", err)
 	}
 
 	// Unmarshal the JSON bytes into a map
 	rdbSettings := map[string]interface{}{}
 	err = json.Unmarshal(rdbSettingsBytes, &rdbSettings)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshaling JSON for chromium resultdb config: %v", err)
+		return nil, fmt.Errorf("error unmarshaling JSON for chromium resultdb config: %w", err)
 	}
 
 	return rdbSettings, nil

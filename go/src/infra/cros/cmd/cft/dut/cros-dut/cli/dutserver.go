@@ -262,7 +262,7 @@ func (s *DutServiceServer) getBootID(ctx context.Context) (string, error) {
 	stdout, stderr, err := s.runCmdOutput("cat /proc/sys/kernel/random/boot_id")
 	if err != nil {
 		s.logger.Printf("Failed to get bootID:  %s\n, %s", err, stderr)
-		return stdout, fmt.Errorf("failed to get bootID %s", err)
+		return stdout, fmt.Errorf("failed to get bootID %w", err)
 	}
 
 	s.logger.Printf("Found BootID %s", stdout)
@@ -312,7 +312,7 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 		conn, err := GetConnectionWithRetry(ctx, s.dutName, s.wiringAddress, req, s.logger)
 		if err != nil {
 			s.logger.Println("unable to connect to dut post reboot.")
-			return fmt.Errorf("rebootDut: unable to get connection, %s", err)
+			return fmt.Errorf("rebootDut: unable to get connection, %w", err)
 		}
 		s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
 		s.connection = &dutssh.SSHClient{Client: conn}
@@ -680,7 +680,7 @@ func (s *DutServiceServer) runCmdOutput(cmd string) (string, string, error) {
 	s.logger.Printf("Checking Connection is alive.")
 	if s.connection == nil || !s.connection.IsAlive() {
 		if err := s.reconnect(context.Background()); err != nil {
-			return "", "", fmt.Errorf("failed to reconnect after connection failure, %s", err)
+			return "", "", fmt.Errorf("failed to reconnect after connection failure, %w", err)
 		}
 	}
 	s.logger.Printf("Checking Connection complete.")
@@ -688,7 +688,7 @@ func (s *DutServiceServer) runCmdOutput(cmd string) (string, string, error) {
 	s.logger.Printf("Creating new session.")
 	session, err := s.connection.NewSession()
 	if err != nil {
-		return "", "", fmt.Errorf("failed to establish a new session for command run, %s", err)
+		return "", "", fmt.Errorf("failed to establish a new session for command run, %w", err)
 	}
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer

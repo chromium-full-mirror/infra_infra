@@ -26,7 +26,7 @@ func startServer(name, artifactDir string, flagSet *flag.FlagSet, concreteServic
 
 	logFile, err := common.CreateLogFile(artifactDir)
 	if err != nil {
-		return fmt.Errorf("failed to create log file: %s", err)
+		return fmt.Errorf("failed to create log file: %w", err)
 	}
 	defer logFile.Close()
 
@@ -35,17 +35,17 @@ func startServer(name, artifactDir string, flagSet *flag.FlagSet, concreteServic
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
-		return fmt.Errorf("failed to create a net listener: %s", err)
+		return fmt.Errorf("failed to create a net listener: %w", err)
 	}
 	err = portdiscovery.WriteServiceMetadata(name, l.Addr().String(), logger)
 	if err != nil {
-		return fmt.Errorf("failed to write metadata port: %s", err)
+		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
 	server := NewServer(logger, concreteService)
 
 	err = server.Serve(l)
 	if err != nil {
-		return fmt.Errorf("failed to initialize server: %s", err)
+		return fmt.Errorf("failed to initialize server: %w", err)
 	}
 	logger.Printf("Started %s on %s", name, l.Addr().String())
 

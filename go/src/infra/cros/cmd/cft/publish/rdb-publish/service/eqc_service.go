@@ -212,7 +212,7 @@ func EqcInfos(req *api.PublishRequest) ([]*artifact.EqcInfo, error) {
 	log.Printf("Started to extract the EqC infos from the request: %#v", req)
 	metadata, err := UnpackMetadata(req)
 	if err != nil {
-		return nil, fmt.Errorf("unpacking the metadata in the publish request: %s", err)
+		return nil, fmt.Errorf("unpacking the metadata in the publish request: %w", err)
 	}
 
 	eqcInfos := make([]*artifact.EqcInfo, 0, len(metadata.GetPublishKeys()))

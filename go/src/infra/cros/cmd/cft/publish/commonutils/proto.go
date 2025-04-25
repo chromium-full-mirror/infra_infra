@@ -19,12 +19,12 @@ func ParsePublishRequest(path string) (*api.PublishRequest, error) {
 	in := &api.PublishRequest{}
 	r, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("error while opening file at %s: %s", path, err)
+		return nil, fmt.Errorf("error while opening file at %s: %w", path, err)
 	}
 
 	data, err := os.ReadFile(r.Name())
 	if err != nil {
-		return nil, fmt.Errorf("error while reading file %s: %s", r.Name(), err)
+		return nil, fmt.Errorf("error while reading file %s: %w", r.Name(), err)
 	}
 
 	umrsh := protojson.UnmarshalOptions{
@@ -32,7 +32,7 @@ func ParsePublishRequest(path string) (*api.PublishRequest, error) {
 	}
 	err = umrsh.Unmarshal(data, in)
 	if err != nil {
-		return nil, fmt.Errorf("err while unmarshalling: %s", err)
+		return nil, fmt.Errorf("err while unmarshalling: %w", err)
 	}
 
 	return in, nil

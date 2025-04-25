@@ -20,9 +20,9 @@ var sourcesPathRE = regexp.MustCompile(`gs://[a-z0-9-_.]+/.+/metadata/sources.js
 // ValidateGCSPublishRequest validates gcs publish request
 func ValidateGCSPublishRequest(req *api.PublishRequest, metadata *api.PublishGcsMetadata) error {
 	if err := ValidateGenericPublishRequest(req); err != nil {
-		return fmt.Errorf("error in publish request: %s", err)
+		return fmt.Errorf("error in publish request: %w", err)
 	} else if err := ValidateGCSRequestMetadata(metadata); err != nil {
-		return fmt.Errorf("error in gcs publish request metadata: %s", err)
+		return fmt.Errorf("error in gcs publish request metadata: %w", err)
 	}
 	return nil
 }
@@ -30,9 +30,9 @@ func ValidateGCSPublishRequest(req *api.PublishRequest, metadata *api.PublishGcs
 // ValidateTKOPublishRequest validates tko publish request
 func ValidateTKOPublishRequest(req *api.PublishRequest, metadata *api.PublishTkoMetadata) error {
 	if err := ValidateGenericPublishRequest(req); err != nil {
-		return fmt.Errorf("error in publish request: %s", err)
+		return fmt.Errorf("error in publish request: %w", err)
 	} else if err := ValidateTKORequestMetadata(metadata); err != nil {
-		return fmt.Errorf("error in tko publish request metadata: %s", err)
+		return fmt.Errorf("error in tko publish request metadata: %w", err)
 	}
 	return nil
 }
@@ -40,9 +40,9 @@ func ValidateTKOPublishRequest(req *api.PublishRequest, metadata *api.PublishTko
 // ValidateTKOPublishRequest validates rdb publish request
 func ValidateRDBPublishRequest(req *api.PublishRequest, metadata *metadata.PublishRdbMetadata) error {
 	if err := ValidateGenericPublishRequest(req); err != nil {
-		return fmt.Errorf("error in publish request: %s", err)
+		return fmt.Errorf("error in publish request: %w", err)
 	} else if err := ValidateRDBRequestMetadata(metadata); err != nil {
-		return fmt.Errorf("error in rdb publish request metadata: %s", err)
+		return fmt.Errorf("error in rdb publish request metadata: %w", err)
 	}
 	return nil
 }
@@ -50,7 +50,7 @@ func ValidateRDBPublishRequest(req *api.PublishRequest, metadata *metadata.Publi
 // ValidateCpconPublishRequest validates cpcon publish request
 func ValidateCpconPublishRequest(req *api.PublishRequest) error {
 	if err := ValidateGenericPublishRequest(req); err != nil {
-		return fmt.Errorf("error in publish request: %s", err)
+		return fmt.Errorf("error in publish request: %w", err)
 	}
 	return nil
 }

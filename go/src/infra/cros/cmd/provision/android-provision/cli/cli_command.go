@@ -87,7 +87,7 @@ func (cc *CLICommand) Init(args []string) error {
 
 	cc.inputProto, err = common_utils.ParseAndroidProvisionRequest(cc.inputFile)
 	if err != nil {
-		return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %s", err)
+		return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %w", err)
 	}
 
 	return nil
@@ -120,7 +120,7 @@ func (cc *CLICommand) Run() error {
 	cc.log.Printf("DutAddr: %s", dutAddr)
 	dutConn, err := grpc.Dial(dutAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return fmt.Errorf("failed to connect to dut-service: %s", err)
+		return fmt.Errorf("failed to connect to dut-service: %w", err)
 	}
 	cc.log.Printf("Dut Conn Established")
 	defer dutConn.Close()
@@ -130,16 +130,16 @@ func (cc *CLICommand) Run() error {
 	if ip == "127.0.0.1" {
 		svcAdapter, err := test.NewLocalDutServiceAdapter(cc.inputProto.GetDutServer())
 		if err != nil {
-			return fmt.Errorf("failed to create AndroidService: %s", err)
+			return fmt.Errorf("failed to create AndroidService: %w", err)
 		}
 		svc, err = service.NewAndroidServiceFromExistingConnection(svcAdapter, cc.inputProto.GetDut().GetAndroid().GetSerialNumber(), cc.inputProto.GetProvisionState().GetAndroidOsImage(), cc.inputProto.GetProvisionState().GetCipdPackages())
 		if err != nil {
-			return fmt.Errorf("failed to create Android service: %s", err)
+			return fmt.Errorf("failed to create Android service: %w", err)
 		}
 	} else {
 		svc, err = service.NewAndroidServiceFromAndroidProvisionRequest(api.NewDutServiceClient(dutConn), cc.inputProto)
 		if err != nil {
-			return fmt.Errorf("failed to create Android service: %s", err)
+			return fmt.Errorf("failed to create Android service: %w", err)
 		}
 	}
 	cc.log.Printf("New AndroidService Created")
@@ -176,7 +176,7 @@ func (cc *CLICommand) Run() error {
 				Reason: api.InstallFailure_Reason(translatedStatus),
 			},
 		}
-		return fmt.Errorf("failed to provision, %s", err)
+		return fmt.Errorf("failed to provision, %w", err)
 	}
 	return nil
 }

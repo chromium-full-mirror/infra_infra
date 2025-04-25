@@ -109,7 +109,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	if getTestType(req) == common.KernelTestType {
 		kernelBuildId, kernelTarget, err := getKernelBuildInfo(req)
 		if err != nil {
-			return fmt.Errorf("fetching kernel build: %+v", err)
+			return fmt.Errorf("fetching kernel build: %+w", err)
 		}
 		if err := generator.AddModification(
 			&api.KernelPrebuilts{
@@ -138,7 +138,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 			},
 		); err != nil {
 			log.Printf("Error while adding modification to provision request, %s", err)
-			return fmt.Errorf("adding kernel prebuilts to provision request: %+v", err)
+			return fmt.Errorf("adding kernel prebuilts to provision request: %+w", err)
 		}
 	}
 
@@ -256,7 +256,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 		var err error
 		installPath, err = fixInstallPathForKernelTest(installPath, req, board)
 		if err != nil {
-			return fmt.Errorf("fixing install path for kernel test: %+v", err)
+			return fmt.Errorf("fixing install path for kernel test: %+w", err)
 		}
 	}
 	// Make sure the buildId and installPath are consistent in all expected locations.

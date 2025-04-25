@@ -30,12 +30,12 @@ type CpconPublishService struct {
 func NewCpconPublishService(req *api.PublishRequest) (*CpconPublishService, error) {
 	var m api.PublishCpconMetadata
 	if err := req.Metadata.UnmarshalTo(&m); err != nil {
-		return nil, fmt.Errorf("improperly formatted input proto metadata, received %v, expected PublishCpconMetadata: %s", req, err)
+		return nil, fmt.Errorf("improperly formatted input proto metadata, received %v, expected PublishCpconMetadata: %w", req, err)
 	}
 
 	bucket, err := resolveGcsPathToBucket(m.GcsPath.GetPath())
 	if err != nil {
-		return nil, fmt.Errorf("improperly formatted gcspath: %s", err)
+		return nil, fmt.Errorf("improperly formatted gcspath: %w", err)
 	}
 
 	retryCount := 0
@@ -65,12 +65,12 @@ func (ts *CpconPublishService) UploadToCpcon(ctx context.Context) error {
 	})
 	if err != nil {
 		log.Printf("error while creating upload results command: %s", err)
-		return fmt.Errorf("error while creating upload results command: %s", err)
+		return fmt.Errorf("error while creating upload results command: %w", err)
 	}
 	stdout, stderr, err := commonutils.RunCommand(ctx, cmd, "cpcon_upload_results", nil, true)
 	if err != nil {
 		log.Printf("cpcon upload cmd stdout: %s, cpcon upload cmd stderr: %s", stdout, stderr)
-		return fmt.Errorf("error in cpcon upload results: %s", err)
+		return fmt.Errorf("error in cpcon upload results: %w", err)
 	}
 	return nil
 }

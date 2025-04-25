@@ -63,7 +63,7 @@ func GetFile(ctx context.Context, file string, dut api.DutServiceClient) (string
 		destDir:   "/var/tmp/outputResult/",
 	}
 	if err := os.MkdirAll("/var/tmp/outputResult/", 0770); err != nil {
-		return "", fmt.Errorf("failed to create output dir: %v", err)
+		return "", fmt.Errorf("failed to create output dir: %w", err)
 	}
 	return gf.getFile()
 
@@ -75,7 +75,7 @@ func (Zip) Tar(ctx context.Context, srcFile, destTarFile string) error {
 	tarCmd := exec.CommandContext(ctx, "tar", "-zcvf", destTarFile, srcFile)
 	if err := tarCmd.Run(); err != nil {
 		log.Printf("writeStreamToFile: Unable to tar file: %v %s %s %s", err, tarCmd.Stdout, tarCmd.Stderr, srcFile)
-		return fmt.Errorf("writeStreamToFile: Unable to tar file: %s", err)
+		return fmt.Errorf("writeStreamToFile: Unable to tar file: %w", err)
 	}
 	log.Printf("Successful tar! Content located at: %s", destTarFile)
 	return nil
@@ -85,7 +85,7 @@ func (Zip) Untar(ctx context.Context, tarFileName, destDir, destFileName string)
 	lCmd := exec.CommandContext(ctx, "tar", "-xvf", tarFileName, "-C", destDir)
 	if err := lCmd.Run(); err != nil {
 		log.Printf("writeStreamToFile: Unable to untar file: %s %s %s %s", err, lCmd.Stdout, lCmd.Stderr, tarFileName)
-		return "", fmt.Errorf("writeStreamToFile: Unable to untar file: %s", err)
+		return "", fmt.Errorf("writeStreamToFile: Unable to untar file: %w", err)
 	}
 	log.Printf("Successful pull! Content located at: %s", filepath.Join(destDir, destFileName))
 
@@ -119,13 +119,13 @@ func (f *FetchFile) getFile() (string, error) {
 	if err != nil {
 		log.Printf("Unable to make temp file: %s", err)
 
-		return "", fmt.Errorf("unable to make temp file: %s", err)
+		return "", fmt.Errorf("unable to make temp file: %w", err)
 	}
 
 	err = f.readStream(stream)
 	if err != nil {
 		log.Printf("Reading stream err: %s", err)
-		return "", fmt.Errorf("read Stream err: %s", err)
+		return "", fmt.Errorf("read Stream err: %w", err)
 	}
 
 	tarFilePath, err := Zip{}.Untar(f.ctx, f.tarFileName, f.destDir, f.fileName)
@@ -136,7 +136,7 @@ func (f *FetchFile) getFile() (string, error) {
 func (f *FetchFile) makeOutputTmpFile() error {
 	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
-		return fmt.Errorf("GetFile: Failed to create local tmpdir: %q, err :%s", tmpDir, err)
+		return fmt.Errorf("GetFile: Failed to create local tmpdir: %q, err :%w", tmpDir, err)
 	}
 	f.tmpdir = tmpDir
 	tarName := fmt.Sprintf("%s.tar.bz", f.fileName)

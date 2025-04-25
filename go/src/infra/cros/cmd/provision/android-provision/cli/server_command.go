@@ -54,7 +54,7 @@ func (sc *ServerCommand) Init(args []string) error {
 
 	sc.metadata.Log, err = common.SetUpLog(sc.logFileName)
 	if err != nil {
-		return fmt.Errorf("unable to set up logs: %s", err)
+		return fmt.Errorf("unable to set up logs: %w", err)
 	}
 
 	if err = sc.validateCLIInputs(); err != nil {
@@ -65,7 +65,7 @@ func (sc *ServerCommand) Init(args []string) error {
 		sc.metadata.Log.Println("warning: CLI arg 'metadata' is deprecated, please use the StartUp RPC instead.")
 		apr, err := common_utils.ParseAndroidProvisionRequest(sc.metadataFile)
 		if err != nil {
-			return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %s", err)
+			return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %w", err)
 		}
 
 		if err = sc.validateProtoInputs(apr); err != nil {

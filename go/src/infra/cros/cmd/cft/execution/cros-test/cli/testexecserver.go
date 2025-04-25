@@ -110,19 +110,19 @@ func runTests(ctx context.Context, logger *log.Logger, resultRootDir, tlwAddr st
 
 	uniqueParfiles, err := finders.GetUniqueParfiles(matchedMdList)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get unique parfiles: %v", err)
+		return nil, fmt.Errorf("failed to get unique parfiles: %w", err)
 	}
 
 	// only fetch if there are unique parfiles.
 	if len(uniqueParfiles) > 0 {
 		if err := finders.FetchAndInstallParfiles(ctx, logger, "mobly_priv_artifacts/out", uniqueParfiles); err != nil {
-			return nil, fmt.Errorf("failed to fetch and install parfiles: %v", err)
+			return nil, fmt.Errorf("failed to fetch and install parfiles: %w", err)
 		}
 	}
 
 	artifacts, err := finders.GetUniqueMoblyZipArtifacts(matchedMdList)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get unique artifacts: %v", err)
+		return nil, fmt.Errorf("failed to get unique artifacts: %w", err)
 	}
 
 	if len(artifacts) > 0 {

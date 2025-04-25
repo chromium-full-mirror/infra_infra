@@ -117,7 +117,7 @@ func SetupAdb(logger *log.Logger, addr string) (err error) {
 	}
 	found, err := AdbDeviceFound(addr, logger)
 	if !found {
-		return fmt.Errorf("ADB Start failed: %s", err)
+		return fmt.Errorf("ADB Start failed: %w", err)
 	}
 
 	return nil
@@ -157,7 +157,7 @@ func AdbDeviceFound(addr string, logger *log.Logger) (bool, error) {
 	deviceRegex := regexp.MustCompile(fmt.Sprintf(`%s\sdevice`, FmtAddr(addr)))
 	if !deviceRegex.MatchString(outStr) {
 
-		return false, fmt.Errorf("ADB Devices CMd failed: %s, %s", err, outStr)
+		return false, fmt.Errorf("ADB Devices CMd failed: %w, %s", err, outStr)
 	}
 	return true, nil
 }

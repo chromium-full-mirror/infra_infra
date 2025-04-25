@@ -137,11 +137,11 @@ func getFromFragments[F Fragmented](handlerChannel chan F, errorFunc func() erro
 	for {
 		fragment, ok := <-handlerChannel
 		if !ok {
-			return fmt.Errorf("handlerChannel %s closed with error: %s", reflect.TypeOf(handlerChannel), errorFunc())
+			return fmt.Errorf("handlerChannel %s closed with error: %w", reflect.TypeOf(handlerChannel), errorFunc())
 		}
 		done, err := mdChecker.Check(fragment.GetMetadata(), int64(len(fragment.GetFragment())))
 		if err != nil {
-			return fmt.Errorf("error when receiving fragmented object: %s", err)
+			return fmt.Errorf("error when receiving fragmented object: %w", err)
 		}
 		streamedBytes = append(streamedBytes, fragment.GetFragment()...)
 		if done {

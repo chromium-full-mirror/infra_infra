@@ -43,7 +43,7 @@ func (s PackageInstallState) Execute(ctx context.Context, log *log.Logger) (*any
 				}
 			}
 			resp, _ := s.svc.MarshalResponseMetadata()
-			return resp, c.GetStatus(), fmt.Errorf("%s: %s", c.GetErrorMessage(), err)
+			return resp, c.GetStatus(), fmt.Errorf("%s: %w", c.GetErrorMessage(), err)
 		}
 	}
 	log.Println("State: AndroidPackageInstallState Completed")
