@@ -169,43 +169,35 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if filterServiceClient == nil {
 		return nil, fmt.Errorf("filterServiceClient is nil")
 	}
-	// TODO(cdelagarza): remove 3d check when it includes gRPC streaming.
-	if filter.Generic.GetBinaryName() != "/solver_service" {
-		defer func() {
-			if err != nil && filter.Generic.GetBinaryName() == "cros-test-finder" {
-				logging.Infof(ctx, "Encountered error when executing cros-test-finder. Falling back to adaptor execution.")
-				resp, err = executeTestFinderAdaptor(ctx, conn, filterReq)
-				if err != nil {
-					err = errors.Annotate(err, "test finder adaptor filter err: ").Err()
-				}
-				logging.Infof(ctx, "Filter Adaptor Success")
+	defer func() {
+		if err != nil && filter.Generic.GetBinaryName() == "cros-test-finder" {
+			logging.Infof(ctx, "Encountered error when executing cros-test-finder. Falling back to adaptor execution.")
+			resp, err = executeTestFinderAdaptor(ctx, conn, filterReq)
+			if err != nil {
+				err = errors.Annotate(err, "test finder adaptor filter err: ").Err()
 			}
-		}()
-		stream, streamErr := filterServiceClient.ExecuteWithStream(ctx)
-		if streamErr != nil {
-			err = streamErr
-			logging.Infof(ctx, "ExecuteWithStream returned error: %s", err)
-			return
+			logging.Infof(ctx, "Filter Adaptor Success")
 		}
-
-		serverCommuncationHandler := streaming.NewServerCommunicationHandler(stream)
-		defer serverCommuncationHandler.Close()
-		go serverCommuncationHandler.HandleStreamFromServer()
-		go serverCommuncationHandler.HandleStreamToServer()
-		go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
-
-		err = serverCommuncationHandler.SendInternalTestplan(filterReq)
-		if err != nil {
-			logging.Infof(ctx, "Failed to send test plan: %s", err)
-			return
-		}
-		resp, err = serverCommuncationHandler.GetInternalTestplan()
-	} else {
-		maxRecvSizeOption := grpc.MaxCallRecvMsgSize(32 * 10e6)
-		maxSendSizeOption := grpc.MaxCallSendMsgSize(32 * 10e6)
-		// Call filter grpc endpoint
-		resp, err = filterServiceClient.Execute(ctx, filterReq, maxRecvSizeOption, maxSendSizeOption)
+	}()
+	stream, streamErr := filterServiceClient.ExecuteWithStream(ctx)
+	if streamErr != nil {
+		err = streamErr
+		logging.Infof(ctx, "ExecuteWithStream returned error: %s", err)
+		return
 	}
+
+	serverCommuncationHandler := streaming.NewServerCommunicationHandler(stream)
+	defer serverCommuncationHandler.Close()
+	go serverCommuncationHandler.HandleStreamFromServer()
+	go serverCommuncationHandler.HandleStreamToServer()
+	go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
+
+	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
+	if err != nil {
+		logging.Infof(ctx, "Failed to send test plan: %s", err)
+		return
+	}
+	resp, err = serverCommuncationHandler.GetInternalTestplan()
 
 	return
 }

@@ -218,7 +218,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	containerInfoList := list.New()
 
 	for _, filter := range ctpFilters {
-		containerInfoList.PushBack(CtpFilterToContainerInfo(filter, build))
+		containerInfoList.PushBack(CtpFilterToContainerInfo(filter))
 	}
 
 	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(containerInfoList)), "Container Info queue")
@@ -318,20 +318,12 @@ func createContainerImagesInfoMap(
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.
-func CtpFilterToContainerInfo(ctpFilter *testapi.CTPFilter, build int) *data.ContainerInfo {
+func CtpFilterToContainerInfo(ctpFilter *testapi.CTPFilter) *data.ContainerInfo {
 	contName := ctpFilter.GetContainerInfo().GetContainer().GetName()
 	// TODO (azrahman): remove this once container creation is more generic.
-	if contName == common.TtcpContainerName {
-		return &data.ContainerInfo{
-			ImageKey:  contName,
-			Request:   common.CreateTTCPContainerRequest(ctpFilter),
-			ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
-		}
-	} else {
-		return &data.ContainerInfo{
-			ImageKey:  contName,
-			Request:   common.CreateContainerRequest(ctpFilter, build),
-			ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
-		}
+	return &data.ContainerInfo{
+		ImageKey:  contName,
+		Request:   common.CreateContainerRequest(ctpFilter),
+		ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
 	}
 }

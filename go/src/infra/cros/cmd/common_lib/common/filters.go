@@ -37,10 +37,13 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	binaryLookup = map[string]string{
-		TtcpContainerName:                    "solver_service",
 		TestFinderContainerName:              "test_finder_filter",
 		PreProcessFilterContainerName:        "pre_process_filter",
 		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
+	}
+
+	binaryArgsLookup = map[string][]string{
+		TtcpContainerName: {"-creds", "/creds/service_accounts/service-account-chromeos.json"},
 	}
 )
 
@@ -229,7 +232,9 @@ func binaryName(name string, build int) string {
 }
 
 // CreateContainerRequest creates container request from provided ctp filter.
-func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.ContainerRequest {
+func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRequest {
+	defaultBinaryArgs := binaryArgsLookup[requestedFilter.GetContainerInfo().GetContainer().GetName()]
+
 	return &api.ContainerRequest{
 		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
 		Container: &api.Template{
@@ -241,7 +246,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.Cont
 					DockerArtifactDir: "/tmp/filters",
 					BinaryArgs: append([]string{
 						"server", "-port", "0",
-					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
+					}, append(defaultBinaryArgs, requestedFilter.GetContainerInfo().GetBinaryArgs()...)...),
 					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
 					Env:               GceMetadataEnvVars(),
@@ -258,36 +263,6 @@ func needBackwardsCompatibility(build int) bool {
 	// TODO (dbeckett/azrahamn): set this to the proper build # once the compatibility
 	// changes land in the OS src tree and have assigned build #s.
 	return build < 20000
-}
-
-// CreateTTCPContainerRequest creates container request from provided ctp filter.
-// TODO (azrahman): Merge this into a generic container request creator that will
-// work for all containers.
-func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRequest {
-	return &api.ContainerRequest{
-		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
-		Container: &api.Template{
-			Container: &api.Template_Generic{
-				Generic: &api.GenericTemplate{
-					// TODO (azrahman): Finalize the format of the this dir. Ideally, it should be /tmp/<container_name>.
-					// So keeping it as comment for now.
-					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
-					DockerArtifactDir: "/tmp/filters",
-					BinaryArgs: append([]string{
-						"-port", "0",
-						"-log", "/tmp/filters",
-						"-creds", "/creds/service_accounts/service-account-chromeos.json",
-					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
-					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
-					BinaryName:        "/solver_service",
-					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
-				},
-			},
-		},
-		// TODO (azrahman): figure this out (not being used right now).
-		ContainerImageKey: requestedFilter.GetContainerInfo().GetContainer().GetName(),
-		Network:           "host",
-	}
 }
 
 // ListToJSON creates json bytes from provided list.
