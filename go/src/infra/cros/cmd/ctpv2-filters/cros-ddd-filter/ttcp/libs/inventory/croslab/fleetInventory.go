@@ -228,7 +228,7 @@ func getSwarmingInventory(pool string, googleApiCredsPath string, logger *log.Lo
 	// Execute the query.
 	it, err := q.Read(ctx)
 	if err != nil {
-		logger.Println("Could not execute query:", err)
+		log.Println("Could not execute query:", err)
 		return *swarmingResource, err
 	} else {
 		if logger != nil {
