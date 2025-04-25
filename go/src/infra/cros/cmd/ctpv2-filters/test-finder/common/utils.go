@@ -217,6 +217,17 @@ func TestSuiteFromTestplan(req *api.InternalTestplan) ([]*api.TestSuite, error) 
 
 }
 
+// AndroidBuildIDFromTestplan attempts to find a build_id in the TestPlan (req).
+func AndroidBuildIDFromTestplan(req *api.InternalTestplan) (string, error) {
+	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	for _, arg := range args {
+		if arg.GetFlag() == "build_id" {
+			return arg.GetValue(), nil
+		}
+	}
+	return "", fmt.Errorf("no build_id present in suite metadata")
+}
+
 // append the magical `FlexibleTF` key on the suiteArgs to be processed by cros-test.
 func AddFlexibleTFFlag(tp *api.InternalTestplan) {
 	existingMD := tp.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()

@@ -37,9 +37,10 @@ func getFindersFromRequest(ctx context.Context, req *api.InternalTestplan, log *
 	g3MoblyFinder := finders.NewG3MoblyFinder(ctx, req, log)
 	// Coming in a follow up CL
 	internalTFFinder := finders.NewTradefedFinder(ctx, req, log)
+	abMoblyFinder := finders.NewAndroidBuildMoblyFinder(ctx, req, log)
 
 	// For now, we will use all. To be adjusted.
 	// TODO implement; currently just building up the logical flow + signatures.
-	finders := []common.FinderInterface{g3MoblyFinder, internalTFFinder}
+	finders := []common.FinderInterface{g3MoblyFinder, internalTFFinder, abMoblyFinder}
 	return finders
 }
