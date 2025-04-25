@@ -324,8 +324,9 @@ func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.St
 }
 
 // GetServodStatus gets the current status of servod.
-func (s *service) GetServodStatus(context.Context, *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetServodStatus not implemented")
+func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
+	status := getServodStatus(ctx, req.StationId.GetServodPort())
+	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
 // HWInitServod calls hwinit of servod.

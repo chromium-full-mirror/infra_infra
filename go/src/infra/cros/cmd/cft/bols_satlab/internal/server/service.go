@@ -93,8 +93,22 @@ func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.St
 	return nil, status.Errorf(codes.Unimplemented, "method StopServod not implemented")
 }
 
-func (s *service) GetServodStatus(context.Context, *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetServodStatus not implemented")
+func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
+	c, err := docker.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fail to create docker client: %w", err)
+	}
+	// Check if the docker client is up.
+	isUp, err := c.IsUp(ctx, req.StationId.GetContainerName())
+	if err != nil {
+		return nil, fmt.Errorf("fail to check if servod container %s is up: %w",
+			req.StationId.GetContainerName(), err)
+	}
+	if !isUp {
+		return nil, fmt.Errorf("servod container %s is not running", req.StationId.GetContainerName())
+	}
+	status := getServodStatus(ctx, c, req.StationId.GetContainerName(), req.StationId.GetServodPort())
+	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
 func (s *service) HWInitServod(context.Context, *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
@@ -155,13 +169,19 @@ func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*b
 
 func startServod(ctx context.Context, containerName, board, model, serial, config string,
 	recoveryMode bool, port int32, logger *log.Logger) error {
+	const (
+		servodRegistryUri             = "SERVOD_REGISTRY_URI"
+		servodContainerlLabel         = "SERVOD_CONTAINER_LABEL"
+		servodRegistryUriFallback     = "us-docker.pkg.dev/chromeos-partner-moblab/common-core"
+		servodContainerlLabelFallback = "release"
+	)
 	if containerName == "" {
 		return errors.New("servod docker container name is required")
 	}
 	servodDockerImagePath := fmt.Sprintf(
 		"%s/servod:%s",
-		misc.GetEnv("SERVOD_REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core"),
-		misc.GetEnv("SERVOD_CONTAINER_LABEL", "release"),
+		misc.GetEnv(servodRegistryUri, servodRegistryUriFallback),
+		misc.GetEnv(servodContainerlLabel, servodContainerlLabelFallback),
 	)
 	c, err := docker.NewClient(ctx)
 	if err != nil {
@@ -171,7 +191,7 @@ func startServod(ctx context.Context, containerName, board, model, serial, confi
 	// Ignore error if container does not exist.
 	err = c.Remove(ctx, containerName, true)
 	if err != nil {
-		logger.Printf("fail to remove container `%s`. Non-fatal\n", containerName)
+		logger.Printf("Fail to remove container `%s`. Non-fatal\n", containerName)
 	}
 
 	containerEnvVars := []string{
@@ -244,4 +264,16 @@ func containerExecCmd(ctx context.Context, dockerClient docker.Client, dockerCon
 			fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
 	}
 	return res.Stdout, res.Stderr, nil
+}
+
+func getServodStatus(ctx context.Context, dockerClient docker.Client, dockerContainerName string,
+	port int32) bols.ServodStatus {
+	// TODO: Refactor this function to a command function so that we will have one common
+	// function for both satlab and labstation.
+	if _, _, err := containerExecCmd(ctx, dockerClient, dockerContainerName,
+		[]string{"servodtool", "instance", "show", "-p", fmt.Sprintf("%d", port)},
+		time.Minute); err == nil {
+		return bols.ServodStatus_SERVOD_RUNNING
+	}
+	return bols.ServodStatus_SERVOD_STOPPED
 }
