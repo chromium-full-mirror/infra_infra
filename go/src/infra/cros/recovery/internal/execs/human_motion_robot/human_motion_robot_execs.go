@@ -52,24 +52,23 @@ func checkHMRStateExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("check hmr state: %q", errHMRNotSupported).Err()
 	}
 
-	if info.GetChromeos().GetHumanMotionRobot().GetTouchhost() == "" {
-		return errors.Reason("empty hostname for Touchhost Pi: %q", errMissingTouchHost).Err()
-	}
-
-	res, err := Call(ctx, info.GetAccess(), info.GetChromeos().GetHumanMotionRobot(), "GetErrors")
-	if err != nil {
-		return errors.Annotate(err, errTouchHostPiBroken).Err()
-	}
-
-	vals := res.GetArray().GetValues()
-	count := len(vals)
-
-	if count > 0 {
-		for _, val := range vals {
-			log.Errorf(ctx, "GetErrors: %s", val.GetString_())
+	if info.GetChromeos().GetHumanMotionRobot().GetTouchhost() != "" {
+		res, err := Call(ctx, info.GetAccess(), info.GetChromeos().GetHumanMotionRobot(), "GetErrors")
+		if err != nil {
+			return errors.Annotate(err, errTouchHostPiBroken).Err()
 		}
-		return errors.Reason(errHMRBroken).Err()
+
+		vals := res.GetArray().GetValues()
+		count := len(vals)
+
+		if count > 0 {
+			for _, val := range vals {
+				log.Errorf(ctx, "GetErrors: %s", val.GetString_())
+			}
+			return errors.Reason(errHMRBroken).Err()
+		}
 	}
+
 	return nil
 }
 

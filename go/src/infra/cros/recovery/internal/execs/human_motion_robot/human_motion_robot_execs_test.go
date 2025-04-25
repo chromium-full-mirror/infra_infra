@@ -290,7 +290,7 @@ func Test_CheckHMRStateExec(t *testing.T) {
 
 	var badHMR *tlw.HumanMotionRobot = nil
 
-	badHMRNoTouchhost := &tlw.HumanMotionRobot{
+	goodHMRNoTouchhost := &tlw.HumanMotionRobot{
 		Name:  "hmr-hostname",
 		State: tlw.HumanMotionRobot_WORKING,
 	}
@@ -324,18 +324,18 @@ func Test_CheckHMRStateExec(t *testing.T) {
 		genericTest_checkHMRStateExec(t, goodHMR, goodXMLRPCResponse, expectPass, wantErrors)
 	})
 
+	t.Run("Good_Touchhost", func(t *testing.T) {
+		wantErrors := []string{}
+
+		genericTest_checkHMRStateExec(t, goodHMRNoTouchhost, nil, expectPass, wantErrors)
+	})
+
 	t.Run("Error", func(t *testing.T) {
 
 		t.Run("Missing_HMR", func(t *testing.T) {
 			wantErrors := []string{errHMRNotSupported}
 
 			genericTest_checkHMRStateExec(t, badHMR, nil, expectFail, wantErrors)
-		})
-
-		t.Run("Missing_Touchhost", func(t *testing.T) {
-			wantErrors := []string{errMissingTouchHost}
-
-			genericTest_checkHMRStateExec(t, badHMRNoTouchhost, nil, expectFail, wantErrors)
 		})
 
 		t.Run("Error_Touch_Host", func(t *testing.T) {
