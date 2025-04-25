@@ -32,7 +32,7 @@ var (
 // hmrCmd creates command for adding, removing, or replacing HMR on a DUT.
 func hmrCmd(mode action) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: "peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model}",
+		UsageLine: "peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model} -hmr-gen {gen_1|gen_2|...}",
 		ShortDesc: "Manage hmr system connections to a DUT",
 		LongDesc:  cmdhelp.ManagePeripheralHMRLongDesc,
 		CommandRun: func() subcommands.CommandRun {
@@ -196,8 +196,9 @@ func (c *manageHmrCmd) cleanAndValidateFlags() error {
 		return checkErrStr(c, errStrs)
 	}
 
+	c.touchHostPi = strings.TrimSpace(c.touchHostPi)
+
 	checkHmrPiHostname(c, &errStrs)
-	checkTouchHostPiHostname(c, &errStrs)
 	checkHmrModel(c, &errStrs)
 
 	checkHmrToolType(c, &errStrs)
@@ -212,13 +213,6 @@ func checkHmrPiHostname(c *manageHmrCmd, errStrs *[]string) {
 	c.hmrPi = strings.TrimSpace(c.hmrPi)
 	if c.hmrPi == "" {
 		*errStrs = append(*errStrs, errEmptyHmrPiHostname)
-	}
-}
-
-func checkTouchHostPiHostname(c *manageHmrCmd, errStrs *[]string) {
-	c.touchHostPi = strings.TrimSpace(c.touchHostPi)
-	if c.touchHostPi == "" {
-		*errStrs = append(*errStrs, errEmptyTouchHostPiHostname)
 	}
 }
 
@@ -284,6 +278,30 @@ func checkErrStr(c *manageHmrCmd, errStrs []string) error {
 		return nil
 	}
 	return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
+}
+
+func (c *manageHmrCmd) String() string {
+	return fmt.Sprintf(
+		`manageHmrCmd
+{
+	dutName: "%s",
+	touchHostPi: "%s",
+	hmrModel: "%s",
+	hmrPi: "%s",
+
+	hmrWalt: %t,
+	hmrToolTypeStr: "%s",
+	hmrToolType: "%s",
+	hmrGenStr: "%s",
+	hmrGen: "%s",
+
+	rpmHostname: "%s",
+	rpmOutlet: "%s",
+}`,
+		c.dutName, c.touchHostPi, c.hmrModel, c.hmrPi,
+		c.hmrWalt, c.hmrToolTypeStr, c.hmrToolType, c.hmrGenStr, c.hmrGen,
+		c.rpmHostname, c.rpmOutlet,
+	)
 }
 
 func getSupportedHmrToolType() []string {

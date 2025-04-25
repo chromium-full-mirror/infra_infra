@@ -5,6 +5,7 @@
 package peripherals
 
 import (
+	"strings"
 	"testing"
 
 	"go.chromium.org/luci/common/testing/typed"
@@ -20,11 +21,11 @@ func TestHmrCleanAndValidateFlags(t *testing.T) {
 	}{
 		{
 			cmd:  &manageHmrCmd{},
-			want: []string{errDUTMissing, errEmptyHmrModel},
+			want: []string{errDUTMissing, errEmptyHmrModel, errEmptyHmrPiHostname},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d"},
-			want: []string{errEmptyHmrPiHostname, errEmptyTouchHostPiHostname, errEmptyHmrModel},
+			want: []string{errEmptyHmrPiHostname, errEmptyHmrModel},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi"},
@@ -32,7 +33,7 @@ func TestHmrCleanAndValidateFlags(t *testing.T) {
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", hmrPi: "hmr-pi"},
-			want: []string{errEmptyTouchHostPiHostname, errEmptyHmrModel},
+			want: []string{errEmptyHmrModel},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi", hmrPi: "hmr-pi"},
@@ -57,6 +58,11 @@ func TestHmrCleanAndValidateFlags(t *testing.T) {
 		if err == nil {
 			t.Errorf("cleanAndValidateFlags = nil; want errors: %v", tt.want)
 			continue
+		}
+		for _, wantErrStr := range tt.want {
+			if !strings.Contains(err.Error(), wantErrStr) {
+				t.Errorf("cleanAndValidateFlags = %s; input: %s; want err %s included", err.Error(), tt.cmd, wantErrStr)
+			}
 		}
 	}
 
@@ -94,6 +100,43 @@ func TestAddHmr(t *testing.T) {
 		HmrWalt:     true,
 		HmrToolType: lab.HumanMotionRobot_HMR_TOOL_TYPE_STYLUS,
 		HmrGen:      lab.HumanMotionRobot_HMR_GEN_1,
+	}
+
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
+		t.Errorf("created hmr is invalid -want +got, %s", diff)
+	}
+}
+
+func TestAddHmrGen2(t *testing.T) {
+	// Valid case
+	c := &manageHmrCmd{
+		dutName:  "d",
+		hmrPi:    "hmr-pi",
+		hmrModel: "hmr-model",
+
+		hmrWalt:        true,
+		hmrToolTypeStr: "stylus",
+		hmrGenStr:      "gen_2",
+
+		mode: actionAdd,
+	}
+	if err := c.cleanAndValidateFlags(); err != nil {
+		t.Errorf("cleanAndValidateFlags = %v; want nil", err)
+	}
+
+	// Valid case: create HMR
+	got, err := c.createHmr()
+	if err != nil {
+		t.Errorf("unable to create HMR: %v; want nil", err)
+	}
+
+	want := &lab.HumanMotionRobot{
+		Hostname: "hmr-pi",
+		HmrModel: "hmr-model",
+
+		HmrWalt:     true,
+		HmrToolType: lab.HumanMotionRobot_HMR_TOOL_TYPE_STYLUS,
+		HmrGen:      lab.HumanMotionRobot_HMR_GEN_2,
 	}
 
 	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
