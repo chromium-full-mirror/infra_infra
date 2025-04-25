@@ -1,0 +1,2749 @@
+{
+  "values": [
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "adlnrvp"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "adlrvp"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "ambassador"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "amd64-generic"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "amd64-generic-embedded"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "amd64-generic-koosh"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "arm-generic"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "arm64-generic"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "asurada"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8192"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "asurada-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8192"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "asurada-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8192"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "asurada64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8192"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "atlas"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "atlas-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "atlas-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "atlas-signingnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "aurora"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "aurora-borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-arc-r-container"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-arc-t"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-arc-v"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-cfm"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "betty-pvs"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "birman"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "phoenix"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brask"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brask-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brask-labstation"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brox"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "rpl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-arcnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-cbx"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-faceauth"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-flossnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-hibernate"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-lvm-rootfs"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-pvs"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "brya-uwb"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "caroline"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "skl"
+        },
+        "kernel": {
+          "version": "4.19"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "cherry"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8195"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "cherry-flossnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8195"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "cherry-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8195"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "cherry64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8195"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "constitution"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "coral"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "coral-compressed-ash"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "coral-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "corsola"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8186"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "corsola-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8186"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "dedede"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "jsl"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "dedede-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "jsl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "dedede-pvs"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "jsl"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "dedede-pvs-lab"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "jsl"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "drallion"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "drallion-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "dustbuster"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "elm"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "elm-arc64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "elm-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "endeavour"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve-arm64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve-kvm"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve-swap"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "eve-userdebug"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "excelsior"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "ferrochrome"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz-cfm"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz-labstation"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz-moblab"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "fizz-satlab"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "geralt"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8188g"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "grunt"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "stnyridge"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "grunt-arc-r"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "stnyridge"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "grunt-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "stnyridge"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "guado"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "bdw"
+        },
+        "kernel": {
+          "version": "4.14"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "guybrush"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cezanne"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "guybrush-cbx"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cezanne"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "guybrush-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cezanne"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hana"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hana-arc64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hana-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hana64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch-borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch-diskswap"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "jacuzzi"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "jacuzzi-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "jacuzzi64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kalista"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kalista-cfm"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kalista-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kirby"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kukui"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kukui-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "kukui64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8183"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "midna"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "midna-next"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "myst"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "phoenix"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nami"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nami-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nami-scudo"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nautilus"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nautilus-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nissa"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nissa-cbx"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nissa-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nissa-pvs"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "noctis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "noctis-next"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nocturne"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "nocturne-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "octopus"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "glk"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "octopus-arc-t"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "glk"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "octopus-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "glk"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "ovis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "penrose"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "puff"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "puff-borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "puff-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "puff-macrophage"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "puff-moblab"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "pyro"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "pyro-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rammus"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rauru"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8196"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reef"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reef-compressed-ash"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reef-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven-arc-r"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven-arc-t"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven-arm64"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "reven-vmtest"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rex"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rex-cbx"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rex-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "rex-uwb"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mtl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "ryker"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "sand"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "sand-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "sarien"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "whl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "sarien-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "whl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "scarlet"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "rk3399"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "seraph"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "simple-fake-board"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "skyrim"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mendocino"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "skyrim-cbx"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mendocino"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "skyrim-chausie"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mendocino"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "skyrim-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mendocino"
+        },
+        "kernel": {
+          "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "skywalker"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8189"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "snappy"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "snappy-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "apl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "soraka"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "soraka-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "soraka-libcamera"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "kbl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "staryu"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8186"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "strongbad"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "qc7180"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "strongbad-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "qc7180"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "tael"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "tatl"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "trogdor"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "qc7180"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "trogdor-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "qc7180"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "trogdor-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "qc7180"
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "volteer"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "tgl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "volteer-borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "tgl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "volteer-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "tgl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "volteer-scudo"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "tgl"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "zork"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "picasso"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "zork-borealis"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "picasso"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "zork-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "picasso"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "zork-floss"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "picasso"
+        },
+        "kernel": {
+          "version": "5.4"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "zork-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "picasso"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    }
+  ]
+}

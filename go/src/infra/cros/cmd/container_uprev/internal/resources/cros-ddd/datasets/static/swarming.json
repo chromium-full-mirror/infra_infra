@@ -1,0 +1,290 @@
+{
+    "name": "Swarming Classes and Categories",
+    "description": "",
+    "classes": {
+        "Swarming:wificell:true": {
+            "name": "Swarming:wificell:true",
+            "description": "Class matches the targets that have label-wificell value of True.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wificell",
+                    "strInSet": {
+                        "values": [
+                            "True"
+                        ]
+                    }
+                }
+            }
+        },
+        "Swarming:wifi_state:normal": {
+            "name": "Swarming:wifi_state:normal",
+            "description": "Class matches the targets that have label-wifi_state value of NORMAL.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_state",
+                    "strInSet": {
+                        "values": [
+                            "NORMAL"
+                        ]
+                    }
+                }
+            }
+        },
+        "Swarming:bluetooth_state:normal": {
+            "name": "Swarming:bluetooth_state:normal",
+            "description": "Class matches the targets that have label-bluetooth_state value of NORMAL.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-bluetooth_state",
+                    "strInSet": {
+                        "values": [
+                            "NORMAL"
+                        ]
+                    }
+                }
+            }
+        },
+        "Swarming:peripheral_wifi_state:working": {
+            "name": "Swarming:peripheral_wifi_state:normal",
+            "description": "Class matches the targets that have label-peripheral_wifi_state value of WORKING.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-peripheral_wifi_state",
+                    "strInSet": {
+                        "values": [
+                            "WORKING"
+                        ]
+                    }
+                }
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX",
+            "description": "Class matches the targets that have label-wifi_router_features value of WIFI_ROUTER_FEATURE_IEEE_802_11_AX.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_router_features",
+                    "strRegexMatch": "WIFI_ROUTER_FEATURE_IEEE_802_11_AX"
+                }
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E",
+            "description": "Class matches the targets that have label-wifi_router_features value of WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_router_features",
+                    "strRegexMatch": "WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E"
+                }
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_BE": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_BE",
+            "description": "Class matches the targets that have label-wifi_router_features value of WIFI_ROUTER_FEATURE_IEEE_802_11_BE.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_router_features",
+                    "strRegexMatch": "WIFI_ROUTER_FEATURE_IEEE_802_11_BE"
+                }
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_SAE_EXT_KEY": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_SAE_EXT_KEY",
+            "description": "Class matches the targets that have label-wifi_router_features value of WIFI_ROUTER_FEATURE_SAE_EXT_KEY.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_router_features",
+                    "strRegexMatch": "WIFI_ROUTER_FEATURE_SAE_EXT_KEY"
+                }
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP",
+            "description": "Class matches the targets that have label-wifi_router_features value of WIFI_ROUTER_FEATURE_GCMP.",
+            "expression": {
+                "property": {
+                    "propertyPath": "swarming:label-wifi_router_features",
+                    "strRegexMatch": "WIFI_ROUTER_FEATURE_GCMP"
+                }
+            }
+        },
+        "Swarming:gpu_id:not_null": {
+            "name": "Swarming:gpu_id:not_null",
+            "description": "Class matches the targets that do NOT have label-gpu_id value of null.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "swarming:label-gpu_id",
+                            "strInSet": {
+                                "values": [
+                                    "null"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Swarming:gpu_ids:chipset_exclude": {
+          "name": "Swarming:gpu_ids:chipset_exclude",
+          "description": "Class matches the targets that do NOT have label-gpu_id value in the exclude set.",
+          "expression": {
+              "not": {
+                  "sub_expression": {
+                      "property": {
+                          "propertyPath": "swarming:label-gpu_id",
+                          "strInSet": {
+                              "values": [
+                                "rockchip:mali-t860",
+                                "intel:5a84",
+                                "intel:191e",
+                                "intel:5a85",
+                                "mediatek:rogue"
+                              ]
+                          }
+                      }
+                  }
+              }
+          }
+        }
+    },
+    "categories": {
+        "Swarming:Wificell:True": {
+            "name": "Swarming:Wificell:True",
+            "description": "Category with a single class that matches the contexts with swarming label-wificell equal to True.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wificell:true"
+                    }
+                ]
+            }
+        },
+        "Swarming:WifiState:Normal": {
+            "name": "Swarming:WifiState:Normal",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_state equal to Normal.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_state:normal"
+                    }
+                ]
+            }
+        },
+        "Swarming:BluetoothState:Normal": {
+            "name": "Swarming:BluetoothState:Normal",
+            "description": "Category with a single class that matches the contexts with swarming label-bluetooth_state equal to Normal.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:bluetooth_state:normal"
+                    }
+                ]
+            }
+        },
+        "Swarming:PeripheralWifiState:Working": {
+            "name": "Swarming:PeripheralWifiState:Working",
+            "description": "Category with a single class that matches the contexts with swarming label-peripheral_wifi_state equal to Working.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:peripheral_wifi_state:working"
+                    }
+                ]
+            }
+        },
+        "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX": {
+            "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_router_features containing the string WIFI_ROUTER_FEATURE_IEEE_802_11_AX.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX"
+                    }
+                ]
+            }
+        },
+        "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E": {
+            "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_router_features containing the string WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E"
+                    }
+                ]
+            }
+        },
+        "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_BE": {
+            "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_BE",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_router_features containing the string WIFI_ROUTER_FEATURE_IEEE_802_11_BE",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_IEEE_802_11_BE"
+                    }
+                ]
+            }
+        },
+        "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_SAE_EXT_KEY": {
+            "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_SAE_EXT_KEY",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_router_features containing the string WIFI_ROUTER_FEATURE_SAE_EXT_KEY",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_SAE_EXT_KEY"
+                    }
+                ]
+            }
+        },
+        "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP": {
+            "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP",
+            "description": "Category with a single class that matches the contexts with swarming label-wifi_router_features containing the string WIFI_ROUTER_FEATURE_GCMP",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP"
+                    }
+                ]
+            }
+        },
+        "Swarming:gpu_id:NOT_NULL": {
+            "name": "Swarming:gpu_id:NOT_NULL",
+            "description": "Category with a single class that matches the contexts with swarming label-gpu_id not containing the string null",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Swarming:gpu_id:not_null"
+                    }
+                ]
+            }
+        },
+        "Swarming:gpu_ids_not_null": {
+            "name": "Swarming:gpu_ids_not_null",
+            "description": "Category with a single class that matches the contexts with swarming label-gpu_id not containing the string null",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "swarming:label-gpu_id"
+                    },
+                    {
+                        "name": "Swarming:gpu_id:NOT_NULL"
+                    }
+                ]
+            }
+        },
+        "Swarming:gpu_id:EXCLUDE_CHIPSETS": {
+          "name": "Swarming:gpu_id:EXCLUDE_CHIPSETS",
+          "description": "Category with a single class that matches the contexts with swarming label-gpu_id not included in exclusion chipset list",
+          "enumerated": {
+              "classes": [
+                  {
+                      "name": "Swarming:gpu_ids:chipset_exclude"
+                  }
+              ]
+          }
+        }
+
+    }
+}

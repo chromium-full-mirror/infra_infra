@@ -1,0 +1,15 @@
+{
+    "value": {
+        "name": "cross category of CPU and GPU",
+        "combinatorial": {
+            "subcategories": [
+                {
+                    "name": "HWID:gpu_field:distinct_values_and_absent"
+                },
+                {
+                    "name": "HWID:cpu_field:distinct_values"
+                }
+            ]
+        }
+    }
+}

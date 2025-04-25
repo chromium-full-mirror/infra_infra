@@ -1,0 +1,105 @@
+{
+    "name": "Graphics classes and Categories",
+    "description": "Categories defined for Graphics tests",
+    "owners": [
+        "crosep-intertech@google.com"
+    ],
+    "classes": {
+        "deqp:not_old_boards":{
+            "name": "deqp:not_old_boards",
+            "description": "Class for excluding gfx DEQP old boards. Old boards are defined as boards that are not in the list of boards that are currently supported by the graphics team for DEQP(https://crrev.com/i/7819956).",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:build_targets",
+                            "strInSet": {
+                                "values": [
+                                    "reven",
+                                    "whirlwind",
+                                    "gale",
+                                    "coral",
+                                    "pyro",
+                                    "reef",
+                                    "sand",
+                                    "snappy",
+                                    "guybrush",
+                                    "drallion",
+                                    "hatch",
+                                    "puff",
+                                    "octopus",
+                                    "atlas",
+                                    "eve",
+                                    "fizz",
+                                    "kalista",
+                                    "nami",
+                                    "nautilus",
+                                    "nocturne",
+                                    "rammus",
+                                    "soraka",
+                                    "staryu",
+                                    "asurada",
+                                    "cherry",
+                                    "jacuzzi",
+                                    "kukui",
+                                    "zork",
+                                    "elm",
+                                    "hana",
+                                    "strongbad",
+                                    "trogdor",
+                                    "grunt",
+                                    "sarien"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "categories": {
+        "Graphics:not_old_boards": {
+            "name": "Graphics:not_old_boards",
+            "description": "Category for excluding old boards for GFX DEQP. Old boards are defined as boards that are not in the list of boards that are currently supported by the graphics team for DEQP (https://crrev.com/i/7819956)",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "deqp:not_old_boards"
+                    }
+                ]
+            }
+        },
+        "Graphics:board_gpu-id": {
+            "name": "Graphics:board_gpu-id",
+            "description": "Category for Graphics tests with component dependencies on gpu id and board",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Graphics:not_old_boards"
+                    },
+                    {
+                        "name": "Common:boards_default_build_variant"
+                    },
+                    {
+                        "name": "Swarming:gpu_ids_not_null"
+                    },
+                    {
+                        "name": "Swarming:gpu_id:EXCLUDE_CHIPSETS"
+                    }
+                ]
+            },
+            "reportCategory": "gpu_id"
+        }
+    },
+    "reportCategories": {
+        "gpu_id": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "swarming:label-gpu_id"
+                    }
+                }
+            ]
+        }
+    }
+}

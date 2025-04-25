@@ -1,5 +1,8 @@
 # Logs
-generated/
+./generated/
 
 # Local bin
 container_uprev
+
+# Resources
+/internal/resources/cros-ddd/datasets/generated/

@@ -49,7 +49,7 @@ func GcloudAuth(ctx context.Context, registry, dockerKeyFile string) (err error)
 		return
 	}
 
-	password, _, err := getPassword(ctx)
+	password, _, err := getPassword(context.Background())
 	if err != nil {
 		err = errors.Annotate(err, "failed to get password").Err()
 		return

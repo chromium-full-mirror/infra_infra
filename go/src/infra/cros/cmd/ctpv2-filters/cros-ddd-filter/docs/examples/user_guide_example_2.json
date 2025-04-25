@@ -1,0 +1,30 @@
+{
+    "value": {
+        "enumerated": {
+            "classes": [
+                {
+                    "value": {
+                        "name": "touchpad_field_vendor:Google",
+                        "expression": {
+                            "property": {
+                                "propertyPath": "touchpad_field_vendor",
+                                "strEqual": "18d1"
+                            }
+                        }
+                    }
+                },
+                {
+                    "value": {
+                        "name": "touchpad_field_vendor:Synaptics",
+                        "expression": {
+                            "property": {
+                                "propertyPath": "touchpad_field_vendor",
+                                "strEqual": "06cb"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

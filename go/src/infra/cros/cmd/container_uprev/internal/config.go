@@ -47,11 +47,69 @@ func WriteDockerfile(dir string, name string) error {
 
 // WriteResource writes the embedded resource to the temporary directory.
 func WriteResource(dir string, name string) error {
-	resource, err := Resources.ReadFile(fmt.Sprintf("resources/%s", name))
+	resourcePath := fmt.Sprintf("resources/%s", name)
+
+	isDir, err := isResourceDir(resourcePath)
 	if err != nil {
-		return errors.Annotate(err, "failed to read %s", name).Err()
+		return err
 	}
-	return os.WriteFile(path.Join(dir, name), resource, common.FilePermission)
+	if isDir {
+		return WriteDir(path.Join(dir, name), resourcePath)
+	} else {
+		return WriteFile(path.Join(dir, name), resourcePath)
+	}
+}
+
+func WriteDir(dst, resourcePath string) error {
+	err := os.Mkdir(dst, common.DirPermission)
+	if err != nil {
+		return fmt.Errorf("failed to make directory: %s", err)
+	}
+	entries, err := Resources.ReadDir(resourcePath)
+	if err != nil {
+		return fmt.Errorf("failed to read directory from embedded filesystem: %s", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			// Call recursively. Need to still be in the correct format of resourcePath.
+			err = WriteDir(path.Join(dst, entry.Name()), path.Join(resourcePath, entry.Name()))
+			if err != nil {
+				return fmt.Errorf("failed to write directory: %s", err)
+			}
+		} else {
+			// Write the file
+			err = WriteFile(path.Join(dst, entry.Name()), path.Join(resourcePath, entry.Name()))
+			if err != nil {
+				return fmt.Errorf("failed to write file: %s", err)
+			}
+		}
+	}
+	return nil
+}
+
+func WriteFile(dst, resourcePath string) error {
+	resourceBytes, err := Resources.ReadFile(resourcePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file from embedded filesystem: %s", err)
+	}
+	return os.WriteFile(dst, resourceBytes, common.FilePermission)
+}
+
+func isResourceDir(resourcePath string) (isDir bool, err error) {
+	resource, err := Resources.Open(resourcePath)
+	defer resource.Close()
+	if err != nil {
+		err = fmt.Errorf("failed to open embedded resource: %s", err)
+		return
+	}
+	resourceInfo, err := resource.Stat()
+	if err != nil {
+		err = fmt.Errorf("failed to stat embedded resource: %s", err)
+		return
+	}
+
+	isDir = resourceInfo.IsDir()
+	return
 }
 
 // CIPDPackage contains relevant information about a CIPDPackage.
@@ -377,6 +435,17 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 			Prepper: preppers.PrepFoilTestAosp,
+		},
+		{
+			Name:       "cros-ddd-filter",
+			Entrypoint: "cros-ddd-filter",
+			Resources: []string{
+				"cros-ddd",
+			},
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/cros-ddd-filter/${platform}"),
+			},
+			Prepper: preppers.PrepareCrosDDD,
 		},
 	}
 

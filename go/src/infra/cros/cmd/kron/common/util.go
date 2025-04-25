@@ -147,7 +147,7 @@ func FetchFileFromInternalURL(url string, authOpts *auth.Options) ([]byte, error
 
 	fileText, err := base64.StdEncoding.DecodeString(string(data))
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, fmt.Errorf("failed decoding string, %s\n%s", err, string(data))
 	}
 
 	return fileText, nil

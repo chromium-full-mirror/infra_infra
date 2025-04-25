@@ -1,0 +1,286 @@
+{
+    "name": "User defined Classes and Categories",
+    "description": "",
+    "classes": {
+        "Common:any": {
+            "name": "Common:any",
+            "description": "Class that matches any target",
+            "expression": {
+                "true": {}
+            }
+        },
+        "Common:build_variant_default": {
+            "name": "Common:build_variant_default",
+            "description": "Class that only matches only the targets that have the default build variant.",
+            "expression": {
+                "property": {
+                    "propertyPath": "image:variant",
+                    "strEqual": ""
+                }
+            }
+        },
+        "Common:build_variant_default_or_kernelnext": {
+            "name": "Common:build_variant_default_or_kernelnext",
+            "description": "Class matches the targets that have the default build variant or the kernelnext variant.",
+            "expression": {
+                "property": {
+                    "propertyPath": "image:variant",
+                    "strInSet": {
+                        "values": [
+                            "",
+                            "kernelnext"
+                        ]
+                    }
+                }
+            }
+        },
+        "Common:build_variant_default_or_connectivity": {
+            "name": "Common:build_variant_default_or_connectivity",
+            "description": "Class matches the targets that have the default build variant or variant of interest for connectivity",
+            "expression": {
+                "property": {
+                    "propertyPath": "image:variant",
+                    "strInSet": {
+                        "values": [
+                            "",
+                            "kernelnext",
+                            "connectivitynext",
+                            "flossnext"
+                        ]
+                    }
+                }
+            }
+        },
+        "Common:label_phase_evt": {
+            "name": "Common:label_phase_evt",
+            "description": "Class that only matches only the targets with label-phase = EVT*.",
+            "expression": {
+                "property": {
+		    "propertyPath":"swarming:label-phase",
+                    "strRegexMatch": "EVT"
+                }
+            }
+        },
+        "Common:rpl_refresh_cpus": {
+            "name": "Common:rpl_refresh_cpus",
+            "description": "Class that matches only RaptorLake Refresh CPUs.",
+            "expression": {
+                "property": {
+                    "propertyPath": "cpu_field",
+                    "strRegexMatch": "avl:(5597|5758|5759|5897|5898|5920|5963)"
+                }
+            }
+        },
+        "Common:not_rpl_refresh_cpus": {
+            "name": "Common:not_rpl_refresh_cpus",
+            "description": "Class that matches only CPUs not RaptorLake Refresh.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "cpu_field",
+                            "strRegexMatch": "avl:(5597|5758|5759|5897|5898|5920|5963)"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "categories": {
+        "Common:context_agnostic": {
+            "name": "Common:context_agnostic",
+            "description": "Category with only a single class that matches any context",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:any"
+                    }
+                ]
+            }
+        },
+        "Common:default_build_variant": {
+            "name": "Common:default_build_variant",
+            "description": "Category with only a single class that matches the contexts with the default build variant",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:build_variant_default"
+                    }
+                ]
+            }
+        },
+        "Common:default_build_variant_or_kernelnext": {
+            "name": "Common:default_build_variant_or_kernelnext",
+            "description": "Category with only a single class that matches the contexts with the default build variant",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:build_variant_default_or_kernelnext"
+                    }
+                ]
+            }
+        },
+        "Common:default_build_variant_or_connectivity": {
+            "name": "Common:default_build_variant_or_connectivity",
+            "description": "Category with only a single class that matches the contexts with the default build variant or variants of interest for connectivity",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:build_variant_default_or_connectivity"
+                    }
+                ]
+            }
+        },
+        "All_Form_Factors": {
+            "name": "All_Form_Factors",
+            "description": " Category that contains all form factors",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:form_factor"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "All_Models": {
+            "name": "All_Models",
+            "description": " Category that contains all models",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:model"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    }
+                ]
+            },
+            "reportCategory": "models"
+        },
+
+	"Common:Label_Phase_EVT": {
+            "name": "All_Form_Factors",
+            "description": " Category that contains all EVT devices",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:label_phase_evt"
+                    }
+                ]
+            },
+            "reportCategory": "label_phase"
+        },
+
+        "All_EVT": {
+            "name": "All_EVT",
+            "description": " Category that contains all device in EVT phase as separate classes",
+            "combinatorial": {
+                "subcategories": [
+		    {
+                        "name": "dlm:model"
+                    },
+                    {
+                        "name": "Common:Label_Phase_EVT"
+                    }
+                ]
+            },
+            "reportCategory": "label_phase"
+        },
+
+        "Common:boards_default_build_variant": {
+            "name": "Common:boards_default_build_variant",
+            "description": "Category that matches the combinational matches of the default build variant and HWID distinct board categories",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name": "dlm:build_targets"
+                    }
+                ]
+            }
+        },
+        "Common:Raptorlake_Refresh_Cpu": {
+            "name": "Common:Raptorlake_Refresh_Cpu",
+            "description": "Category with only a single class that matches cpus that are Raptorlake Refresh",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:rpl_refresh_cpus"
+                    }
+                ]
+            },
+            "reportCategory": "raptorlake_refresh_soc"
+        },
+        "Common:Not_Raptorlake_Refresh_Cpu": {
+            "name": "Common:Not_Raptorlake_Refresh_Cpu",
+            "description": "Category with only a single class that matches cpus that are NOT Raptorlake Refresh",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Common:not_rpl_refresh_cpus"
+                    }
+                ]
+            }
+        }
+    },
+    "reportCategories": {
+        "models": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:model"
+                    }
+                }
+            ]
+        },
+        "form_factors": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:form_factor"
+                    }
+                }
+            ]
+        },
+        "label_phase": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "swarming:label-phase"
+                    }
+                }
+            ]
+        },
+        "image_variant": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "image:variant"
+                    }
+                }
+            ]
+        },
+        "raptorlake_refresh_soc": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc",
+                        "overrides": [
+                            {
+                                "property": "cpu_field",
+                                "match": "avl:(5597|5758|5759|5897|5898|5920|5963)",
+                                "replace": "Raptor Lake Refresh"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

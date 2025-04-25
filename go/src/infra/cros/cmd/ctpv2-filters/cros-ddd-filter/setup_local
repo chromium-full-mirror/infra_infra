@@ -1,0 +1,44 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/4d2b37a84fad1091b9de401eb450aae66f1a741e.tar.gz
+#! nix-shell -i bash -p bash
+
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+set -ex
+
+# Initialize local folder and symbolic links
+if ! [ -d local ]; then
+    mkdir local
+fi
+if ! [ -d local/cros-ddd ]; then
+    ln -s ../../../container_uprev/internal/resources/cros-ddd/ local/cros-ddd
+fi
+
+# Prepare the local python environment
+./setup_python
+
+# Run local env preparer script
+go build -o preparelocal devscripts/main.go
+if [ -d local/chromeos-hwid ]; then
+    rm -rf local/chromeos-hwid
+fi
+./preparelocal
+rm -f preparelocal
+
+# Unzip artifacts of preparer script into local environments
+rm -f datasets/generated/*
+rm -f docs/datasets/*
+unzip local/named_ttcp_classes_and_categories_dataset.zip -d datasets/generated
+unzip local/named_ttcp_classes_and_categories_docs.zip -d docs/datasets
+
+# Load descriptor protobuf from archive
+if [ -d protobuf ]; then
+    rm -rf protobuf/
+fi
+wget -O protobufarchive.tar.gz https://github.com/protocolbuffers/protobuf/archive/v21.5.tar.gz
+tar -xvzf protobufarchive.tar.gz -C local/ --wildcards --no-wildcards-match-slash --transform="s/.*\//protobuf\//" "protobuf*/src/google/protobuf/descriptor.proto"
+rm -f protobufarchive.tar.gz
+
+# Regenerate the protos doc
+./regen_protos_doc

@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 
+	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -19,6 +20,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/container_uprev/internal"
+	"go.chromium.org/infra/cros/cmd/container_uprev/internal/vars"
 )
 
 var UpdateShaStorage = internal.UpdateShaStorage
@@ -63,6 +65,7 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 		buildState.End(err)
 		logCfg.DumpStepsToFolder(logDir)
 	}()
+	vars.LoginMode = auth.InteractiveLogin
 
 	if !runAsAdmin {
 		// Do not update the sha storage on local execution.

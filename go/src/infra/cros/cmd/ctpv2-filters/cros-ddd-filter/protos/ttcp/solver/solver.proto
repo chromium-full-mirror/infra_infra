@@ -1,0 +1,57 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package ttcp;
+
+import "protos/protodocs/protodocs.proto";
+import "protos/ttcp/syntax/syntax.proto";
+
+// protolint:disable MAX_LINE_LENGTH
+option go_package = "go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos/ttcp/solver";
+
+option (protodocs.file_docs) = "TTCP Solver objects.";
+
+message SolvedCategory {
+  CategoryExpression expression = 1;
+  repeated SolvedClass classes = 2;
+  string request_id = 3;
+}
+
+message SolvedClass {
+  Class expression = 1;
+  map<string, SolvedTarget> targets = 2;
+  repeated LegacyTarget legacy_solutions = 3;
+  string name = 4;
+  repeated EqcCategory dimensions = 5;
+}
+
+message SolvedTarget {
+  string device_id = 1;
+  string image_id = 2;
+  SolvedTargetInfo info = 3;
+}
+
+message SwarmingLabel {
+  string label = 1;
+  string value = 2;
+}
+
+message SolvedTargetInfo {
+  string board = 1;
+  string model = 2;
+  string image_variant = 3;
+  repeated SwarmingLabel swarming_labels = 4;
+}
+
+message LegacyTarget {
+  string board = 1;
+  repeated string models = 2;
+}
+
+message EqcCategory {
+  string name = 1;
+  string value = 2;
+}

@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package protodocs;
+
+import "google/protobuf/descriptor.proto";
+
+// protolint:disable MAX_LINE_LENGTH
+option go_package = "go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos/protodocs";
+
+// protodocs provide a mechanism to document your protobuffer definitions.
+// The advantage of providing documentation this way is that it is embedded
+// into protobuffer descriptor and can be retreived at runtime.
+//
+// Example on how to use the protodocs
+//
+// =============================================================================
+//
+// syntax = "proto3";
+// package <package_name>
+//
+// option (protodocs.file_docs) = "Package level documentation - line 1";
+// option (protodocs.file_docs) = "Package level documentation - line 2";
+//
+// message ExampleMessage{
+//     option (protodocs.message_docs) = "Message level documentation - line 1";
+//     option (protodocs.message_docs) = "Message level documentation - line 2";
+//     string fieldExample = 1 [(protodocs.docs)="Field level documentation -
+//     line 1",
+//                              (protodocs.docs)="Field level documentation -
+//                              line 2"];
+//     oneof condition {
+//         option (protodocs.one_docs)="Oneof documentation - line 1";
+//         option (protodocs.one_docs)="Oneof documentation - line 2";
+//         string oneofFieldExample = 2
+//                        [(protodocs.docs)="Oneof field level documentation -
+//                        line 1",
+//                         (protodocs.docs)="Oneof field level documentation -
+//                         line 2"];
+//     }
+// }
+//
+// =============================================================================
+
+// extension to provide documentation for a protobuffer package
+extend google.protobuf.FileOptions {
+  repeated string file_docs = 50000;
+}
+
+// extension to provide documentation for a protobuffer messages
+extend google.protobuf.MessageOptions {
+  repeated string message_docs = 50001;
+}
+
+// extension to provide documentation for a protobuffer message fields
+extend .google.protobuf.FieldOptions {
+  repeated string docs = 50002;
+}
+
+// extension to provide documentation for a protobuffer OneOf
+extend google.protobuf.OneofOptions {
+  repeated string one_docs = 50003;
+}
+
+// extension to provide documentation for a protobuffer enum
+extend google.protobuf.EnumOptions {
+  repeated string enum_docs = 50004;
+}
+
+// extension to provide documentation for a protobuffer enum value
+extend google.protobuf.EnumValueOptions {
+  repeated string enum_doc_values = 50005;
+}

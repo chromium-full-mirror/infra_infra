@@ -1,0 +1,2127 @@
+{
+  "testCases": [
+    {
+      "name": "test0",
+      "metadata": {
+        "testCase": {
+          "id": {
+            "value": "tast.test0"
+          },
+          "name": "test0",
+          "dependencies": [
+            {
+              "value": "label-wificell:True"
+            },
+            {
+              "value": "label-wifi_state:NORMAL"
+            },
+            {
+              "value": "label-bluetooth_state:NORMAL"
+            },
+            {
+              "value": "label-peripheral_wifi_state:WORKING"
+            },
+            {
+              "value": "label-wifi_router_features:WIFI_ROUTER_FEATURE_GCMP"
+            }
+          ]
+        },
+        "testCaseExec": {
+          "testHarness": {
+            "tast": {}
+          }
+        },
+        "testCaseInfo": {
+          "variantCategory": {
+            "value": "{\"name\": \"WifiBtChipset_Soc_Kernel\"}"
+          }
+        }
+      }
+    }
+  ],
+  "suiteInfo": {
+      "suiteMetadata": {
+        "pool": "wificell",
+        "executionMetadata": {
+          "args": [
+            {}
+          ]
+        },
+        "schedulerInfo": {
+          "scheduler": "SCHEDUKE",
+          "qsAccount": "unmanaged_p2"
+        },
+        "dynamicUpdates": [
+          {
+            "focalTaskFinder": {
+              "first": {
+                "taskType": "TEST"
+              }
+            },
+            "updateAction": {
+              "insert": {
+                "insertType": "PREPEND",
+                "task": {
+                  "orderedContainerRequests": [
+                    {
+                      "dynamicIdentifier": "crosDutServer_primary",
+                      "container": {
+                        "crosDut": {}
+                      },
+                      "dynamicDeps": [
+                        {
+                          "key": "crosDut.cacheServer",
+                          "value": "cache-server"
+                        },
+                        {
+                          "key": "crosDut.dutAddress",
+                          "value": "device_primary.dutServer"
+                        }
+                      ],
+                      "containerImageKey": "cros-dut"
+                    },
+                    {
+                      "dynamicIdentifier": "cros-provision_primary",
+                      "container": {
+                        "generic": {
+                          "binaryName": "cros-provision",
+                          "binaryArgs": [
+                            "server",
+                            "-port",
+                            "0"
+                          ],
+                          "dockerArtifactDir": "/tmp/provisionservice",
+                          "additionalVolumes": [
+                            "/creds:/creds"
+                          ]
+                        }
+                      },
+                      "containerImageKey": "cros-provision"
+                    }
+                  ],
+                  "provision": {
+                    "serviceAddress": {},
+                    "startupRequest": {},
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "${installPath}"
+                      },
+                      "metadata": {
+                        "@type": "type.googleapis.com/chromiumos.test.api.CrOSProvisionMetadata"
+                      }
+                    },
+                    "dynamicDeps": [
+                      {
+                        "key": "serviceAddress",
+                        "value": "cros-provision_primary"
+                      },
+                      {
+                        "key": "startupRequest.dut",
+                        "value": "device_primary.dut"
+                      },
+                      {
+                        "key": "startupRequest.dutServer",
+                        "value": "crosDutServer_primary"
+                      }
+                    ],
+                    "target": "primary",
+                    "dynamicIdentifier": "cros-provision_primary"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "schedulingUnits": [
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "coral"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/coral-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/coral-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "coral-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "coral",
+              "installPath": "gs://chromeos-image-archive/coral-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "dedede"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/dedede-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/dedede-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "dedede-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "dedede",
+              "installPath": "gs://chromeos-image-archive/dedede-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "elm"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/elm-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/elm-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "elm-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "elm",
+              "installPath": "gs://chromeos-image-archive/elm-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "hana"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/hana-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/hana-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "hana-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "hana",
+              "installPath": "gs://chromeos-image-archive/hana-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "jacuzzi"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/jacuzzi-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/jacuzzi-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  },
+                  {
+                    "key": "chromeos_build",
+                    "value": "jacuzzi-release/R132-16072.0.0"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "jacuzzi",
+              "installPath": "gs://chromeos-image-archive/jacuzzi-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "snappy"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/snappy-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/snappy-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "snappy-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "snappy",
+              "installPath": "gs://chromeos-image-archive/snappy-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "fizz"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/fizz-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/fizz-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "fizz-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "fizz",
+              "installPath": "gs://chromeos-image-archive/fizz-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "nissa"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/nissa-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/nissa-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "nissa-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "nissa",
+              "installPath": "gs://chromeos-image-archive/nissa-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "octopus"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/octopus-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/octopus-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "octopus-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "octopus",
+              "installPath": "gs://chromeos-image-archive/octopus-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "reef"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/reef-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/reef-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "reef-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "reef",
+              "installPath": "gs://chromeos-image-archive/reef-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "rex"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/rex-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/rex-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "rex-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "rex",
+              "installPath": "gs://chromeos-image-archive/rex-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "sarien"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/sarien-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/sarien-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "sarien-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "sarien",
+              "installPath": "gs://chromeos-image-archive/sarien-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "staryu"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/staryu-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/staryu-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "staryu-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "staryu",
+              "installPath": "gs://chromeos-image-archive/staryu-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "strongbad"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/strongbad-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/strongbad-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "strongbad-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "strongbad",
+              "installPath": "gs://chromeos-image-archive/strongbad-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "trogdor"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/trogdor-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/trogdor-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "trogdor-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "trogdor",
+              "installPath": "gs://chromeos-image-archive/trogdor-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "asurada"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/asurada-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/asurada-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "asurada-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "asurada",
+              "installPath": "gs://chromeos-image-archive/asurada-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "cherry"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/cherry-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/cherry-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "cherry-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "cherry",
+              "installPath": "gs://chromeos-image-archive/cherry-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "skyrim"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/skyrim-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/skyrim-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "skyrim-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "skyrim",
+              "installPath": "gs://chromeos-image-archive/skyrim-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "atlas"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/atlas-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/atlas-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "atlas-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "atlas",
+              "installPath": "gs://chromeos-image-archive/atlas-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "soraka"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/soraka-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/soraka-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "soraka-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "soraka",
+              "installPath": "gs://chromeos-image-archive/soraka-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "zork"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/zork-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/zork-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "zork-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "zork",
+              "installPath": "gs://chromeos-image-archive/zork-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "aurora"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/aurora-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/aurora-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "aurora-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "aurora",
+              "installPath": "gs://chromeos-image-archive/aurora-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "brox"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/brox-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/brox-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "brox-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "brox",
+              "installPath": "gs://chromeos-image-archive/brox-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "guybrush"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/guybrush-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/guybrush-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "guybrush-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "guybrush",
+              "installPath": "gs://chromeos-image-archive/guybrush-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "hatch"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/hatch-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/hatch-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "hatch-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "hatch",
+              "installPath": "gs://chromeos-image-archive/hatch-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "nautilus"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/nautilus-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/nautilus-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "nautilus-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "nautilus",
+              "installPath": "gs://chromeos-image-archive/nautilus-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "brya"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/brya-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/brya-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "brya-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "brya",
+              "installPath": "gs://chromeos-image-archive/brya-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "drallion"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/drallion-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/drallion-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "drallion-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "drallion",
+              "installPath": "gs://chromeos-image-archive/drallion-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "excelsior"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/excelsior-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/excelsior-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "excelsior-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "excelsior",
+              "installPath": "gs://chromeos-image-archive/excelsior-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "fatcat"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/fatcat-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/fatcat-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "fatcat-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "fatcat",
+              "installPath": "gs://chromeos-image-archive/fatcat-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "geralt"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/geralt-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/geralt-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "geralt-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "geralt",
+              "installPath": "gs://chromeos-image-archive/geralt-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "kukui"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/kukui-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/kukui-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "kukui-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "kukui",
+              "installPath": "gs://chromeos-image-archive/kukui-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "ovis"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/ovis-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/ovis-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "ovis-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "ovis",
+              "installPath": "gs://chromeos-image-archive/ovis-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "puff"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/puff-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/puff-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "puff-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "puff",
+              "installPath": "gs://chromeos-image-archive/puff-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "rauru"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/rauru-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/rauru-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "rauru-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "rauru",
+              "installPath": "gs://chromeos-image-archive/rauru-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "volteer"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/volteer-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/volteer-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "volteer-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "volteer",
+              "installPath": "gs://chromeos-image-archive/volteer-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "ambassador"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/ambassador-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/ambassador-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "ambassador-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "ambassador",
+              "installPath": "gs://chromeos-image-archive/ambassador-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "brask"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/brask-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/brask-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "brask-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "brask",
+              "installPath": "gs://chromeos-image-archive/brask-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "corsola"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/corsola-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/corsola-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "corsola-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "corsola",
+              "installPath": "gs://chromeos-image-archive/corsola-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "eve"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/eve-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/eve-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "eve-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "eve",
+              "installPath": "gs://chromeos-image-archive/eve-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "nami"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/nami-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/nami-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "nami-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "nami",
+              "installPath": "gs://chromeos-image-archive/nami-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "pyro"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/pyro-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/pyro-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "pyro-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "pyro",
+              "installPath": "gs://chromeos-image-archive/pyro-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "rammus"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/rammus-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/rammus-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "rammus-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "rammus",
+              "installPath": "gs://chromeos-image-archive/rammus-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "sand"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/sand-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/sand-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "sand-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "sand",
+              "installPath": "gs://chromeos-image-archive/sand-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "endeavour"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/endeavour-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/endeavour-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "endeavour-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "endeavour",
+              "installPath": "gs://chromeos-image-archive/endeavour-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "grunt"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/grunt-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/grunt-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "grunt-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "grunt",
+              "installPath": "gs://chromeos-image-archive/grunt-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "kalista"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/kalista-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/kalista-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "kalista-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "kalista",
+              "installPath": "gs://chromeos-image-archive/kalista-release/R132-16072.0.0"
+            }
+          },
+          {
+            "primaryTarget": {
+              "swarmingDef": {
+                "dutInfo": {
+                  "chromeos": {
+                    "dutModel": {
+                      "buildTarget": "nocturne"
+                    }
+                  }
+                },
+                "provisionInfo": [
+                  {
+                    "installRequest": {
+                      "imagePath": {
+                        "hostType": "GS",
+                        "path": "gs://chromeos-image-archive/nocturne-release/R132-16072.0.0"
+                      }
+                    }
+                  }
+                ]
+              },
+              "swReq": {
+                "build": "release",
+                "gcsPath": "gs://chromeos-image-archive/nocturne-release/R132-16072.0.0",
+                "keyValues": [
+                  {
+                    "key": "chromeos_build",
+                    "value": "nocturne-release/R132-16072.0.0"
+                  },
+                  {
+                    "key": "chromeos_build_gcs_bucket",
+                    "value": "chromeos-image-archive"
+                  }
+                ]
+              }
+            },
+            "dynamicUpdateLookupTable": {
+              "board": "nocturne",
+              "installPath": "gs://chromeos-image-archive/nocturne-release/R132-16072.0.0"
+            }
+          }
+        ]
+      },
+      "suiteRequest": {
+        "testSuite": {
+          "name": "wifi_matfunc",
+          "testCaseTagCriteria": {
+            "tags": [
+              "group:wificell",
+              "wificell_func"
+            ],
+            "tagExcludes": [
+              "wificell_unstable",
+              "wificell_reboot",
+              "wificell_suspend"
+            ]
+          }
+        },
+        "maximumDuration": "140400s",
+        "analyticsName": "ddd__kernel_wifi_functional_3d____wificell__wifi_matfunc__normal__tfc__new_build_3d",
+        "dddSuite": true
+      }
+   }
+}

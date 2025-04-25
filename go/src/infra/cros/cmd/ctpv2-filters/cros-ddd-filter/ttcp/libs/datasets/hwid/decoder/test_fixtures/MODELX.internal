@@ -1,0 +1,120 @@
+project: MODEL_X
+
+encoding_patterns:
+  0: default
+
+image_id:
+  0: PROTO
+  1: EVT
+  2: DVT
+  3: PVT
+
+pattern:
+- image_ids:
+  - 0
+  - 1
+  - 2
+  - 3
+  encoding_scheme: base8192
+  fields:
+  - region_field: 5
+  - battery_field: 0
+  - dram_field: 1
+
+encoded_fields:
+  region_field: !region_field
+  - us
+  - ar
+  - au
+  - be
+  - bg
+  - br.abnt
+  - ca.hybrid
+  - ch
+  - ch.usintl
+  - cz
+  - de
+  - es
+  - fr
+  - gb
+  - gcc
+  - gr
+  - hk
+  - hr
+  - id
+  - il
+  - in
+  - is
+  - it
+  - jp
+  - jp.us
+  - kr
+  - kz
+  - latam-es-419
+  - mx
+  - my
+  - nl
+  - nordic
+  - pl
+  - pt
+  - ro
+  - ru
+  - sa
+  - sg
+  - th
+  - tr
+  - tw
+  - za.us
+  battery_field:
+    0:
+      battery: battery_2
+  dram_field:
+    0:
+      dram:
+      - dram_26#1
+      - dram_26#2
+    1:
+      dram:
+      - dram_15#3
+      - dram_15#4
+
+components:
+  region: !region_component
+  battery:
+    items:
+      battery_2:
+        status: unqualified
+        values:
+          manufacturer: 3
+          model_name: DM
+          technology: LION
+  dram:
+    items:
+      dram_26#1:
+        status: supported
+        values:
+          part: dimm1c
+          size: '1024'
+          slot: '0'
+      dram_26#2:
+        status: supported
+        values:
+          part: dimm1c
+          size: '1024'
+          slot: '1'
+      dram_26#3:
+        status: supported
+        values:
+          part: dimm1c
+          size: '1024'
+          slot: '2'
+      dram_26#4:
+        status: supported
+        values:
+          part: dimm1c
+          size: '1024'
+          slot: '3'
+
+rules:
+- name: device_info.image_id
+  evaluate: SetImageId('PVT')

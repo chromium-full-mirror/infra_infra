@@ -1,0 +1,10 @@
+MODEL_X:
+    board: BOARDX
+    branch: main
+    version: 3
+    path: MODELX
+MODEL_Y:
+    board: BOARDZ
+    branch: main
+    version: 3
+    path: MODELY

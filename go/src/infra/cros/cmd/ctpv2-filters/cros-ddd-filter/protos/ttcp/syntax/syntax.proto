@@ -1,0 +1,289 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package ttcp;
+
+import "protos/protodocs/protodocs.proto";
+
+// protolint:disable MAX_LINE_LENGTH
+option go_package = "go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos/ttcp/syntax";
+
+option (protodocs.file_docs) = "TTCP statement's syntactic structures.";
+option (protodocs.file_docs) = "";
+option (protodocs.file_docs) = "A user guide can be found";
+option (protodocs.file_docs) = " at src/config-internal/ttcp/docs/syntax.md";
+
+message Collection {
+  option (protodocs.message_docs) = "Collection is a dataset of property";
+  option (protodocs.message_docs) = "categories and classes. The categories";
+  option (protodocs.message_docs) = "andclasses of a collection can be ";
+  option (protodocs.message_docs) = "referenced in ttcp expressions by name.";
+
+  string name = 1 [
+    (protodocs.docs) = "Name of the collection.",
+    (protodocs.docs) = "Constraint: The name needs to satisfy the regex",
+    (protodocs.docs) = "'^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$', max length",
+    (protodocs.docs) = "is 64"
+  ];
+  repeated string owners = 2
+      [ (protodocs.docs) = "Who maintains this collection." ];
+  string description = 4 [
+    (protodocs.docs) = "Description of the collection.",
+    (protodocs.docs) = "Constraint: use only printable ascii characters"
+  ];
+  map<string, Category> categories = 5
+      [ (protodocs.docs) = "Index of categories." ];
+  map<string, Class> classes = 6 [ (protodocs.docs) = "Index of classes." ];
+  map<string, ReportCategoryList> report_categories = 7
+      [ (protodocs.docs) =
+            "Index of reporting categories for readable eqc names." ];
+}
+
+message ReportCategoryList {
+  repeated ReportCategory categories = 1;
+}
+
+message ReportCategory {
+  oneof body {
+    string name = 1
+        [ (protodocs.docs) = "Name of the predefined report category." ];
+    ReportCategoryValue value = 2
+        [ (protodocs.docs) = "Explicit report category value." ];
+  }
+}
+
+message ReportCategoryValue {
+  string property = 1;
+  repeated MatchReplace overrides = 2;
+}
+
+message MatchReplace {
+  string match = 1;
+  string replace = 2;
+  string property = 3;
+}
+
+message CategoryExpression {
+
+  option (protodocs.message_docs) = "CategoryExpression denotes a category ";
+  option (protodocs.message_docs) = "via referencing a predefined expresion ";
+  option (protodocs.message_docs) = "by name or defining it explicitly.";
+
+  oneof body {
+    string name = 1 [ (protodocs.docs) = "Name of the predefined category." ];
+    Category value = 2 [ (protodocs.docs) = "Explicit category value." ];
+  }
+}
+
+message Category {
+  option (protodocs.message_docs) = "Category denotes a set of behavioral";
+  option (protodocs.message_docs) = "variants that are related to a class of";
+  option (protodocs.message_docs) = "stimulations.";
+  string name = 1 [
+    (protodocs.docs) = "User friedly string that represents the category",
+    (protodocs.docs) = "Constraint: Name is required and needs to satisfy",
+    (protodocs.docs) = "the regex: '^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$'",
+    (protodocs.docs) = "max length is 64"
+  ];
+  string description = 2
+      [ (protodocs.docs) = "Description of the semantics of the category" ];
+  oneof category {
+    CombinatorialCategory combinatorial = 3 [
+      (protodocs.docs) = "The category is defined by combination of",
+      (protodocs.docs) = "other categories."
+    ];
+    EnumeratedCategory enumerated = 4 [
+      (protodocs.docs) = "The category is defined by an enumeration of",
+      (protodocs.docs) = "classes."
+    ];
+    UnionCategory union = 5 [
+      (protodocs.docs) = "The category is defined by an union of",
+      (protodocs.docs) = "categories."
+    ];
+  }
+  string report_category = 6 [ (protodocs.docs) = "Eqc reporting categories." ];
+}
+
+message CombinatorialCategory {
+  option (protodocs.message_docs) = "CombinatorialCategory is a structure to";
+  option (protodocs.message_docs) = "create higher level categories out of";
+  option (protodocs.message_docs) = "more elementary ones. This is used when a";
+  option (protodocs.message_docs) = "behavior is the result of the interaction";
+  option (protodocs.message_docs) = "of more elementary behaviors";
+  option (protodocs.message_docs) = "";
+  option (protodocs.message_docs) = "A CombinatorialCategory is equivalent to";
+  option (protodocs.message_docs) = "an EnumeratedCategory, where each";
+  option (protodocs.message_docs) = "combination of classes of the";
+  option (protodocs.message_docs) = "subcategories is transformed into a";
+  option (protodocs.message_docs) = "single class in the EnumeratedCategory by";
+  option (protodocs.message_docs) = "conjuncting them";
+
+  repeated CategoryExpression subcategories = 1
+      [ (protodocs.docs) = "List of the categories to combine." ];
+}
+
+message EnumeratedCategory {
+  option (protodocs.message_docs) = "EnumeratedCategory defines the different";
+  option (protodocs.message_docs) = "class of behavior bydirectly enumerating";
+  option (protodocs.message_docs) = "each property class that identifies the";
+  option (protodocs.message_docs) = "behavior.";
+
+  string name = 1 [
+    (protodocs.docs) = "User friedly string that represents the category.",
+    (protodocs.docs) = "Constraint: Name is required and needs to satisfy",
+    (protodocs.docs) = "the regex:",
+    (protodocs.docs) = "'^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$' max length",
+    (protodocs.docs) = " is 64"
+  ];
+  repeated ClassExpression classes = 2
+      [ (protodocs.docs) = "List of the classes constituting the category." ];
+}
+
+message UnionCategory {
+  option (protodocs.message_docs) = "The union category is a structure to";
+  option (protodocs.message_docs) = "create sparse matrixes out of more";
+  option (protodocs.message_docs) = "elementary categories. This is used";
+  option (protodocs.message_docs) = "instead of a CombinatorialCategory when";
+  option (protodocs.message_docs) = "it would create too many of the";
+  option (protodocs.message_docs) = "combinations would not have an impact on";
+  option (protodocs.message_docs) = "the test's behavior";
+
+  repeated CategoryExpression subcategories = 1
+      [ (protodocs.docs) =
+            "List of the categories constituting the category." ];
+}
+
+message ClassExpression {
+  option (protodocs.message_docs) = "CategoryExpression allows to define a";
+  option (protodocs.message_docs) = "give a ttcp class by referencing a";
+  option (protodocs.message_docs) = "predefined expresion by name or an";
+  option (protodocs.message_docs) = "explicit value.";
+  oneof body {
+    string name = 1 [
+      (protodocs.docs) = "The class is defined by the name of a predefined",
+      (protodocs.docs) = "class"
+    ];
+    Class value = 2
+        [ (protodocs.docs) = "The class is defined by a class value" ];
+  }
+}
+
+message Class {
+  option (protodocs.message_docs) = "Class purpose is to identify a set of";
+  option (protodocs.message_docs) = "devices sharing an identical behavior";
+  option (protodocs.message_docs) = "resulting from the stimulation of a";
+  option (protodocs.message_docs) = "specific kind. A device is amember of the";
+  option (protodocs.message_docs) = "Class if it satisfies the expression of";
+  option (protodocs.message_docs) = "the Class.";
+  string name = 1 [
+    (protodocs.docs) = "User friedly string that represents the class",
+    (protodocs.docs) = "Constraint: Name is required and needs to satisfy",
+    (protodocs.docs) = "the regex:",
+    (protodocs.docs) = "'^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$' max length",
+    (protodocs.docs) = "is 64"
+  ];
+  string description = 2
+      [ (protodocs.docs) = "Description of the semantics of the class." ];
+  Expression expression = 3;
+}
+
+message Expression {
+  option (protodocs.message_docs) = "An Expression is a logical test over the";
+  option (protodocs.message_docs) = "properties of a device.";
+
+  oneof operator {
+    Or or = 1;
+    And and = 2;
+    Not not = 3;
+    Condition property = 4;
+    True true = 5;
+  }
+}
+
+message True {
+  option (protodocs.message_docs) = "Defines a logical test that is always";
+  option (protodocs.message_docs) = "true.";
+}
+
+message Or {
+  option (protodocs.message_docs) = "Defines a logical test over the";
+  option (protodocs.message_docs) = "properties of a device that is true only";
+  option (protodocs.message_docs) = "if at least one subexpressions is true.";
+  repeated Expression sub_expressions = 1;
+}
+
+message Not {
+  option (protodocs.message_docs) = "Defines a logical test over the";
+  option (protodocs.message_docs) = "properties of a device that is true only";
+  option (protodocs.message_docs) = "if the subexpressions is false.";
+  Expression sub_expression = 1;
+}
+
+message And {
+  option (protodocs.message_docs) = "Defines a logical test over a device that";
+  option (protodocs.message_docs) = "is true only if all the subExpression are";
+  option (protodocs.message_docs) = "true.";
+  repeated Expression sub_expressions = 1;
+}
+
+message Condition {
+  option (protodocs.message_docs) = "Defines a test over a specific property";
+  option (protodocs.message_docs) = "of a device";
+  string property_path = 1
+      [ (protodocs.docs) =
+            "The path of the property the condition applies to." ];
+  oneof condition {
+    option (protodocs.one_docs) =
+        "The condition the property needs to statisfy.";
+    bool present = 2 [ (protodocs.docs) = "The property is present." ];
+    string str_equal = 3 [
+      (protodocs.docs) = "The property has a string representation",
+      (protodocs.docs) = " equal to the value."
+    ];
+    StringSet str_in_set = 4 [
+      (protodocs.docs) = "The property has a string representation",
+      (protodocs.docs) = "equal to one of the values."
+    ];
+    int64 int_equal = 5 [
+      (protodocs.docs) = "The property is an integer equal to the",
+      (protodocs.docs) = "value."
+    ];
+    IntSet int_in_set = 6 [
+      (protodocs.docs) = "The property is an integer equal to one of",
+      (protodocs.docs) = "the values."
+    ];
+    int64 int_less = 7 [
+      (protodocs.docs) = "The property is an integer lesser than the",
+      (protodocs.docs) = "value."
+    ];
+    int64 int_less_or_equal = 8 [
+      (protodocs.docs) = "The property is an integer lesser or equal",
+      (protodocs.docs) = " to the value."
+    ];
+    int64 int_greater = 9 [
+      (protodocs.docs) = "The property is an integer greater than the",
+      (protodocs.docs) = "value."
+    ];
+    int64 int_greater_or_equal = 10 [
+      (protodocs.docs) = "The property is an integer greater or equal",
+      (protodocs.docs) = "than the value."
+    ];
+    string str_regex_match = 11 [
+      (protodocs.docs) = "The property has a string regex match ",
+      (protodocs.docs) = " with a value."
+    ];
+  }
+}
+
+message StringSet {
+  option (protodocs.message_docs) = "List of strings.";
+  repeated string values = 1;
+}
+
+message IntSet {
+  option (protodocs.message_docs) = "List of integers.";
+  repeated int64 values = 1;
+}

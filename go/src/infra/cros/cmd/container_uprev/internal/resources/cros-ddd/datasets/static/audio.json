@@ -1,0 +1,52 @@
+{
+    "name": "Audio_3D_expressions",
+    "description": "Categories for Audio tests applicable to EqC combinations",
+    "owners": [
+        "crosep-intertech@google.com"
+    ],
+    "classes": {},
+    "categories": {
+        "Audio_SoC_Codec_Amp": {
+            "name": "Audio_SoC_Codec_Amp",
+            "description": "Category with Audio EqCs of SoC+audio_codec+speaker_amp",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "HWID:audio_codec_field:distinct_values"
+                    }
+                ]
+            }
+        },
+        "Audio_Board": {
+            "name": "Audio_Board",
+            "description": "Category with Audio EqCs of Board",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:board:distinct_values"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            }
+        },
+        "Audio_Model": {
+            "name": "Audio_Model",
+            "description": "Category with Audio EqCs of Model",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:model"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            }
+        }
+    }
+}

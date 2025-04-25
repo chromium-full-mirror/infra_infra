@@ -1,0 +1,16 @@
+{
+    "value": {
+        "name": "leading devices",
+        "expression": {
+            "property": {
+                "propertyPath": "board",
+                "str_in_set": {
+                    "values": [
+                        "BRYA",
+                        "OCTOPUS"
+                    ]
+                }
+            }
+        }
+    }
+}

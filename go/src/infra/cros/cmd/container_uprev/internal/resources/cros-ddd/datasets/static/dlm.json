@@ -1,0 +1,196 @@
+{
+    "name": "DLM Classes and Categories",
+    "description": "",
+    "classes": {
+        "dlm:soc:Tigerlake": {
+            "name": "dlm:soc:Tigerlake",
+            "description": "Class matches the targets that have soc regex match of Tigerlake.",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:soc",
+                    "strRegexMatch": "Tigerlake"
+                }
+            }
+        },
+        "dlm:soc:Apollolake": {
+            "name": "dlm:soc:Apollolake",
+            "description": "Class matches the targets that have soc regex match of Apollolake.",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:soc",
+                    "strRegexMatch": "Apollolake"
+                }
+            }
+        },
+        "dlm:soc:Kabylake": {
+            "name": "dlm:soc:Kabylake",
+            "description": "Class matches the targets that have soc regex match of Kabylake.",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:soc",
+                    "strRegexMatch": "Kabylake"
+                }
+            }
+        },
+        "dlm:soc:not_Tigerlake": {
+            "name": "dlm:soc:not_Tigerlake",
+            "description": "Class matches the targets that do not have soc regex match of Tigerlake.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:soc",
+                            "strRegexMatch": "Tigerlake"
+                        }
+                    }
+                }
+            }
+        },
+        "dlm:soc:not_Apollolake": {
+            "name": "dlm:soc:not_Apollolake",
+            "description": "Class matches the targets that do not have soc regex match of Apollolake.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:soc",
+                            "strRegexMatch": "Apollolake"
+                        }
+                    }
+                }
+            }
+        },
+        "dlm:soc:not_Kabylake": {
+            "name": "dlm:soc:not_Kabylake",
+            "description": "Class matches the targets that do not have soc regex match of Kabylake.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:soc",
+                            "strRegexMatch": "Kabylake"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "categories": {
+        "Dlm:Soc:Tigerlake": {
+            "name": "Dlm:Soc:Tigerlake",
+            "description": "Category with a single class that matches the contexts with dlm:soc regex match Tigerlake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:Tigerlake"
+                    }
+                ]
+            },
+            "reportCategory": "socTigerlake"
+        },
+        "Dlm:Soc:Apollolake": {
+            "name": "Dlm:Soc:Apollolake",
+            "description": "Category with a single class that matches the contexts with dlm:soc regex match Apollolake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:Apollolake"
+                    }
+                ]
+            },
+            "reportCategory": "socApollolake"
+        },
+        "Dlm:Soc:Kabylake": {
+            "name": "Dlm:Soc:Kabylake",
+            "description": "Category with a single class that matches the contexts with dlm:soc regex match Kabylake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:Kabylake"
+                    }
+                ]
+            },
+            "reportCategory": "socKabylake"
+        },
+        "Dlm:Soc:Not_Tigerlake": {
+            "name": "Dlm:Soc:Not_Tigerlake",
+            "description": "Category with a single class that matches the contexts not with dlm:soc regex match Tigerlake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:not_Tigerlake"
+                    }
+                ]
+            }
+        },
+        "Dlm:Soc:Not_Apollolake": {
+            "name": "Dlm:Soc:Not_Apollolake",
+            "description": "Category with a single class that matches the contexts not with dlm:soc regex match Apollolake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:not_Apollolake"
+                    }
+                ]
+            }
+        },
+        "Dlm:Soc:Not_Kabylake": {
+            "name": "Dlm:Soc:Not_Kabylake",
+            "description": "Category with a single class that matches the contexts not with dlm:soc regex match Kabylake.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "dlm:soc:not_Kabylake"
+                    }
+                ]
+            }
+        }
+    },
+    "reportCategories": {
+        "socTigerlake": {
+            "categories": [
+                {   
+                    "value": {
+                        "property": "dlm:soc",
+                        "overrides": [
+                            {
+                                "match": "Tigerlake.*",
+                                "replace": "Tigerlake"
+                            }
+                        ] 
+                    }
+                }
+            ]
+        },
+        "socApollolake": {
+            "categories": [
+                {   
+                    "value": {
+                        "property": "dlm:soc",
+                        "overrides": [
+                            {
+                                "match": "Apollolake.*",
+                                "replace": "Apollolake"
+                            }
+                        ] 
+                    }
+                }
+            ]
+        },
+        "socKabylake": {
+            "categories": [
+                {   
+                    "value": {
+                        "property": "dlm:soc",
+                        "overrides": [
+                            {
+                                "match": "Kabylake.*",
+                                "replace": "Kabylake"
+                            }
+                        ] 
+                    }
+                }
+            ]
+        }
+    }
+}

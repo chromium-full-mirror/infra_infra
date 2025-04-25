@@ -1,0 +1,5 @@
+/scripts/ddd_cli/data/
+/scripts/chromiumos_root.py
+/local/
+/docs/protos/*
+/docs/datasets/*

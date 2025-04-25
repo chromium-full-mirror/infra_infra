@@ -1,0 +1,17 @@
+{
+    "value": {
+        "name": "leading devices",
+        "expression": {
+            "property": {
+                "propertyPath": "model",
+                "str_in_set": {
+                    "values": [
+                        "SKOLAS",
+                        "TAEKO",
+                        "VORTININJA"
+                    ]
+                }
+            }
+        }
+    }
+}

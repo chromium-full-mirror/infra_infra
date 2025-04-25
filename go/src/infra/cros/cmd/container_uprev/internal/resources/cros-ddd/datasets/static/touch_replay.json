@@ -1,0 +1,369 @@
+{
+    "name": "Touch Replay Suites 3D Expressions",
+    "description": "Categories defined for touch replay test suites",
+    "owners": [
+        "crosep-intertech@google.com"
+    ],
+    "classes": {
+        "touchscreen:soc:not_empty": {
+            "name": "touchscreen:soc:not_empty",
+            "description": "Class matches the targets that have a touchscreen.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "touchscreen_field",
+                            "strEqual": ""
+                        }
+                    }
+                }
+            }
+        },
+        "stylus:soc:not_empty": {
+            "name": "stylus:soc:not_empty",
+            "description": "Class matches the targets that have a stylus.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "stylus_field",
+                            "strEqual": ""
+                        }
+                    }
+                }
+            }
+        },
+        "touchpad:soc:not_empty": {
+            "name": "touchpad:soc:not_empty",
+            "description": "Class matches the targets that have a touchpad.",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "touchpad_field",
+                            "strEqual": ""
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "categories": {
+        "Touchscreen:Not_Empty": {
+            "name": "Touchscreen:Not_Empty",
+            "description": "Category with a single class that matches the contexts not with touchscreen equals empty.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "touchscreen:soc:not_empty"
+                    }
+                ]
+            }
+        },
+        "Stylus:Not_Empty": {
+            "name": "Stylus:Not_Empty",
+            "description": "Category with a single class that matches the contexts not with stylus equals empty.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "stylus:soc:not_empty"
+                    }
+                ]
+            }
+        },
+        "Touchpad:Not_Empty": {
+            "name": "Touchpad:Not_Empty",
+            "description": "Category with a single class that matches the contexts not with touchpad equals empty.",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "touchpad:soc:not_empty"
+                    }
+                ]
+            }
+        },
+        "Touchpad_SoC_Controller_ProductId_Variant-def-plus-kernelnext": {
+            "name": "Touchpad_SoC_Controller_ProductId_Variant-def-plus-kernelnext",
+            "description": "Category with unique Touchpad: SoC + Controller + ProductID + Image Variant Default and Kernelnext",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "Touchpad"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "soc:touchPad:kernelVersion"
+        },
+        "Touchpad_SoC_Controller_Variant-def-plus-kernelnext": {
+            "name": "Touchpad_SoC_Controller_Variant-def-plus-kernelnext",
+            "description": "Category with unique Touchpad: SoC + Controller + Image Variant Default and Kernelnext",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "Touchpad"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "soc:touchPad:kernelVersion"
+        },
+        "Touchscreen_SoC_Controller_ProductId_Variant-def-plus-kernelnext": {
+            "name": "Touchscreen_SoC_Controller_ProductId_Variant-def-plus-kernelnext",
+            "description": "Category with unique Touchscreen: SoC + Controller + ProductID + Image Variant Default and Kernelnext",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "Touchscreen"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "soc:touchScreen:kernelVersion"
+        },
+        "Touchscreen_SoC_Controller_Variant-def-plus-kernelnext": {
+            "name": "Touchscreen_SoC_Controller_Variant-def-plus-kernelnext",
+            "description": "Category with unique Touchscreen: SoC + Controller + Image Variant Default and Kernelnext",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "Touchscreen"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "soc:touchScreen:kernelVersion"
+        },
+        "Stylus_SoC_Controller_Variant-def-plus-kernelnext": {
+            "name": "Stylus_SoC_Controller_Variant-def-plus-kernelnext",
+            "description": "Category with unique Stylus: SoC + Controller + Image Variant Default and Kernelnext",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "dlm:soc"
+                    },
+                    {
+                        "name": "Stylus"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "soc:stylus:kernelVersion"
+        },
+        "Touchscreen_Product_Ids": {
+            "name": "Touchscreen_Product_Ids",
+            "description": "Category with unique Touchscreen Product Ids",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchscreen_field_product_id:distinct_values_and_absent"
+                    }
+                ]
+            },
+            "reportCategory": "touchscreenProductId"
+        },
+        "Touchscreen_Products": {
+            "name": "Touchscreen_Products",
+            "description": "Category with unique Touchscreen Products",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchscreen_field_product:distinct_values_and_absent"
+                    }
+                ]
+            },
+            "reportCategory": "touchscreenProduct"
+        },
+        "Touchscreen": {
+            "name": "Touchscreen",
+            "description": "Category with unique Touchscreens",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchscreen_field:distinct_values"
+                    },
+                    {
+                        "name": "Touchscreen:Not_Empty"
+                    }
+                ]
+            }
+        },
+        "Stylus": {
+            "name": "Stylus",
+            "description": "Category with unique Stylus",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:stylus_field:distinct_values"
+                    },
+                    {
+                        "name": "Stylus:Not_Empty"
+                    }
+                ]
+            }
+        },
+        "Touchpad_Product_Ids": {
+            "name": "Touchpad_Product_Ids",
+            "description": "Category with unique Touchpad Product Ids",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchpad_field_product_id:distinct_values_and_absent"
+                    }
+                ]
+            }
+        },
+        "Touchpad_Products": {
+            "name": "Touchpad_Products",
+            "description": "Category with unique Touchpad Products",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchpad_field_product:distinct_values_and_absent"
+                    }
+                ]
+            }
+        },
+        "Touchpad_Products_And_Product_Ids": {
+            "name": "Touchpad_Products_And_Product_Ids",
+            "description": "Category with unique Touchpad Products",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Touchpad_Products"
+                    },
+                    {
+                        "name": "Touchpad_Product_Ids"
+                    }
+                ]
+            }
+        },
+        "Touchpad": {
+            "name": "Touchpad",
+            "description": "Category with unique Touchpad",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:touchpad_field:distinct_values"
+                    },
+                    {
+                        "name": "Touchpad:Not_Empty"
+                    }
+                ]
+            }
+        }
+    },
+    "reportCategories": {
+        "touchscreenProductId": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "touchscreen_field_product_id"
+                    }
+                }
+            ]
+        },
+        "touchscreenProduct": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "touchscreen_field_product"
+                    }
+                }
+            ]
+        },
+        "touchscreenProductAndProductIds": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "touchscreen_field_product"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "touchscreen_field_product_id"
+                    }
+                }
+            ]
+        },
+        "soc:touchScreen:kernelVersion": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "touchscreen_field"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                }
+            ]
+        },
+        "soc:stylus:kernelVersion": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "stylus_field"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                }
+            ]
+        },
+        "soc:touchPad:kernelVersion": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "touchpad_field"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                }
+            ]
+        }
+    }
+}

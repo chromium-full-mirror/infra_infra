@@ -1,0 +1,5694 @@
+{
+  "values": [
+    {
+      "device_id": 396,
+      "soc": "MT8192",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "asurada",
+      "model": "hayato"
+    },
+    {
+      "device_id": 425,
+      "soc": "MT8192",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "asurada",
+      "model": "spherion"
+    },
+    {
+      "device_id": 679,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "aurash"
+    },
+    {
+      "device_id": 743,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "bujia"
+    },
+    {
+      "device_id": 625,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "gaelin"
+    },
+    {
+      "device_id": 627,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "gladios"
+    },
+    {
+      "device_id": 550,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "hahn"
+    },
+    {
+      "device_id": 672,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "jeev"
+    },
+    {
+      "device_id": 578,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "kinox"
+    },
+    {
+      "device_id": 609,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "kuldax"
+    },
+    {
+      "device_id": 655,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "lisbon"
+    },
+    {
+      "device_id": 561,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brask",
+      "model": "moli"
+    },
+    {
+      "device_id": 798,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "moxie"
+    },
+    {
+      "device_id": 738,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brox",
+      "model": "greenbayupoc"
+    },
+    {
+      "device_id": 760,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brox",
+      "model": "jubilant"
+    },
+    {
+      "device_id": 757,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brox",
+      "model": "jubileum"
+    },
+    {
+      "device_id": 737,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brox",
+      "model": "lotso"
+    },
+    {
+      "device_id": 528,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "anahera"
+    },
+    {
+      "device_id": 579,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "banshee"
+    },
+    {
+      "device_id": 560,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "crota"
+    },
+    {
+      "device_id": 587,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "crota360"
+    },
+    {
+      "device_id": 516,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "felwinter"
+    },
+    {
+      "device_id": 503,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "gimble"
+    },
+    {
+      "device_id": 512,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "kano"
+    },
+    {
+      "device_id": 599,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "mithrax"
+    },
+    {
+      "device_id": 543,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "osiris"
+    },
+    {
+      "device_id": 498,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "primus"
+    },
+    {
+      "device_id": 502,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "redrix"
+    },
+    {
+      "device_id": 517,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "taeko"
+    },
+    {
+      "device_id": 547,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "taeland"
+    },
+    {
+      "device_id": 564,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "taniks"
+    },
+    {
+      "device_id": 585,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "tarlo"
+    },
+    {
+      "device_id": 501,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "vell"
+    },
+    {
+      "device_id": 544,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "volmar"
+    },
+    {
+      "device_id": 545,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "zavala"
+    },
+    {
+      "device_id": 716,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "dochi"
+    },
+    {
+      "device_id": 657,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "marasov"
+    },
+    {
+      "device_id": 671,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "omnigul"
+    },
+    {
+      "device_id": 724,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "omniknight"
+    },
+    {
+      "device_id": 731,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brya",
+      "model": "xol"
+    },
+    {
+      "device_id": 479,
+      "soc": "MT8195",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "cherry",
+      "model": "tomato"
+    },
+    {
+      "device_id": 420,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "kitefin"
+    },
+    {
+      "device_id": 422,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "longfin"
+    },
+    {
+      "device_id": 421,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "sailfin"
+    },
+    {
+      "device_id": 764,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "azurill"
+    },
+    {
+      "device_id": 583,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "bellossom"
+    },
+    {
+      "device_id": 719,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "chinchou"
+    },
+    {
+      "device_id": 720,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "chinchou360"
+    },
+    {
+      "device_id": 751,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "keldeo"
+    },
+    {
+      "device_id": 732,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "kyogre"
+    },
+    {
+      "device_id": 623,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "magikarp"
+    },
+    {
+      "device_id": 624,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "magikarp360"
+    },
+    {
+      "device_id": 602,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "magneton"
+    },
+    {
+      "device_id": 699,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "ponyta"
+    },
+    {
+      "device_id": 791,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "ponyta360"
+    },
+    {
+      "device_id": 601,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "rusty"
+    },
+    {
+      "device_id": 793,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "rustyt"
+    },
+    {
+      "device_id": 650,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "shellder"
+    },
+    {
+      "device_id": 736,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "skitty"
+    },
+    {
+      "device_id": 749,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "squirtle"
+    },
+    {
+      "device_id": 591,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "steelix"
+    },
+    {
+      "device_id": 794,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "steelixt"
+    },
+    {
+      "device_id": 590,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "tentacool"
+    },
+    {
+      "device_id": 603,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "tentacruel"
+    },
+    {
+      "device_id": 750,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "veluza"
+    },
+    {
+      "device_id": 581,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "corsola",
+      "model": "voltorb"
+    },
+    {
+      "device_id": 384,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "dirinboz"
+    },
+    {
+      "device_id": 454,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "gumboz"
+    },
+    {
+      "device_id": 449,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "jelboz"
+    },
+    {
+      "device_id": 468,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "jelboz360"
+    },
+    {
+      "device_id": 782,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "awadoron"
+    },
+    {
+      "device_id": 765,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "awasuki"
+    },
+    {
+      "device_id": 553,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "beadrix"
+    },
+    {
+      "device_id": 542,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "beetley"
+    },
+    {
+      "device_id": 447,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "blipper"
+    },
+    {
+      "device_id": 575,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "bookem"
+    },
+    {
+      "device_id": 388,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "boten"
+    },
+    {
+      "device_id": 446,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "botenflex"
+    },
+    {
+      "device_id": 515,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "bugzzy"
+    },
+    {
+      "device_id": 573,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "corori2"
+    },
+    {
+      "device_id": 473,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "cret"
+    },
+    {
+      "device_id": 475,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "cret360"
+    },
+    {
+      "device_id": 380,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "drawcia"
+    },
+    {
+      "device_id": 383,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "drawlat"
+    },
+    {
+      "device_id": 381,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "drawman"
+    },
+    {
+      "device_id": 494,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "drawper"
+    },
+    {
+      "device_id": 444,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galith"
+    },
+    {
+      "device_id": 532,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galith360"
+    },
+    {
+      "device_id": 462,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "gallop"
+    },
+    {
+      "device_id": 443,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galnat"
+    },
+    {
+      "device_id": 533,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galnat360"
+    },
+    {
+      "device_id": 433,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galtic"
+    },
+    {
+      "device_id": 457,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "galtic360"
+    },
+    {
+      "device_id": 586,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "hyness"
+    },
+    {
+      "device_id": 472,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "kracko"
+    },
+    {
+      "device_id": 471,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "kracko360"
+    },
+    {
+      "device_id": 592,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "landia"
+    },
+    {
+      "device_id": 588,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "landrid"
+    },
+    {
+      "device_id": 445,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "lantis"
+    },
+    {
+      "device_id": 400,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "madoo"
+    },
+    {
+      "device_id": 539,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "maglet"
+    },
+    {
+      "device_id": 390,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "maglia"
+    },
+    {
+      "device_id": 430,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "maglith"
+    },
+    {
+      "device_id": 507,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magma"
+    },
+    {
+      "device_id": 540,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magneto"
+    },
+    {
+      "device_id": 570,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magnetopb"
+    },
+    {
+      "device_id": 389,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magolor"
+    },
+    {
+      "device_id": 450,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magpie"
+    },
+    {
+      "device_id": 440,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "metaknight"
+    },
+    {
+      "device_id": 631,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "oscino"
+    },
+    {
+      "device_id": 733,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "palutena"
+    },
+    {
+      "device_id": 577,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "pasara"
+    },
+    {
+      "device_id": 697,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "peezer"
+    },
+    {
+      "device_id": 485,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "pirette"
+    },
+    {
+      "device_id": 477,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "pirika"
+    },
+    {
+      "device_id": 459,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "sasuke"
+    },
+    {
+      "device_id": 460,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "sasukette"
+    },
+    {
+      "device_id": 614,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "shotzo",
+      "model": "shotzo"
+    },
+    {
+      "device_id": 455,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "storo"
+    },
+    {
+      "device_id": 456,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "storo360"
+    },
+    {
+      "device_id": 677,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "boxy"
+    },
+    {
+      "device_id": 729,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "devadelete"
+    },
+    {
+      "device_id": 723,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "dexi"
+    },
+    {
+      "device_id": 728,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "dita"
+    },
+    {
+      "device_id": 692,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "taranza"
+    },
+    {
+      "device_id": 567,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "draco",
+      "model": "agah"
+    },
+    {
+      "device_id": 527,
+      "soc": "MT8195",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "cherry",
+      "model": "pineapple"
+    },
+    {
+      "device_id": 703,
+      "soc": "MT8188G",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "geralt",
+      "model": "ciri"
+    },
+    {
+      "device_id": 391,
+      "soc": "Stoney Ridge",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "miranda"
+    },
+    {
+      "device_id": 394,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "treeyac"
+    },
+    {
+      "device_id": 541,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "guybrush",
+      "model": "dewatt"
+    },
+    {
+      "device_id": 509,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "guybrush",
+      "model": "leflay"
+    },
+    {
+      "device_id": 522,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "guybrush",
+      "model": "nipperkin"
+    },
+    {
+      "device_id": 510,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "guybrush",
+      "model": "slappy"
+    },
+    {
+      "device_id": 675,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hades",
+      "model": "cora"
+    },
+    {
+      "device_id": 693,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "ouros"
+    },
+    {
+      "device_id": 676,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hades",
+      "model": "zeus"
+    },
+    {
+      "device_id": 597,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "herobrine",
+      "model": "evoker"
+    },
+    {
+      "device_id": 555,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "herobrine",
+      "model": "villager"
+    },
+    {
+      "device_id": 664,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "herobrine",
+      "model": "zombie"
+    },
+    {
+      "device_id": 574,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "bellis"
+    },
+    {
+      "device_id": 580,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "bigbellis"
+    },
+    {
+      "device_id": 401,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "burnet"
+    },
+    {
+      "device_id": 406,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "cerise"
+    },
+    {
+      "device_id": 453,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "cozmo"
+    },
+    {
+      "device_id": 402,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "esche"
+    },
+    {
+      "device_id": 416,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "fennel"
+    },
+    {
+      "device_id": 417,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "fennel14"
+    },
+    {
+      "device_id": 500,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "giygas"
+    },
+    {
+      "device_id": 431,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "kenzo"
+    },
+    {
+      "device_id": 482,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "makomo"
+    },
+    {
+      "device_id": 571,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "malveaux"
+    },
+    {
+      "device_id": 518,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "munna"
+    },
+    {
+      "device_id": 506,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "pico"
+    },
+    {
+      "device_id": 549,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "pico6"
+    },
+    {
+      "device_id": 407,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "stern"
+    },
+    {
+      "device_id": 392,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "willow"
+    },
+    {
+      "device_id": 572,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "zager"
+    },
+    {
+      "device_id": 508,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "cappy"
+    },
+    {
+      "device_id": 511,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "cappy2"
+    },
+    {
+      "device_id": 530,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "corori"
+    },
+    {
+      "device_id": 529,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "corori360"
+    },
+    {
+      "device_id": 534,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "driblee"
+    },
+    {
+      "device_id": 523,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "gooey"
+    },
+    {
+      "device_id": 505,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "habokay"
+    },
+    {
+      "device_id": 504,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "haboki"
+    },
+    {
+      "device_id": 519,
+      "soc": "MT8183",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "kukui",
+      "model": "kakadu2"
+    },
+    {
+      "device_id": 799,
+      "soc": "Twin Lake",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "dirks"
+    },
+    {
+      "device_id": 767,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "domika"
+    },
+    {
+      "device_id": 766,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "domilly"
+    },
+    {
+      "device_id": 768,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "domiso"
+    },
+    {
+      "device_id": 800,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "epic"
+    },
+    {
+      "device_id": 802,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "epiccs"
+    },
+    {
+      "device_id": 801,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "guren"
+    },
+    {
+      "device_id": 810,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "guren360"
+    },
+    {
+      "device_id": 803,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "meliks"
+    },
+    {
+      "device_id": 792,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjogatwin"
+    },
+    {
+      "device_id": 795,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoniru"
+    },
+    {
+      "device_id": 796,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "quandiso2"
+    },
+    {
+      "device_id": 797,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "quandiso3602"
+    },
+    {
+      "device_id": 746,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "riven"
+    },
+    {
+      "device_id": 776,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "roric"
+    },
+    {
+      "device_id": 748,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "rudriks"
+    },
+    {
+      "device_id": 772,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "ruke"
+    },
+    {
+      "device_id": 773,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "rull"
+    },
+    {
+      "device_id": 747,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "rynax"
+    },
+    {
+      "device_id": 770,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "teliks"
+    },
+    {
+      "device_id": 769,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "teliks360"
+    },
+    {
+      "device_id": 785,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "telith"
+    },
+    {
+      "device_id": 784,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "teltic"
+    },
+    {
+      "device_id": 711,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "anraggar"
+    },
+    {
+      "device_id": 722,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "anraggar360"
+    },
+    {
+      "device_id": 700,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "birdo"
+    },
+    {
+      "device_id": 600,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craask"
+    },
+    {
+      "device_id": 701,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskana"
+    },
+    {
+      "device_id": 606,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskbowl"
+    },
+    {
+      "device_id": 665,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskino"
+    },
+    {
+      "device_id": 668,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskino15w"
+    },
+    {
+      "device_id": 702,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskov"
+    },
+    {
+      "device_id": 608,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaskvin"
+    },
+    {
+      "device_id": 656,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craasneto"
+    },
+    {
+      "device_id": 669,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craasneto15w"
+    },
+    {
+      "device_id": 704,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "craaswell"
+    },
+    {
+      "device_id": 775,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "gallida360"
+    },
+    {
+      "device_id": 761,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "gana"
+    },
+    {
+      "device_id": 726,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "glassway"
+    },
+    {
+      "device_id": 690,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "gothrax"
+    },
+    {
+      "device_id": 715,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "gothraxcs"
+    },
+    {
+      "device_id": 725,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "hideo"
+    },
+    {
+      "device_id": 615,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "joxer"
+    },
+    {
+      "device_id": 619,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "joxero"
+    },
+    {
+      "device_id": 698,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pirrha"
+    },
+    {
+      "device_id": 616,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjo"
+    },
+    {
+      "device_id": 710,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjo1e"
+    },
+    {
+      "device_id": 617,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoflex"
+    },
+    {
+      "device_id": 752,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoga"
+    },
+    {
+      "device_id": 613,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoteen"
+    },
+    {
+      "device_id": 628,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoteen15w"
+    },
+    {
+      "device_id": 713,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "quandiso"
+    },
+    {
+      "device_id": 718,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "quandiso360"
+    },
+    {
+      "device_id": 742,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "sundance"
+    },
+    {
+      "device_id": 674,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "uldren"
+    },
+    {
+      "device_id": 673,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "uldren360"
+    },
+    {
+      "device_id": 662,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "xivrah"
+    },
+    {
+      "device_id": 611,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "xivu"
+    },
+    {
+      "device_id": 610,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "xivu360"
+    },
+    {
+      "device_id": 663,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "xivur"
+    },
+    {
+      "device_id": 696,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yahiko"
+    },
+    {
+      "device_id": 687,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yavijo"
+    },
+    {
+      "device_id": 652,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yaviks"
+    },
+    {
+      "device_id": 653,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yavikso"
+    },
+    {
+      "device_id": 686,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yavilla"
+    },
+    {
+      "device_id": 688,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "yavilly"
+    },
+    {
+      "device_id": 735,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "yavista"
+    },
+    {
+      "device_id": 554,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "amptone"
+    },
+    {
+      "device_id": 536,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "apele"
+    },
+    {
+      "device_id": 714,
+      "soc": "Meteorlake-H",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "ovis",
+      "model": "deku"
+    },
+    {
+      "device_id": 418,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "dooly"
+    },
+    {
+      "device_id": 398,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "faffy"
+    },
+    {
+      "device_id": 378,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "noibat"
+    },
+    {
+      "device_id": 393,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "wyvern"
+    },
+    {
+      "device_id": 771,
+      "soc": "MT8196",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "rauru",
+      "model": "hylia"
+    },
+    {
+      "device_id": 739,
+      "soc": "MT8196",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "rauru",
+      "model": "navi"
+    },
+    {
+      "device_id": 777,
+      "soc": "Meteorlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rex",
+      "model": "kanix"
+    },
+    {
+      "device_id": 695,
+      "soc": "Meteorlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rex",
+      "model": "karis"
+    },
+    {
+      "device_id": 689,
+      "soc": "Meteorlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rex",
+      "model": "screebo"
+    },
+    {
+      "device_id": 612,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skolas",
+      "model": "ghost"
+    },
+    {
+      "device_id": 666,
+      "soc": "Mendocino",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "crystaldrift"
+    },
+    {
+      "device_id": 630,
+      "soc": "Mendocino",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "frostflow"
+    },
+    {
+      "device_id": 670,
+      "soc": "Mendocino",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "markarth"
+    },
+    {
+      "device_id": 584,
+      "soc": "Mendocino",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "mistveil"
+    },
+    {
+      "device_id": 626,
+      "soc": "Mendocino",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "morthal"
+    },
+    {
+      "device_id": 654,
+      "soc": "Mendocino",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "weynon"
+    },
+    {
+      "device_id": 622,
+      "soc": "Mendocino",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "whiterun"
+    },
+    {
+      "device_id": 620,
+      "soc": "Mendocino",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "skyrim",
+      "model": "winterhold"
+    },
+    {
+      "device_id": 806,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "ahsoka"
+    },
+    {
+      "device_id": 811,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "skywalker",
+      "model": "obiwan"
+    },
+    {
+      "device_id": 812,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "skywalker",
+      "model": "quigon"
+    },
+    {
+      "device_id": 809,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "skywalker",
+      "model": "yoda"
+    },
+    {
+      "device_id": 691,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "staryu",
+      "model": "starmie"
+    },
+    {
+      "device_id": 741,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "staryu",
+      "model": "wugtrio"
+    },
+    {
+      "device_id": 778,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "staryu",
+      "model": "wyrdeer"
+    },
+    {
+      "device_id": 409,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "coachz"
+    },
+    {
+      "device_id": 593,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "gelarshie"
+    },
+    {
+      "device_id": 497,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "mrbland"
+    },
+    {
+      "device_id": 546,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "quackingstick"
+    },
+    {
+      "device_id": 531,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "wormdingler"
+    },
+    {
+      "device_id": 451,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "dagron"
+    },
+    {
+      "device_id": 458,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "homsar"
+    },
+    {
+      "device_id": 535,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "kingoftown"
+    },
+    {
+      "device_id": 480,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "marzipan"
+    },
+    {
+      "device_id": 496,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "pazquel"
+    },
+    {
+      "device_id": 629,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "pazquel360"
+    },
+    {
+      "device_id": 403,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "pompom"
+    },
+    {
+      "device_id": 814,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "trulo",
+      "model": "pujjocento"
+    },
+    {
+      "device_id": 805,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "trulo",
+      "model": "pujjolo"
+    },
+    {
+      "device_id": 804,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "trulo",
+      "model": "pujjoquince"
+    },
+    {
+      "device_id": 745,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "uldrenite"
+    },
+    {
+      "device_id": 744,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "uldrenite360"
+    },
+    {
+      "device_id": 499,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "chronicler"
+    },
+    {
+      "device_id": 476,
+      "soc": "Tigerlake-UP4",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "collis"
+    },
+    {
+      "device_id": 442,
+      "soc": "Tigerlake-UP4",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "copano"
+    },
+    {
+      "device_id": 375,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "delbin"
+    },
+    {
+      "device_id": 605,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "delbing"
+    },
+    {
+      "device_id": 434,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "drobit"
+    },
+    {
+      "device_id": 399,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "eldrid"
+    },
+    {
+      "device_id": 423,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "elemi"
+    },
+    {
+      "device_id": 404,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "lillipup"
+    },
+    {
+      "device_id": 408,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "lindar"
+    },
+    {
+      "device_id": 428,
+      "soc": "Tigerlake-UP4",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "voema"
+    },
+    {
+      "device_id": 424,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "volet"
+    },
+    {
+      "device_id": 387,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "volta"
+    },
+    {
+      "device_id": 386,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "volteer",
+      "model": "voxel"
+    },
+    {
+      "device_id": 382,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "choboz"
+    },
+    {
+      "device_id": 385,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "korboz"
+    },
+    {
+      "device_id": 461,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "mumboz"
+    },
+    {
+      "device_id": 441,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "shuboz"
+    },
+    {
+      "device_id": 376,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "vilboz"
+    },
+    {
+      "device_id": 395,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "vilboz14"
+    },
+    {
+      "device_id": 377,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "vilboz360"
+    },
+    {
+      "device_id": 374,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "woomax"
+    },
+    {
+      "device_id": 359,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "deltaur360"
+    },
+    {
+      "device_id": 358,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "deltaur"
+    },
+    {
+      "device_id": 807,
+      "soc": "Purwa",
+      "form_factor": "NONE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "bluey"
+    },
+    {
+      "device_id": 717,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brox",
+      "model": "brox"
+    },
+    {
+      "device_id": 712,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "aviko"
+    },
+    {
+      "device_id": 667,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "dedede",
+      "model": "dibbi"
+    },
+    {
+      "device_id": 783,
+      "soc": "Panther Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "felino"
+    },
+    {
+      "device_id": 781,
+      "soc": "Panther Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "francka"
+    },
+    {
+      "device_id": 813,
+      "soc": "Panther Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "kinmen"
+    },
+    {
+      "device_id": 360,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "deltan"
+    },
+    {
+      "device_id": 492,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "keeby",
+      "model": "lalala"
+    },
+    {
+      "device_id": 538,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "nereid360"
+    },
+    {
+      "device_id": 524,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "nivviks"
+    },
+    {
+      "device_id": 537,
+      "soc": "Alderlake-N",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "nivviks360"
+    },
+    {
+      "device_id": 786,
+      "soc": "Wildcat Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "ocelot"
+    },
+    {
+      "device_id": 362,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "snowfall"
+    },
+    {
+      "device_id": 774,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "skywalker",
+      "model": "skywalker"
+    },
+    {
+      "device_id": 755,
+      "soc": "Twin Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "norisa"
+    },
+    {
+      "device_id": 756,
+      "soc": "Twin Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "orisa"
+    },
+    {
+      "device_id": 345,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "berknip"
+    },
+    {
+      "device_id": 367,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "yoruk"
+    },
+    {
+      "device_id": 136,
+      "soc": "Ice Lake-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dragonegg",
+      "model": "dragonegg"
+    },
+    {
+      "device_id": 272,
+      "soc": "NONE",
+      "form_factor": "NONE",
+      "soc_vendor": "NONE",
+      "architecture": "NONE",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "ryu"
+    },
+    {
+      "device_id": 123,
+      "soc": "SDM845",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "cheza",
+      "model": "cheza"
+    },
+    {
+      "device_id": 126,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "coral",
+      "model": "coral"
+    },
+    {
+      "device_id": 258,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "porbeagle"
+    },
+    {
+      "device_id": 372,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "dedede",
+      "model": "wheelie"
+    },
+    {
+      "device_id": 305,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "talon"
+    },
+    {
+      "device_id": 319,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "twitch"
+    },
+    {
+      "device_id": 131,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "delan"
+    },
+    {
+      "device_id": 298,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "stryke"
+    },
+    {
+      "device_id": 113,
+      "soc": "MT8183",
+      "form_factor": "CHROMESLATE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "flapjack",
+      "model": "c18"
+    },
+    {
+      "device_id": 114,
+      "soc": "MT8183",
+      "form_factor": "CHROMESLATE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "flapjack",
+      "model": "c19"
+    },
+    {
+      "device_id": 379,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nami",
+      "model": "sylas"
+    },
+    {
+      "device_id": 109,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bounder"
+    },
+    {
+      "device_id": 201,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "korath"
+    },
+    {
+      "device_id": 242,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "nospike"
+    },
+    {
+      "device_id": 219,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "poppy",
+      "model": "lux"
+    },
+    {
+      "device_id": 323,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rammus",
+      "model": "volibear"
+    },
+    {
+      "device_id": 271,
+      "soc": "MT8176",
+      "form_factor": "CHROMESLATE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "rowan",
+      "model": "rowan"
+    },
+    {
+      "device_id": 120,
+      "soc": "Wilco",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "cd"
+    },
+    {
+      "device_id": 448,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "boldar"
+    },
+    {
+      "device_id": 419,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "mudada"
+    },
+    {
+      "device_id": 225,
+      "soc": "Cannonlake",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "meowth",
+      "model": "meowth"
+    },
+    {
+      "device_id": 338,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "zork",
+      "model": "zork"
+    },
+    {
+      "device_id": 155,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "fizz",
+      "model": "fizz"
+    },
+    {
+      "device_id": 170,
+      "soc": "Stoney Ridge",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "grunt",
+      "model": "grunt"
+    },
+    {
+      "device_id": 178,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "jacuzzi",
+      "model": "jacuzzi"
+    },
+    {
+      "device_id": 184,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "kahlee",
+      "model": "kahlee"
+    },
+    {
+      "device_id": 203,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "kukui",
+      "model": "kukui"
+    },
+    {
+      "device_id": 233,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nami",
+      "model": "nami"
+    },
+    {
+      "device_id": 94,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "bip"
+    },
+    {
+      "device_id": 243,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "octopus",
+      "model": "octopus"
+    },
+    {
+      "device_id": 333,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "octopus",
+      "model": "yorp"
+    },
+    {
+      "device_id": 265,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "reef",
+      "model": "reef"
+    },
+    {
+      "device_id": 366,
+      "soc": "MT8192",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "asurada",
+      "model": "asurada"
+    },
+    {
+      "device_id": 513,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brask",
+      "model": "brask"
+    },
+    {
+      "device_id": 478,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "adlrvp"
+    },
+    {
+      "device_id": 439,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "brya"
+    },
+    {
+      "device_id": 493,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "pahanin"
+    },
+    {
+      "device_id": 569,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "skolas"
+    },
+    {
+      "device_id": 514,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "brya",
+      "model": "vyhar"
+    },
+    {
+      "device_id": 452,
+      "soc": "MT8195",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "cherry",
+      "model": "cherry"
+    },
+    {
+      "device_id": 568,
+      "soc": "MT8195",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "cherry",
+      "model": "dojo"
+    },
+    {
+      "device_id": 563,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "corsola",
+      "model": "corsola"
+    },
+    {
+      "device_id": 559,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "corsola",
+      "model": "kingler"
+    },
+    {
+      "device_id": 558,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "corsola",
+      "model": "krabby"
+    },
+    {
+      "device_id": 354,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "zork",
+      "model": "dalboz"
+    },
+    {
+      "device_id": 426,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "jslrvp"
+    },
+    {
+      "device_id": 429,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dedede",
+      "model": "magister"
+    },
+    {
+      "device_id": 348,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "dedede",
+      "model": "waddledee"
+    },
+    {
+      "device_id": 349,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "dedede",
+      "model": "waddledoo"
+    },
+    {
+      "device_id": 562,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "draco",
+      "model": "draco"
+    },
+    {
+      "device_id": 137,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "drallion",
+      "model": "drallion"
+    },
+    {
+      "device_id": 138,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "drallion",
+      "model": "drallion360"
+    },
+    {
+      "device_id": 779,
+      "soc": "TEST Live",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "dummyrefboard"
+    },
+    {
+      "device_id": 754,
+      "soc": "Panther Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "fatcat"
+    },
+    {
+      "device_id": 411,
+      "soc": "Galaxylake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "andromeda"
+    },
+    {
+      "device_id": 410,
+      "soc": "Galaxylake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "milkyway"
+    },
+    {
+      "device_id": 412,
+      "soc": "Galaxylake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "sombrero"
+    },
+    {
+      "device_id": 651,
+      "soc": "MT8188G",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "geralt",
+      "model": "geralt"
+    },
+    {
+      "device_id": 356,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "nuwani"
+    },
+    {
+      "device_id": 357,
+      "soc": "Stoney Ridge",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "nuwani360"
+    },
+    {
+      "device_id": 315,
+      "soc": "Stoney Ridge",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "treeya360"
+    },
+    {
+      "device_id": 463,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "guybrush",
+      "model": "guybrush"
+    },
+    {
+      "device_id": 464,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "guybrush",
+      "model": "guybrush360"
+    },
+    {
+      "device_id": 680,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "hades",
+      "model": "hades"
+    },
+    {
+      "device_id": 73,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "akemi"
+    },
+    {
+      "device_id": 344,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "darby"
+    },
+    {
+      "device_id": 135,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "dragonair"
+    },
+    {
+      "device_id": 139,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "dratini"
+    },
+    {
+      "device_id": 352,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "flammie"
+    },
+    {
+      "device_id": 174,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "hatch",
+      "model": "hatch"
+    },
+    {
+      "device_id": 342,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "hatched"
+    },
+    {
+      "device_id": 182,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "jinlon"
+    },
+    {
+      "device_id": 194,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "kindred"
+    },
+    {
+      "device_id": 198,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "kled"
+    },
+    {
+      "device_id": 346,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "mushu"
+    },
+    {
+      "device_id": 239,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "nightfury"
+    },
+    {
+      "device_id": 347,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "hatch",
+      "model": "palkia"
+    },
+    {
+      "device_id": 295,
+      "soc": "Cometlake-U",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "stormcutter"
+    },
+    {
+      "device_id": 296,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "stormfly"
+    },
+    {
+      "device_id": 483,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "herobrine",
+      "model": "herobrine"
+    },
+    {
+      "device_id": 551,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "herobrine",
+      "model": "hoglin"
+    },
+    {
+      "device_id": 526,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "herobrine",
+      "model": "piglin"
+    },
+    {
+      "device_id": 484,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "senor",
+      "model": "senor"
+    },
+    {
+      "device_id": 649,
+      "soc": "Qualcomm 7c+ Gen 3",
+      "form_factor": "NONE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "herobrine",
+      "model": "zoglin"
+    },
+    {
+      "device_id": 129,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "damu"
+    },
+    {
+      "device_id": 183,
+      "soc": "MT8183",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "juniper"
+    },
+    {
+      "device_id": 186,
+      "soc": "MT8183",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "jacuzzi",
+      "model": "kappa"
+    },
+    {
+      "device_id": 495,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "keeby",
+      "model": "keeby"
+    },
+    {
+      "device_id": 520,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "keeby",
+      "model": "waddledee2"
+    },
+    {
+      "device_id": 521,
+      "soc": "Jasperlake/JSL+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "keeby",
+      "model": "waddledoo2"
+    },
+    {
+      "device_id": 185,
+      "soc": "MT8183",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "kukui",
+      "model": "kakadu"
+    },
+    {
+      "device_id": 202,
+      "soc": "MT8183",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "kukui",
+      "model": "krane"
+    },
+    {
+      "device_id": 753,
+      "soc": "TEST Live",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "link",
+      "model": "livetestpgm"
+    },
+    {
+      "device_id": 481,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "majolica",
+      "model": "majolica"
+    },
+    {
+      "device_id": 474,
+      "soc": "Cezanne / Barcelo",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "mancomb"
+    },
+    {
+      "device_id": 682,
+      "soc": "Hawk Point",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "myst",
+      "model": "myst"
+    },
+    {
+      "device_id": 683,
+      "soc": "Hawk Point",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "myst",
+      "model": "myst360"
+    },
+    {
+      "device_id": 759,
+      "soc": "Twin Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "tereid"
+    },
+    {
+      "device_id": 762,
+      "soc": "Twin Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "tirwen"
+    },
+    {
+      "device_id": 758,
+      "soc": "Twin Lake",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "tivviks"
+    },
+    {
+      "device_id": 589,
+      "soc": "Alderlake-N",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "adlnrvp"
+    },
+    {
+      "device_id": 525,
+      "soc": "Alderlake-N",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "nereid"
+    },
+    {
+      "device_id": 598,
+      "soc": "Alderlake-N",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "nirwen"
+    },
+    {
+      "device_id": 364,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bipship"
+    },
+    {
+      "device_id": 132,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "dood"
+    },
+    {
+      "device_id": 351,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "doodlte"
+    },
+    {
+      "device_id": 157,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "foob"
+    },
+    {
+      "device_id": 158,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "foob360"
+    },
+    {
+      "device_id": 369,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "garfour"
+    },
+    {
+      "device_id": 160,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "garg"
+    },
+    {
+      "device_id": 161,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "garg360"
+    },
+    {
+      "device_id": 168,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "grob360s"
+    },
+    {
+      "device_id": 213,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "lick"
+    },
+    {
+      "device_id": 343,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "vitalin"
+    },
+    {
+      "device_id": 681,
+      "soc": "Meteorlake-H",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "ovis",
+      "model": "ovis"
+    },
+    {
+      "device_id": 604,
+      "soc": "MT8195",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "passionfruit"
+    },
+    {
+      "device_id": 350,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "duffy"
+    },
+    {
+      "device_id": 355,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "puff",
+      "model": "kaisa"
+    },
+    {
+      "device_id": 259,
+      "soc": "Cometlake-U",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "puff",
+      "model": "puff"
+    },
+    {
+      "device_id": 721,
+      "soc": "MT8196",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "rauru",
+      "model": "rauru"
+    },
+    {
+      "device_id": 552,
+      "soc": "Meteorlake-U",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "rex",
+      "model": "mtlrvp"
+    },
+    {
+      "device_id": 548,
+      "soc": "Meteorlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "rex",
+      "model": "rex"
+    },
+    {
+      "device_id": 780,
+      "soc": "Generic X86_64 ",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "seraph",
+      "model": "seraph"
+    },
+    {
+      "device_id": 427,
+      "soc": "Alderlake-U/P/Raptorlake-U/P",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "shadowkeep"
+    },
+    {
+      "device_id": 556,
+      "soc": "Mendocino",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "skyrim",
+      "model": "skyrim15w"
+    },
+    {
+      "device_id": 557,
+      "soc": "Mendocino",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "skyrim",
+      "model": "skyrim15w360"
+    },
+    {
+      "device_id": 565,
+      "soc": "Mendocino",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "skyrim",
+      "model": "skyrim6w"
+    },
+    {
+      "device_id": 566,
+      "soc": "Mendocino",
+      "form_factor": "NONE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "skyrim",
+      "model": "skyrim6w360"
+    },
+    {
+      "device_id": 678,
+      "soc": "MT8186/MT8186T (Kompanio 520/528)",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "staryu",
+      "model": "staryu"
+    },
+    {
+      "device_id": 466,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "strongbad",
+      "model": "homestar"
+    },
+    {
+      "device_id": 373,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "strongbad",
+      "model": "strongbad"
+    },
+    {
+      "device_id": 209,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "lazor"
+    },
+    {
+      "device_id": 432,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "trogdor",
+      "model": "limozeen"
+    },
+    {
+      "device_id": 318,
+      "soc": "Qualcomm 7c Gen1/2",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "trogdor",
+      "model": "trogdor"
+    },
+    {
+      "device_id": 763,
+      "soc": "Alderlake-N",
+      "form_factor": "NONE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "nissa",
+      "model": "trulo"
+    },
+    {
+      "device_id": 363,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "halvor"
+    },
+    {
+      "device_id": 361,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "volteer",
+      "model": "malefor"
+    },
+    {
+      "device_id": 368,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "volteer",
+      "model": "terrador"
+    },
+    {
+      "device_id": 353,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "volteer",
+      "model": "trondo"
+    },
+    {
+      "device_id": 324,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "volteer",
+      "model": "volteer"
+    },
+    {
+      "device_id": 415,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "volteer",
+      "model": "volteer2"
+    },
+    {
+      "device_id": 397,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "zantor"
+    },
+    {
+      "device_id": 337,
+      "soc": "Cannonlake",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "zoombini",
+      "model": "zoombini"
+    },
+    {
+      "device_id": 152,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "ezkinil"
+    },
+    {
+      "device_id": 232,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "zork",
+      "model": "morphius"
+    },
+    {
+      "device_id": 316,
+      "soc": "Picasso/Dali/Pollock",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "zork",
+      "model": "trembyle"
+    },
+    {
+      "device_id": 81,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "astronaut"
+    },
+    {
+      "device_id": 84,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "babymako"
+    },
+    {
+      "device_id": 85,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "babymega"
+    },
+    {
+      "device_id": 86,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "babytiger"
+    },
+    {
+      "device_id": 96,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "blacktip"
+    },
+    {
+      "device_id": 97,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "blacktip360"
+    },
+    {
+      "device_id": 98,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "blacktiplte"
+    },
+    {
+      "device_id": 104,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "blue"
+    },
+    {
+      "device_id": 110,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "bruce"
+    },
+    {
+      "device_id": 149,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "epaulette"
+    },
+    {
+      "device_id": 208,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "lava"
+    },
+    {
+      "device_id": 234,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "nasher"
+    },
+    {
+      "device_id": 235,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "nasher360"
+    },
+    {
+      "device_id": 263,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "rabbid"
+    },
+    {
+      "device_id": 269,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "robo"
+    },
+    {
+      "device_id": 270,
+      "soc": "Apollolake Coral",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "robo360"
+    },
+    {
+      "device_id": 276,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "santa"
+    },
+    {
+      "device_id": 327,
+      "soc": "Apollolake Coral",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "coral",
+      "model": "whitetip"
+    },
+    {
+      "device_id": 180,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "jax"
+    },
+    {
+      "device_id": 192,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "kench"
+    },
+    {
+      "device_id": 283,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "sion"
+    },
+    {
+      "device_id": 306,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "teemo"
+    },
+    {
+      "device_id": 331,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBOX",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "fizz",
+      "model": "wukong"
+    },
+    {
+      "device_id": 75,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "aleena"
+    },
+    {
+      "device_id": 90,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "barla"
+    },
+    {
+      "device_id": 116,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "careena"
+    },
+    {
+      "device_id": 188,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "kasumi"
+    },
+    {
+      "device_id": 189,
+      "soc": "Stoney Ridge",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "kasumi360"
+    },
+    {
+      "device_id": 212,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "liara"
+    },
+    {
+      "device_id": 231,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "mordin"
+    },
+    {
+      "device_id": 314,
+      "soc": "Stoney Ridge",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "AMD",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "grunt",
+      "model": "treeya"
+    },
+    {
+      "device_id": 176,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "helios"
+    },
+    {
+      "device_id": 200,
+      "soc": "Cometlake-U",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "hatch",
+      "model": "kohaku"
+    },
+    {
+      "device_id": 187,
+      "soc": "Kabylake U/R",
+      "form_factor": "CHROMEBASE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "kalista",
+      "model": "karma"
+    },
+    {
+      "device_id": 190,
+      "soc": "MT8183",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "kukui",
+      "model": "katsu"
+    },
+    {
+      "device_id": 199,
+      "soc": "MT8183",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "kukui",
+      "model": "kodama"
+    },
+    {
+      "device_id": 71,
+      "soc": "Kabylake U/R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "akali"
+    },
+    {
+      "device_id": 72,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "akali360"
+    },
+    {
+      "device_id": 89,
+      "soc": "Kabylake U/R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "bard"
+    },
+    {
+      "device_id": 145,
+      "soc": "Kabylake U/R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "ekko"
+    },
+    {
+      "device_id": 247,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "pantheon"
+    },
+    {
+      "device_id": 260,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "pyke"
+    },
+    {
+      "device_id": 287,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "sona"
+    },
+    {
+      "device_id": 304,
+      "soc": "Kabylake U/R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "syndra"
+    },
+    {
+      "device_id": 322,
+      "soc": "Kabylake U/R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nami",
+      "model": "vayne"
+    },
+    {
+      "device_id": 95,
+      "soc": "MT8173",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "birch"
+    },
+    {
+      "device_id": 147,
+      "soc": "MT8173",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "elm",
+      "model": "elm"
+    },
+    {
+      "device_id": 173,
+      "soc": "MT8173",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "hana"
+    },
+    {
+      "device_id": 220,
+      "soc": "MT8173",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "maple"
+    },
+    {
+      "device_id": 221,
+      "soc": "MT8173",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "maple14"
+    },
+    {
+      "device_id": 302,
+      "soc": "MT8173",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "sycamore"
+    },
+    {
+      "device_id": 303,
+      "soc": "MT8173",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "sycamore360"
+    },
+    {
+      "device_id": 307,
+      "soc": "MT8173",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "hana",
+      "model": "telesu"
+    },
+    {
+      "device_id": 77,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "ampton"
+    },
+    {
+      "device_id": 79,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "apel"
+    },
+    {
+      "device_id": 100,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bloog"
+    },
+    {
+      "device_id": 101,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "blooglet"
+    },
+    {
+      "device_id": 102,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "blooguard"
+    },
+    {
+      "device_id": 103,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "blorb"
+    },
+    {
+      "device_id": 105,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bluebird"
+    },
+    {
+      "device_id": 107,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bobba"
+    },
+    {
+      "device_id": 108,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "bobba360"
+    },
+    {
+      "device_id": 118,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "casta"
+    },
+    {
+      "device_id": 133,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "dopefish"
+    },
+    {
+      "device_id": 134,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "dorp"
+    },
+    {
+      "device_id": 140,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "droid"
+    },
+    {
+      "device_id": 156,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "fleex"
+    },
+    {
+      "device_id": 162,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "gik"
+    },
+    {
+      "device_id": 163,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "gik360"
+    },
+    {
+      "device_id": 167,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "grabbiter"
+    },
+    {
+      "device_id": 205,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "laser"
+    },
+    {
+      "device_id": 206,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "laser14"
+    },
+    {
+      "device_id": 224,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "meep"
+    },
+    {
+      "device_id": 228,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "mimrock"
+    },
+    {
+      "device_id": 244,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "orbatrix"
+    },
+    {
+      "device_id": 253,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "phaser"
+    },
+    {
+      "device_id": 254,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "phaser360"
+    },
+    {
+      "device_id": 290,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "sparky"
+    },
+    {
+      "device_id": 291,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "sparky360"
+    },
+    {
+      "device_id": 325,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "vorticon"
+    },
+    {
+      "device_id": 326,
+      "soc": "Geminilake/GLK/GLK-R",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "octopus",
+      "model": "vortininja"
+    },
+    {
+      "device_id": 150,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "eve",
+      "model": "eve"
+    },
+    {
+      "device_id": 236,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nautilus",
+      "model": "nautilus"
+    },
+    {
+      "device_id": 237,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nautilus",
+      "model": "nautiluslte"
+    },
+    {
+      "device_id": 83,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "atlas",
+      "model": "atlas"
+    },
+    {
+      "device_id": 241,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "nocturne",
+      "model": "nocturne"
+    },
+    {
+      "device_id": 288,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "soraka",
+      "model": "soraka"
+    },
+    {
+      "device_id": 211,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rammus",
+      "model": "leona"
+    },
+    {
+      "device_id": 281,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rammus",
+      "model": "shyvana"
+    },
+    {
+      "device_id": 282,
+      "soc": "Kabylake-Y/AML-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "rammus",
+      "model": "shyvana-m"
+    },
+    {
+      "device_id": 74,
+      "soc": "Apollolake Reef",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "snappy",
+      "model": "alan"
+    },
+    {
+      "device_id": 91,
+      "soc": "Apollolake Reef",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "reef",
+      "model": "basking"
+    },
+    {
+      "device_id": 93,
+      "soc": "Apollolake Reef",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "snappy",
+      "model": "bigdaddy"
+    },
+    {
+      "device_id": 146,
+      "soc": "Apollolake Reef",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "reef",
+      "model": "electro"
+    },
+    {
+      "device_id": 261,
+      "soc": "Apollolake Reef",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "pyro",
+      "model": "pyro"
+    },
+    {
+      "device_id": 275,
+      "soc": "Apollolake Reef",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "sand",
+      "model": "sand"
+    },
+    {
+      "device_id": 285,
+      "soc": "Apollolake Reef",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "snappy",
+      "model": "snappy"
+    },
+    {
+      "device_id": 80,
+      "soc": "Wilco",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "sarien",
+      "model": "arcada"
+    },
+    {
+      "device_id": 277,
+      "soc": "Wilco",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "sarien",
+      "model": "sarien"
+    }
+  ]
+}

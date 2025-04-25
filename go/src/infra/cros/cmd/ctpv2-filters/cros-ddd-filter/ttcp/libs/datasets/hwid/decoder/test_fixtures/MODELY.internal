@@ -1,0 +1,93 @@
+board: MODEL_Y
+
+encoding_patterns:
+  0: default
+
+image_id:
+  0: PROTO
+  1: EVT
+  2: DVT
+
+pattern:
+  - image_ids: [0, 1, 2]
+    encoding_scheme: base8192
+    fields:
+    - region_field: 8
+    - dram_field: 5
+    - board_version_field: 3
+    - firmware_field: 5
+
+encoded_fields:
+  board_version_field:
+    0: { board_version: rev0 }
+    1: { board_version: rev1 }
+    2: { board_version: rev2 }
+  dram_field:
+    0:
+      dram: [
+        y_2gb_dimm0,
+        y_2gb_dimm1
+    ]
+  firmware_field:
+    0:
+      hash_gbb: hash_gbb_premp
+      key_recovery: key_recovery_premp
+      key_root: key_root_premp
+      ro_ec_firmware: ro_ec_firmware_0
+      ro_main_firmware: ro_main_firmware_0
+  region_field: !region_field
+
+components:
+  board_version:
+    items:
+      rev0:
+        status: unsupported
+        values: { compact_str: 'rev0' }
+      rev1:
+        status: unsupported
+        values: { compact_str: 'rev1' }
+      rev2:
+        values: { compact_str: 'rev2' }
+  dram:
+    items:
+      y_2gb_dimm0:
+        values:
+          part: 'part-dim0'
+          size: '2048'
+          slot: '0'
+          timing: LPDDR3-800,LPDDR3-1066,LPDDR3-1333,LPDDR3-1600,LPDDR3-1866
+      y_2gb_dimm1:
+        values:
+          part: 'part-dim0'
+          size: '2048'
+          slot: '1'
+          timing: LPDDR3-800,LPDDR3-1066,LPDDR3-1333,LPDDR3-1600,LPDDR3-1866
+  region: !region_component
+  hash_gbb:
+    items:
+      hash_gbb_premp:
+        values: { compact_str: 'gv2#199' }
+  key_recovery:
+    items:
+      key_recovery_premp:
+        values: { compact_str: 'kv3#0b6' }
+  key_root:
+    items:
+      key_root_premp:
+        values: { compact_str: 'kv3#8dc' }
+  ro_ec_firmware:
+    items:
+      ro_ec_firmware_0:
+        values:
+          hash: 189
+          version: y_v1.10.99
+  ro_main_firmware:
+    items:
+      ro_main_firmware_0:
+        values:
+          hash: a67
+          version: y.2016_11_14_2017
+
+rules:
+- name: device_info.set_image_id
+  evaluate: SetImageId('DVT')

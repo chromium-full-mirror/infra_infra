@@ -1,0 +1,2773 @@
+{
+    "name": "WiFi and Bluetooth classes and Categories",
+    "description": "Categories defined for WiFi and Bluetooth tests",
+    "owners": [
+        "chromeos-connectivity-engprod@google.com"
+    ],
+    "classes": {
+        "wifi:not_board_herobrine_or_model_nipperkin":{
+            "name": "wifi:not_board_herobrine_or_model_nipperkin",
+            "description": "Class for WiFiWEP hwdep",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "dlm:build_targets",
+                                        "strInSet": {
+                                            "values": [
+                                                "herobrine"
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "dlm:model",
+                                        "strInSet": {
+                                            "values": [
+                                                "nipperkin"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "wifi:boards_only_volteer":{
+            "name" : "wifi:boards_only_volteer",
+            "description": "Class of all boards except volteer",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:build_targets",
+                    "strInSet": {
+                        "values": [
+                            "volteer"
+                        ]
+                    }
+                }
+            }
+        },
+        "wifi:boards_exclude_trogdor_strongbad":{
+            "name" : "wifi:boards_exclude_trogdor_strongbad",
+            "description": "Class of all boards except trogdor and strongbad",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:build_targets",
+                            "strInSet": {
+                                "values": [
+                                    "trogdor",
+                                    "strongbad"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "boards_except_kalista":{
+            "name" : "boards_except_kalista",
+            "description": "Class of all boards except kalista",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:build_targets",
+                            "strInSet": {
+                                "values": [
+                                    "kalista"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "connectivity_FSI_models":{
+            "name":"connectivity_FSI_models",
+            "description": "Class for models which are near FSI.This is manually defined.(This is only for testing 3d sceduling)",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:model",
+                    "strInSet": {
+                        "values": [
+                            "navi",
+                            "wyrdeer"
+                        ]
+                    }
+                }
+            }
+        },
+        "wifi:models_with_vpd_sar_tables":{
+            "name": "wifi:models_with_vpd_sar_tables",
+            "description": "Class for models that match hwdep WifiVpdSar()",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:model",
+                    "strInSet": {
+                        "values": [
+                            "akali360",
+                            "ampton",
+                            "arcada",
+                            "babytiger",
+                            "basking",
+                            "caroline",
+                            "eve",
+                            "leona",
+                            "nautilus",
+                            "nautiluslte",
+                            "pantheon",
+                            "shyvana",
+                            "vayne"
+                        ]
+                    }
+                }
+            }
+        },
+        "wifi:models_with_out_vpd_sar_tables":{
+            "name": "wifi:models_with_out_vpd_sar_tables",
+            "description": "Class for models that match hwdep WifiNoVpdSar()",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:model",
+                            "strInSet": {
+                                "values": [
+                                    "akali360",
+                                    "ampton",
+                                    "arcada",
+                                    "babytiger",
+                                    "basking",
+                                    "caroline",
+                                    "eve",
+                                    "leona",
+                                    "nautilus",
+                                    "nautiluslte",
+                                    "pantheon",
+                                    "shyvana",
+                                    "vayne"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:models_with_hfp_offload":{
+            "name": "bluetooth:models_with_hfp_offload",
+            "description": "Class for models that support bluetooth HFP offload",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:model",
+                    "strInSet": {
+                        "values": [
+                            "aurash",
+                            "aviko",
+                            "brask",
+                            "brya",
+                            "craask",
+                            "craaskbowl",
+                            "craaskino",
+                            "craaskino15w",
+                            "craaskvin",
+                            "craasneto",
+                            "craasneto15w",
+                            "gaelin",
+                            "gimble",
+                            "kanix",
+                            "kano",
+                            "karis",
+                            "kuldax",
+                            "moli",
+                            "omnigul",
+                            "omniknight",
+                            "osiris",
+                            "redrix",
+                            "rex",
+                            "rex64",
+                            "rex_ec_ish",
+                            "screebo",
+                            "skolas",
+                            "volmar",
+                            "zavala"
+                        ]
+                    }
+                }
+            }
+        },
+        "bluetooth:boards_with_super_resolution":{
+            "name": "bluetooth:boards_with_super_resolution",
+            "description": "Class for models that support bluetooth super resolution",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:build_targets",
+                    "strInSet": {
+                        "values": [
+                            "eve",
+                            "soraka",
+                            "nautilus",
+                            "nami",
+                            "nocturne",
+                            "rammus",
+                            "fizz"
+                        ]
+                    }
+                }
+            }
+        },
+        "bluetooth:models_without_central_peripheral_role_support":{
+            "name": "bluetooth:models_without_central_peripheral_role_support",
+            "description": "Class for models that fails with central peripheral role requirement",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:model",
+                            "strInSet": {
+                                "values": [
+                                    "akali",
+                                    "babymega",
+                                    "barla",
+                                    "basking",
+                                    "burnet",
+                                    "careena",
+                                    "cerise",
+                                    "cozmo",
+                                    "delbin",
+                                    "elm",
+                                    "esche",
+                                    "eve",
+                                    "fennel",
+                                    "hana",
+                                    "juniper",
+                                    "kakadu",
+                                    "kappa",
+                                    "karma",
+                                    "katsu",
+                                    "kench",
+                                    "kenzo",
+                                    "krane",
+                                    "nocturne",
+                                    "pantheon",
+                                    "pyro",
+                                    "sand",
+                                    "snappy",
+                                    "sona",
+                                    "soraka",
+                                    "stern",
+                                    "teemo",
+                                    "treeya360",
+                                    "willow"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "wireless:vendor:intel": {
+            "name": "wireless:vendor:intel",
+            "description": "Class for wireless intel chip",
+            "expression": {
+                "property": {
+                    "propertyPath": "wireless_field_original_values_vendor",
+                    "strInSet": {
+                        "values": [
+                            "0x8086"
+                        ]
+                    }
+                }
+            }
+        },
+        "wireless:vendor:mediatek": {
+            "name": "wireless:vendor:mediatek",
+            "description": "Class for wireless mediatek chip",
+            "expression": {
+                "property": {
+                    "propertyPath": "wireless_field_original_values_vendor",
+                    "strInSet": {
+                        "values": [
+                            "0x14c3",
+                            "0x037a"
+                        ]
+                    }
+                }
+            }
+        },
+        "Wireless:device_intel_JfP2": {
+            "name": "Wireless:device_intel_JfP2",
+            "description": "Class for wireless intel chip JfP2",
+            "expression": {
+                "and": {
+                    "sub_expressions": [
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_vendor",
+                                "strInSet": {
+                                    "values": [
+                                        "0x8086"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_device",
+                                "strInSet": {
+                                    "values": [
+                                        "0x9df0",
+                                        "0x31dc",
+                                        "0x02f0"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Wireless:device_intel_StP2": {
+            "name": "Wireless:device_intel_StP2",
+            "description": "Class for wireless intel chip StP2",
+            "expression": {
+                "and": {
+                    "sub_expressions": [
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_vendor",
+                                "strInSet": {
+                                    "values": [
+                                        "0x8086"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_device",
+                                "strInSet": {
+                                    "values": [
+                                        "0x095a",
+                                        "0x095b"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Wireless:device_not_StP2": {
+            "name": "Wireless:device_not_StP2",
+            "description": "Class for not wireless chip StP2",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x8086"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x095a"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x8086"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x095b"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipset_support_ext_adv": {
+            "name": "bluetooth:chipset_support_ext_adv",
+            "description": "Class that excludes chipsets in EXT_ADV_UNSUPPORTED_CHIPSETS currently STP2 and MVL",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2116"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipset_support_multiple_adv": {
+            "name": "bluetooth:chipset_support_multiple_adv",
+            "description": "Class that excludes chipsets that can't advertise 4 connectable  advertisements. Current all Realtek chipsets",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:1522"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:3647"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:3630"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:4683"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:4233"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:6525"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipset_support_device_count_test": {
+            "name": "bluetooth:chipset_support_device_count_test",
+            "description": "Class that excludes chipsets that can't run bluetooth_AdapterAdvMonitor.advmon_condition_device_count_tests",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:4863"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:3630"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:4233"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2116"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:1522"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "647"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:1719"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:627"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:3647"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipsets_exclude_le_floss_iop": {
+          "name": "bluetooth:chipsets_exclude_le_floss_iop",
+            "description": "Class that excludes chipsets in LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS  'MVL-8897', 'INTEL-CCP2-AX200', 'INTEL-HRP2-AX201', 'INTEL-GFP2-AX211', 'INTEL-BE200'",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2688"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2125"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:3645"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:5993"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipsets_exclude_suspend_power_down": {
+            "name": "bluetooth:chipsets_exclude_suspend_power_down",
+            "description": "Class that excludes chipsets that power down on suspend Realtek-RTL8822CE MVL-8897",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:1522"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipsets_support_advmon": {
+            "name": "bluetooth:chipsets_support_advmon",
+            "description": "Class that excludes chipset that does not support advmon = MVL-8897 Intel-AC7265 Realtek-RTL8822C-USB/UART QCA-6174A-5-USB QCA-6174A-3-UART",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x02df"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x912d"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "or": {
+                                        "sub_expressions": [
+                                            {
+                                                "and": {
+                                                    "sub_expressions": [
+                                                        {
+                                                            "property": {
+                                                                "propertyPath": "wireless_field_original_values_vendor",
+                                                                "strInSet": {
+                                                                    "values": [
+                                                                        "0x8086"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "property": {
+                                                                "propertyPath": "wireless_field_original_values_device",
+                                                                "strInSet": {
+                                                                    "values": [
+                                                                        "0x095a"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "and": {
+                                                    "sub_expressions": [
+                                                        {
+                                                            "property": {
+                                                                "propertyPath": "wireless_field_original_values_vendor",
+                                                                "strInSet": {
+                                                                    "values": [
+                                                                        "0x8086"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "property": {
+                                                                "propertyPath": "wireless_field_original_values_device",
+                                                                "strInSet": {
+                                                                    "values": [
+                                                                        "0x095b"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x10ec"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0xc822"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x168c"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x003e"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x0271"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x050a"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipsets_support_wbs": {
+            "name": "bluetooth:chipsets_support_wbs",
+            "description": "Class for chipsets that support WBS on floss",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2116"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:627"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "bluetooth:chipsets_support_qr": {
+            "name": "bluetooth:chipsets_support_qr",
+            "description": "Class for chipsets that support QR",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:840"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:2116"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:1719"
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field",
+                                        "str_equal": "avl:627"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "Wireless:device_intel_ThP2": {
+            "name": "Wireless:device_intel_ThP2",
+            "description": "Class for wireless intel chip ThP2",
+            "expression": {
+                "and": {
+                    "sub_expressions": [
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_vendor",
+                                "strInSet": {
+                                    "values": [
+                                        "0x8086"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_device",
+                                "strInSet": {
+                                    "values": [
+                                        "0x2526"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Wireless:device_marvell": {
+            "name": "Wireless:device_marvell",
+            "description": "Class for wireless chip Marvell",
+            "expression": {
+                "or": {
+                    "sub_expressions": [
+                        {
+                            "and": {
+                                "sub_expressions": [
+                                    {
+                                        "property": {
+                                            "propertyPath": "wireless_field_original_values_vendor",
+                                            "strInSet": {
+                                                "values": [
+                                                    "0x02df"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "property": {
+                                            "propertyPath": "wireless_field_original_values_device",
+                                            "strInSet": {
+                                                "values": [
+                                                    "0x912d"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "and": {
+                                "sub_expressions": [
+                                    {
+                                        "property": {
+                                            "propertyPath": "wireless_field_original_values_vendor",
+                                            "strInSet": {
+                                                "values": [
+                                                    "0x1b4b"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "property": {
+                                            "propertyPath": "wireless_field_original_values_device",
+                                            "strInSet": {
+                                                "values": [
+                                                    "0x2b42"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Wireless:device_not_marvell": {
+            "name": "Wireless:device_not_marvell",
+            "description": "Class for not wireless chip Marvell",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "or": {
+                            "sub_expressions": [
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x02df"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x912d"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "and": {
+                                        "sub_expressions": [
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_vendor",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x1b4b"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "property": {
+                                                    "propertyPath": "wireless_field_original_values_device",
+                                                    "strInSet": {
+                                                        "values": [
+                                                            "0x2b42"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "Wireless:device_Qualcomm_WCN6855": {
+            "name": "Wireless:device_Qualcomm_WCN6855",
+            "description": "Class for wireless Qualcomm chip WCN6855",
+            "expression": {
+                "and": {
+                    "sub_expressions": [
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_vendor",
+                                "strInSet": {
+                                    "values": [
+                                        "0x17cb"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "property": {
+                                "propertyPath": "wireless_field_original_values_device",
+                                "strInSet": {
+                                    "values": [
+                                        "0x1103"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "Wireless:device_not_Qualcomm_WCN6855": {
+            "name": "Wireless:device_not_Qualcomm_WCN6855",
+            "description": "Class for not wireless Qualcomm chip WCN6855",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "and": {
+                            "sub_expressions": [
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field_original_values_vendor",
+                                        "strInSet": {
+                                            "values": [
+                                                "0x17cb"
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "property": {
+                                        "propertyPath": "wireless_field_original_values_device",
+                                        "strInSet": {
+                                            "values": [
+                                                "0x1103"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "Formfactor:chromebase": {
+            "name": "Formfactor:chromebase",
+            "description": "Class for all chromebases",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:form_factor",
+                    "str_equal": "CHROMEBASE"
+                }
+            }
+        },
+        "Formfactor:chromebox": {
+            "name": "Formfactor:chromebox",
+            "description": "Class for all chromeboxs",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:form_factor",
+                        "str_equal": "CHROMEBOX"
+                }
+            }
+        },
+       "Formfactor:chromebase_box": {
+            "name": "Formfactor:chromebase_box",
+            "description": "Class for all chromeboxes and chromebases",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:form_factor",
+                    "strInSet": {
+                        "values": [
+                            "CHROMEBASE",
+                            "CHROMEBOX"
+                        ]
+                    }
+                }
+            }
+       },
+        "Formfactor:detachable": {
+            "name": "Formfactor:detachable",
+            "description": "Class for detachable formfactor",
+            "expression": {
+                "property": {
+                    "propertyPath": "dlm:form_factor",
+                    "str_equal": "DETACHABLE"
+                }
+            }
+        },
+        "Formfactor:not_detachable": {
+            "name": "Formfactor:not_detachable",
+            "description": "Class for all formfactor excluding detachable",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:form_factor",
+                            "str_equal": "DETACHABLE"
+                        }
+                    }
+                }
+            }
+        },
+        "Formfactor:not_convertible": {
+            "name": "Formfactor:not_convertible",
+            "description": "Class for all formfactor excluding convertible (tablets)",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:form_factor",
+                            "str_equal": "CONVERTIBLE"
+                        }
+                    }
+                }
+            }
+        },
+        "Formfactor:not_chromebox": {
+            "name": "Formfactor:not_chromebox",
+            "description": "Class for all formfactor excluding chromebox (tablets)",
+            "expression": {
+                "not": {
+                    "sub_expression": {
+                        "property": {
+                            "propertyPath": "dlm:form_factor",
+                            "str_equal": "CHROMEBOX"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "categories": {
+        "Wireless:Wifi_Soc": {
+            "name": "Wireless:Wifi_Soc",
+            "description": "Category with unique Wifi SOCs",
+            "union": {
+                "subcategories": [
+                    {
+                        "value": {
+                            "name": "dlm:soc:exclude_tgl_apl_kbl",
+                            "combinatorial": {
+                                "subcategories": [
+                                    {
+                                        "name": "dlm:soc"
+                                    },
+                                    {
+                                        "name": "Dlm:Soc:Not_Tigerlake"
+                                    },
+                                    {
+                                        "name": "Dlm:Soc:Not_Kabylake"
+                                    },
+                                    {
+                                        "name": "Dlm:Soc:Not_Apollolake"
+                                    },
+                                    {
+                                        "name": "Common:Not_Raptorlake_Refresh_Cpu"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "Dlm:Soc:Tigerlake"
+                    },
+                    {
+                        "name": "Dlm:Soc:Apollolake"
+                    },
+                    {
+                        "name": "Dlm:Soc:Kabylake"
+                    },
+                    {
+                        "name": "Common:Raptorlake_Refresh_Cpu"
+                    }
+                ]
+            },
+            "reportCategory": "wirelessSoc"
+        },
+        "BT_Chipset_Kernel": {
+            "name": "BT_Chipset_Kernel",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_Exclude_Marvell": {
+            "name": "BT_Chipset_Kernel_Exclude_Marvell",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel while excluding Marvel chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant_or_kernelnext"
+                    },
+                    {
+                        "name": "Wireless:Device:Not_Marvell"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_and_formfactor": {
+            "name": "BT_Chipset_Kernel_and_formfactor",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel union with same mapping on chromebase/box",
+            "union": {
+                "subcategories": [
+                    {
+                        "name":"BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "BT_Chipset_Kernel_chromebase_and_chromebox"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant:formfactor"
+        },
+        "WiFi:Exclude_herobrine_nipperkin": {
+            "name": "WiFi:Exclude_herobrine_nipperkin",
+            "description": "Category with a single class that excludes board:herobrine and model:nipperkin. (Equivalent for hwdep WiFiWEP())",
+            "enumerated": {
+                "classes": [
+                    {
+                           "name": "wifi:not_board_herobrine_or_model_nipperkin"
+                    }
+                ]
+            }
+        },
+        "Wireless:Vendor:Intel": {
+            "name": "Wireless:Vendor:Intel",
+            "description": "Category with a single class that matches the contexts with an Intel vendor chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "wireless:vendor:intel"
+                    }
+                ]
+            }
+        },
+        "Wireless:Vendor:Mediatek": {
+            "name": "Wireless:Vendor:Mediatek",
+            "description": "Category with a single class that matches the contexts with an Mediatek vendor chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "wireless:vendor:mediatek"
+                    }
+                ]
+            }
+        },
+        "WiFi_Intel_Chipset": {
+            "name": "Wireless:Vendor:Intel",
+            "description": "Category for all unique HWID with Intel chipset and connectivity overlays",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Common:default_build_variant_or_connectivity"
+                    },
+                    {
+                        "name": "Wireless:Vendor:Intel"
+                    },
+                    {
+                        "name": "swarming:hwid"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:hwid"
+        },
+        "WiFi_Mediatek_Chipset": {
+            "name": "Wireless:Vendor:Intel",
+            "description": "Category for all unique HWID with Intel chipset and connectivity overlays",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Common:default_build_variant_or_connectivity"
+                    },
+                    {
+                        "name": "Wireless:Vendor:Mediatek"
+                    },
+                    {
+                        "name": "swarming:hwid"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:IntelJfP2": {
+            "name": "Wireless:Device:IntelJfP2",
+            "description": "Category with a single class that matches the contexts with the Intel JfP2 wifi chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_intel_JfP2"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:IntelThP2": {
+            "name": "Wireless:Device:IntelThP2",
+            "description": "Category with a single class that matches the contexts with the Intel ThP2 wifi chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_intel_ThP2"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:Marvell": {
+            "name": "Wireless:Device:Marvell",
+            "description": "Category with a single class that matches the contexts with the Marvell wifi chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_marvell"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:Not_Marvell": {
+            "name": "Wireless:Device:Not_Marvell",
+            "description": "Category with a single class that matches the contexts with not Marvell wifi chipsets",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_not_marvell"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:Qualcomm_WCN6855": {
+            "name": "Wireless:Device:Qualcomm_WCN6855",
+            "description": "Category with a single class that matches the contexts with Qualcomm WCN6855 chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_Qualcomm_WCN6855"
+                    }
+                ]
+            }
+        },
+        "Wireless:Device:Not_Qualcomm_WCN6855": {
+            "name": "Wireless:Device:Not_Qualcomm_WCN6855",
+            "description": "Category with a single class that matches the contexts with not Qualcomm WCN6855 chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_not_Qualcomm_WCN6855"
+                    }
+                ]
+            }
+        },
+        "WiFi:Board_Only_Volteer": {
+            "name": "WiFi:Board_Only_Volteer",
+            "description": "Category with a single class that matches boards which are not Volteer",
+            "enumerated": {
+                "classes": [
+                    {
+                             "name" : "wifi:boards_only_volteer"
+                    }
+                ]
+            }
+        },
+        "Board_Not_Kalista": {
+            "name": "Board_Not_Kalista",
+            "description": "Category with a single class that matches boards which are not Kalista",
+            "enumerated": {
+                "classes": [
+                    {
+                             "name" : "boards_except_kalista"
+                    }
+                ]
+            }
+        },
+        "WiFi:Board_Not_Trogdor_Strongbad": {
+            "name": "WiFi:Board_Not_Trogdor_Strongbad",
+            "description": "Category with a single class that matches boards which are not trogdor or strongbad",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name" :  "wifi:boards_exclude_trogdor_strongbad"
+                    }
+                ]
+            }
+        },
+        "WiFi:VPD_SAR": {
+            "name": "WiFi:VPD_SAR",
+            "description": "Category with a single class that matches hwdep WifiVpdSar",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "wifi:models_with_vpd_sar_tables"
+                    }
+                ]
+            }
+        },
+        "WiFi:No_VPD_SAR": {
+            "name": "WiFi:No_VPD_SAR",
+            "description": "Category with a single class that matches hwdep WifiNoVpdSar",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "wifi:models_with_out_vpd_sar_tables"
+                    }
+                ]
+            }
+        },
+
+        "Connectivity_FSI_Models": {
+            "name": "Connectivity_FSI_Models",
+            "description": "Category with a single class that matches a list of models FSI soon. (This is just a test of 3d scheduling)",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "connectivity_FSI_models"
+                    }
+                ]
+            }
+        },
+        "WifiCell_TB_Dependencies": {
+            "name": "WifiCell_TB_Dependencies",
+            "description": "Category for core WifiCell Testbench Dependencies",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Swarming:Wificell:True"
+                    },
+                    {
+                        "name": "Swarming:WifiState:Normal"
+                    },
+                    {
+                        "name": "Swarming:BluetoothState:Normal"
+                    },
+                    {
+                        "name": "Swarming:PeripheralWifiState:Working"
+                    }
+                ]
+            }
+        },
+        "WifiBtChipset_Soc_Kernel": {
+            "name": "User:WiFi_MatFunc",
+            "description": "Category for WiFi tests. Unique WiFi chipset,SoC,Kernel combinations",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "swarming:label-wifi_chip"
+                    },
+                    {
+                        "name": "Wireless:Wifi_Soc"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_with_EVT": {
+            "name": "WifiBtChipset_Soc_Kernel_with_EVT",
+            "description": "Category for WiFi tests. Unique WiFi chipset,SoC,Kernel combinations and all EVT in the pool and FSI.",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "All_EVT"
+                    },
+                    {
+                        "name": "Connectivity_FSI_Models"
+                    }
+                ]
+            },
+              "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+       "WifiBtChipset_Soc_Kernel_IntelJfP2": {
+            "name": "User:WiFi_MatFunc:IntelJfP2",
+            "description": "Category for WiFi tests with component dependencies on the IntelJfP2 chipset",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:IntelJfP2"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_IntelThP2": {
+            "name": "User:WiFi_MatFunc:IntelThP2",
+            "description": "Category for WiFi tests with component dependencies on the IntelThP2 chipset",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:IntelThP2"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Marvell": {
+            "name": "User:WiFi_MatFunc:Marvel",
+            "description": "Category for WiFi tests with component dependencies on the Marvell chipset",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Marvell"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Not_Marvell": {
+            "name": "User:WiFi_MatFunc:Not_Marvell",
+            "description": "Category for WiFi tests with component dependencies on not Marvell chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Not_Marvell"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Intel": {
+            "name": "User:WiFi_MatFunc:Intel",
+            "description": "Category for WiFi tests with component dependencies on the Intel chipset",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Vendor:Intel"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_IntelJfP2_or_IntelThP2": {
+            "name": "User:WiFi_MatFunc:IntelJfP2_ThP2",
+            "description": "Category for WiFi tests with component dependencies on the IntelJfP2 and ThP2 chipsets",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel_IntelJfP2"
+                    },
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel_IntelThP2"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_80211_AX": {
+            "name": "User:WifiBtChipset_Soc_Kernel_AX",
+            "description": "Category for WiFi tests with testbed dependencies on wifi router with feature 80211AX",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_80211_AXE": {
+            "name": "User:WifiBtChipset_Soc_Kernel_AXE",
+            "description": "Category for WiFi tests with testbed dependencies on wifi router with feature 80211AXE",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_80211_BE": {
+            "name": "User:WifiBtChipset_Soc_Kernel_BE",
+            "description": "Category for WiFi tests with testbed dependencies on wifi router with feature 80211BE",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_IEEE_802_11_BE"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_SAE_EXT_KEY": {
+            "name": "User:WifiBtChipset_Soc_Kernel_SAE_EXT_KEY",
+            "description": "Category for WiFi tests with testbed dependencies on wifi router with feature SAE_EXT_KEY",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Swarming:WifiRouterFeatures:WIFI_ROUTER_FEATURE_SAE_EXT_KEY"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_GCMP": {
+            "name": "User:WifiBtChipset_Soc_Kernel_GCMP",
+            "description": "Category for WiFi tests with testbed dependencies on wifi router with feature GCMP",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Swarming:wifi_router_features:WIFI_ROUTER_FEATURE_GCMP"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Qualcomm_WCN6855": {
+            "name": "User:WifiBtChipset_Soc_Kernel_Qualcomm_WCN6855",
+            "description": "Category for Wifi tests with component dependencies on the Qualcomm WCN6855 chipset",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Qualcomm_WCN6855"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Only_Volteer": {
+            "name": "User:WifiBtChipset_Soc_Kernel_Only_Volteer",
+            "description": "Category for Wifi tests which are not supported by board:volteer",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "WiFi:Board_Only_Volteer"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_Not_Trogdor_Strongbad": {
+            "name": "User:WifiBtChipset_Soc_Kernel_Not_Trogdor_Strongbad",
+            "description": "Category for Wifi tests which are not supported by board:trogdor and board:strongbad",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "WiFi:Board_Not_Trogdor_Strongbad"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "WifiBtChipset_Soc_Kernel_WEP": {
+            "name": "User:WifiBtChipset_Soc_Kernel_WEP",
+            "description": "Category for Wifi tests with hwdep WifiWEP()",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "WiFi:Exclude_herobrine_nipperkin"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "All_Models_VPDSAR": {
+            "name": "User:All_Models_VPDSAR",
+            "description": "Category for Wifi tests with hwdep WifiVpdSar()",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "All_Models"
+                    },
+                    {
+                        "name": "WiFi:VPD_SAR"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "All_Models_No_VPDSAR": {
+            "name": "User:All_Models_No_VPDSAR",
+            "description": "Category for Wifi tests with hwdep WifiNoVpdSar()",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "All_Models"
+                    },
+                    {
+                        "name": "WiFi:No_VPD_SAR"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+       "WifiBtChipset_Soc_Kernel_Hwdep_Combination_1": {
+           "name": "WifiBtChipset_Soc_Kernel_Hwdep_Combination_1",
+            "description": "Category for Wifi tests with hwdep  hwdep.D(hwdep.WifiNotMarvell(), hwdep.SkipOnPlatform('trogdor', 'strongbad', 'trogdor-kernelnext'), hwdep.WifiWEP())",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "WifiBtChipset_Soc_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Not_Marvell"
+                    },
+                    {
+                        "name": "WiFi:Board_Not_Trogdor_Strongbad"
+                    },
+                    {
+                        "name": "WiFi:Exclude_herobrine_nipperkin"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "Wireless:Device:Not_StP2": {
+            "name": "Wireless:Device:Not_StP2",
+            "description": "Category with a single class that matches the contexts with not StP2 chipset",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Wireless:device_not_StP2"
+                    }
+                ]
+            },
+            "reportCategory": "wifiBtChipset:soc:kernelVersion"
+        },
+        "Formfactor:Chromebase": {
+            "name": "Formfactor:Chromebase",
+            "description": "Category with a single classes that matches the contexts with Chromebase form factor",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:chromebase"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "Formfactor:Chromebox": {
+            "name": "Formfactor:Chromebox",
+            "description": "Category with a single classes that matches the contexts with Chromebox form factor",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:chromebox"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "Formfactor:Every_Chromebox": {
+            "name": "Formfactor:Every_Chromebox",
+            "description": "Category with with every chromeboxs as separate class",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Formfactor:Chromebox"
+                    },
+                    {
+                        "name": "dlm:model"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "Formfactor:Every_Chromebase": {
+            "name": "Formfactor:Every_Chromebase",
+            "description": "Category with with every chromebases as separate class",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Formfactor:Chromebase"
+                    },
+                    {
+                        "name": "dlm:model"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "Formfactor:Every_Chromebase_exclude_kalista": {
+            "name": "Formfactor:Every_Chromebase_exclude_kalista_karma",
+            "description": "Category with with every chromebases as separate class excluding board:kalista",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "Formfactor:Chromebase"
+                    },
+                    {
+                        "name": "dlm:model"
+                    },
+                    {
+                        "name": "Board_Not_Kalista"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant:formfactor"
+        },
+        "Formfactor:Detachable": {
+            "name": "Formfactor:Detachable",
+            "description": "Category with a single classes that matches only detachable formafactor",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:detachable"
+                    }
+                ]
+            },
+          "reportCategory": "form_factors"
+        },
+        "Formfactor:Not_Detachable": {
+            "name": "Formfactor:Not_Detachable",
+            "description": "Category with a single classes that matches all formfactor except detachables",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:not_detachable"
+                    }
+                ]
+            },
+          "reportCategory": "form_factors"
+        },
+        "Formfactor:Not_Convertible": {
+            "name": "Formfactor:Not_Convertible",
+            "description": "Category with a single classes that matches all formfactor except convertibles",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:not_convertible"
+                    }
+                ]
+            },
+          "reportCategory": "form_factors"
+        },
+        "Formfactor:Not_Chromebox": {
+            "name": "Formfactor:Not_Chromebox",
+            "description": "Category with a single classes that matches all formfactor except chromebox",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:not_chromebox"
+                    }
+                ]
+            },
+          "reportCategory": "form_factors"
+        },
+        "Formfactor:Chromebase_or_Chromebox": {
+            "name": "Formfactor:Chromebase_box",
+            "description": "Category with a single classes that matches the contexts with Chromebose_box form factor",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "Formfactor:chromebase_box"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "Formfactor:Chromebase_and_Chromebox": {
+            "name": "Formfactor:enum_base_box",
+            "description": "enumerated of base and box",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "Formfactor:Chromebox"
+                    },
+                    {
+                        "name": "Formfactor:Chromebase"
+                    }
+                ]
+            },
+            "reportCategory": "form_factors"
+        },
+        "BT_Chipset_Kernel_chromebase_and_chromebox": {
+            "name": "BT_Chipset_Kernel_chromebase_and_chromebox",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel for chromeboxes and chromebases",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name" : "Formfactor:Chromebase_and_Chromebox"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant:formfactor"
+        },
+        "BT_Chipset_Kernel_chromebox": {
+            "name": "BT_Chipset_Kernel_chromebox",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel for chromeboxes",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name" : "Formfactor:Chromebox"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant:formfactor"
+        },
+        "BT_Chipset_Kernel_Detachable": {
+            "name": "BT_Chipset_Kernel_Detachable",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel for detachables",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name": "Formfactor:Detachable"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+      },
+        "BT_Chipset_Kernel_exclude_Detachable": {
+            "name": "BT_Chipset_Kernel_exclude_Detachable",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel excluding detachable",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name": "Formfactor:Not_Detachable"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_Tablet_Suspend_Power_Down": {
+            "name": "BT_Chipset_Kernel_exclude_Tablet_Suspend_Power_Down",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel excluding detachables and suspend power down chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Formfactor:Not_Detachable"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_Suspend_Power_Down"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_Tablet_Suspend_Power_Down": {
+            "name": "BT_Chipset_Kernel_Tablet_Suspend_Power_Down",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel with detachable formfactor while excluding suspend power down chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Formfactor:Detachable"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_Suspend_Power_Down"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+      },
+      "BT_Chipset_Kernel_exclude_Convertible": {
+            "name": "BT_Chipset_Kernel_exclude_Convertible",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel for convertibles(tablets)",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name": "Formfactor:Not_Convertible"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+      },
+        "BT_Chipset_Kernel_exclude_Chromebox": {
+            "name": "BT_Chipset_Kernel_exclude_Chromebox",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel that exclude chromeboxes",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name": "Formfactor:Not_Chromebox"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Models_with_HFP_offload": {
+            "name": "BT:Models_with_HFP_offload",
+            "description": "Category with a single class that matches the models that has Bluetooth HFP offload support",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:models_with_hfp_offload"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_HFP_Offload": {
+            "name": "BT_Chipset_Kernel_HFP_Offload",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name" : "BT:Models_with_HFP_offload"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Boards_with_Super_Resolution": {
+            "name": "BT:Boards_with_Super_Resolution",
+            "description": "Category with a single class that matches the models that has Bluetooth HFP offload support",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:boards_with_super_resolution"
+                    }
+                ]
+            }
+        },
+         "BT_Chipset_Kernel_Super_Resolution": {
+            "name": "BT_Chipset_Kernel_Super_Resolution",
+            "description": "Category with unique Bluetooth Chipset+transport and Kernel and boards that support super resolution",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "HWID:wireless_field:distinct_values"
+                    },
+                    {
+                        "name": "image:_kernel_version"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
+                    },
+                    {
+                        "name" : "BT:Boards_with_Super_Resolution"
+                    }
+                ]
+            }
+         },
+        "Bluetooth:Chipsets_Support_Multiple_Adv": {
+            "name": "Bluetooth:Chipsets_Support_Multiple_Adv",
+            "description": "Category with a single class that matches the chipsets that support 4 connectable advertisement",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipset_support_multiple_adv"
+                    }
+                ]
+            }
+        },
+        "Bluetooth:Chipsets_Support_Ext_Adv": {
+            "name": "Bluetooth:Chipsets_Support_Ext_Adv",
+            "description": "Category with a single class that matches the chipsets not in EXT_ADV_UNSUPPORTED_CHIPSETS",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipset_support_ext_adv"
+                    }
+                ]
+            }
+        },
+        "BT_Chipset_Kernel_Ext_Adv": {
+            "name": "BT_Chipset_Kernel_Ext_Adv",
+            "description": "Bluetooth eqc definition that include chipsets not in not in EXT_ADV_UNSUPPORTED_CHIPSETS",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Support_Ext_Adv"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_Multiple_Adv": {
+            "name": "BT_Chipset_Kernel_Multiple_Adv",
+            "description": "Bluetooth category exclude chipset that does not support  4 connectable advertisement",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Support_Multiple_Adv"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+      "Bluetooth:Chipsets_Exclude_Suspend_Power_Down": {
+            "name": "Bluetooth:Chipsets_Exclude_Suspend_Power_Down",
+            "description": "Category with a single class that excludes chipsets that power down on suspend",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipsets_exclude_suspend_power_down"
+                    }
+                ]
+            },
+          "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_Suspend_Power_Down": {
+            "name": "BT_Chipset_Kernel_exclude_Suspend_Power_Down",
+            "description": "Bluetooth category exclude SUSPEND_POWER_DOWN_CHIPSETS chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_Suspend_Power_Down"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "Bluetooth:Chipsets_Exclude_LE_Floss_IOP": {
+            "name": "Bluetooth:Chipsets_Exclude_LE_Floss_IOP",
+            "description": "Category with a single class that excludes chipsets in LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipsets_exclude_le_floss_iop"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "Bluetooth:Models_Exclude_Role_Requirement": {
+            "name": "Bluetooth:Models_Exclude_Role_Requirement",
+            "description": "Category with a single class that excludes models that doesn't support central/peripheral roles",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:models_without_central_peripheral_role_support"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_Role_Requirement":{
+            "name": "BT_Chipset_Kernel_exclude_Role_Requirement",
+            "description": "Bluetooth category exclude Bluetooth:Models_Exclude_Role_Requirement models",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Models_Exclude_Role_Requirement"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Ext_Adv":{
+            "name": "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Ext_Adv",
+            "description": "Bluetooth category exclude LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS chipsets and EXT_ADV_UNSUPPORTED_CHIPSETS",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_LE_Floss_IOP"
+                    },
+                    {
+                        "name":  "Bluetooth:Chipsets_Support_Ext_Adv"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_combine_exclude_Role_Ext_Adv":{
+            "name": "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Role",
+            "description": "Bluetooth category exclude  Bluetooth:Models_Exclude_Role_Requirement models and EXT_ADV_UNSUPPORTED_CHIPSETS",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name":  "Bluetooth:Chipsets_Support_Ext_Adv"
+                    },
+                    {
+                        "name": "Bluetooth:Models_Exclude_Role_Requirement"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Role":{
+            "name": "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Role",
+            "description": "Bluetooth category exclude LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS chipsets and Bluetooth:Models_Exclude_Role_Requirement models",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_LE_Floss_IOP"
+                    },
+                    {
+                        "name": "Bluetooth:Models_Exclude_Role_Requirement"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Role_Ext_Adv":{
+            "name": "BT_Chipset_Kernel_combine_exclude_Floss_IOP_Role",
+            "description": "Bluetooth category exclude LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS chipsets,Bluetooth:Models_Exclude_Role_Requirement models and EXT_ADV_UNSUPPORTED_CHIPSETS",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_LE_Floss_IOP"
+                    },
+                    {
+                        "name": "Bluetooth:Models_Exclude_Role_Requirement"
+                    },
+                    {
+                        "name":  "Bluetooth:Chipsets_Support_Ext_Adv"
+                    }
+
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_LE_Floss_IOP": {
+            "name": "BT_Chipset_Kernel_exclude_LE_Floss_IOP",
+            "description": "Bluetooth category exclude LE_RECEIVER_FLOSS_IOP_ISSUE_CHIPSETS chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_LE_Floss_IOP"
+                    }
+                ]
+            },
+             "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_LLPrivacy_not_supported": {
+            "name": "BT_Chipset_Kernel_exclude_LLPrivacy_not_supported",
+            "description": "Bluetooth category exclude LL_PRIVACY_NOT_SUPPORTED_CHIPSETS  chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Not_StP2"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_LLPrivacy_not_supported_and_SUSPEND_POWERDOWN": {
+            "name": "BT_Chipset_Kernel_exclude_LLPrivacy_not_supported",
+            "description": "Bluetooth category exclude LL_PRIVACY_NOT_SUPPORTED_CHIPSETS  chipsets and suspend_powerdown chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "Wireless:Device:Not_StP2"
+                    },
+                    {
+                        "name": "Bluetooth:Chipsets_Exclude_Suspend_Power_Down"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Chipsets_with_ADVMON": {
+            "name": "BT:Chipsets_with_ADVMON",
+            "description": "Category with a single class that matches the models that has Bluetooth ADVMON suport",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipsets_support_advmon"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_ADVMON_not_supported": {
+            "name": "BT_Chipset_Kernel_exclude_ADVMON_not_supported",
+            "description": "Bluetooth category exclude ADVMON_UNSUPPORTED_CHIPSETS  chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "BT:Chipsets_with_ADVMON"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Chipsets_support_ADV_DEVICE_COUNT": {
+            "name": "BT:Chipsets_support_ADV_DEVICE_COUNT",
+            "description": "Category with a single class that matches the chipsets that can run advmon_condition_device_count_tests",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name":   "bluetooth:chipset_support_device_count_test"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_Chipset_Support_ADV_DEVICE_COUNT": {
+            "name": "BT_Chipset_Kernel_Chipset_Support_ADV_DEVICE_COUNT",
+            "description": "Bluetooth category that include chipsets that can run advmon_condition_device_count_tests",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "BT:Chipsets_support_ADV_DEVICE_COUNT"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Chipsets_with_WBS": {
+            "name": "BT:Chipsets_with_WBS",
+            "description": "Category with a single class that matches the models that has Bluetooth WBS suport on Floss",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipsets_support_wbs"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_WBS_not_supported": {
+            "name": "BT_Chipset_Kernel_exclude_WBS_not_supported",
+            "description": "Bluetooth category that exclude FLOSS_NO_WBS_CHIPSETS  chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "BT:Chipsets_with_WBS"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT:Chipsets_with_QR": {
+            "name": "BT:Chipsets_with_QR",
+            "description": "Category with a single class that matches the models that has Bluetooth QR suport on Floss",
+            "enumerated": {
+                "classes": [
+                    {
+                        "name": "bluetooth:chipsets_support_qr"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        },
+        "BT_Chipset_Kernel_exclude_QR_not_supported": {
+            "name": "BT_Chipset_Kernel_exclude_QR_not_supported",
+            "description": "Bluetooth category that exclude QR_UNSUPPORTED_CHIPSETS chipsets",
+            "combinatorial": {
+                "subcategories": [
+                    {
+                        "name": "BT_Chipset_Kernel"
+                    },
+                    {
+                        "name": "BT:Chipsets_with_QR"
+                    }
+                ]
+            },
+            "reportCategory": "wifibtChipset:kernelVersion:variant"
+        }
+    },
+    "reportCategories": {
+        "wirelessSoc": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc",
+                        "overrides": [
+                            {
+                                "match": "Kabylake.*",
+                                "replace": "Kabylake"
+                            },
+                            {
+                                "match": "Apollolake.*",
+                                "replace": "Apollolake"
+                            },
+                            {
+                                "match": "Tigerlake.*",
+                                "replace": "Tigerlake"
+                            },
+                            {
+                                "property": "cpu_field",
+                                "match": "avl:(5597|5758|5759|5897|5898|5920|5963)",
+                                "replace": "Raptor Lake Refresh"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "wirelessWifBtChipset": {
+            "categories":[
+                {
+                    "value": {
+                        "property": "swarming:label-wifi_chip",
+                        "overrides": [
+                            {
+                                "match": "avl:5309",
+                                "replace": "AX203"
+                            },
+                            {
+                                "match": "avl:5993",
+                                "replace": "BE200,Gale Peak 2"
+                            },
+                            {
+                                "match": "avl:3645",
+                                "replace": "INTEL_GFP2_AX211"
+                            },
+                            {
+                                "match": "avl:3646",
+                                "replace": "MT7921LE"
+                            },
+                            {
+                                "match": "avl:2125",
+                                "replace": "INTEL_HRP2_AX201"
+                            },
+                            {
+                                "match": "avl:5423",
+                                "replace": "MT7922"
+                            },
+                            {
+                                "match": "avl:2116",
+                                "replace": "INTEL_STP2_AC7265"
+                            },
+                            {
+                                "match": "avl:3629",
+                                "replace": "QC_WCN6856"
+                            },
+                            {
+                                "match": "avl:3630",
+                                "replace": "RTL8852AE"
+                            },
+                            {
+                                "match": "avl:708",
+                                "replace": "INTEL_JFP2_AC9560"
+                            },
+                            {
+                                "match": "avl:1522",
+                                "replace": "RTL8822CE"
+                            },
+                            {
+                                "match": "avl:4233",
+                                "replace": "RTL8852BE"
+                            },
+                            {
+                                "match": "avl:1295",
+                                "replace": "INTEL_THP2_AC9260"
+                            },
+                            {
+                                "match": "avl:840",
+                                "replace": "MVL8897"
+                            },
+                            {
+                                "match": "avl:1719",
+                                "replace": "QCA6174A3"
+                            },
+                            {
+                                "match": "avl:4261",
+                                "replace": "MT7921LS"
+                            },
+                            {
+                                "match": "avl:3647",
+                                "replace": "RTL8822CE-VR"
+                            },
+                            {
+                                "match": "avl:2688",
+                                "replace": "INTEL_CCP2_AX200"
+                            },
+                            {
+                                "match": ".*_3062.*",
+                                "replace": "QC_WCN3991"
+                            },
+                            {
+                                "match": "avl:627",
+                                "replace": "QCA6174A5"
+                            },
+                            {
+                                "match": "avl:5489",
+                                "replace": "MT7925"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "wifiBtChipset:soc:kernelVersion": {
+            "categories": [
+                {
+                    "name": "wirelessSoc"
+                },
+                {
+                    "name": "wirelessWifBtChipset"
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                }
+            ]
+        },
+        "wifiBtChipset:hwid": {
+            "categories": [
+                {
+                    "name": "wirelessWifBtChipset"
+                },
+                {
+                    "value": {
+                        "property": "swarming:hwid"
+                    }
+                }
+            ]
+        },
+        "wifibtChipset:kernelVersion:variant": {
+            "categories": [
+                {
+                    "name": "wirelessWifBtChipset"
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "image:variant"
+                    }
+                }
+            ]
+        },
+        "wifibtChipset:kernelVersion:variant:formfactor": {
+            "categories": [
+                {
+                    "name": "wirelessWifBtChipset"
+                },
+                {
+                    "value": {
+                        "property": "image:_kernel_version"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "image:variant"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "dlm:form_factor"
+                    }
+                }
+            ]
+        }
+    }
+}

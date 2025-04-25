@@ -29,6 +29,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -549,4 +550,33 @@ func StringInSlice(str string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// FetchTarFromInternalURL retrieves a tar from the given internal URL, LUCI
+// auth must be provided.
+func FetchTarFromInternalURL(url string, authOpts *auth.Options, loginMode auth.LoginMode) ([]byte, error) {
+	// NOTE: If the user running this CLI tool is being given authentication
+	// issues it is because they are not on the authentication list for the
+	// config internal repo. See https://crbug.com/1519973 for an authentication
+	// request example.
+	authenticator := auth.NewAuthenticator(context.Background(), loginMode, *authOpts)
+	httpClient, err := authenticator.Client()
+	if err != nil {
+		fmt.Println(err)
+		return []byte{}, err
+	}
+
+	log.Printf("Fetching file from %s", url)
+
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return data, nil
 }

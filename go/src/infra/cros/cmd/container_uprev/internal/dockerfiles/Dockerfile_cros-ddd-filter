@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+FROM us-docker.pkg.dev/cros-registry/base-images/ubuntu:ubuntuProd
+
+RUN apt-get update && \
+    apt-get install -y \
+    ca-certificates
+
+COPY cros-ddd-filter /usr/bin
+
+COPY cros-ddd/datasets/static /
+COPY cros-ddd/generated /
+COPY named_ttcp_classes_and_categories_dataset.zip /
+
+RUN mkdir HWID_DB
+COPY chromeos-hwid/projects.yaml HWID_DB/
+COPY chromeos-hwid/v3/*.internal HWID_DB/

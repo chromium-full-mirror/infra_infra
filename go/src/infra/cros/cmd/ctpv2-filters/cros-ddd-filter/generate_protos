@@ -1,0 +1,27 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/4d2b37a84fad1091b9de401eb450aae66f1a741e.tar.gz
+#! nix-shell -i bash -p bash protoc-gen-go protobuf protolint
+
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+set -ex
+
+echo dependencies used
+echo "   protobuf:" $(which protobuf)
+echo "   protoc:" $(which protoc)
+echo "   protoc-gen-go:" $(which protoc-gen-go)
+echo "   protolint:" $(which protolint)
+
+# format protofiles
+protolint -config_path=config/protolint.yaml --fix protos/
+echo "The protobuffer definitions have been formated"
+
+mapfile -t proto_files < <(find protos/ -type f -name '*.proto')
+
+protoc \
+    --proto_path= "${proto_files[@]}" \
+    --go_opt=module=go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos \
+    --go_out=protos \
+    --python_out=. \
+    --pyi_out=. ;
