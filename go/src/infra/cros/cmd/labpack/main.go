@@ -316,7 +316,14 @@ func watchDMLease(ctx context.Context, lg logger.Logger, leaseID string, pool st
 			if err != nil {
 				err = errors.Annotate(err, "watching DM lease: sending lease extension request to DM").Err()
 				lg.Infof(err.Error())
-				return err
+
+				// See b:396467394 for details. Control must leave watchDMLease if we make it here,
+				// but the context expiring should be forgiven and shouldn't propagate up to a user-visible error.
+				if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+					return nil
+				} else {
+					return err
+				}
 			}
 			lastLeaseExtensionTime = time.Now()
 		}
