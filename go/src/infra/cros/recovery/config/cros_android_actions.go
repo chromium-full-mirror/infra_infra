@@ -339,6 +339,8 @@ func androidActions(actions map[string]*Action) {
 			ExecName: "dut_is_in_pool",
 			ExecExtraArgs: []string{
 				"chrome",
+				"chrome.tests",
+				"chrome.tests.perf",
 			},
 			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},

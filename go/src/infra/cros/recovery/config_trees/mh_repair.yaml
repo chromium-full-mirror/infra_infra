@@ -10451,6 +10451,8 @@ plans:
               exec_name: dut_is_in_pool
               exec_args:
                 - chrome
+                - chrome.tests
+                - chrome.tests.perf
               docs:
                 - Verify device is in pools which require to be on stable version.
           recoveries:
