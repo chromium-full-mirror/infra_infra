@@ -118,9 +118,6 @@ linters:
         # https://staticcheck.dev/docs/checks#SA5001
         # Deferring Close before checking for a possible error
         - "-SA5001"
-        # https://staticcheck.dev/docs/checks#SA5012
-        # Passing odd-sized slice to function expecting even size
-        - "-SA5012"
         # https://staticcheck.dev/docs/checks#SA9001
         # Defers in range loops may not run when you expect them to
         - "-SA9001"

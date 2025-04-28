@@ -32,7 +32,7 @@ func TestErrLinks(t *testing.T) {
 				t.Fatal("expected panic")
 			}
 		}()
-		attachLinks(nil, "name") //nolint:staticcheck SA5012 intentional test that odd links panics
+		attachLinks(nil, "name") //nolint:staticcheck // SA5012 intentional test that odd links panics
 	})
 	t.Run("tree", func(t *testing.T) {
 		want := []link{
