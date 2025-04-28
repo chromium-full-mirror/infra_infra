@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -268,6 +269,7 @@ func TestParseCfgFiles(t *testing.T) {
 func TestFindQuotaErrors(t *testing.T) {
 	t.Parallel()
 
+	ctx := context.Background()
 	possibleRegions := []string{"us-east1"}
 	possibleNetworks := []string{"networkA"}
 	possibleFamilies := []string{"n1"}
@@ -279,15 +281,15 @@ func TestFindQuotaErrors(t *testing.T) {
 		quotasPerRegion["us-east1"].cpusQuota.max = 100
 		quotasPerRegion["us-east1"].cpusQuota.starlarkUsage = 90
 		quotasPerRegion["us-east1"].cpusQuota.desc = "cpus"
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
 
 		// 100 of 100 shouldn't be an error.
 		quotasPerRegion["us-east1"].cpusQuota.starlarkUsage = 100
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
 
 		// 101 of 100 should be an error.
 		quotasPerRegion["us-east1"].cpusQuota.starlarkUsage = 101
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), should.Match([]string{"cpus at 101.00% (101 of 100)"}))
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 100.0, false), should.Match([]string{"cpus at 101.00% (101 of 100)"}))
 	})
 
 	ftt.Run("local ssd check", t, func(t *ftt.Test) {
@@ -295,7 +297,7 @@ func TestFindQuotaErrors(t *testing.T) {
 		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].max = 1000
 		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].starlarkUsage = 2000
 		quotasPerRegion["us-east1"].localSSDPerFamilyQuota["n1"].desc = "local ssd"
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), should.Match([]string{"local ssd at 200.00% (2000 of 1000)"}))
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 100.0, false), should.Match([]string{"local ssd at 200.00% (2000 of 1000)"}))
 	})
 
 	ftt.Run("network check", t, func(t *ftt.Test) {
@@ -304,8 +306,8 @@ func TestFindQuotaErrors(t *testing.T) {
 		quotasPerNetwork["networkA"].starlarkUsage = 95
 		quotasPerNetwork["networkA"].desc = "networkA"
 		// 100% cut off at 95% usage shouldn't be an error.
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 100.0, false), should.BeEmpty)
 		// 90% cut off at 95% usage should be an error.
-		assert.Loosely(t, findQuotaErrors(quotasPerRegion, quotasPerNetwork, 90.0, false), should.Match([]string{"networkA at 95.00% (95 of 100)"}))
+		assert.Loosely(t, findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, 90.0, false), should.Match([]string{"networkA at 95.00% (95 of 100)"}))
 	})
 }

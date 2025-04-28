@@ -24,6 +24,8 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
 	gceproviderpb "go.chromium.org/luci/gce/api/config/v1"
 )
 
@@ -224,6 +226,7 @@ func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuo
 			cpusPerFamilyQuota:     make(map[string]*quotaVals),
 		}
 		region := *resp.Name
+		logging.Debugf(ctx, "Region %s reported %d total quotas", region, len(resp.Quotas))
 		for _, quota := range resp.Quotas {
 			switch *quota.Metric {
 			case "CPUS":
@@ -344,7 +347,11 @@ func getNetworkQuotas(ctx context.Context, project string) map[string]*quotaVals
 				}
 				networkName, ok := networkIDToName[labelValInt]
 				if !ok {
-					log.Fatalln("Unknown network id: ", labelVal)
+					// When a network gets deleted, GCE will continue reporting
+					// its quota for some time. So need to gracefully skip these
+					// cases.
+					logging.Warningf(ctx, "Unknown network id: %s", labelVal)
+					continue
 				}
 				quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value(), desc: "Instances in network " + networkName}
 				break
@@ -440,7 +447,7 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 	}
 }
 
-func findQuotaErrors(quotasPerRegion map[string]*regionQuotas, quotasPerNetwork map[string]*quotaVals, cutoffPercent float64, isVerbose bool) []string {
+func findQuotaErrors(ctx context.Context, quotasPerRegion map[string]*regionQuotas, quotasPerNetwork map[string]*quotaVals, cutoffPercent float64, isVerbose bool) []string {
 	var quotaErrors []string
 	// Flatten all quotas into a single slice for easier iterating.
 	var allQuotas []quotaVals
@@ -466,6 +473,13 @@ func findQuotaErrors(quotasPerRegion map[string]*regionQuotas, quotasPerNetwork 
 	for _, quota := range allQuotas {
 		percent := quota.GetUsagePercent()
 		desc := quota.GetDescPretty()
+		// Sometimes GCE will mysteriously report no quota info in the
+		// ListRegions request. Use the desc field here to detect and
+		// skip those quotas since they won't be properly initialized.
+		if quota.desc == "" {
+			logging.Warningf(ctx, "One or more regions may have missing quota info")
+			continue
+		}
 		if percent > cutoffPercent {
 			quotaErrors = append(quotaErrors, desc)
 		}
@@ -481,8 +495,15 @@ func findQuotaErrors(quotasPerRegion map[string]*regionQuotas, quotasPerNetwork 
 
 func main() {
 	ctx := context.Background()
-	project, cutoffPercent, isVerbose, cfgPaths := parseFlags()
+	logCfg := gologger.LoggerConfig{Out: os.Stdout}
+	ctx = logCfg.Use(ctx)
 
+	project, cutoffPercent, isVerbose, cfgPaths := parseFlags()
+	if isVerbose {
+		ctx = logging.SetLevel(ctx, logging.Debug)
+	} else {
+		ctx = logging.SetLevel(ctx, logging.Warning)
+	}
 	// Query GCE for all relevant quotas for the project.
 	quotasPerRegion, regionNames := getRegionQuotas(ctx, project)
 	getLocalSSDQuotas(ctx, project, quotasPerRegion)
@@ -493,7 +514,7 @@ func main() {
 	parseCfgFiles(project, cfgPaths, regionNames, quotasPerRegion, quotasPerNetwork)
 
 	// Find where used > max for all quotas.
-	quotaErrors := findQuotaErrors(quotasPerRegion, quotasPerNetwork, cutoffPercent, isVerbose)
+	quotaErrors := findQuotaErrors(ctx, quotasPerRegion, quotasPerNetwork, cutoffPercent, isVerbose)
 	if len(quotaErrors) > 0 {
 		if isVerbose {
 			fmt.Println()
