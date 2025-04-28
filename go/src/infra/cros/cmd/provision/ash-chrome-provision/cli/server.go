@@ -33,6 +33,7 @@ type AshChromeProvisionServer struct {
 	// service. Its address may be specified either when server is created,
 	// or later in user's AshChromeProvisionRequest.
 	dutServer api.DutServiceClient
+	dut       *api1.Dut
 
 	log        *log.Logger
 	listenPort int
@@ -115,6 +116,7 @@ func (ps *AshChromeProvisionServer) StartUp(ctx context.Context, req *api.Provis
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 		return &response, errors.New("ProvisionStartupRequest: cache_server_address must be visible from DUT, i.e. no localhost")
 	}
+	ps.dut = req.GetDut()
 
 	response.Status = api.ProvisionStartupResponse_STATUS_SUCCESS
 	return &response, nil
@@ -173,7 +175,7 @@ func (ps *AshChromeProvisionServer) doProvision(ctx context.Context, req *api.In
 		ps.log.Printf("Provision set OP Response to:%s ", response.String())
 	}()
 
-	ashService, status, err := ashchromeservice.NewAshChromeService(ctx, ps.dutServer, ps.cacheServer, req)
+	ashService, status, err := ashchromeservice.NewAshChromeService(ctx, ps.dutServer, ps.cacheServer, req, ps.dut)
 	if err != nil {
 		ps.log.Printf("Failed to initialize AshChrome Service: %v", err)
 		response.Status = status

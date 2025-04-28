@@ -13,15 +13,21 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
+
+var reBoard = regexp.MustCompile(`CHROMEOS_RELEASE_BOARD=(.*)`)
 
 // AshChromeService implements ServiceInterface
 type AshChromeService struct {
@@ -35,13 +41,14 @@ type AshChromeService struct {
 
 	// DUTServer is the gRPC connection to the DUT.
 	DUTServer api.DutServiceClient
+	dut       *labapi.Dut
 
 	CacheServer url.URL
 }
 
 // NewAshChromeService initializes an AshChromeService.
 func NewAshChromeService(ctx context.Context, dutServer api.DutServiceClient,
-	cacheServer url.URL, req *api.InstallRequest) (*AshChromeService, api.InstallResponse_Status, error) {
+	cacheServer url.URL, req *api.InstallRequest, dut *labapi.Dut) (*AshChromeService, api.InstallResponse_Status, error) {
 	metadata := new(api.AshChromeProvisionInstallMetadata)
 	if req.GetMetadata().MessageIs(metadata) {
 		if err := req.GetMetadata().UnmarshalTo(metadata); err != nil {
@@ -57,6 +64,7 @@ func NewAshChromeService(ctx context.Context, dutServer api.DutServiceClient,
 		connection:  dutAdapter,
 		DUTServer:   dutServer,
 		CacheServer: cacheServer,
+		dut:         dut,
 	}
 
 	service.artifactPath = detailedRequest.GetChromeBuilderArtifactPath()
@@ -90,32 +98,12 @@ func (service *AshChromeService) PrintRequestInfo() {
 	log.Println("[AshChrome Provisioning]", informationString)
 }
 
-// WaitForReconnect attempts to ssh to the DUT until it connects
-func (service *AshChromeService) WaitForReconnect(ctx context.Context) error {
-	// Attempts to run `true` on the DUT over SSH until |reconnectRetries| attempts.
-	const reconnectRetries = 10
-	const reconnectAttemptWait = 10 * time.Second
-	const reconnectFailPause = 10 * time.Second
-	var connectErr error
-	for range reconnectRetries {
-		reconnectCtx, reconnCancel := context.WithTimeout(ctx, reconnectAttemptWait)
-		defer reconnCancel()
-		_, connectErr = service.connection.RunCmd(reconnectCtx, "true", nil)
-		if connectErr == nil {
-			return nil
-		}
-		time.Sleep(reconnectFailPause)
-	}
-	log.Printf("Timed out waiting for DUT to connect: %v", connectErr)
-	return connectErr
-}
-
 // RestartDut restarts the DUT using one of the available mechanisms.
 func (service *AshChromeService) RestartDut(ctx context.Context) error {
 	if service.connection != nil {
 		log.Printf("[AshChrome Provisioning: Restart DUT] restarting DUT over SSH.")
 		service.connection.Restart(ctx)
-		return service.WaitForReconnect(ctx)
+		return service.connection.ForceReconnectWithBackoff(ctx)
 	}
 	return errors.New("failed to restart: no SSH connection to the DUT")
 }
@@ -173,12 +161,105 @@ func (service *AshChromeService) ExtractChromeArtifacts(ctx context.Context, tar
 	return nil
 }
 
+func (service *AshChromeService) LogChromeVersion(ctx context.Context) error {
+	if err := service.runRemoteCommandAndLog(ctx, "/opt/google/chrome/chrome", "--version"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (service *AshChromeService) MakeRootfsWritable(ctx context.Context) error {
+	out, err := service.connection.RunCmd(ctx, "cat", []string{"/proc/mounts"})
+	if err != nil {
+		return fmt.Errorf("cat /proc/mounts failed: %v", err)
+	}
+	log.Printf("cat /proc/mounts: \n%s", out)
+	for _, line := range strings.Split(strings.TrimRight(out, "\n"), "\n") {
+		split := strings.Split(line, " ")
+		if split[0] != "/dev/root" {
+			continue
+		}
+		if len(split) < 4 {
+			return fmt.Errorf("unexpected result: %v", split)
+		}
+		opts := strings.Split(split[3], ",")
+		if opts[0] != "rw" && opts[0] != "ro" {
+			return fmt.Errorf("unexpected result: %v", split)
+		}
+		if opts[0] == "rw" {
+			return nil
+		}
+	}
+
+	err = service.runRemoteCommandAndLog(ctx, "/usr/share/vboot/bin/make_dev_ssd.sh", "--partitions \"2 4\"", "--remove_rootfs_verification", "--force")
+	if err != nil {
+		return err
+	}
+
+	err = service.RestartDut(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = service.runRemoteCommandAndLog(ctx, "mount", "-o", "remount,rw", "/")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service *AshChromeService) ChromiteDeployChrome(ctx context.Context, localChromeDir string) error {
+	if _, _, err := service.runWithTimeout(ctx, 60, true, "chmod", "-R", "755", localChromeDir); err != nil {
+		return err
+	}
+
+	chromiteDir := filepath.Join(localChromeDir, "third_party/chromite")
+
+	board, err := service.GetDUTBoard(ctx)
+	if err != nil {
+		return err
+	}
+
+	if _, _, err := service.runWithTimeout(ctx, 1200, true,
+		"python3",
+		filepath.Join(chromiteDir, "bin/deploy_chrome"), "--noremove-rootfs-verification", "--force", "--nostrip",
+		"--build-dir", filepath.Join(localChromeDir, service.buildDir),
+		"--process-timeout", "180", "--device", fmt.Sprintf("%s:%d", service.dut.GetChromeos().GetSsh().GetAddress(), service.dut.GetChromeos().GetSsh().GetPort()), "--board", board, "--mount"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service *AshChromeService) GetDUTBoard(ctx context.Context) (string, error) {
+	out, err := service.connection.RunCmd(ctx, "cat", []string{"/etc/lsb-release"})
+	if err != nil {
+		return "", fmt.Errorf("cat /etc/lsb-release failed: %v", err)
+	}
+	log.Printf("cat /etc/lsb-release: \n%s", out)
+	match := reBoard.FindStringSubmatch(out)
+	if match == nil {
+		return "", fmt.Errorf("No match found for %s", reBoard.String())
+	}
+	return match[1], nil
+}
+
 func (service *AshChromeService) GetArtifactPath() *conf.StoragePath {
 	return service.artifactPath
 }
 
 func (service *AshChromeService) GetTmpDir() string {
 	return service.tmpDir
+}
+
+func (service *AshChromeService) runRemoteCommandAndLog(ctx context.Context, cmd string, args ...string) error {
+	out, err := service.connection.RunCmd(ctx, cmd, args)
+	if err != nil {
+		return fmt.Errorf("%s %v failed: %v", cmd, args, err)
+	}
+	log.Printf("%s %v: %s", cmd, args, out)
+	return nil
 }
 
 // DeleteArchiveDirectories deletes files on the servo host or DUT.

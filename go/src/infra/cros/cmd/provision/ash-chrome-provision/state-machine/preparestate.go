@@ -34,10 +34,6 @@ func NewAshChromePrepareState(service *ashchromeservice.AshChromeService) common
 // The already downloaded images will not be downloaded and extracted again.
 func (s AshChromePrepareState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("Started %s\n", s.Name())
-	if err := s.service.WaitForReconnect(ctx); err != nil {
-		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION, err
-	}
-
 	artifact := s.service.GetArtifactPath()
 	tmpDir := s.service.GetTmpDir()
 	switch artifact.HostType {
@@ -60,7 +56,7 @@ func (s AshChromePrepareState) Execute(ctx context.Context, log *log.Logger) (*a
 }
 
 func (s AshChromePrepareState) Next() common_utils.ServiceState {
-	return NotImplementedState(s)
+	return DeployState(s)
 }
 
 func (s AshChromePrepareState) Name() string {

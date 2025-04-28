@@ -6,9 +6,10 @@
 FROM python:3.8-slim-buster
 
 # zstd for extracting Chrome builder artifacts.
+# openssh-client and rsync for chromite to deploy chrome.
 # curl, ca-certificates, and gnupg for google-cloud-sdk install below.
 RUN apt-get update \
-    && apt-get install -y zstd curl ca-certificates gnupg
+    && apt-get install -y zstd curl ca-certificates gnupg openssh-client rsync
 
 # grab gsutil
 RUN echo \
