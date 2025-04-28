@@ -504,7 +504,7 @@ func crosRepairActions() map[string]*Action {
 				"Stop if DUT needs replacement",
 				"Audit device storage comparing partition hash",
 				"Stop if DUT needs replacement",
-				"Place REIMAGE_BY_USBKEY repair-requests",
+				"Place PROVISION repair-requests",
 			},
 			ExecName: "sample_pass",
 		},

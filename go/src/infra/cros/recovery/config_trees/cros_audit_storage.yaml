@@ -3162,10 +3162,10 @@ plans:
                   docs:
                     - 'Place repair-request: provision to reimage the DUT.'
                     - The request will be applied when plan restarted and reached action to address it.
-            - name: Place REIMAGE_BY_USBKEY repair-requests (ALWAYS_RUN)
+            - name: Place PROVISION repair-requests (ALWAYS_RUN)
               exec_name: dut_add_repair_requests
               exec_args:
-                - requests:REIMAGE_BY_USBKEY
+                - requests:PROVISION
               docs:
-                - 'Place repair-request: reimage the DUT from USB.'
+                - 'Place repair-request: provision to reimage the DUT.'
                 - The request will be applied when plan restarted and reached action to address it.

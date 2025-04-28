@@ -936,4 +936,4 @@ plans:
             - name: Stop if DUT needs replacement ('dut_state_match')
               recoveries:
                 - name: Place PROVISION repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
-            - name: Place REIMAGE_BY_USBKEY repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
+            - name: Place PROVISION repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
