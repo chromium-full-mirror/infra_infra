@@ -17,9 +17,9 @@ import (
 	"time"
 
 	gol "github.com/op/go-logging"
+	"golang.org/x/term"
 
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/system/terminal"
 )
 
 const (
@@ -319,7 +319,7 @@ const StdFormatWithColor = `%{color}[%{level:.1s}%{time:2006-01-02T15:04:05.0000
 // Used by default StdConfig.
 func PickStdFormat(w io.Writer) string {
 	if file, _ := w.(*os.File); file != nil {
-		if terminal.IsTerminal(int(file.Fd())) {
+		if term.IsTerminal(int(file.Fd())) {
 			return StdFormatWithColor
 		}
 	}
