@@ -18,7 +18,7 @@ import (
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
-	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
@@ -118,7 +118,7 @@ func TestRackRegistration(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err := RackRegistration(ctx, rack)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 
 		t.Run("Create new rack - permission denied: different realm", func(t *ftt.Test) {
@@ -132,7 +132,7 @@ func TestRackRegistration(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			_, err := RackRegistration(ctx, rack)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 
 		t.Run("Create new rack - duplicated bbnum", func(t *ftt.Test) {
@@ -173,7 +173,7 @@ func TestUpdateRack(t *testing.T) {
 			}
 			_, err := UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 		})
 
 		t.Run("Update existing rack", func(t *ftt.Test) {
@@ -333,7 +333,7 @@ func TestUpdateRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 
 		t.Run("Update rack - permission denied: different realm", func(t *ftt.Test) {
@@ -353,7 +353,7 @@ func TestUpdateRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 
 		t.Run("Update rack(realm name) - different realm with permission success", func(t *ftt.Test) {
@@ -396,7 +396,7 @@ func TestUpdateRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 	})
 }
@@ -425,7 +425,7 @@ func TestDeleteRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteRack(ctx, "rack-3")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(CannotDelete))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.CannotDelete))
 
 			resp, err := registration.GetRack(ctx, "rack-3")
 			assert.Loosely(t, resp, should.NotBeNil)
@@ -451,7 +451,7 @@ func TestDeleteRack(t *testing.T) {
 			resp, err := registration.GetRack(ctx, "rack-4")
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-4")
 			assert.Loosely(t, err, should.BeNil)
@@ -512,23 +512,23 @@ func TestDeleteRack(t *testing.T) {
 
 			_, err = registration.GetRack(ctx, "rack-6")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			_, err = registration.GetRPM(ctx, "rpm-6")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "kvm-6")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			resIPs, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.6"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resIPs, should.HaveLength(1))
 			assert.Loosely(t, resIPs[0].Occupied, should.BeFalse)
 
 			_, err = state.GetStateRecord(ctx, "racks/rack-6")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			_, err = state.GetStateRecord(ctx, "rpms/rpm-6")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-6")
 			assert.Loosely(t, err, should.BeNil)
@@ -600,14 +600,14 @@ func TestDeleteRack(t *testing.T) {
 
 			_, err = registration.GetRack(ctx, "rack-5")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			_, err = registration.GetKVM(ctx, "kvm-5")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "kvm-5")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			resIPs, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.4"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resIPs, should.HaveLength(1))
@@ -615,14 +615,14 @@ func TestDeleteRack(t *testing.T) {
 
 			_, err = registration.GetSwitch(ctx, "switch-5")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			_, err = state.GetStateRecord(ctx, "racks/rack-5")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			_, err = state.GetStateRecord(ctx, "switches/switch-5")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 			_, err = state.GetStateRecord(ctx, "kvms/kvm-5")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-5")
 			assert.Loosely(t, err, should.BeNil)
@@ -645,7 +645,7 @@ func TestDeleteRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			err = DeleteRack(ctx, "rack-31")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 
 		t.Run("Delete rack - Permission denied: different realm", func(t *ftt.Test) {
@@ -661,7 +661,7 @@ func TestDeleteRack(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteRack(ctx, "rack-32")
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 	})
 }
@@ -730,7 +730,7 @@ func TestReplaceRack(t *testing.T) {
 			rresp, rerr := ReplaceRack(ctx, oldRack1, newRack2)
 			assert.Loosely(t, rerr, should.NotBeNil)
 			assert.Loosely(t, rresp, should.BeNil)
-			assert.Loosely(t, rerr.Error(), should.ContainSubstring(AlreadyExists))
+			assert.Loosely(t, rerr.Error(), should.ContainSubstring(ufsds.AlreadyExists))
 
 			// No change are recorded as the replacement fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-5")
@@ -931,7 +931,7 @@ func TestRenameRack(t *testing.T) {
 		t.Run("RenameRack - permission denied", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = RenameRack(ctx, "rename-rack", "rename-rack-new")
-			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.PermissionDenied))
 		})
 		t.Run("RenameRack - old rack doesn't exist", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
