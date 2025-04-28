@@ -405,33 +405,33 @@ func executeFiltersInLuciBuild(
 }
 
 func AISummarizeSuiteExecution(ctx context.Context, sk *data.FilterStateKeeper, step *build.Step, err error) string {
-	configsLog := step.Log("AI failure Summary")
-	logging.Infof(ctx, sk.ExecutionAIContext)
-	apiKey, keyErr := fetchGeminiAPIKey(ctx)
-	var aiSummary string
-	var aiErr error
-	if keyErr != nil {
-		logging.Infof(ctx, "error during fetching Gemini API key: %s", keyErr)
-		return "error during fetching Gemini API key"
-	}
-	if err != nil {
-		aiSummary, aiErr = common.AISummarize(ctx, sk.ExecutionAIContext, common.SuiteFailureSummaryPrompt, apiKey, true)
-		if aiErr != nil {
-			logging.Infof(ctx, "error during AI failure summarization: %s", aiErr)
-			return "error during AI failure summarization"
-		}
-		_, logErr := configsLog.Write([]byte(aiSummary))
-		if logErr != nil {
-			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
-		}
-	} else {
-		aiSummary = "No Infra failures detected."
-		_, logErr := configsLog.Write([]byte(aiSummary))
-		if logErr != nil {
-			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
-		}
-	}
-	return aiSummary
+	// configsLog := step.Log("AI failure Summary")
+	// logging.Infof(ctx, sk.ExecutionAIContext)
+	// apiKey, keyErr := fetchGeminiAPIKey(ctx)
+	// var aiSummary string
+	// var aiErr error
+	// if keyErr != nil {
+	// 	logging.Infof(ctx, "error during fetching Gemini API key: %s", keyErr)
+	// 	return "error during fetching Gemini API key"
+	// }
+	// if err != nil {
+	// 	aiSummary, aiErr = common.AISummarize(ctx, sk.ExecutionAIContext, common.SuiteFailureSummaryPrompt, apiKey, true)
+	// 	if aiErr != nil {
+	// 		logging.Infof(ctx, "error during AI failure summarization: %s", aiErr)
+	// 		return "error during AI failure summarization"
+	// 	}
+	// 	_, logErr := configsLog.Write([]byte(aiSummary))
+	// 	if logErr != nil {
+	// 		logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
+	// 	}
+	// } else {
+	// 	aiSummary = "No Infra failures detected."
+	// 	_, logErr := configsLog.Write([]byte(aiSummary))
+	// 	if logErr != nil {
+	// 		logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
+	// 	}
+	// }
+	return "aiSummary disabled"
 }
 
 func fetchGeminiAPIKey(ctx context.Context) (string, error) {
