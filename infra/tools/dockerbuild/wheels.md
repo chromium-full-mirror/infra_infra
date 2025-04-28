@@ -5511,6 +5511,104 @@ wheel: <
 
 * *universal*
 
+## **mdformat-black-py3**
+
+### 0.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat-black-py3"
+  version: "version:0.1.1"
+>
+```
+
+
+* *universal*
+
+## **mdformat-gfm-py3**
+
+### 0.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat-gfm-py3"
+  version: "version:0.4.1"
+>
+```
+
+
+* *universal*
+
+## **mdformat-toc-py3**
+
+### 0.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat-toc-py3"
+  version: "version:0.3.0"
+>
+```
+
+
+* *universal*
+
+## **mdformat-web-py3**
+
+### 0.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat-web-py3"
+  version: "version:0.2.0"
+>
+```
+
+
+* *universal*
+
+## **mdformat_footnote-py3**
+
+### 0.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat_footnote-py3"
+  version: "version:0.1.1"
+>
+```
+
+
+* *universal*
+
+## **mdformat_pyproject-py3**
+
+### 0.0.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat_pyproject-py3"
+  version: "version:0.0.2"
+>
+```
+
+
+* *universal*
+
+## **mdformat_tables-py3**
+
+### 1.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat_tables-py3"
+  version: "version:1.0.0"
+>
+```
+
+
+* *universal*
+
 ## **mdurl-py3**
 
 ### 0.1.2
