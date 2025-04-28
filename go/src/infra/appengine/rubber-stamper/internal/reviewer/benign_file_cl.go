@@ -32,7 +32,7 @@ func reviewBenignFileChange(ctx context.Context, hostCfg *config.HostConfig, gc 
 	}
 	resp, err := gc.ListFiles(ctx, listReq)
 	if err != nil {
-		return nil, fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %v", listReq, err)
+		return nil, fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %w", listReq, err)
 	}
 
 	bfp := retrieveBenignFilePattern(ctx, hostCfg, t.Repo)

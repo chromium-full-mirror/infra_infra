@@ -49,7 +49,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 		}
 		resp, err := gc.ListFiles(ctx, listReq)
 		if err != nil {
-			return "", fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %v", listReq, err)
+			return "", fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %w", listReq, err)
 		}
 
 		var invalidFiles []string
@@ -75,7 +75,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 	}
 	originalClInfo, err := gc.GetChange(ctx, getChangeReq)
 	if err != nil {
-		return "", fmt.Errorf("gerrit GetChange rpc call failed with error: request %+v, error %v", getChangeReq, err)
+		return "", fmt.Errorf("gerrit GetChange rpc call failed with error: request %+v, error %w", getChangeReq, err)
 	}
 	tw := cfg.DefaultTimeWindow
 	if hostCfg.CleanCherryPickTimeWindow != "" {
@@ -122,7 +122,7 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 	}
 	mi, err := gc.GetMergeable(ctx, getMergeableReq)
 	if err != nil {
-		return "", fmt.Errorf("gerrit GetMergeable rpc call failed with error: request %+v, error %v", getMergeableReq, err)
+		return "", fmt.Errorf("gerrit GetMergeable rpc call failed with error: request %+v, error %w", getMergeableReq, err)
 	}
 	if !mi.Mergeable {
 		return "The change is not mergeable.", nil

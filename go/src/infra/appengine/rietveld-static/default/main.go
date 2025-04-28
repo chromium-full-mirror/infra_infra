@@ -148,13 +148,13 @@ func authorize(ctx context.Context, req *http.Request) error {
 	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
 	projectNumber, err := metadata.NumericProjectID()
 	if err != nil {
-		return fmt.Errorf("failed to fetch project number: %v", err)
+		return fmt.Errorf("failed to fetch project number: %w", err)
 	}
 
 	aud := fmt.Sprintf("/projects/%s/apps/%s", projectNumber, projectID)
 	payload, err := idtoken.Validate(ctx, jwt, aud)
 	if err != nil {
-		return fmt.Errorf("idtoken.Validate: %v", err)
+		return fmt.Errorf("idtoken.Validate: %w", err)
 	}
 
 	email, ok := payload.Claims["email"].(string)

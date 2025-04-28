@@ -297,7 +297,7 @@ func flushOldAnnotations(c context.Context) (int, error) {
 	results := []*model.Annotation{}
 	err := datastoreGetAnnotationsByQuery(c, &results, q)
 	if err != nil {
-		return 0, fmt.Errorf("while fetching annotations to delete: %s", err)
+		return 0, fmt.Errorf("while fetching annotations to delete: %w", err)
 	}
 
 	for _, ann := range results {

@@ -22,7 +22,7 @@ func GetServiceAccountName(ctx context.Context) (string, error) {
 	}
 	info, err := signer.ServiceInfo(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to get service info: %v", err)
+		return "", fmt.Errorf("failed to get service info: %w", err)
 	}
 	return info.ServiceAccountName, nil
 }

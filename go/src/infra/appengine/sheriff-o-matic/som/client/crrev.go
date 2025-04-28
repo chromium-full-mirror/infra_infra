@@ -34,10 +34,10 @@ func (cr *crRev) GetRedirect(c context.Context, pos string) (map[string]string, 
 		}
 		itm.SetValue(body)
 		if err = memcache.Set(c, itm); err != nil {
-			return nil, fmt.Errorf("while setting memcache: %s", err)
+			return nil, fmt.Errorf("while setting memcache: %w", err)
 		}
 	} else if err != nil {
-		return nil, fmt.Errorf("while getting from memcache: %s", err)
+		return nil, fmt.Errorf("while getting from memcache: %w", err)
 	}
 
 	m := map[string]string{}

@@ -23,7 +23,7 @@ func DeviceToBQMsgs(d *ds.DeviceOpResult) (*apibq.LabInventory, *apibq.StateConf
 		return nil, nil, fmt.Errorf("deviceOpResult cannot be empty")
 	}
 	if d.Err != nil {
-		return nil, nil, fmt.Errorf("failed device response: %s", d.Err)
+		return nil, nil, fmt.Errorf("failed device response: %w", d.Err)
 	}
 	if d.Entity.ID == "" {
 		return nil, nil, fmt.Errorf("Non-existing empty entity ID")

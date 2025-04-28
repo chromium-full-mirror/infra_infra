@@ -56,7 +56,7 @@ func reviewCleanRevert(ctx context.Context, cfg *config.Config, gc gerrit.Client
 	}
 	resp, err := gc.GetPureRevert(ctx, getPureRevertReq)
 	if err != nil {
-		return "", fmt.Errorf("gerrit GetPureRevert rpc call failed with error: request %+v, error %v", getPureRevertReq, err)
+		return "", fmt.Errorf("gerrit GetPureRevert rpc call failed with error: request %+v, error %w", getPureRevertReq, err)
 	}
 	if !resp.IsPureRevert {
 		return "Gerrit GetPureRevert API does not mark this CL as a pure revert.", nil
@@ -80,7 +80,7 @@ func reviewCleanRevert(ctx context.Context, cfg *config.Config, gc gerrit.Client
 	}
 	originalClInfo, err := gc.GetChange(ctx, getChangeReq)
 	if err != nil {
-		return "", fmt.Errorf("gerrit GetChange rpc call failed with error: request %+v, error %v", getChangeReq, err)
+		return "", fmt.Errorf("gerrit GetChange rpc call failed with error: request %+v, error %w", getChangeReq, err)
 	}
 	if originalClInfo.Revisions[originalClInfo.CurrentRevision].Created.AsTime().Before(validTime) {
 		return fmt.Sprintf("The change is not in the configured time window. Rubber Stamper is only allowed to review reverts within %s %s.", tw[:len(tw)-1], timeWindowToStr[tw[len(tw)-1:]]), nil
@@ -105,7 +105,7 @@ func reviewCleanRevert(ctx context.Context, cfg *config.Config, gc gerrit.Client
 func getValidTimeFromTimeWindow(tw string) (time.Time, error) {
 	val, err := strconv.Atoi(tw[:len(tw)-1])
 	if err != nil || timeWindowToStr[tw[len(tw)-1:]] == "" {
-		return time.Time{}, fmt.Errorf("invalid time_window config %s: %v", tw, err)
+		return time.Time{}, fmt.Errorf("invalid time_window config %s: %w", tw, err)
 	}
 	duration := timeWindowToDuration[tw[len(tw)-1:]] * time.Duration(val)
 	return time.Now().Add(-duration), nil
@@ -120,7 +120,7 @@ func checkExcludedFiles(ctx context.Context, excludedPaths []string, gc gerrit.C
 	}
 	resp, err := gc.ListFiles(ctx, listReq)
 	if err != nil {
-		return nil, fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %v", listReq, err)
+		return nil, fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %w", listReq, err)
 	}
 
 	var patterns []gitignore.Pattern

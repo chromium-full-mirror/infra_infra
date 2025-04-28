@@ -280,12 +280,12 @@ func flushOldAlerts(c context.Context) (int, error) {
 	results := []*model.AlertJSONNonGrouping{}
 	err := datastore.GetAll(c, q, &results)
 	if err != nil {
-		return 0, fmt.Errorf("error fetching alerts to delete: %s", err)
+		return 0, fmt.Errorf("error fetching alerts to delete: %w", err)
 	}
 
 	err = datastore.Delete(c, results)
 	if err != nil {
-		return 0, fmt.Errorf("error deleting alerts: %s", err)
+		return 0, fmt.Errorf("error deleting alerts: %w", err)
 	}
 
 	return len(results), nil

@@ -60,13 +60,13 @@ func (a *Announcement) ToProto(platforms []*Platform) (*dashpb.Announcement, err
 	}
 	endTime, err := ptypes.TimestampProto(a.EndTime)
 	if err != nil {
-		return nil, fmt.Errorf("error converting announcement EndTime - %s", err)
+		return nil, fmt.Errorf("error converting announcement EndTime - %w", err)
 	}
 	aProto.EndTime = endTime
 
 	startTime, err := ptypes.TimestampProto(a.StartTime)
 	if err != nil {
-		return nil, fmt.Errorf("error converting announcement StartTime - %s", err)
+		return nil, fmt.Errorf("error converting announcement StartTime - %w", err)
 	}
 	aProto.StartTime = startTime
 
@@ -109,7 +109,7 @@ func CreateLiveAnnouncement(c context.Context, message, creator string, platform
 	}
 	err := datastore.RunInTransaction(c, func(c context.Context) error {
 		if err := datastore.Put(c, announcement); err != nil {
-			return fmt.Errorf("error writing announcement to datastore - %s", err)
+			return fmt.Errorf("error writing announcement to datastore - %w", err)
 		}
 
 		announcementKey := datastore.NewKey(c, "Announcement", "", announcement.ID, nil)
@@ -118,7 +118,7 @@ func CreateLiveAnnouncement(c context.Context, message, creator string, platform
 		}
 
 		if err := datastore.Put(c, platforms); err != nil {
-			return fmt.Errorf("error writing platforms to datastore - %s", err)
+			return fmt.Errorf("error writing platforms to datastore - %w", err)
 		}
 		return nil
 	}, nil)
@@ -156,7 +156,7 @@ func SearchAnnouncements(c context.Context, platformName string, retired bool, l
 	}
 	var announcements []*Announcement
 	if err := datastore.GetAll(c, annQ, &announcements); err != nil {
-		return nil, fmt.Errorf("error getting Announcement entities - %s", err)
+		return nil, fmt.Errorf("error getting Announcement entities - %w", err)
 	}
 	return GetAllAnnouncementsPlatforms(c, announcements)
 }
@@ -172,11 +172,11 @@ func GetAllAnnouncementsPlatforms(c context.Context, announcements []*Announceme
 			workC <- func() error {
 				platforms, err := ann.getPlatforms(c)
 				if err != nil {
-					return fmt.Errorf("error getting Platform entities - %s", err)
+					return fmt.Errorf("error getting Platform entities - %w", err)
 				}
 				annProtos[i], err = ann.ToProto(platforms)
 				if err != nil {
-					return fmt.Errorf("error converting Announcement - %s", err)
+					return fmt.Errorf("error converting Announcement - %w", err)
 				}
 				return nil
 			}
@@ -195,14 +195,14 @@ func RetireAnnouncement(c context.Context, announcementID int64, closer string) 
 	announcement := &Announcement{ID: announcementID}
 	return datastore.RunInTransaction(c, func(c context.Context) error {
 		if err := datastore.Get(c, announcement); err != nil {
-			return fmt.Errorf("error getting Announcement - %s", err)
+			return fmt.Errorf("error getting Announcement - %w", err)
 		}
 		announcement.Retired = true
 		// datastore will only store timestamps precise to microseconds.
 		announcement.EndTime = clock.Now(c).UTC().Truncate(time.Microsecond)
 		announcement.Closer = closer
 		if err := datastore.Put(c, announcement); err != nil {
-			return fmt.Errorf("error saving Announcement - %s", err)
+			return fmt.Errorf("error saving Announcement - %w", err)
 		}
 		return nil
 	}, nil)
