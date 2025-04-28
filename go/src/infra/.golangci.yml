@@ -82,21 +82,9 @@ linters:
         # https://staticcheck.dev/docs/checks#S1009
         # Omit redundant nil check on slices, maps, and channels
         - "-S1009"
-        # https://staticcheck.dev/docs/checks#S1012
-        # Replace time.Now().Sub(x) with time.Since(x)
-        - "-S1012"
-        # https://staticcheck.dev/docs/checks#S1016
-        # Use a type conversion instead of manually copying struct fields
-        - "-S1016"
-        # https://staticcheck.dev/docs/checks#S1017
-        # Replace manual trimming with strings.TrimPrefix
-        - "-S1017"
         # https://staticcheck.dev/docs/checks#S1031
         # Omit redundant nil check around loop
         - "-S1031"
-        # https://staticcheck.dev/docs/checks#S1032
-        # Use sort.Ints(x) , sort.Float64s(x) , and sort.Strings(x)
-        - "-S1032"
         # https://staticcheck.dev/docs/checks#S1038
         # Unnecessarily complex way of printing formatted string
         - "-S1038"
@@ -109,15 +97,9 @@ linters:
         # https://staticcheck.dev/docs/checks#SA1019
         # Using a deprecated function, variable, constant or field
         - "-SA1019"
-        # https://staticcheck.dev/docs/checks#SA1024
-        # A string cutset contains duplicate characters
-        - "-SA1024"
         # https://staticcheck.dev/docs/checks#SA1029
         # Inappropriate key in call to context.WithValue
         - "-SA1029"
-        # https://staticcheck.dev/docs/checks#SA4004
-        # The loop exits unconditionally after one iteration
-        - "-SA4004"
         # https://staticcheck.dev/docs/checks#SA4006
         # A value assigned to a variable is never read before being overwritten. Forgotten error check or dead code?
         - "-SA4006"
