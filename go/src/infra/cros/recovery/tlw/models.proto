@@ -1075,6 +1075,8 @@ enum DUTSetupType {
 	DEV_BOARD = 8;
 	// Special setup for CLANK-Only devices.
 	CLANK_ONLY = 9;
+	// Special setup for ChromeOS Android devices.
+	CROS_ANDROID = 10;
 }
 
 // This proto define common version info we want to record from a device.

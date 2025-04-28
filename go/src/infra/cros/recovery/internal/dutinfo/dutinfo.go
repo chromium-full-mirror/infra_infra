@@ -156,9 +156,12 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		setup = tlw.DUTSetupType_CROSVM
 	}
 
-	// Check hostname to see if it's DUTs for browser testing
-	if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
-		hive := ufsUtil.GetHiveForDut(name, dut.GetHive())
+	osRestriction := convertOSRestriction(dut.GetOsRestriction())
+	hive := ufsUtil.GetHiveForDut(name, dut.GetHive())
+	if osRestriction == tlw.ChromeOS_OSR_ANDROID_ONLY {
+		setup = tlw.DUTSetupType_CROS_ANDROID
+	} else if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
+		// Check hostname to see if it's DUTs for browser testing
 		if hive == "chrome-clank" {
 			setup = tlw.DUTSetupType_CLANK_ONLY
 		} else {
@@ -178,7 +181,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		SetupType:      setup,
 		State:          dutstate.ConvertFromUFSState(lc.GetResourceState()),
 		RepairRequests: convertRepairRequestsFromUFS(ds.GetRepairRequests()),
-		Hive:           dut.GetHive(),
+		Hive:           hive,
 		Chromeos: &tlw.ChromeOS{
 			Board:               machine.GetChromeosMachine().GetBuildTarget(),
 			Model:               machine.GetChromeosMachine().GetModel(),
@@ -214,7 +217,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			AmtManager:          createDUTAMTManager(p, ds),
 			Camera:              createDUTCamera(ds),
 			Fingerprint:         createDUTFingerprint(ds),
-			OsRestriction:       convertOSRestriction(dut.GetOsRestriction()),
+			OsRestriction:       osRestriction,
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
