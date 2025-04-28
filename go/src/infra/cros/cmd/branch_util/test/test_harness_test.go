@@ -471,7 +471,6 @@ func TestAssertCommentsPersist(t *testing.T) {
 		return "test_data/", nil
 	}
 	cleanupLocalCheckoutFunc = func(checkout string) {
-		return
 	}
 
 	r := &CrosRepoHarness{}
@@ -492,7 +491,6 @@ func TestAssertMinimalManifestChanges(t *testing.T) {
 		return "test_data/", nil
 	}
 	cleanupLocalCheckoutFunc = func(checkout string) {
-		return
 	}
 
 	r := &CrosRepoHarness{}

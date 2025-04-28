@@ -83,14 +83,12 @@ func (c *GitCommit) GetPositionNumber() (*CommitPosition, error) {
 			switch name {
 			case "name":
 				cp.Name = match[i]
-				break
 			case "number":
 				positionNumber, err := strconv.Atoi(match[2])
 				if err != nil {
 					return nil, err
 				}
 				cp.Number = positionNumber
-				break
 			}
 		}
 		return &cp, nil

@@ -445,8 +445,6 @@ func (c *Client) createRemoteBranchesWorker(
 		}
 		wg.Done()
 	}
-
-	return
 }
 
 // CreateRemoteBranches makes the requested branches on the remote Gerrit hosts

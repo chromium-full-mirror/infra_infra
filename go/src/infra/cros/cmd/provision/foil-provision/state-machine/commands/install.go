@@ -164,8 +164,6 @@ func logcat(log *log.Logger, pid string, addr string) {
 
 	log.Println("Finished co")
 	log.Println("logcat out", outStr)
-
-	return
 }
 
 // Helper function to read output from a pipe

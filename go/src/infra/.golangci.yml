@@ -91,9 +91,6 @@ linters:
         # https://staticcheck.dev/docs/checks#S1017
         # Replace manual trimming with strings.TrimPrefix
         - "-S1017"
-        # https://staticcheck.dev/docs/checks#S1023
-        # Omit redundant control flow
-        - "-S1023"
         # https://staticcheck.dev/docs/checks#S1031
         # Omit redundant nil check around loop
         - "-S1031"

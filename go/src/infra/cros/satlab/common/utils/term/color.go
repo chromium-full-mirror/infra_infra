@@ -505,7 +505,6 @@ func (c Color) String() string {
 					default:
 						// Not a term mod code.
 						i = s
-						break
 					}
 				}
 			}

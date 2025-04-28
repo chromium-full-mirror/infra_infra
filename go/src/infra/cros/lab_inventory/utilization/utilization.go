@@ -133,7 +133,6 @@ func getStatusForBotInfo(bi *swarmingv2.BotInfo) status {
 		switch d.Key {
 		case "dut_state":
 			dutState = summarizeValues(d.Value)
-			break
 		default:
 			// Ignore other dimensions.
 		}

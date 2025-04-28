@@ -338,7 +338,6 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 			{"domain_controller_machine", "domain-controll"},
 			{"user", "Joe"},
 		}
-		break
 	case "virtual_machine":
 		resourceData = [][]string{
 			{"network", "primary"},

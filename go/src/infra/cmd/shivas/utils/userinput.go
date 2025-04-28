@@ -154,7 +154,6 @@ func GetSwitchInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, s 
 			break
 		}
 	}
-	return
 }
 
 // GetMachineInteractiveInput get Machine input in interactive mode
@@ -2078,7 +2077,6 @@ func GetRPMInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, rpm *
 			break
 		}
 	}
-	return
 }
 
 // GetRackInteractiveInput get rack input in interactive mode
@@ -2158,7 +2156,6 @@ func GetRackInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, req 
 			break
 		}
 	}
-	return
 }
 
 func createKeyValuePairs(m map[int32]string) string {

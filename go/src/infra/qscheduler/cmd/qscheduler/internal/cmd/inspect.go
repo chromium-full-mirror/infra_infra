@@ -131,7 +131,6 @@ func (t table) sort() {
 		return
 	}
 	sort.Slice(t, func(i, j int) bool { return t[i][0] < t[j][0] })
-	return
 }
 
 // floatInsert inserts float slice to a row. If the size of the slice
@@ -171,7 +170,6 @@ func printAccountBalancesTable(tw *tabwriter.Writer, report *qscheduler.InspectP
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printAccountRatesTable(tw *tabwriter.Writer, report *qscheduler.InspectPoolResponse) {
@@ -189,7 +187,6 @@ func printAccountRatesTable(tw *tabwriter.Writer, report *qscheduler.InspectPool
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printAccountPoliciesTable(tw *tabwriter.Writer, report *qscheduler.InspectPoolResponse) {
@@ -213,7 +210,6 @@ func printAccountPoliciesTable(tw *tabwriter.Writer, report *qscheduler.InspectP
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printAccountDescriptionTable(tw *tabwriter.Writer, report *qscheduler.InspectPoolResponse) {
@@ -231,7 +227,6 @@ func printAccountDescriptionTable(tw *tabwriter.Writer, report *qscheduler.Inspe
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printBotTables(w io.Writer, report *qscheduler.InspectPoolResponse) {
@@ -266,7 +261,6 @@ func printBotTables(w io.Writer, report *qscheduler.InspectPoolResponse) {
 	}
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printTaskTables(w io.Writer, report *qscheduler.InspectPoolResponse) {
@@ -294,7 +288,6 @@ func printRunningTaskTables(tw *tabwriter.Writer, report *qscheduler.InspectPool
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }
 
 func printWaitingTaskTables(tw *tabwriter.Writer, report *qscheduler.InspectPoolResponse) {
@@ -314,5 +307,4 @@ func printWaitingTaskTables(tw *tabwriter.Writer, report *qscheduler.InspectPool
 	t.sort()
 	t.print(tw)
 	fmt.Fprintln(tw)
-	return
 }

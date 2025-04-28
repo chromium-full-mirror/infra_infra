@@ -113,7 +113,6 @@ func (c *publishRun) pipelineRun(ctx context.Context, ch chan state) {
 		return
 	}
 	ch <- state{result_flow.State_SUCCEEDED, nil}
-	return
 }
 
 func (c *publishRun) loadPublishRequest() error {

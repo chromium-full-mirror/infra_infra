@@ -142,7 +142,6 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 			switch segments[1] {
 			case "pbunits":
 				protoUnmarshalFunc = proto.Unmarshal
-				break
 			default:
 				protoUnmarshalFunc = protojson.Unmarshal
 			}
