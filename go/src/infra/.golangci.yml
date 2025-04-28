@@ -164,6 +164,12 @@ linters:
       - linters:
         - ineffassign
         path: ^(appengine/(cros|poros|rotation-proxy)|chromeperf|cmd|cr_builder_health|cros|experimental|fleetconsole|qscheduler|rts|tools|unifiedfleet)/
+      # See https://chromium-review.googlesource.com/c/infra/infra/+/6490573 and https://chromium-review.googlesource.com/c/infra/infra/+/6284947 for details.
+      # golangbuild intentionally does not wrap certain errors.
+      # TODO(gregorynisbet): Drop this stanza when go1.23 support is dropped + 1 month-ish.
+      - linters:
+        - errorlint
+        path: ^experimental/golangbuild
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
