@@ -28,9 +28,7 @@ import (
 // This is necessary as the BUF removes double-slashes, which mangles the URI.
 // Returns the bucket and append as a formed bucket URI.
 func BucketJoin(bucket string, append string) string {
-	if strings.HasPrefix(bucket, "gs://") {
-		bucket = bucket[5:]
-	}
+	bucket = strings.TrimPrefix(bucket, "gs://")
 	return fmt.Sprintf("gs://%s", path.Join(bucket, append))
 }
 

@@ -92,9 +92,7 @@ func (s FoilInstallState) Next() common_utils.ServiceState {
 	if s.service.CrossOver {
 		return cross_over.NewCrossOverInitState(s.service.Params)
 	} else {
-		return FoilPostState{
-			service: s.service,
-		}
+		return FoilPostState(s)
 	}
 }
 
