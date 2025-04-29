@@ -268,17 +268,33 @@ message ResourceRequest {
   // The details of the resource request.
   string resource_details = 3;
 
-  // The procurement end date of the resource request.
-  optional DateOnly procurement_end_date = 4;
+  // The procurement dates of the resource request.
+  reserved 4;
+  optional DateOnly procurement_target_start_date = 10;
+  optional DateOnly procurement_actual_start_date = 11;
+  optional DateOnly procurement_target_delivery_date = 12;
+  optional DateOnly procurement_actual_delivery_date = 13;
 
-  // The build end date of the resource request.
-  optional DateOnly build_end_date = 5;
+  // The build dates of the resource request.
+  reserved 5;
+  optional DateOnly build_target_start_date = 14;
+  optional DateOnly build_actual_start_date = 15;
+  optional DateOnly build_target_delivery_date = 16;
+  optional DateOnly build_actual_delivery_date = 17;
 
-  // The QA end date of the resource request.
-  optional DateOnly qa_end_date = 6;
+  // The QA dates of the resource request.
+  reserved 6;
+  optional DateOnly qa_target_start_date = 18;
+  optional DateOnly qa_actual_start_date = 19;
+  optional DateOnly qa_target_delivery_date = 20;
+  optional DateOnly qa_actual_delivery_date = 21;
 
-  // The config end date of the resource request.
-  optional DateOnly config_end_date = 7;
+  // The config dates of the resource request.
+  reserved 7;
+  optional DateOnly config_target_start_date = 22;
+  optional DateOnly config_actual_start_date = 23;
+  optional DateOnly config_target_delivery_date = 24;
+  optional DateOnly config_actual_delivery_date = 25;
 
   // Expected ETA for the resource request.
   optional DateOnly expected_eta = 8;

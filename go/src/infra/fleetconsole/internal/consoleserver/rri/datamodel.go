@@ -19,10 +19,22 @@ const (
 	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
 	ResourceRequestTargetDeliveryDateColumn = "resource_request_target_delivery_date"
 	FulfillmentStatusColumn                 = "fulfillment_status"
-	ProcurementDateColumn                   = "material_sourcing_target_delivery_date"
-	BuildEndDateColumn                      = "build_target_delivery_date"
-	QAEndDateColumn                         = "qa_target_delivery_date"
-	ConfigEndDateColumn                     = "config_target_delivery_date"
+	ProcurementTargetStartDateColumn        = "material_sourcing_target_start_date"
+	ProcurementActualStartDateColumn        = "material_sourcing_actual_start_date"
+	ProcurementTargetDeliveryDateColumn     = "material_sourcing_target_delivery_date"
+	ProcurementActualDeliveryDateColumn     = "material_sourcing_actual_delivery_date"
+	BuildTargetStartDateColumn              = "build_target_start_date"
+	BuildActualStartDateColumn              = "build_actual_start_date"
+	BuildTargetDeliveryDateColumn           = "build_target_delivery_date"
+	BuildActualDeliveryDateColumn           = "build_actual_delivery_date"
+	QATargetStartDateColumn                 = "qa_target_start_date"
+	QAActualStartDateColumn                 = "qa_actual_start_date"
+	QATargetDeliveryDateColumn              = "qa_target_delivery_date"
+	QAActualDeliveryDateColumn              = "qa_actual_delivery_date"
+	ConfigTargetStartDateColumn             = "config_target_start_date"
+	ConfigActualStartDateColumn             = "config_actual_start_date"
+	ConfigTargetDeliveryDateColumn          = "config_target_delivery_date"
+	ConfigActualDeliveryDateColumn          = "config_actual_delivery_date"
 	MaterialSourcingStatusColumn            = "material_sourcing_status"
 	BuildStatusColumn                       = "build_status"
 	QAStatusColumn                          = "qa_status"
@@ -44,10 +56,22 @@ func GetResourceRequestsTable(isProd bool) *queryutils.Table {
 		queryutils.NewColumn(ResourceRequestActualDeliveryDateColumn).Build(),
 		queryutils.NewColumn(ResourceRequestTargetDeliveryDateColumn).Build(),
 		queryutils.NewColumn(FulfillmentStatusColumn).Build(),
-		queryutils.NewColumn(ProcurementDateColumn).Build(),
-		queryutils.NewColumn(BuildEndDateColumn).Build(),
-		queryutils.NewColumn(QAEndDateColumn).Build(),
-		queryutils.NewColumn(ConfigEndDateColumn).Build(),
+		queryutils.NewColumn(ProcurementTargetStartDateColumn).Build(),
+		queryutils.NewColumn(ProcurementActualStartDateColumn).Build(),
+		queryutils.NewColumn(ProcurementTargetDeliveryDateColumn).Build(),
+		queryutils.NewColumn(ProcurementActualDeliveryDateColumn).Build(),
+		queryutils.NewColumn(BuildTargetStartDateColumn).Build(),
+		queryutils.NewColumn(BuildActualStartDateColumn).Build(),
+		queryutils.NewColumn(BuildTargetDeliveryDateColumn).Build(),
+		queryutils.NewColumn(BuildActualDeliveryDateColumn).Build(),
+		queryutils.NewColumn(QATargetStartDateColumn).Build(),
+		queryutils.NewColumn(QAActualStartDateColumn).Build(),
+		queryutils.NewColumn(QATargetDeliveryDateColumn).Build(),
+		queryutils.NewColumn(QAActualDeliveryDateColumn).Build(),
+		queryutils.NewColumn(ConfigTargetStartDateColumn).Build(),
+		queryutils.NewColumn(ConfigActualStartDateColumn).Build(),
+		queryutils.NewColumn(ConfigTargetDeliveryDateColumn).Build(),
+		queryutils.NewColumn(ConfigActualDeliveryDateColumn).Build(),
 	).Build()
 }
 

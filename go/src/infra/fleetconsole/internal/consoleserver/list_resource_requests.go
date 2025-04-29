@@ -50,15 +50,27 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 	}
 
 	return &fleetconsolerpc.ResourceRequest{
-		RrId:               row[rri.RrIDColumn].(string),
-		Name:               "resourceRequests/" + rrID,
-		ResourceDetails:    row[rri.ResourceDetailsColumn].(string),
-		ExpectedEta:        expectedEta,
-		FulfillmentStatus:  rri.MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
-		ProcurementEndDate: BigQueryValueToDate(row[rri.ProcurementDateColumn]),
-		BuildEndDate:       BigQueryValueToDate(row[rri.BuildEndDateColumn]),
-		QaEndDate:          BigQueryValueToDate(row[rri.QAEndDateColumn]),
-		ConfigEndDate:      BigQueryValueToDate(row[rri.ConfigEndDateColumn]),
+		RrId:                          row[rri.RrIDColumn].(string),
+		Name:                          "resourceRequests/" + rrID,
+		ResourceDetails:               row[rri.ResourceDetailsColumn].(string),
+		ExpectedEta:                   expectedEta,
+		FulfillmentStatus:             rri.MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
+		ProcurementTargetStartDate:    BigQueryValueToDate(row[rri.ProcurementTargetStartDateColumn]),
+		ProcurementActualStartDate:    BigQueryValueToDate(row[rri.ProcurementActualStartDateColumn]),
+		ProcurementTargetDeliveryDate: BigQueryValueToDate(row[rri.ProcurementTargetDeliveryDateColumn]),
+		ProcurementActualDeliveryDate: BigQueryValueToDate(row[rri.ProcurementActualDeliveryDateColumn]),
+		BuildTargetStartDate:          BigQueryValueToDate(row[rri.BuildTargetStartDateColumn]),
+		BuildActualStartDate:          BigQueryValueToDate(row[rri.BuildActualStartDateColumn]),
+		BuildTargetDeliveryDate:       BigQueryValueToDate(row[rri.BuildTargetDeliveryDateColumn]),
+		BuildActualDeliveryDate:       BigQueryValueToDate(row[rri.BuildActualDeliveryDateColumn]),
+		QaTargetStartDate:             BigQueryValueToDate(row[rri.QATargetStartDateColumn]),
+		QaActualStartDate:             BigQueryValueToDate(row[rri.QAActualStartDateColumn]),
+		QaTargetDeliveryDate:          BigQueryValueToDate(row[rri.QATargetDeliveryDateColumn]),
+		QaActualDeliveryDate:          BigQueryValueToDate(row[rri.QAActualDeliveryDateColumn]),
+		ConfigTargetStartDate:         BigQueryValueToDate(row[rri.ConfigTargetStartDateColumn]),
+		ConfigActualStartDate:         BigQueryValueToDate(row[rri.ConfigActualStartDateColumn]),
+		ConfigTargetDeliveryDate:      BigQueryValueToDate(row[rri.ConfigTargetDeliveryDateColumn]),
+		ConfigActualDeliveryDate:      BigQueryValueToDate(row[rri.ConfigActualDeliveryDateColumn]),
 	}
 }
 
