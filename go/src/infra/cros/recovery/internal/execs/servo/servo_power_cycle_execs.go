@@ -37,21 +37,13 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "servo power cycle root servo: find the servo").Err()
 	}
 	log.Infof(ctx, "Servo usb devnum before reset: %s", preResetDevnum)
-	// Resetting servo. We need either powercycle-servo-usbhub-port or servodtool to succeed.
-	// If both of them fail, join the errors and return them.
-	var retErr error
-	log.Infof(ctx, "Try to reset servo through Cambronix usbhub.")
+	// Resetting servo. Call powercycle-servo-usbhub-port
+	log.Infof(ctx, "Try to reset servo through usbhub.")
 	if _, err = run(ctx, resetTimeout, "powercycle-servo-usbhub-port --servo_serial ", servoSerial, " --downtime_sec 10"); err != nil {
-		log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a Cambronix usbhub`, servoSerial)
-		retErr = errors.Annotate(err, "servo power cycle root servo by cambronix").Err()
+		log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a supported USB hub`, servoSerial)
+		return errors.Annotate(err, "servo power cycle root servo").Err()
 	}
-	if retErr != nil {
-		log.Infof(ctx, "Resetting servo through smart usbhub.")
-		if _, err := run(ctx, resetTimeout, "servodtool", "device", "-s", servoSerial, "power-cycle"); err != nil {
-			log.Warningf(ctx, "Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a smart usbhub", servoSerial)
-			return errors.Join(retErr, errors.Annotate(err, "servo power cycle root servo").Err())
-		}
-	}
+
 	// Since we are able to run the power cycle servodtool command
 	// It implies the smartUsb is present.
 	smartUsbhubPresent = true
