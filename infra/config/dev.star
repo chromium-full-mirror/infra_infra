@@ -11,7 +11,7 @@ This is also enforced by PRESUBMIT.py script.
 
 load("//lib/infra.star", "infra")
 
-lucicfg.check_version("1.39.4", "Please update depot_tools")
+lucicfg.check_version("1.45.0", "Please update depot_tools")
 
 lucicfg.enable_experiment("crbug.com/1338648")
 

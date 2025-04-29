@@ -1,0 +1,16 @@
+{
+	"lucicfg": "1.45.0",
+	"packages": [
+		{
+			"name": "@infra/config",
+			"lucicfg": "1.45.0",
+			"resources": [
+				"data/*"
+			],
+			"entrypoints": [
+				"dev.star",
+				"main.star"
+			]
+		}
+	]
+}
