@@ -166,7 +166,10 @@ class QEMUAPI(recipe_api.RecipeApi):
             src = src if is_dir_path else self.m.path.dirname(src)
             dest = dest if is_dir_path else self.m.path.dirname(dest)
             self.m.file.copytree(
-                name='Copy {}'.format(src), source=src, dest=dest)
+                name='Copy {}'.format(src),
+                source=src,
+                dest=dest,
+                allow_override=True)
         finally:
           self.unmount_disk_image(loop_file)
 
