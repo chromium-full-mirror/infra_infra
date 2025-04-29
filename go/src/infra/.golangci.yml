@@ -156,14 +156,14 @@ linters:
         - unused
         # Ignore `_kind` field in struct for datastore.
         text: "field _kind is unused"
-      # TODO(b/398333401): Reduce this exlucde by cleaning up unused symbols.
+      # TODO(b/398333401): Reduce this exclude by cleaning up unused symbols.
       - linters:
         - unused
         path: ^(appengine/(cr-rev|cros|crosskylabadmin|dashboard|drone-queen|poros|rietveld-static|rubber-stamper|sheriff-o-matic|test-results|tree-status)|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
-      # TODO(b/398333401): Reduce this exlucde by cleaning up ineffective assignments.
+      # TODO(b/398333401): Reduce this exclude by cleaning up ineffective assignments.
       - linters:
         - ineffassign
-        path: ^(appengine/(cros|poros|rotation-proxy)|chromeperf|cmd|cr_builder_health|cros|experimental|fleetconsole|qscheduler|rts|tools|unifiedfleet)/
+        path: ^(appengine/(cros|poros|rotation-proxy)|chromeperf|cmd|cr_builder_health|cros|experimental|qscheduler|rts|tools|unifiedfleet)/
       # See https://chromium-review.googlesource.com/c/infra/infra/+/6490573 and https://chromium-review.googlesource.com/c/infra/infra/+/6284947 for details.
       # golangbuild intentionally does not wrap certain errors.
       # TODO(gregorynisbet): Drop this stanza when go1.23 support is dropped + 1 month-ish.

@@ -242,7 +242,7 @@ func compareDevice(swarmingDevice, ufsDevice *devicesdb.DeviceDAO) string {
 				continue
 			}
 
-			swarmingValue := "UNDEFINED"
+			var swarmingValue string
 			if swarmingDevice.DeviceSpec.Labels[label] != nil {
 				values := swarmingDevice.DeviceSpec.Labels[label].Values
 				slices.Sort(values)
