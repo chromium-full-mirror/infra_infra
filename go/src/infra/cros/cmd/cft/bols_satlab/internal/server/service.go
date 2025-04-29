@@ -18,6 +18,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
 
+	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
 	"go.chromium.org/infra/cros/recovery/docker"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
@@ -98,16 +99,10 @@ func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatus
 	if err != nil {
 		return nil, fmt.Errorf("fail to create docker client: %w", err)
 	}
-	// Check if the docker client is up.
-	isUp, err := c.IsUp(ctx, req.StationId.GetContainerName())
+	status, err := servodStatus(ctx, c, req.GetStationId().GetContainerName(), req.GetStationId().GetServodPort())
 	if err != nil {
-		return nil, fmt.Errorf("fail to check if servod container %s is up: %w",
-			req.StationId.GetContainerName(), err)
+		return nil, fmt.Errorf("fail to get servod status: %w", err)
 	}
-	if !isUp {
-		return nil, fmt.Errorf("servod container %s is not running", req.StationId.GetContainerName())
-	}
-	status := getServodStatus(ctx, c, req.StationId.GetContainerName(), req.StationId.GetServodPort())
 	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
@@ -119,8 +114,14 @@ func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.Re
 	return nil, status.Errorf(codes.Unimplemented, "method ReadServod not implemented")
 }
 
-func (s *service) GetServod(context.Context, *bols.GetServodRequest) (*bols.GetServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetServod not implemented")
+func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
+	rpsn, err := xmlrpc.GetServod(ctx, req.GetStationId().GetContainerName(),
+		req.GetStationId().GetServodPort(), req.GetControl())
+	if err != nil {
+		return nil, fmt.Errorf("failed to send get request to servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
+	}
+	return rpsn, nil
 }
 
 func (s *service) SetServod(context.Context, *bols.SetServodRequest) (*bols.SetServodResponse, error) {
@@ -264,6 +265,20 @@ func containerExecCmd(ctx context.Context, dockerClient docker.Client, dockerCon
 			fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
 	}
 	return res.Stdout, res.Stderr, nil
+}
+
+func servodStatus(ctx context.Context, dockerClient docker.Client, dockerContainerName string,
+	port int32) (bols.ServodStatus, error) {
+	// Check if the docker client is up.
+	isUp, err := dockerClient.IsUp(ctx, dockerContainerName)
+	if err != nil {
+		return bols.ServodStatus_SERVOD_UNKNOWN, fmt.Errorf("fail to check if servod container %s is up: %w",
+			dockerContainerName, err)
+	}
+	if !isUp {
+		return bols.ServodStatus_SERVOD_UNKNOWN, fmt.Errorf("servod container %s is not running", dockerContainerName)
+	}
+	return getServodStatus(ctx, dockerClient, dockerContainerName, port), nil
 }
 
 func getServodStatus(ctx context.Context, dockerClient docker.Client, dockerContainerName string,

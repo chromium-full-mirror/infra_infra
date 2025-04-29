@@ -21,6 +21,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
+
+	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
 )
 
 // GetFileStat reads file information from the labstation.
@@ -340,8 +342,14 @@ func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.Re
 }
 
 // GetServod gets a servod control value.
-func (s *service) GetServod(context.Context, *bols.GetServodRequest) (*bols.GetServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetServod not implemented")
+func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
+	rpsn, err := xmlrpc.GetServod(ctx, "localhost", req.GetStationId().GetServodPort(), req.GetControl())
+	if err != nil {
+		return nil, fmt.Errorf("failed to send get request to servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
+	}
+
+	return rpsn, nil
 }
 
 // SetServod sets value to a servod control.

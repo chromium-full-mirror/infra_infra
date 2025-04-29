@@ -160,7 +160,7 @@ func TestFloat64ToXMLDouble(t *testing.T) {
 
 func TestValueString(t *testing.T) {
 	s := "1"
-	v := value{Int: &s}
+	v := Value{Int: &s}
 	sOut := fmt.Sprintf("%v", v)
 	sWant := "(int)1"
 	if sOut != sWant {
@@ -168,7 +168,7 @@ func TestValueString(t *testing.T) {
 	}
 
 	s = "1"
-	v = value{Boolean: &s}
+	v = Value{Boolean: &s}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "(boolean)1"
 	if sOut != sWant {
@@ -176,7 +176,7 @@ func TestValueString(t *testing.T) {
 	}
 
 	s = "1.2"
-	v = value{Double: &s}
+	v = Value{Double: &s}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "(double)1.2"
 	if sOut != sWant {
@@ -184,7 +184,7 @@ func TestValueString(t *testing.T) {
 	}
 
 	s = "1.2"
-	v = value{Str: &s}
+	v = Value{Str: &s}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "(string)1.2"
 	if sOut != sWant {
@@ -192,7 +192,7 @@ func TestValueString(t *testing.T) {
 	}
 
 	s = "c29tZSBkYXRh"
-	v = value{Base64: &s}
+	v = Value{Base64: &s}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "(base64)c29tZSBkYXRh"
 	if sOut != sWant {
@@ -203,26 +203,26 @@ func TestValueString(t *testing.T) {
 	s2 := "0"
 	s3 := "2.1"
 	s4 := "2.1"
-	a := xmlArray{Values: []value{
+	a := XMLArray{Values: []Value{
 		{Int: &s1},
 		{Boolean: &s2},
 		{Double: &s3},
 		{Str: &s4},
 	}}
-	v = value{Array: &a}
+	v = Value{Array: &a}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "[(int)2, (boolean)0, (double)2.1, (string)2.1]"
 	if sOut != sWant {
 		t.Errorf("String() got %q, want %q", sOut, sWant)
 	}
 
-	b := xmlStruct{Members: []member{
-		{Name: "key1", Value: value{Int: &s1}},
-		{Name: "key2", Value: value{Boolean: &s2}},
-		{Name: "key3", Value: value{Double: &s3}},
-		{Name: "key4", Value: value{Str: &s4}},
+	b := XMLStruct{Members: []Member{
+		{Name: "key1", Value: Value{Int: &s1}},
+		{Name: "key2", Value: Value{Boolean: &s2}},
+		{Name: "key3", Value: Value{Double: &s3}},
+		{Name: "key4", Value: Value{Str: &s4}},
 	}}
-	v = value{Struct: &b}
+	v = Value{Struct: &b}
 	sOut = fmt.Sprintf("%v", v)
 	sWant = "{key1: (int)2, key2: (boolean)0, key3: (double)2.1, key4: (string)2.1}"
 	if sOut != sWant {
@@ -291,7 +291,7 @@ func TestNewValue(t *testing.T) {
 	arrInt := []int{1, 2}
 	s1 := "1"
 	s2 := "2"
-	expectedArrayOfInt := xmlArray{Values: []value{{Int: &s1}, {Int: &s2}}}
+	expectedArrayOfInt := XMLArray{Values: []Value{{Int: &s1}, {Int: &s2}}}
 	v, err = newValue(arrInt)
 	if err != nil {
 		t.Errorf("input %v gave unexpected error: %v", arrInt, err)
@@ -307,9 +307,9 @@ func TestNewValue(t *testing.T) {
 	v1 := "v1"
 	v2 := "v2"
 	mapStrOfStr := map[string]string{k1: v1, k2: v2}
-	expectedMapStrOfString := xmlStruct{Members: []member{
-		{Name: k1, Value: value{Str: &v1}},
-		{Name: k2, Value: value{Str: &v2}},
+	expectedMapStrOfString := XMLStruct{Members: []Member{
+		{Name: k1, Value: Value{Str: &v1}},
+		{Name: k2, Value: Value{Str: &v2}},
 	}}
 	v, err = newValue(mapStrOfStr)
 	if err != nil {
@@ -343,11 +343,11 @@ func TestNewValue(t *testing.T) {
 	var intVal newIntType = -1
 
 	mapStrOfInterface := map[string]interface{}{boolKey: boolVal, floatKey: floatVal, intKey: intVal, strKey: strVal}
-	expectedMapStrOfInterface := xmlStruct{Members: []member{
-		{Name: boolKey, Value: value{Boolean: &expectedBoolStr}},
-		{Name: floatKey, Value: value{Double: &expectedDoubleStr}},
-		{Name: intKey, Value: value{Int: &expectedIntStr}},
-		{Name: strKey, Value: value{Str: &expectedStr}},
+	expectedMapStrOfInterface := XMLStruct{Members: []Member{
+		{Name: boolKey, Value: Value{Boolean: &expectedBoolStr}},
+		{Name: floatKey, Value: Value{Double: &expectedDoubleStr}},
+		{Name: intKey, Value: Value{Int: &expectedIntStr}},
+		{Name: strKey, Value: Value{Str: &expectedStr}},
 	}}
 	v, err = newValue(mapStrOfInterface)
 	if err != nil {
@@ -422,7 +422,7 @@ func TestSerializeMethodCall(t *testing.T) {
 }
 
 func TestUnpack(t *testing.T) {
-	resp := methodResponse{Params: nil}
+	resp := MethodResponse{Params: nil}
 	var out string
 	expErr := "response contains no args; want 1"
 	if err := resp.unpack([]interface{}{&out}); err == nil {
@@ -442,7 +442,7 @@ func TestUnpack(t *testing.T) {
 	if err != nil {
 		t.Fatal("creating params: ", err)
 	}
-	resp = methodResponse{Params: &params}
+	resp = MethodResponse{Params: &params}
 	var stringOut string
 	var boolOut bool
 	var intOut int
@@ -543,7 +543,7 @@ func TestXMLResponse(t *testing.T) {
 	</params>
 	</methodResponse>
 	`
-	res := methodResponse{}
+	res := MethodResponse{}
 	if err := xml.Unmarshal([]byte(xmlStr), &res); err != nil {
 		t.Fatal("xml unmarshal:", err)
 	}
@@ -688,7 +688,7 @@ func TestCheckFault(t *testing.T) {
 		{faultWithUnexpectedMember, true, false, 0, ""},
 	} {
 		// Check the XML bytes for fault.
-		r := methodResponse{}
+		r := MethodResponse{}
 		if err := xml.Unmarshal(tc.b, &r); err != nil {
 			t.Errorf("tc #%d: failed to unmarshal bytes: %v", i, err)
 			continue
