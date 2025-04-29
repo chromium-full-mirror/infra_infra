@@ -64,6 +64,9 @@ func (c *CheckInstallNeeded) Execute(log *log.Logger) error {
 		if err != nil {
 			// We need to reinstall the stateful image for the missing utils.
 			log.Printf("Missing test utils.")
+			// Whenever stateful reinstall is needed, fully install the image.
+			// There are issues with just updating the stateful partition.
+			c.cs.UpdateCros = true
 			c.cs.QuickResetDevice = true
 		} else if !isHexDigest(oid) {
 			// The device is not in a correct state, we should clear the TPM.
