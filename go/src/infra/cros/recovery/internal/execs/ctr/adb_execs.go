@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/ctr"
-	adbTool "go.chromium.org/infra/cros/recovery/internal/adb"
 	"go.chromium.org/infra/cros/recovery/internal/components/cft"
-	"go.chromium.org/infra/cros/recovery/internal/components/cft/adb"
+	cftadb "go.chromium.org/infra/cros/recovery/internal/components/cft/adb"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/adb"
 	"go.chromium.org/infra/cros/recovery/internal/components/cros/android"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
@@ -69,7 +69,7 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	log.Infof(ctx, "Container %q started!", req.Name)
-	client, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	client, err := cftadb.ServiceClient(ctx, ctrInfo, dut)
 	if err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
@@ -101,20 +101,12 @@ func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // adbCommandExec execs custom command with arguments.
 func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
-	var client api.ADBServiceClient
-	if !adbTool.UseLocal(ctx) {
-		var err error
-		client, err = cft.ADBClientFromScope(ctx, info.GetDut())
-		if err != nil {
-			return errors.Annotate(err, "adb command").Err()
-		}
-	}
 	// Minus 5 seconds as we expect 5 seconds to get container info.
 	timeout := info.GetExecTimeout() - (5 * time.Second)
 	argsMap := info.GetActionArgs(ctx)
 	command := argsMap.AsString(ctx, "command", "")
 	commandArgs := argsMap.AsStringSlice(ctx, "args", []string{})
-	_, err := adb.ExecCommand(ctx, client, timeout, command, commandArgs...)
+	_, err := adb.Exec(ctx, info.GetDut(), timeout, command, commandArgs...)
 	return errors.Annotate(err, "adb command").Err()
 }
 

@@ -6,7 +6,6 @@ package execs
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -15,10 +14,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	adbTool "go.chromium.org/infra/cros/recovery/internal/adb"
 	"go.chromium.org/infra/cros/recovery/internal/components"
-	"go.chromium.org/infra/cros/recovery/internal/components/cft"
-	"go.chromium.org/infra/cros/recovery/internal/components/cft/adb"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/adb"
 	"go.chromium.org/infra/cros/recovery/internal/log"
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
@@ -140,52 +137,22 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	} else {
 		log.Debugf(ctx, "Prepare to run command: %q", fullCmd)
 	}
-	// TODO(otabek): apply code logic from SSH run.
-	adbRun := func() (components.SSHRunResponse, *errors.Annotator) {
-		fullCmd = "adb shell " + fullCmd
-
-		var resErr error
-		var response adb.ADBResponse
-		if adbTool.UseLocal(ctx) {
-			// For local run we ned specify device always.
-			deviceName := fmt.Sprintf("%s:%d", b.dut.Name, adbTool.Port(ctx))
-			params := []string{deviceName, "shell", command}
-			if len(args) > 0 {
-				params = append(params, args...)
-			}
-			// Response doe snot contains exit code.
-			response, resErr = adb.RunCommand(ctx, nil, timeout, "-s", params...)
-		} else {
-			client, err := cft.ADBClientFromScope(ctx, b.dut)
-			if err != nil {
-				return &adbResponse{
-					err:  err.Error(),
-					code: -1,
-				}, errors.Annotate(err, "runner")
-			}
-			params := []string{command}
-			if len(args) > 0 {
-				params = append(params, args...)
-			}
-			// Response doe snot contains exit code.
-			response, resErr = adb.RunCommand(ctx, client, timeout, "shell", params...)
-		}
-		if resErr != nil {
-			return &adbResponse{
-				err:  resErr.Error(),
-				code: 1,
-			}, errors.Annotate(resErr, "runner")
-		}
-		return &adbResponse{
-			out:  string(response.GetStdout()),
-			err:  string(response.GetStderr()),
-			code: response.GetExitCode(),
-		}, nil
-	}
 	var errAnnotator *errors.Annotator
 	var res components.SSHRunResponse
 	if b.host == b.dut.Name && b.dut.GetChromeos().GetIsAndroidBased() {
-		res, errAnnotator = adbRun()
+		if response, resErr := adb.Shell(ctx, b.dut, timeout, command, args...); resErr != nil {
+			res = &adbResponse{
+				err:  resErr.Error(),
+				code: 1,
+			}
+			errAnnotator = errors.Annotate(resErr, "runner")
+		} else {
+			res = &adbResponse{
+				out:  string(response.GetStdout()),
+				err:  string(response.GetStderr()),
+				code: response.GetExitCode(),
+			}
+		}
 	} else {
 		res = b.access.Run(ctx, &tlw.RunRequest{
 			Resource:     b.host,

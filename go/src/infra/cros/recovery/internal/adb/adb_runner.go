@@ -33,6 +33,10 @@ func (r *runnerResult) GetExitCode() int32 {
 	return r.ExitCode
 }
 
+func EmptyResult() *runnerResult {
+	return &runnerResult{}
+}
+
 // Run runs blocking command by ADB.
 // Do not use for non-blocking commands (like: logcat).
 func Run(ctx context.Context, args ...string) (*runnerResult, error) {
