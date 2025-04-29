@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package moblab_test
 
 import (
 	"context"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 	"google.golang.org/api/iterator"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
-	"testing"
 )
 
-func TestExampleNewBuildClient(t *testing.T) {
+func ExampleNewBuildClient() {
 	ctx := context.Background()
 	c, err := moblab.NewBuildClient(ctx)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleBuildClient_ListBuilds() {
 	}
 }
 
-func TestExampleBuildClient_CheckBuildStageStatus(t *testing.T) {
+func ExampleBuildClient_CheckBuildStageStatus() {
 	// import moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	ctx := context.Background()
@@ -135,7 +135,7 @@ func TestExampleBuildClient_CheckBuildStageStatus(t *testing.T) {
 	_ = resp
 }
 
-func TestExampleBuildClient_StageBuild(t *testing.T) {
+func ExampleBuildClient_StageBuild() {
 	// import moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	ctx := context.Background()
@@ -151,15 +151,16 @@ func TestExampleBuildClient_StageBuild(t *testing.T) {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	if op != nil {
-		_, err = op.Wait(ctx)
-		if err != nil {
-			// TODO: Handle error.
-		}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func TestExampleBuildClient_FindMostStableBuild(t *testing.T) {
+func ExampleBuildClient_FindMostStableBuild() {
 	// import moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	ctx := context.Background()

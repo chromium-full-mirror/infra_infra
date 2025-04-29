@@ -16,19 +16,15 @@ import (
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
 type MockMoblabClient struct {
-	mu                            sync.Mutex
-	StageBuildCalls               []StageBuildCall
-	CheckBuildStageStatusCalls    []CheckBuildStageStatusCall
-	StageBuildResponse            *moblab.StageBuildOperation
-	StageBuildError               error
-	CheckBuildStageStatusResponse *moblabpb.CheckBuildStageStatusResponse
-	CheckBuildStageStatusError    error
-	BuildFailures                 map[string]error
+	mu                          sync.Mutex
+	StageBuildCalls             []StageBuildCall
+	CheckBuildStageStatusCalls  []CheckBuildStageStatusCall
+	StageBuildReturn            []*StageBuildReturn
+	CheckBuildStageStatusReturn []*CheckBuildStageStatusReturn
+	BuildFailures               map[string]error
 }
 
 type StageBuildCall struct {
@@ -43,21 +39,34 @@ type CheckBuildStageStatusCall struct {
 	Opts []gax.CallOption
 }
 
-func (m *MockMoblabClient) StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error) {
+type StageBuildReturn struct {
+	Metadata *moblabpb.StageBuildMetadata
+	Error    error
+}
+
+type CheckBuildStageStatusReturn struct {
+	Response *moblabpb.CheckBuildStageStatusResponse
+	Error    error
+}
+
+func (m *MockMoblabClient) StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblabpb.StageBuildMetadata, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.StageBuildCalls = append(m.StageBuildCalls, StageBuildCall{Ctx: ctx, Req: req, Opts: opts})
 	if err, exists := m.BuildFailures[req.Name]; exists {
 		return nil, err
 	}
-	return m.StageBuildResponse, m.StageBuildError
+	i := min(len(m.StageBuildCalls), len(m.StageBuildReturn)) - 1
+
+	return m.StageBuildReturn[i].Metadata, m.StageBuildReturn[i].Error
 }
 
 func (m *MockMoblabClient) CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.CheckBuildStageStatusCalls = append(m.CheckBuildStageStatusCalls, CheckBuildStageStatusCall{Ctx: ctx, Req: req, Opts: opts})
-	return m.CheckBuildStageStatusResponse, m.CheckBuildStageStatusError
+	i := min(len(m.CheckBuildStageStatusCalls), len(m.CheckBuildStageStatusReturn)) - 1
+	return m.CheckBuildStageStatusReturn[i].Response, m.CheckBuildStageStatusReturn[i].Error
 }
 
 func GenerateLegacySW(build string, bucket string) *api.LegacySW {
@@ -164,13 +173,44 @@ func TestStageChromeOSBuild(t *testing.T) {
 	bucket := "chromeos-distributed-fleet-s4p"
 	expectedName := "buildTargets/skyrim/models/foo/builds/16033.49.0/artifacts/chromeos-distributed-fleet-s4p"
 	expectedFilter := "type=release"
+	cloud_build_id := "12345"
+	expectedCheckStatusFilter := fmt.Sprintf("cloud_build_id=%s", cloud_build_id)
 
 	ctx := context.Background()
 	mockMoblabClient := &MockMoblabClient{
-		CheckBuildStageStatusResponse: &moblabpb.CheckBuildStageStatusResponse{
-			IsBuildStaged: true,
-			StagedBuildArtifact: &moblabpb.BuildArtifact{
-				Path: "path/to/artifact",
+		StageBuildReturn: []*StageBuildReturn{{
+			Metadata: &moblabpb.StageBuildMetadata{
+				CloudBuild: &moblabpb.CloudBuild{
+					Id:     "12345",
+					Status: moblabpb.CloudBuild_QUEUED,
+				},
+			},
+		},
+		},
+		CheckBuildStageStatusReturn: []*CheckBuildStageStatusReturn{
+			{
+				Response: &moblabpb.CheckBuildStageStatusResponse{
+					IsBuildStaged: true,
+					StagedBuildArtifact: &moblabpb.BuildArtifact{
+						Path: "path/to/artifact",
+					},
+					CloudBuild: &moblabpb.CloudBuild{
+						Id:     "12345",
+						Status: moblabpb.CloudBuild_QUEUED,
+					},
+				},
+			},
+			{
+				Response: &moblabpb.CheckBuildStageStatusResponse{
+					IsBuildStaged: true,
+					StagedBuildArtifact: &moblabpb.BuildArtifact{
+						Path: "path/to/artifact",
+					},
+					CloudBuild: &moblabpb.CloudBuild{
+						Id:     "12345",
+						Status: moblabpb.CloudBuild_SUCCEEDED,
+					},
+				},
 			},
 		},
 	}
@@ -189,13 +229,16 @@ func TestStageChromeOSBuild(t *testing.T) {
 		t.Errorf("Expected 1 call to StageBuild, got %d", len(mockMoblabClient.StageBuildCalls))
 	}
 
-	if len(mockMoblabClient.CheckBuildStageStatusCalls) == 1 {
-		actualReqyest := mockMoblabClient.CheckBuildStageStatusCalls[0].Req
-		if actualReqyest.Name != expectedName {
-			t.Errorf("Expected Name: %s, got Name: %s", expectedName, actualReqyest.Name)
+	if len(mockMoblabClient.CheckBuildStageStatusCalls) == 2 {
+		actualRequest := mockMoblabClient.CheckBuildStageStatusCalls[0].Req
+		if actualRequest.Name != expectedName {
+			t.Errorf("Expected Name: %s, got Name: %s", expectedName, actualRequest.Name)
+		}
+		if actualRequest.Filter != expectedCheckStatusFilter {
+			t.Errorf("Expected Filter: %s, got Filter: %s", expectedCheckStatusFilter, actualRequest.Filter)
 		}
 	} else {
-		t.Errorf("Expected 1 call to CheckBuildStageStatus, got %d", len(mockMoblabClient.CheckBuildStageStatusCalls))
+		t.Errorf("Expected 2 call to CheckBuildStageStatus, got %d", len(mockMoblabClient.CheckBuildStageStatusCalls))
 	}
 }
 
@@ -205,7 +248,9 @@ func TestStageChromeOSBuild_StageBuildError(t *testing.T) {
 
 	ctx := context.Background()
 	mockMoblabClient := &MockMoblabClient{
-		StageBuildError: fmt.Errorf("simulated StageBuild error"),
+		StageBuildReturn: []*StageBuildReturn{{
+			Error: fmt.Errorf("simulated StageBuild error"),
+		}},
 	}
 
 	log := log.Default()
@@ -230,8 +275,10 @@ func TestStageChromeOSBuild_CheckBuildStageStatusError(t *testing.T) {
 
 	ctx := context.Background()
 	mockMoblabClient := &MockMoblabClient{
-		StageBuildResponse:         &moblab.StageBuildOperation{},
-		CheckBuildStageStatusError: fmt.Errorf("simulated CheckBuildStageStatus error"),
+		StageBuildReturn: []*StageBuildReturn{{
+			Metadata: &moblabpb.StageBuildMetadata{},
+		}},
+		CheckBuildStageStatusReturn: []*CheckBuildStageStatusReturn{{Error: fmt.Errorf("simulated CheckBuildStageStatus error")}},
 	}
 
 	log := log.Default()
@@ -255,11 +302,18 @@ func TestStageBuilds_Success(t *testing.T) {
 	logger := log.Default()
 
 	mockMoblabClient := &MockMoblabClient{
-		StageBuildResponse: &moblab.StageBuildOperation{},
-		CheckBuildStageStatusResponse: &moblabpb.CheckBuildStageStatusResponse{
-			IsBuildStaged: true,
-			StagedBuildArtifact: &moblabpb.BuildArtifact{
-				Path: "path/to/artifact",
+		StageBuildReturn: []*StageBuildReturn{
+			{
+				Metadata: &moblabpb.StageBuildMetadata{},
+			}},
+		CheckBuildStageStatusReturn: []*CheckBuildStageStatusReturn{
+			{
+				Response: &moblabpb.CheckBuildStageStatusResponse{
+					IsBuildStaged: true,
+					StagedBuildArtifact: &moblabpb.BuildArtifact{
+						Path: "path/to/artifact",
+					},
+				},
 			},
 		},
 	}
@@ -286,13 +340,18 @@ func TestStageBuilds_PartialFailure(t *testing.T) {
 	logger := log.Default()
 
 	mockMoblabClient := &MockMoblabClient{
-		StageBuildResponse: &moblab.StageBuildOperation{},
-		CheckBuildStageStatusResponse: &moblabpb.CheckBuildStageStatusResponse{
-			IsBuildStaged: true,
-			StagedBuildArtifact: &moblabpb.BuildArtifact{
-				Path: "path/to/artifact",
-			},
-		},
+		StageBuildReturn: []*StageBuildReturn{{
+			Metadata: &moblabpb.StageBuildMetadata{},
+		}},
+		CheckBuildStageStatusReturn: []*CheckBuildStageStatusReturn{
+			{
+				Response: &moblabpb.CheckBuildStageStatusResponse{
+					IsBuildStaged: true,
+					StagedBuildArtifact: &moblabpb.BuildArtifact{
+						Path: "path/to/artifact",
+					},
+				},
+			}},
 		BuildFailures: map[string]error{
 			"buildTargets/build2/models/foo/builds/1234.56.8/artifacts/bucket2": fmt.Errorf("simulated failure"),
 		},

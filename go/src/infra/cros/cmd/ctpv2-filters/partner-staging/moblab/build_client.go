@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -349,7 +349,7 @@ func (c *BuildClient) StageBuild(ctx context.Context, req *moblabpb.StageBuildRe
 //
 // Most recent dev channel build with build status Pass
 func (c *BuildClient) FindMostStableBuild(ctx context.Context, req *moblabpb.FindMostStableBuildRequest, opts ...gax.CallOption) (*moblabpb.FindMostStableBuildResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "build_target", url.QueryEscape(req.GetBuildTarget())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "build_target", url.QueryEscape(req.GetBuildTarget()), "model", url.QueryEscape(req.GetModel())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.FindMostStableBuild[0:len(c.CallOptions.FindMostStableBuild):len(c.CallOptions.FindMostStableBuild)], opts...)
 	var resp *moblabpb.FindMostStableBuildResponse
