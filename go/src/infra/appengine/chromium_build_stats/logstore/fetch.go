@@ -16,7 +16,7 @@ import (
 func Fetch(ctx context.Context, client *storage.Client, path string) (*storage.Reader, error) {
 	bkt, err := Bucket(ctx, path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get Bucket name for %s: %v", path, err)
+		return nil, fmt.Errorf("failed to get Bucket name for %s: %w", path, err)
 	}
 	obj := client.Bucket(bkt).Object(path).ReadCompressed(true)
 

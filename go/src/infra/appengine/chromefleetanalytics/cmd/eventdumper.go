@@ -43,7 +43,7 @@ func extractTimestamp(line string) (int64, error) {
 	}
 	t, err := strconv.ParseInt(m[1], 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("%q is not an integer: %s", m[1], err)
+		return 0, fmt.Errorf("%q is not an integer: %w", m[1], err)
 	}
 	return t, nil
 }

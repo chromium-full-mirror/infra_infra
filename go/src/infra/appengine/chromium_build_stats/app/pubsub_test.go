@@ -132,10 +132,10 @@ func (objectHandle) NewReader(ctx context.Context) (stiface.Reader, error) {
 {"build_id": 12345, "platform": "linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50}
 `))
 	if err != nil {
-		return nil, fmt.Errorf("failed to write gzip: %v", err)
+		return nil, fmt.Errorf("failed to write gzip: %w", err)
 	}
 	if err := zw.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close gzip: %v", err)
+		return nil, fmt.Errorf("failed to close gzip: %w", err)
 	}
 	return r, nil
 }

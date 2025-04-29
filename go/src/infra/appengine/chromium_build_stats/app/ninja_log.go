@@ -431,7 +431,7 @@ func ninjalogPath(reqPath string) (string, outputFunc, error) {
 func ninjalogFetch(ctx context.Context, logPath string) (*ninjalog.NinjaLog, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create storage client: %v", err)
+		return nil, fmt.Errorf("failed to create storage client: %w", err)
 	}
 	defer client.Close()
 
@@ -443,7 +443,7 @@ func ninjalogFetch(ctx context.Context, logPath string) (*ninjalog.NinjaLog, err
 
 	rd, err := gzip.NewReader(r)
 	if err != nil {
-		return nil, fmt.Errorf("failed to uncompress: %v", err)
+		return nil, fmt.Errorf("failed to uncompress: %w", err)
 	}
 	nl, err := ninjalog.Parse(logPath, rd)
 	return nl, err

@@ -29,7 +29,7 @@ func Upload(ctx context.Context, prefix string, data []byte) (_ string, rerr err
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to create storage client: %v", err)
+		return "", fmt.Errorf("failed to create storage client: %w", err)
 	}
 	defer closeCloser(client)
 
@@ -51,7 +51,7 @@ func Upload(ctx context.Context, prefix string, data []byte) (_ string, rerr err
 
 	_, err = gw.Write(data)
 	if err != nil {
-		return "", fmt.Errorf("failed to write data: %v", err)
+		return "", fmt.Errorf("failed to write data: %w", err)
 	}
 
 	return logPath, nil

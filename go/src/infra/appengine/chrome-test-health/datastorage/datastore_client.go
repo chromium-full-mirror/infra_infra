@@ -61,7 +61,7 @@ func NewDataStoreClient(ctx context.Context, cloudProject string) (*DataStoreCli
 // Example 3: dsClient.Get(ctx, &str, "EntityA", "k")
 func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName string, key interface{}, options ...interface{}) error {
 	if !(len(options) == 0 || len(options) == 2) {
-		return fmt.Errorf("%s: Expected 4 or 6 arguments but got %d", ErrInsufficientArgs, len(options)+4)
+		return fmt.Errorf("%w: Expected 4 or 6 arguments but got %d", ErrInsufficientArgs, len(options)+4)
 	}
 
 	var ancestorKeyLiteral *datastore.Key
@@ -96,7 +96,7 @@ func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName
 	err := c.datastoreClient.Get(ctx, entityKeyLiteral, result)
 	if err != nil {
 		if errors.Is(err, datastore.ErrInvalidEntityType) {
-			return fmt.Errorf("%s: The result argument is likely an invalid type", ErrInvalidType)
+			return fmt.Errorf("%w: The result argument is likely an invalid type", ErrInvalidType)
 		}
 		if errors.Is(err, datastore.ErrInvalidKey) {
 			return ErrInvalidKey
@@ -160,7 +160,7 @@ func (c DataStoreClient) Query(
 		case string:
 			q = q.Order(order)
 		default:
-			return fmt.Errorf("%s: Argument order should be either a string or nil", ErrInvalidType)
+			return fmt.Errorf("%w: Argument order should be either a string or nil", ErrInvalidType)
 		}
 	}
 
