@@ -99,6 +99,11 @@ const (
 	// Data Sizes
 	KB = 1024
 	MB = KB * KB
+
+	// MaxPublishMsgSize the maximum size of the publish request
+	// message that the publish gRPC can receive is 4000MB.
+	// TODO: Remove once streaming is implemented.
+	MaxPublishMsgSize = 4000 * MB
 )
 
 // AL related constants

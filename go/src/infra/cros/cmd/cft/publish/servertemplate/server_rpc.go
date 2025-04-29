@@ -16,6 +16,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 type PublishServiceServer struct {
@@ -36,7 +38,7 @@ func NewServer(logger *log.Logger, concreteService PublishService) *grpc.Server 
 		serverLogger:    logger,
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.MaxRecvMsgSize(common.MaxPublishMsgSize), grpc.MaxSendMsgSize(common.MaxPublishMsgSize))
 	api.RegisterGenericPublishServiceServer(server, s)
 	reflection.Register(server)
 

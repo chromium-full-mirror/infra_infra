@@ -144,7 +144,7 @@ func (ex *GenericTestsExecutor) RunTests(
 	}
 
 	common.WriteProtoToStepLog(ctx, step, req, "cros test request")
-	runTestsOp, err := client.RunTests(ctx, req, grpc.MaxCallRecvMsgSize(MaxPublishMsgSize), grpc.MaxCallSendMsgSize(MaxPublishMsgSize))
+	runTestsOp, err := client.RunTests(ctx, req, grpc.MaxCallRecvMsgSize(common.MaxPublishMsgSize), grpc.MaxCallSendMsgSize(common.MaxPublishMsgSize))
 	if err != nil {
 		err = errors.Annotate(err, "run tests failure: ").Err()
 		return
