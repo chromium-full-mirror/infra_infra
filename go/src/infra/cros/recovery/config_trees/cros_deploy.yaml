@@ -6785,13 +6785,9 @@ plans:
                   docs:
                     - Set default boot from disk by crossystem.
                 - name: Simple reboot (ALWAYS_RUN)
-                  exec_name: cros_run_command
-                  exec_args:
-                    - host:dut
-                    - command:reboot
-                    - background:true
+                  exec_name: cros_simple_reboot
                   docs:
-                    - Simple un-blocker reboot.
+                    - Simple un-blocker reboot trigger.
         - name: DUT is on test channel OS
           exec_name: cros_is_os_test_channel
           docs:
@@ -9678,13 +9674,9 @@ plans:
                         - Limited to 15 seconds.
                   dependencies:
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Quick provision OS
                   exec_name: sample_pass
                   docs:
@@ -9782,13 +9774,9 @@ plans:
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
           recoveries:
             - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
               exec_name: sample_sleep
@@ -13292,13 +13280,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Update FW from fw-image by servo and wait for boot
                   exec_name: sample_pass
                   docs:
@@ -13583,13 +13567,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Update FW from fw-image by servo and wait for boot
                   exec_name: sample_pass
                   docs:
@@ -34924,13 +34904,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -37358,13 +37334,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -38005,13 +37977,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -38653,13 +38621,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -39301,13 +39265,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -39856,13 +39816,9 @@ plans:
                         - Limited to 15 seconds.
                   dependencies:
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -44237,13 +44193,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -48950,13 +48902,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -51061,13 +51009,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -53585,13 +53529,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -56485,13 +56425,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -57207,13 +57143,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -58006,13 +57938,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -58670,13 +58598,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -61150,13 +61074,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -62306,13 +62226,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -64251,13 +64167,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -65433,13 +65345,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -96789,13 +96697,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -97435,13 +97339,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Update FW from fw-image by servo and wait for boot
                   exec_name: sample_pass
                   docs:
@@ -99578,13 +99478,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -100224,13 +100120,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Update FW from fw-image by servo and wait for boot
                   exec_name: sample_pass
                   docs:
@@ -102435,13 +102327,9 @@ plans:
                         - Limited to 15 seconds.
                   dependencies:
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -104434,13 +104322,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -105147,13 +105031,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -105779,13 +105659,9 @@ plans:
                       exec_args:
                         - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -109916,13 +109792,9 @@ plans:
                           exec_args:
                             - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                         - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_access
                           docs:
@@ -110571,13 +110443,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                       exec_name: sample_sleep
                       exec_args:
@@ -110656,13 +110524,9 @@ plans:
                       docs:
                         - This action sets the GBB flags to the default value.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
                       docs:
@@ -111014,13 +110878,9 @@ plans:
                       docs:
                         - This action disables booting into dev-mode.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
                       docs:
@@ -111421,13 +111281,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                       exec_name: sample_sleep
                       exec_args:
@@ -113261,13 +113117,9 @@ plans:
                             - Limited to 15 seconds.
                       dependencies:
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
                     - name: Quick provision OS
                       exec_name: sample_pass
                       docs:
@@ -113365,13 +113217,9 @@ plans:
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
                         - name: Simple reboot (ALWAYS_RUN)
-                          exec_name: cros_run_command
-                          exec_args:
-                            - host:dut
-                            - command:reboot
-                            - background:true
+                          exec_name: cros_simple_reboot
                           docs:
-                            - Simple un-blocker reboot.
+                            - Simple un-blocker reboot trigger.
               recoveries:
                 - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                   exec_name: sample_sleep
@@ -115299,13 +115147,9 @@ plans:
                           docs:
                             - Check if UFS contents are stored in UFS.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_access
                       docs:
@@ -115371,13 +115215,9 @@ plans:
                         - Limited to 15 seconds.
                   dependencies:
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                 - name: Quick provision OS
                   exec_name: sample_pass
                   docs:
@@ -115475,13 +115315,9 @@ plans:
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
             - name: Update special device labels
               exec_name: sample_pass
               docs:
@@ -129118,13 +128954,9 @@ plans:
                       docs:
                         - This action sets the GBB flags to the default value.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
                       docs:
@@ -129476,13 +129308,9 @@ plans:
                       docs:
                         - This action disables booting into dev-mode.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
                       docs:
@@ -129842,13 +129670,9 @@ plans:
                                 - Verify that device is reachable by SSH.
                                 - Limited to 15 seconds.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
                     - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                       exec_name: sample_sleep
                       exec_args:

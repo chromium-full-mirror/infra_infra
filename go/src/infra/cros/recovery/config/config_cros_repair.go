@@ -3776,14 +3776,9 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Simple reboot": {
 			Docs: []string{
-				"Simple un-blocker reboot.",
+				"Simple un-blocker reboot trigger.",
 			},
-			ExecName: "cros_run_command",
-			ExecExtraArgs: []string{
-				"host:dut",
-				"command:reboot",
-				"background:true",
-			},
+			ExecName:   "cros_simple_reboot",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Set default boot as disk": {

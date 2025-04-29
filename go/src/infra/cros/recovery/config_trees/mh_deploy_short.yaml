@@ -4357,7 +4357,7 @@ plans:
                   dependencies:
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                 - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
-                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -4455,7 +4455,7 @@ plans:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
               dependencies:
                 - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
-                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -4550,7 +4550,7 @@ plans:
                     - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
         - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')

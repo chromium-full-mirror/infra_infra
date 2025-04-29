@@ -6668,7 +6668,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7369,7 +7369,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7550,7 +7550,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7731,7 +7731,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7912,7 +7912,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -8069,7 +8069,7 @@ plans:
                   conditions:
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -9341,7 +9341,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10710,7 +10710,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -11313,7 +11313,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -12046,7 +12046,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -12883,7 +12883,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13090,7 +13090,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13324,7 +13324,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13510,7 +13510,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14222,7 +14222,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14548,7 +14548,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -15109,7 +15109,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -15442,7 +15442,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -24518,7 +24518,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -24699,7 +24699,7 @@ plans:
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -25318,7 +25318,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -25499,7 +25499,7 @@ plans:
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -26137,7 +26137,7 @@ plans:
                   conditions:
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -26717,7 +26717,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -26922,7 +26922,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -27101,7 +27101,7 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28285,7 +28285,7 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28466,7 +28466,7 @@ plans:
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Verify by host that DUT has default GBB flags ('cros_has_default_gbb_flags')
               conditions:
@@ -28486,7 +28486,7 @@ plans:
                       dependencies:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -28584,7 +28584,7 @@ plans:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                   dependencies:
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
@@ -28690,7 +28690,7 @@ plans:
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Match serial-number (Allow to fail) ('cros_match_serial_number_inventory')
               conditions:
@@ -29216,7 +29216,7 @@ plans:
                       conditions:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                       dependencies:
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -29242,7 +29242,7 @@ plans:
                         - name: Delete whitelabel_tag from vpd ('cros_run_command') (ALWAYS_RUN)
                           dependencies:
                             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                        - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                        - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
@@ -29799,7 +29799,7 @@ plans:
                         - name: Hardware write protection is disabled ('cros_is_hardware_write_protection_disabled')
                         - name: CBI is present ('cros_cbi_is_present')
                         - name: UFS contains CBI contents ('cros_ufs_contains_cbi_contents')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Invalidate CBI cache ('cros_invalidate_cbi_cache')
                       dependencies:
@@ -29817,7 +29817,7 @@ plans:
                   conditions:
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -29843,7 +29843,7 @@ plans:
                     - name: Delete whitelabel_tag from vpd ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
             - name: Update special device labels ('sample_pass')
               dependencies:
                 - name: Collect SKU value (Allow to fail) ('cros_update_device_sku')
@@ -33799,7 +33799,7 @@ plans:
                       dependencies:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -33897,7 +33897,7 @@ plans:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                   dependencies:
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
@@ -33992,7 +33992,7 @@ plans:
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Missing serial-number ('sample_fail')
               conditions:

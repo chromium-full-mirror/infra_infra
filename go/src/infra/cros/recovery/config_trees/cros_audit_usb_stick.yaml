@@ -6254,13 +6254,9 @@ plans:
                       docs:
                         - Set default boot from disk by crossystem.
                     - name: Simple reboot (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:reboot
-                        - background:true
+                      exec_name: cros_simple_reboot
                       docs:
-                        - Simple un-blocker reboot.
+                        - Simple un-blocker reboot trigger.
             - name: Print block devices of the DUT (Allow to fail)
               exec_name: cros_run_command
               exec_args:

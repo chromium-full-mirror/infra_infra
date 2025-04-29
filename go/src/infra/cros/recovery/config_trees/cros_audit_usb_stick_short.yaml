@@ -2076,7 +2076,7 @@ plans:
                 - name: Set default boot as disk and reboot ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Set default boot as disk ('cros_update_crossystem')
-                    - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
+                    - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
             - name: Print block devices of the DUT (Allow to fail) ('cros_run_command')
             - name: Check if USB-key drop connection after sleep ('servo_usbkey_is_detected') (time:'3m20s')
           recoveries:
