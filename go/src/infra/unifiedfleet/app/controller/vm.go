@@ -63,7 +63,7 @@ func CreateVM(ctx context.Context, vm *ufspb.VM, nwOpt *ufsAPI.NetworkOption) (*
 			if err := hc.netUdt.addVMHostHelper(ctx, nwOpt, vm); err != nil {
 				return errors.Annotate(err, "Fail to assign ip to vm %s", vm.GetName()).Err()
 			}
-			vm.ResourceState = ufspb.State_STATE_DEPLOYING
+
 		}
 
 		if _, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm}); err != nil {
