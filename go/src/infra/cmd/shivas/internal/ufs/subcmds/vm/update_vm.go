@@ -63,6 +63,7 @@ Partial update a vm by parameters. Only specified parameters will be updated in 
 		c.Flags.IntVar(&c.cpuCores, "cpu-cores", 0, "number of CPU cores. To clear this field set it to -1.")
 		c.Flags.StringVar(&c.memory, "memory", "", "amount of memory in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.storage, "storage", "", "disk storage capacity in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
+		c.Flags.Int64Var(&c.vmid, "vmid", -1, "Proxmox unique ID of the VM (100 - 999999999).")
 		return c
 	},
 }
@@ -90,6 +91,7 @@ type updateVM struct {
 	cpuCores         int
 	memory           string
 	storage          string
+	vmid             int64
 }
 
 func (c *updateVM) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -167,6 +169,7 @@ func (c *updateVM) innerRun(a subcommands.Application, args []string, env subcom
 			"cpu-cores": "cpuCores",
 			"memory":    "memory",
 			"storage":   "storage",
+			"vmid":      "vmid",
 		}),
 	})
 	if err != nil {
@@ -245,6 +248,11 @@ func (c *updateVM) parseArgs(vm *ufspb.VM) {
 	} else {
 		vm.Storage, _ = utils.ConvertToBytes(c.storage)
 	}
+	if c.vmid == -1 {
+		vm.Vmid = 0
+	} else {
+		vm.Vmid = int64(c.vmid)
+	}
 }
 
 func (c *updateVM) validateArgs() error {
@@ -254,7 +262,7 @@ func (c *updateVM) validateArgs() error {
 		}
 		if c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.state == "" && c.deploymentTicket == "" &&
 			c.hostName == "" && c.osVersion == "" && c.osImage == "" && c.macAddress == "" && len(c.tags) == 0 && c.description == "" &&
-			c.cpuCores == 0 && c.memory == "" && c.storage == "" {
+			c.cpuCores == 0 && c.memory == "" && c.storage == "" && c.vmid == 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
