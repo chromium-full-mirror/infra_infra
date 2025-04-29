@@ -94,7 +94,7 @@ func LoadAll(c context.Context) (*FileSet, error) {
 			URL := fmt.Sprintf("https://chromium.googlesource.com/chromium/src/+/HEAD/%s?format=TEXT", path)
 			b, err := client.GetGitilesCached(c, URL)
 			if err != nil {
-				r.err = fmt.Errorf("error reading: %s", err)
+				r.err = fmt.Errorf("error reading: %w", err)
 				rCh <- r
 				return
 			}
@@ -104,7 +104,7 @@ func LoadAll(c context.Context) (*FileSet, error) {
 				p := NewStringParser(line)
 				stmt, err := p.Parse()
 				if err != nil {
-					r.err = fmt.Errorf("error parsing %s:%d %q: %s", name, n, line, err)
+					r.err = fmt.Errorf("error parsing %s:%d %q: %w", name, n, line, err)
 					rCh <- r
 					return
 				}

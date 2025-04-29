@@ -306,7 +306,7 @@ func flushOldAnnotations(c context.Context) (int, error) {
 
 	err = datastoreDeleteAnnotations(c, results)
 	if err != nil {
-		return 0, fmt.Errorf("while deleting annotations: %s", err)
+		return 0, fmt.Errorf("while deleting annotations: %w", err)
 	}
 
 	return len(results), nil

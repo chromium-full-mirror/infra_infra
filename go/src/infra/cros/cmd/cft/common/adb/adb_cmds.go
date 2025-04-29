@@ -19,7 +19,7 @@ const retryInterval = 1 * time.Second
 
 func TeardownAdb(logger *log.Logger, addr string) error {
 	if out, err := AdbCmd([]string{"-s", FmtAddr(addr), "disconnect"}, logger); err != nil {
-		return fmt.Errorf("ADB disconnect failed. %s: %s", err, string(out))
+		return fmt.Errorf("ADB disconnect failed. %w: %s", err, string(out))
 	}
 	return nil
 }
@@ -28,7 +28,7 @@ func AdbConnect(logger *log.Logger, addr string) (err error) {
 	// Assumes the ADB port on the CrOS device is visible directly.
 	outStr, err := AdbCmd([]string{"connect", FmtAddr(addr)}, logger)
 	if err != nil {
-		return fmt.Errorf("ADB Start failed. %s: %s", err, outStr)
+		return fmt.Errorf("ADB Start failed. %w: %s", err, outStr)
 	}
 
 	if !strings.Contains(outStr, fmt.Sprintf("connected to %s", FmtAddr(addr))) {
@@ -80,7 +80,7 @@ func SetupAdbConnections(logger *log.Logger, addrs []string) (err error) {
 			innerErr := AdbConnect(logger, addr)
 			if innerErr != nil {
 				logger.Printf("failed to connect to %s, %s", addr, innerErr)
-				err = fmt.Errorf("%s\n%s", err, innerErr)
+				err = fmt.Errorf("%w\n%w", err, innerErr)
 			}
 		}
 

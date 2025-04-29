@@ -27,7 +27,7 @@ import (
 func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
 	fs, err := fstat(req.GetFilepath())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file status of %s: %v", req.GetFilepath(), err)
+		return nil, fmt.Errorf("failed to get file status of %s: %w", req.GetFilepath(), err)
 	}
 	return &bols.GetFileStatResponse{
 		FileStats: fs,
@@ -39,7 +39,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 	fn := req.GetFilename()
 	file, err := os.Open(fn)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %v", fn, err)
+		return fmt.Errorf("failed to open file %s: %w", fn, err)
 	}
 	defer file.Close()
 	data := make([]byte, 1024*1024)
@@ -49,7 +49,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to read file %s: %v", fn, err)
+			return fmt.Errorf("failed to read file %s: %w", fn, err)
 		}
 		stream.Send(&bols.GetFileResponse{
 			Data: data[:n],
@@ -70,7 +70,7 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to receive streaming data: %v", err)
+			return fmt.Errorf("failed to receive streaming data: %w", err)
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -78,7 +78,7 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			fn = info.GetFilename()
 			f, err = os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 			if err != nil {
-				return fmt.Errorf("failed to open file %s: %v", fn, err)
+				return fmt.Errorf("failed to open file %s: %w", fn, err)
 			}
 			defer f.Close()
 		case req.GetData() != nil:
@@ -86,7 +86,7 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 				return errors.New("data was send before file name")
 			}
 			if _, err := f.Write(req.GetData()); err != nil {
-				return fmt.Errorf("failed to write file %s: %v", fn, err)
+				return fmt.Errorf("failed to write file %s: %w", fn, err)
 			}
 		}
 	}
@@ -103,7 +103,7 @@ func (s *service) DownloadFile(context.Context, *bols.DownloadFileRequest) (*bol
 func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (*bols.RemoveFileResponse, error) {
 	fn := req.GetFilename()
 	if err := os.Remove(fn); err != nil {
-		return nil, fmt.Errorf("failed to remove file %s: %v", fn, err)
+		return nil, fmt.Errorf("failed to remove file %s: %w", fn, err)
 	}
 	return &bols.RemoveFileResponse{}, nil
 }
@@ -113,13 +113,13 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 	path := req.GetPath()
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get information on directory %s: %v", path, err)
+		return nil, fmt.Errorf("failed to get information on directory %s: %w", path, err)
 	}
 	var stats []*bols.FileStat
 	for _, e := range entries {
 		stat, err := fstat(e.Name())
 		if err != nil {
-			return nil, fmt.Errorf("failed to get information on %s: %v", e.Name(), err)
+			return nil, fmt.Errorf("failed to get information on %s: %w", e.Name(), err)
 		}
 		stats = append(stats, stat)
 	}
@@ -135,7 +135,7 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.MakeDirResponse, error) {
 	dirName := req.GetPath()
 	if err := os.MkdirAll(dirName, 0750); err != nil {
-		return nil, fmt.Errorf("failed to make directory %s: %v", dirName, err)
+		return nil, fmt.Errorf("failed to make directory %s: %w", dirName, err)
 	}
 	return &bols.MakeDirResponse{}, nil
 }
@@ -146,7 +146,7 @@ func (s *service) MakeTempDir(ctx context.Context, req *bols.MakeTempDirRequest)
 	pattern := req.GetPattern()
 	path, err := os.MkdirTemp(dirName, pattern)
 	if err != nil {
-		return nil, fmt.Errorf("failed to make temporary directory in %s with pattern %q: %v",
+		return nil, fmt.Errorf("failed to make temporary directory in %s with pattern %q: %w",
 			dirName, pattern, err)
 	}
 	return &bols.MakeTempDirResponse{
@@ -161,13 +161,13 @@ func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*b
 	path := req.GetPath()
 	fi, err := os.Stat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file status of %s: %v", path, err)
+		return nil, fmt.Errorf("failed to get file status of %s: %w", path, err)
 	}
 	if !fi.IsDir() {
 		return nil, fmt.Errorf("the path %s is not a directory", path)
 	}
 	if err := os.RemoveAll(path); err != nil {
-		return nil, fmt.Errorf("failed to remove directory %s: %v", path, err)
+		return nil, fmt.Errorf("failed to remove directory %s: %w", path, err)
 	}
 	return &bols.RemoveDirResponse{}, nil
 }
@@ -177,7 +177,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 	ctx := stream.Context()
 	data, err := exec.CommandContext(ctx, "dmesg", "-H").CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("failed to run dmesg: %s : %v", string(data), err)
+		return fmt.Errorf("failed to run dmesg: %s : %w", string(data), err)
 	}
 	const size int = 1024 * 1024
 	for len(data) > 0 {
@@ -209,15 +209,15 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 		req, err := stream.Recv()
 		if err == io.EOF {
 			if err := stdin.Close(); err != nil {
-				return fmt.Errorf("failed to close stdin to dd: %v", err)
+				return fmt.Errorf("failed to close stdin to dd: %w", err)
 			}
 			if err := cmd.Wait(); err != nil {
-				return fmt.Errorf("failed to wait for dd to finish: %v", err)
+				return fmt.Errorf("failed to wait for dd to finish: %w", err)
 			}
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to receive streaming data: %v", err)
+			return fmt.Errorf("failed to receive streaming data: %w", err)
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -234,7 +234,7 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 			cmd = exec.CommandContext(ctx, "dd", args...)
 			stdin, err = cmd.StdinPipe()
 			if err != nil {
-				return fmt.Errorf("failed to create stdin to dd: %v", err)
+				return fmt.Errorf("failed to create stdin to dd: %w", err)
 			}
 		case req.GetData() != nil:
 			if fn == "" {
@@ -242,7 +242,7 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 			}
 			if _, err := io.Writer.Write(stdin, req.GetData()); err != nil {
 				stdin.Close()
-				return fmt.Errorf("failed to write data to file %s: %v", fn, err)
+				return fmt.Errorf("failed to write data to file %s: %w", fn, err)
 			}
 		}
 	}
@@ -268,7 +268,7 @@ func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bol
 		args = append(args, req.GetDest())
 	}
 	if out, err := exec.CommandContext(ctx, "mount", args...).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to mount %s to %s: %s: %v", req.GetSrc(), req.GetDest(), string(out), err)
+		return nil, fmt.Errorf("failed to mount %s to %s: %s: %w", req.GetSrc(), req.GetDest(), string(out), err)
 	}
 	return &bols.RunMountResponse{}, nil
 }
@@ -276,7 +276,7 @@ func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bol
 // RunUMount runs the "umount" command on the labstation.
 func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
 	if out, err := exec.CommandContext(ctx, "umount", req.GetPath()).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to umount %s: %s: %v", req.GetPath(), string(out), err)
+		return nil, fmt.Errorf("failed to umount %s: %s: %w", req.GetPath(), string(out), err)
 	}
 	return &bols.RunUMountResponse{}, nil
 }
@@ -285,7 +285,7 @@ func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*b
 func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
 	port := req.GetStationId().GetServodPort()
 	if err := markInUseFile(port); err != nil {
-		return nil, fmt.Errorf("failed to mark in use file: %v", err)
+		return nil, fmt.Errorf("failed to mark in use file: %w", err)
 	}
 	if getServodStatus(ctx, port) == bols.ServodStatus_SERVOD_RUNNING {
 		// Since servod has already been started, do not need to start again.
@@ -309,7 +309,7 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		args = append(args, "REC_MODE=1")
 	}
 	if out, err := exec.CommandContext(ctx, "start", args...).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to start servod at %d: %s: %v", port, string(out), err)
+		return nil, fmt.Errorf("failed to start servod at %d: %s: %w", port, string(out), err)
 	}
 	if out, err := exec.CommandContext(ctx, "servodtool", "instance", "wait-for-active",
 		"--timeout", "120", "-p", fmt.Sprintf("%d", port)).Output(); err != nil {
@@ -381,10 +381,10 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 			// Check if the port argument is valid.
 			num, err := strconv.Atoi(a)
 			if err != nil {
-				return nil, fmt.Errorf("invalid port number %s: %v", a, err)
+				return nil, fmt.Errorf("invalid port number %s: %w", a, err)
 			}
 			if num != int(port) {
-				return nil, fmt.Errorf("port number %s does not match port %d in station id: %v", a, port, err)
+				return nil, fmt.Errorf("port number %s does not match port %d in station id: %w", a, port, err)
 			}
 			break
 		}
@@ -397,7 +397,7 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("failed to run futility: %s: %v", stderr.String(), err)
+		return nil, fmt.Errorf("failed to run futility: %s: %w", stderr.String(), err)
 	}
 	return &bols.RunFutilityResponse{
 		Output: &bols.OutputStream{
@@ -418,10 +418,10 @@ func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (
 			// Check if the port argument is valid.
 			num, err := strconv.Atoi(a[len("--port="):])
 			if err != nil {
-				return nil, fmt.Errorf("invalid port number %s: %v", a, err)
+				return nil, fmt.Errorf("invalid port number %s: %w", a, err)
 			}
 			if num != int(port) {
-				return nil, fmt.Errorf("port number %s does not match port %d in station id: %v", a, port, err)
+				return nil, fmt.Errorf("port number %s does not match port %d in station id: %w", a, port, err)
 			}
 			break
 		}
@@ -431,7 +431,7 @@ func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("failed to run flash_ec: %s: %v", stderr.String(), err)
+		return nil, fmt.Errorf("failed to run flash_ec: %s: %w", stderr.String(), err)
 	}
 	return &bols.RunFlashECResponse{
 		Output: &bols.OutputStream{
@@ -464,11 +464,11 @@ func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*b
 func fstat(path string) (*bols.FileStat, error) {
 	fi, err := os.Stat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file status of %s: %v", path, err)
+		return nil, fmt.Errorf("failed to get file status of %s: %w", path, err)
 	}
 	lstat, err := os.Lstat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to check if %s is a symlink: %v", path, err)
+		return nil, fmt.Errorf("failed to check if %s is a symlink: %w", path, err)
 	}
 	return &bols.FileStat{
 		Name:      fi.Name(),
