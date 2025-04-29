@@ -55,12 +55,22 @@ func newProvisionState(req *tlw.ProvisionRequest, run *runner, tlw tlw_server.Se
 }
 
 func (p *provisionState) connect(ctx context.Context) error {
-	c, err := p.run.GetClient(ctx)
-	if err != nil {
-		return fmt.Errorf("connect: DUT unreachable, %w", err)
+	for {
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("connect: timeout when trying to connect: %s", p.dutName)
+		default:
+			c, err := p.run.GetClient(ctx)
+			if err != nil {
+				log.Printf("connect: retrying connection to %s", p.dutName)
+				// Add a slight delay before retry.
+				time.Sleep(2 * time.Second)
+			} else {
+				p.c = c
+				return nil
+			}
+		}
 	}
-	p.c = c
-	return nil
 }
 
 // swapStatefulPartition will swap the stateful partition with a minimal filesystem to trigger powerwash.
