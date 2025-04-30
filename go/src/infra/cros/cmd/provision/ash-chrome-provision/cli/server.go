@@ -19,12 +19,13 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/lro"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	ashchromeservice "go.chromium.org/infra/cros/cmd/provision/ash-chrome-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/ash-chrome-provision/state-machine"
+	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 )
 
 // AshChromeProvisionServer is the top level class for the ash-chrome provisioning server.
@@ -33,7 +34,7 @@ type AshChromeProvisionServer struct {
 	// service. Its address may be specified either when server is created,
 	// or later in user's AshChromeProvisionRequest.
 	dutServer api.DutServiceClient
-	dut       *api1.Dut
+	dut       *lab_api.Dut
 
 	log        *log.Logger
 	listenPort int
@@ -41,16 +42,6 @@ type AshChromeProvisionServer struct {
 	manager *lro.Manager
 
 	cacheServer url.URL
-}
-
-func ipEndpointToHostPort(i *api1.IpEndpoint) (string, error) {
-	if len(i.GetAddress()) == 0 {
-		return "", errors.New("IpEndpoint missing address")
-	}
-	if i.GetPort() == 0 {
-		return "", errors.New("IpEndpoint missing port")
-	}
-	return fmt.Sprintf("%v:%v", i.GetAddress(), i.GetPort()), nil
 }
 
 // NewAshChromeProvisionServer returns a new AshChromeProvisionServer, a closer function, and an error.
@@ -93,7 +84,7 @@ func (ps *AshChromeProvisionServer) StartUp(ctx context.Context, req *api.Provis
 		return &response, err
 	}
 
-	dutServAddr, err := ipEndpointToHostPort(req.DutServer)
+	dutServAddr, err := cache.IPEndpointToHostPort(req.DutServer)
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 		return &response, errors.Wrap(err, "failed to parse IpEndpoint of Dut Server")
@@ -105,7 +96,7 @@ func (ps *AshChromeProvisionServer) StartUp(ctx context.Context, req *api.Provis
 	}
 	ps.dutServer = dutServer
 
-	cacheServerAddr, err := ipEndpointToHostPort(req.Dut.GetCacheServer().GetAddress())
+	cacheServerAddr, err := cache.IPEndpointToHostPort(req.Dut.GetCacheServer().GetAddress())
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 		return &response, errors.Wrap(err, "failed to parse IpEndpoint of cache server")

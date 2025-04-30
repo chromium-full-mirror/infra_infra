@@ -12,15 +12,15 @@ import (
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 )
 
-var buildIdPatterns = []*regexp.Regexp{
+var buildIDPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`build_details/(P?[0-9]+)/`),
 	regexp.MustCompile(`artifacts_list/(P?[0-9]+)/`)}
 
@@ -39,7 +39,7 @@ type FoilService struct {
 	UpdateEnginePid  string
 	CurrentBuild     string
 	TargetBuild      string
-	CacheServerUrl   url.URL
+	CacheServerURL   url.URL
 	DutClient        api.DutServiceClient
 	ServoNexusAddr   string
 	Dut              *lab_api.Dut
@@ -49,23 +49,21 @@ type FoilService struct {
 }
 
 func NewFoilService(dut *lab_api.Dut, req *api.InstallRequest, dutClient api.DutServiceClient, servoNexusAddr string) (*FoilService, error) {
-	cacheServerAddr, err := ipEndpointToHostPort(dut.GetCacheServer().GetAddress())
+	cacheServerAddr, err := cache.IPEndpointToHostPort(dut.GetCacheServer().GetAddress())
 	if err != nil {
 		return nil, fmt.Errorf("invalid cache server address %v", err)
 	}
-	var cacheUrl url.URL
-	cacheUrl.Scheme = "http"
-	cacheUrl.Host = cacheServerAddr
+	cacheURL := url.URL{Scheme: "http", Host: cacheServerAddr}
 	// TODO: Verify that the req.ImagePath.HostType is Android_build.
 	imagePath := req.GetImagePath().GetPath()
-	build, err := TargetBuild(imagePath)
+	build, err := ExtractBuildID(imagePath)
 	if err != nil {
 		return nil, err
 	}
 	return &FoilService{
 		DutIp:          dut.GetChromeos().GetSsh().GetAddress(),
 		TargetBuild:    build,
-		CacheServerUrl: cacheUrl,
+		CacheServerURL: cacheURL,
 		ImagePath: &conf.StoragePath{
 			Path: imagePath,
 		},
@@ -76,14 +74,15 @@ func NewFoilService(dut *lab_api.Dut, req *api.InstallRequest, dutClient api.Dut
 	}, nil
 }
 
-func TargetBuild(imagePath string) (string, error) {
-	for _, re := range buildIdPatterns {
+// ExtractBuildID parses the Android build ID out from an Android image path.
+func ExtractBuildID(imagePath string) (string, error) {
+	for _, re := range buildIDPatterns {
 		matches := re.FindStringSubmatch(imagePath)
 		if len(matches) == 2 {
 			return matches[1], nil
 		}
 	}
-	return "", fmt.Errorf("could not extract buildId from %s", imagePath)
+	return "", fmt.Errorf("could not extract build ID from %s", imagePath)
 }
 
 // CleanupOnFailure is called if one of service's states fails to Execute() and
@@ -91,14 +90,4 @@ func TargetBuild(imagePath string) (string, error) {
 func (c *FoilService) CleanupOnFailure(states []common_utils.ServiceState, executionErr error) error {
 	// TODO: evaluate whether cleanup is needed.
 	return nil
-}
-
-func ipEndpointToHostPort(i *api1.IpEndpoint) (string, error) {
-	if len(i.GetAddress()) == 0 {
-		return "", fmt.Errorf("IpEndpoint missing address")
-	}
-	if i.GetPort() == 0 {
-		return "", fmt.Errorf("IpEndpoint missing port")
-	}
-	return fmt.Sprintf("%v:%v", i.GetAddress(), i.GetPort()), nil
 }

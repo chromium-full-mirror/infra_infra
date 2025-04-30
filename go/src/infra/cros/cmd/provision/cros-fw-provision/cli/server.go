@@ -19,10 +19,11 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/lro"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
+	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	firmwareservice "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/state-machine"
 )
@@ -38,7 +39,7 @@ type FWProvisionServer struct {
 	// service. Its address may be specified either when server is created,
 	// or later in user's ProvisionFirmwareRequest
 	servoClient api.ServodServiceClient
-	servoConfig *api1.Servo
+	servoConfig *labapi.Servo
 
 	log        *log.Logger
 	listenPort int
@@ -49,16 +50,6 @@ type FWProvisionServer struct {
 
 	board string
 	model string
-}
-
-func ipEndpointToHostPort(i *api1.IpEndpoint) (string, error) {
-	if len(i.GetAddress()) == 0 {
-		return "", errors.New("IpEndpoint missing address")
-	}
-	if i.GetPort() == 0 {
-		return "", errors.New("IpEndpoint missing port")
-	}
-	return fmt.Sprintf("%v:%v", i.GetAddress(), i.GetPort()), nil
 }
 
 // NewFWProvisionServer returns a new FWProvisionServer, a closer function, and an error.
@@ -104,7 +95,7 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 	ps.board = req.Dut.GetChromeos().DutModel.BuildTarget
 	ps.model = req.Dut.GetChromeos().DutModel.ModelName
 
-	dutServAddr, err := ipEndpointToHostPort(req.DutServer)
+	dutServAddr, err := cache.IPEndpointToHostPort(req.DutServer)
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 		return &response, errors.Wrap(err, "failed to parse IpEndpoint of Dut Server")
@@ -116,7 +107,7 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 	}
 	ps.dutServer = dutServer
 
-	cacheServerAddr, err := ipEndpointToHostPort(req.Dut.GetCacheServer().GetAddress())
+	cacheServerAddr, err := cache.IPEndpointToHostPort(req.Dut.GetCacheServer().GetAddress())
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 		return &response, errors.Wrap(err, "failed to parse IpEndpoint of cache server")
@@ -129,7 +120,7 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 	}
 
 	if req.ServoNexusAddr != nil && req.GetDut().GetChromeos().GetServo().GetPresent() {
-		servoServerAddr, err := ipEndpointToHostPort(req.ServoNexusAddr)
+		servoServerAddr, err := cache.IPEndpointToHostPort(req.ServoNexusAddr)
 		if err != nil {
 			response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
 			return &response, errors.Wrap(err, "failed to parse IpEndpoint of Servo Nexus")

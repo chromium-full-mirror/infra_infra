@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -21,10 +20,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
+	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 )
 
-var launchTargetPatterns = []*regexp.Regexp{
+var lunchTargetPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`build_details/P?[0-9]+/([a-z_\-]+)`),
 	regexp.MustCompile(`artifacts_list/P?[0-9]+/([a-z_\-]+)`)}
 
@@ -32,7 +32,7 @@ type Install struct {
 	ctx            context.Context
 	cs             *service.FoilService
 	RebootRequired bool
-	helperStatus   string
+	errorReason    string
 }
 
 func NewInstall(ctx context.Context, cs *service.FoilService) *Install {
@@ -54,61 +54,40 @@ func (c *Install) Execute(log *log.Logger) error {
 	status, installErr := install(log, c.cs.UpdateEnginePid, c.cs.DutIp, localImagePath)
 
 	if installErr != nil {
-		c.helperStatus = fmt.Sprintf("OTA EXIT STATUS: %s", status)
-		return fmt.Errorf("Unable to install over 1 atempts.")
+		c.errorReason = fmt.Sprintf("OTA EXIT STATUS: %s", status)
+		return fmt.Errorf("unable to install over 1 attempt (exit status=%s): %w", status, installErr)
 	}
 	return nil
 }
 
-// function to extract the launch from the android build path.
-// Example it will return brya-trunk_staging-userdebug from
+// extractLunchTarget extracts the lunch target from the Android Build artifact path.
+// For example, it will return "brya-trunk_staging-userdebug" from any of the following:
 // android-build/build_explorer/build_details/P78687640/brya-trunk_staging-userdebug/android-desktop-ota-packages.zip
 // android-build/build_explorer/artifacts_list/12330924/brya-trunk_staging-userdebug/brya-ota-12330924.zip
-func extractTargetLaunch(path string) (string, error) {
-	for _, re := range launchTargetPatterns {
+func extractLunchTarget(path string) (string, error) {
+	for _, re := range lunchTargetPatterns {
 		matches := re.FindStringSubmatch(path)
 		if len(matches) == 2 {
 			return matches[1], nil
 		}
 	}
-	return "", fmt.Errorf("could not extract launch from %s", path)
+	return "", fmt.Errorf("could not extract lunch target from %s", path)
 }
 
-// pullFromCache downloads the imge from cache server on cft container and
-// returns the local path.
+// pullFromCache downloads an image from the cache server onto the cft container,
+// and returns the local path to the downloaded image.
 func (c *Install) pullFromCache(log *log.Logger, path string) (string, error) {
-	targetLaunch, err := extractTargetLaunch(path)
+	lunchTarget, err := extractLunchTarget(path)
 	if err != nil {
 		return "", err
 	}
-	var client http.Client
-	cacheUrl := c.cs.CacheServerUrl
-	cacheUrl.Path = filepath.Join("download", "android-build", "builds", c.cs.TargetBuild, targetLaunch, "attempts", "latest", "artifacts", filepath.Base(path))
-	log.Println("pulling from cache url : ", cacheUrl.String())
-	resp, err := client.Get(cacheUrl.String())
+	cacheClient, err := cache.NewClient(c.cs.CacheServerURL)
 	if err != nil {
-		c.helperStatus = fmt.Sprintf("failed to pull from cache: %s", err)
-		return "", fmt.Errorf("FLEET: failed to pull from cache server %v", err)
+		return "", err
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		c.helperStatus = fmt.Sprintf("FLEET: error code while download: %v", resp.StatusCode)
-		return "", fmt.Errorf("error %s to download %q", resp.Status, cacheUrl.String())
-	}
-	out, err := os.CreateTemp(os.TempDir(), "image-*")
-	if err != nil {
-		c.helperStatus = "INFRA: unable to make tempfile on host"
-		return "", fmt.Errorf("failed to create a temp file %v", err)
-	}
-	log.Printf("created tmp file %v to store the pulled file", out.Name())
-
-	defer out.Close()
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		c.helperStatus = "INFRA: unable to copy cache to tempfile"
-		return "", fmt.Errorf("failed to copy request data to temp file %v", err)
-	}
-	return out.Name(), nil
+	localPath, errorReason, err := cacheClient.DownloadABArtifact(c.cs.TargetBuild, lunchTarget, filepath.Base(path))
+	c.errorReason = errorReason
+	return localPath, err
 }
 
 func (c *Install) Revert() error {
@@ -116,7 +95,7 @@ func (c *Install) Revert() error {
 }
 
 func (c *Install) GetErrorMessage() string {
-	return c.helperStatus
+	return c.errorReason
 }
 
 func (c *Install) GetStatus() api.InstallResponse_Status {

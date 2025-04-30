@@ -121,7 +121,7 @@ func targetOlder(dutAddr string, path string, log *log.Logger) bool {
 		log.Println("unable to parse current image, forcing a flash.")
 		return true
 	}
-	targetBuild, err := service.TargetBuild(path)
+	targetBuild, err := service.ExtractBuildID(path)
 	if err != nil {
 		log.Println("unable to parse target image, forcing a flash.")
 		return true
