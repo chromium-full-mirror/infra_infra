@@ -59,24 +59,36 @@ service Inventory {
   rpc ListCrosDevicesLabConfig(ListCrosDevicesLabConfigRequest) returns (ListCrosDevicesLabConfigResponse);
 
   // Get a device manual repair record from datastore
-  rpc GetDeviceManualRepairRecord(GetDeviceManualRepairRecordRequest) returns (GetDeviceManualRepairRecordResponse);
+  rpc GetDeviceManualRepairRecord(GetDeviceManualRepairRecordRequest) returns (GetDeviceManualRepairRecordResponse){
+    option deprecated = true;
+  };
 
   // Create a device manual repair record in datastore
-  rpc CreateDeviceManualRepairRecord(CreateDeviceManualRepairRecordRequest) returns (CreateDeviceManualRepairRecordResponse);
+  rpc CreateDeviceManualRepairRecord(CreateDeviceManualRepairRecordRequest) returns (CreateDeviceManualRepairRecordResponse) {
+    option deprecated = true;
+  };
 
   // Update a device manual repair record in datastore
-  rpc UpdateDeviceManualRepairRecord(UpdateDeviceManualRepairRecordRequest) returns (UpdateDeviceManualRepairRecordResponse);
+  rpc UpdateDeviceManualRepairRecord(UpdateDeviceManualRepairRecordRequest) returns (UpdateDeviceManualRepairRecordResponse) {
+    option deprecated = true;
+  };
 
   // ListManualRepairRecords lists repair records based on filters passed in the
   // request.
-  rpc ListManualRepairRecords(ListManualRepairRecordsRequest) returns (ListManualRepairRecordsResponse);
+  rpc ListManualRepairRecords(ListManualRepairRecordsRequest) returns (ListManualRepairRecordsResponse) {
+    option deprecated = true;
+  };
 
   // Get the open manual repair records for a batch of hostnames from datastore
-  rpc BatchGetManualRepairRecords(BatchGetManualRepairRecordsRequest) returns (BatchGetManualRepairRecordsResponse);
+  rpc BatchGetManualRepairRecords(BatchGetManualRepairRecordsRequest) returns (BatchGetManualRepairRecordsResponse) {
+    option deprecated = true;
+  };
 
   // BatchCreateManualRepairRecords creates multiple manual repair records in
   // datastore in batch
-  rpc BatchCreateManualRepairRecords(BatchCreateManualRepairRecordsRequest) returns (BatchCreateManualRepairRecordsResponse);
+  rpc BatchCreateManualRepairRecords(BatchCreateManualRepairRecordsRequest) returns (BatchCreateManualRepairRecordsResponse) {
+    option deprecated = true;
+  };
 }
 
 message ListCrosDevicesLabConfigRequest {
