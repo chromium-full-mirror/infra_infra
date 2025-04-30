@@ -191,15 +191,24 @@ def remove_directory(p):
 
 
 def read_toolchain(p):
-  """Reads `toolchain ...` directive from go.mod."""
+  """Reads the toolchain version from go.mod."""
+  go_ver = None
+  toolchain_ver = None
   with open(p, 'r') as f:
     for line in f:
       if line.startswith('toolchain '):
         val = line.split(' ')[1].strip()
         if not val.startswith('go'):
           raise ValueError('Bad toolchain directive: %s' % line.strip())
-        return val[2:]
-  raise ValueError('%s doesn\'t have toolchain directive' % p)
+        toolchain_ver = val[2:]
+      elif line.startswith('go '):
+        go_ver = line.split(' ')[1].strip()
+  # If "go ..." and "toolchain ..." in go.mod specify the exact same go version,
+  # "go mod tidy" removes "toolchain" directive. Fallback to "go ..." one in
+  # this case.
+  if not toolchain_ver and not go_ver:
+    raise ValueError('%s doesn\'t have "toolchain" or "go" directives' % p)
+  return toolchain_ver or go_ver
 
 
 def install_toolset(toolset_root, version):
