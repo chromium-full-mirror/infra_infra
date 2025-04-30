@@ -79,9 +79,6 @@ linters:
         # https://staticcheck.dev/docs/checks#S1009
         # Omit redundant nil check on slices, maps, and channels
         - "-S1009"
-        # https://staticcheck.dev/docs/checks#S1031
-        # Omit redundant nil check around loop
-        - "-S1031"
         # https://staticcheck.dev/docs/checks#S1038
         # Unnecessarily complex way of printing formatted string
         - "-S1038"

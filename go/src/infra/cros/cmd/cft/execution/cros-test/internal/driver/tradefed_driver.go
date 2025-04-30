@@ -258,15 +258,13 @@ func getArgs(req *api.CrosTestRequest) map[string][]string {
 		metadata := suites[0].GetExecutionMetadata()
 		if metadata != nil {
 			rawArgs := metadata.GetArgs()
-			if rawArgs != nil {
-				for _, rawArg := range rawArgs {
-					flag := rawArg.GetFlag()
-					value := rawArg.GetValue()
+			for _, rawArg := range rawArgs {
+				flag := rawArg.GetFlag()
+				value := rawArg.GetValue()
 
-					// Only process if both flag and value are non-empty.
-					if flag != "" && value != "" {
-						args[flag] = append(args[flag], value)
-					}
+				// Only process if both flag and value are non-empty.
+				if flag != "" && value != "" {
+					args[flag] = append(args[flag], value)
 				}
 			}
 		}

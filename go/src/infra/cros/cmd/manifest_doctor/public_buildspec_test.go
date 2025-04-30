@@ -324,15 +324,14 @@ func legacyTest(t *testing.T, externalList []string, externalDownloads map[strin
 			Ref:     "HEAD",
 		}: &contents,
 	}
-	if externalDownloads != nil {
-		for path, contents := range externalDownloads {
-			expectedDownloads[gerrit.ExpectedPathParams{
-				Host:    chromeExternalHost,
-				Project: "chromiumos/manifest-versions",
-				Path:    path,
-				Ref:     "HEAD",
-			}] = &contents
-		}
+
+	for path, contents := range externalDownloads {
+		expectedDownloads[gerrit.ExpectedPathParams{
+			Host:    chromeExternalHost,
+			Project: "chromiumos/manifest-versions",
+			Path:    path,
+			Ref:     "HEAD",
+		}] = &contents
 	}
 
 	if externalList == nil {
