@@ -18,9 +18,9 @@ const (
 // deviceStatusFile is the contents of ~/*cros_device_status.json file, but
 // only the fields we care about
 type deviceStatusFile struct {
-	Battery           batteryStatus        `json:"battery"`
+	Battery           *batteryStatus       `json:"battery"`
 	ContainerHostname string               `json:"container_hostname"`
-	Memory            memory               `json:"memory"`
+	Memory            *memory              `json:"memory"`
 	OSVersion         string               `json:"os_version"`
 	Status            string               `json:"status"`
 	Temperature       map[string][]float64 `json:"temperature"`

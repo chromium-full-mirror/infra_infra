@@ -57,14 +57,14 @@ func TestUpdateMetrics(t *testing.T) {
 		Timestamp:         946782246,
 		Status:            "online",
 		OSVersion:         "12317.0.0-rc1",
-		Battery: batteryStatus{
+		Battery: &batteryStatus{
 			Charge: 50.56,
 		},
 		Temperature: map[string][]float64{
 			"CPU": {29.65, 28.95, 30.01, 29.02},
 			"GPU": {32.23},
 		},
-		Memory: memory{
+		Memory: &memory{
 			Avail: 1221444,
 			Total: 1899548,
 		},

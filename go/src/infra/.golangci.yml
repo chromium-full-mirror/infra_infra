@@ -106,9 +106,6 @@ linters:
         # https://staticcheck.dev/docs/checks#SA4017
         # Discarding the return values of a function without side effects, making the call pointless
         - "-SA4017"
-        # https://staticcheck.dev/docs/checks#SA4022
-        # Comparing the address of a variable against nil
-        - "-SA4022"
         # https://staticcheck.dev/docs/checks#SA5001
         # Deferring Close before checking for a possible error
         - "-SA5001"

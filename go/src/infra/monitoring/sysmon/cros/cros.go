@@ -114,7 +114,7 @@ func updateMetrics(c context.Context, deviceFile deviceStatusFile) {
 	} else {
 		logging.Warningf(c, "CrOS version unknown")
 	}
-	if &(deviceFile.Battery) != nil {
+	if deviceFile.Battery != nil {
 		battCharge.Set(c, deviceFile.Battery.Charge,
 			deviceFile.ContainerHostname)
 	} else {
@@ -136,7 +136,7 @@ func updateMetrics(c context.Context, deviceFile deviceStatusFile) {
 	} else {
 		logging.Warningf(c, "Temperature info unknown")
 	}
-	if &(deviceFile.Memory) != nil {
+	if deviceFile.Memory != nil {
 		totalMem.Set(c, deviceFile.Memory.Total, deviceFile.ContainerHostname)
 		availMem.Set(c, deviceFile.Memory.Avail, deviceFile.ContainerHostname)
 	} else {
