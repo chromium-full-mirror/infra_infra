@@ -82,9 +82,6 @@ linters:
         # https://staticcheck.dev/docs/checks#S1038
         # Unnecessarily complex way of printing formatted string
         - "-S1038"
-        # https://staticcheck.dev/docs/checks#S1039
-        # Unnecessary use of fmt.Sprint
-        - "-S1039"
         # https://staticcheck.dev/docs/checks#SA1006
         # Printf with dynamic first argument and no further arguments
         - "-SA1006"

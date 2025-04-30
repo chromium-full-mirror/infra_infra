@@ -192,7 +192,7 @@ func (tecfg *CmdExecutionConfig) processCommandConfig(
 			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Error occurred: %s", err))
 			return nil, errors.Annotate(err, "error while instantiation command for cmd type %s and executor type %s: ", cmdConfig.CommandType, cmdConfig.ExecutorType).Err()
 		}
-		tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Processed."))
+		tecfg.StateKeeper.AppendToAIExecutionContext("Processed.")
 		cmds = append(cmds, cmd)
 	}
 
@@ -210,7 +210,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 	var singleErr error
 	var firstErr error
 	foundErr := false
-	tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Executing Commands"))
+	tecfg.StateKeeper.AppendToAIExecutionContext("Executing Commands")
 	for i, cmd := range cmds {
 		if firstErr == nil {
 			// Once allErr is not nil, should only have a single error.
