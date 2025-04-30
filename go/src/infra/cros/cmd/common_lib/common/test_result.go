@@ -175,6 +175,15 @@ func IsAnyTestFailure(testResults []*testapi.TestCaseResult) bool {
 		switch testResult.Verdict.(type) {
 		case *testapi.TestCaseResult_Fail_, *testapi.TestCaseResult_Abort_, *testapi.TestCaseResult_Crash_:
 			return true
+		case *testapi.TestCaseResult_NotRun_:
+			// Normally NotRun's are not considered as test failures.
+			// But when containing the reason of "exit status 1", it can be
+			// safely inferred that the testing environment had some form of
+			// error overall.
+			if strings.Contains(testResult.GetReason(), "exit status 1") {
+				return true
+			}
+			continue
 		default:
 			continue
 		}
