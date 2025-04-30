@@ -145,7 +145,7 @@ func excludeBot(b *swarmingAPI.SwarmingRpcsBotInfo) bool {
 			return true
 		}
 	}
-	var hasZone bool
+
 	for _, d := range b.Dimensions {
 		if d.Key == "os" && len(d.Value) > 0 {
 			switch d.Value[0] {
@@ -163,7 +163,6 @@ func excludeBot(b *swarmingAPI.SwarmingRpcsBotInfo) bool {
 			}
 		}
 		if d.Key == "zone" {
-			hasZone = true
 			for _, v := range d.Value {
 				if v == "us-atl" || v == "us-iad" || v == "us-mtv" {
 					return false
@@ -172,8 +171,5 @@ func excludeBot(b *swarmingAPI.SwarmingRpcsBotInfo) bool {
 			return true
 		}
 	}
-	if !hasZone {
-		return true
-	}
-	return false
+	return true
 }

@@ -152,10 +152,7 @@ func (c *enumerateRun) enumerateOne(ctx context.Context, workspace string, tag s
 }
 
 func matchesUserErrorPatterns(err error) bool {
-	if strings.Contains(err.Error(), "object doesn't exist") {
-		return true
-	}
-	return false
+	return strings.Contains(err.Error(), "object doesn't exist")
 }
 
 func validateEnumeration(ts []*steps.EnumerationResponse_AutotestInvocation) ([]*steps.EnumerationResponse_AutotestInvocation, errors.MultiError) {
