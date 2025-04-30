@@ -257,23 +257,21 @@ func getEqcCategoryValue(deviceInfo deviceinfo.TargetVariant, reportCategory *tt
 
 	// If report category overrides exist, populate the categoryVal on the
 	// match/replace rule from the class information
-	if nameOverrides != nil {
-		for _, override := range nameOverrides {
-			innerPropName := override.GetProperty()
-			innerPropVal := categoryVal
-			match := override.GetMatch()
-			replace := override.GetReplace()
-			if innerPropName != "" {
-				innerProp, ok := deviceInfo.Properties.PropertiesDetails[innerPropName]
-				if ok && len(innerProp.Values) > 0 {
-					innerPropVal = innerProp.Values[0].(string)
-				}
+	for _, override := range nameOverrides {
+		innerPropName := override.GetProperty()
+		innerPropVal := categoryVal
+		match := override.GetMatch()
+		replace := override.GetReplace()
+		if innerPropName != "" {
+			innerProp, ok := deviceInfo.Properties.PropertiesDetails[innerPropName]
+			if ok && len(innerProp.Values) > 0 {
+				innerPropVal = innerProp.Values[0].(string)
 			}
-			re := regexp.MustCompile(match)
-			if re.MatchString(innerPropVal) {
-				categoryVal = re.ReplaceAllString(innerPropVal, replace)
-				return categoryVal, nil
-			}
+		}
+		re := regexp.MustCompile(match)
+		if re.MatchString(innerPropVal) {
+			categoryVal = re.ReplaceAllString(innerPropVal, replace)
+			return categoryVal, nil
 		}
 	}
 	// Else return the value of the device property specified in the report
