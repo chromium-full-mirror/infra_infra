@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	goversion "go/version"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -123,8 +124,12 @@ func getGo(ctx context.Context, spec *buildSpec, goName, goroot string, goSrc *s
 //   - If the input property "version_file" is present, it always overwrites
 //     the VERSION file with that value.
 //   - If no VERSION file is present or the VERSION file is empty, then the
+//     VERSION file is written with contents `go1.X-devel_<commit>` or
+//     `go1.X-devel_<change>_<patchset>` (this matches the version that
+//     make.bash auto-infers from git, other than <date> being left out).
+//   - If no VERSION file is present or the VERSION file is empty, then the
 //     VERSION file is written with contents `devel <commit>` or
-//     `devel <change>/<patchset>` (existing behavior).
+//     `devel <change>/<patchset>` (previous behavior, still used for 1.24/1.23).
 //   - If a VERSION file is present AND the first line matches `go1.X.Y`,
 //     then only the first line is kept, and we append `-devel_<commit>` or
 //     `-devel_<change>_<patchset>` to the version.
@@ -139,13 +144,18 @@ func maybeUpdateVersionFile(ctx context.Context, goSrc *sourceSpec, goroot strin
 		return writeFile(ctx, versionPath, inputs.VersionFile)
 	}
 
-	// Load VERSION file.
+	// Read the VERSION file.
 	version, _, err := readFile(ctx, versionPath)
 	if err != nil {
 		return err
 	}
-	// Strip metadata from the version.
-	version = versionWithoutMetadata(version)
+	version, _, _ = strings.Cut(version, "\n") // Version is on line 1, the rest is metadata.
+
+	// Read the Go language version.
+	langVer, err := gorootVersion(ctx, goroot)
+	if err != nil {
+		return err
+	}
 
 	// Check the version and update it if necessary.
 	var newVersion string
@@ -161,7 +171,14 @@ func maybeUpdateVersionFile(ctx context.Context, goSrc *sourceSpec, goroot strin
 		case goSrc.commit != nil:
 			newVersion = fmt.Sprintf("%s-devel_%s", version, goSrc.commit.Id)
 		}
-	} else if version == "" {
+	} else if version == "" && goversion.Compare("go"+langVer, "go1.25") >= 0 {
+		switch {
+		case goSrc.change != nil:
+			newVersion = fmt.Sprintf("go%s-devel_%d_%d", langVer, goSrc.change.Change, goSrc.change.Patchset)
+		case goSrc.commit != nil:
+			newVersion = fmt.Sprintf("go%s-devel_%s", langVer, goSrc.commit.Id)
+		}
+	} else if version == "" { // Stay with previous behavior on 1.24/1.23 release branches.
 		switch {
 		case goSrc.change != nil:
 			newVersion = fmt.Sprintf("devel %d/%d", goSrc.change.Change, goSrc.change.Patchset)
@@ -180,11 +197,6 @@ func maybeUpdateVersionFile(ctx context.Context, goSrc *sourceSpec, goroot strin
 }
 
 var versionRegexp = regexp.MustCompile(`^go1([.]\d+){2}$`)
-
-func versionWithoutMetadata(v string) string {
-	s, _, _ := strings.Cut(v, "\n")
-	return s
-}
 
 // scriptExt returns the extension to use for
 // GOROOT/src/{make,all} scripts on this GOOS.
