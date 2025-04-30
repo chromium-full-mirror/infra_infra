@@ -55,7 +55,7 @@ require (
 	github.com/go-git/go-git/v5 v5.13.2
 	github.com/gofrs/flock v0.12.1
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/glog v1.2.4
+	github.com/golang/glog v1.2.5
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.22.1
