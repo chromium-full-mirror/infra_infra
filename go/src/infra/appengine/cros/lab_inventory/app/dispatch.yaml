@@ -1,3 +1,0 @@
-dispatch:
-  - url: "*/manual-repair/*"
-    service: manual-repair

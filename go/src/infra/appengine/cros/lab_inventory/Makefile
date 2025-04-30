@@ -5,7 +5,6 @@
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 APP_PATH := $(PROJECT_PATH)/app/appengine
-MR_APP_PATH := $(PROJECT_PATH)/app/ui/manual-repair
 DEV_CFG_PATH := $(PROJECT_PATH)/devcfg/services/dev/
 LIBS_PATH := $(PROJECT_PATH)/../../../cros/lab_inventory
 GCP_PROJECT = cros-lab-inventory
@@ -31,16 +30,6 @@ Helpers for managing Chrome OS Lab Inventory project in $(PROJECT_PATH):
   cleanup-dev: run gae.py cleanup for Inventory v2 on dev appengine
   up-prod: upload Inventory v2 service to prod appengine service without routing traffic
   switch-prod: switch Inventory v2 prod version and route traffic
-
-  mr-setup: install all node_modules for Manual Repair App
-  mr-dev: run Manual Repair App locally
-  mr-deps: build dependencies needed for deployment
-  mr-up-dev: upload Manual Repair App to dev appengine service and route traffic
-  mr-up-prod: upload Manual Repair App to prod appengine service without routing traffic
-
-  up-dev-all: upload all services to dev appengine and route traffic
-  up-prod-all: upload all services to prod appengine without routing traffic
-  switch-prod-all: switch Inventory v2 prod version and route traffic
 endef
 
 .PHONY: help
@@ -97,51 +86,3 @@ up-prod: check-sync
 .PHONY: switch-prod
 switch-prod:
 	gae.py switch -A $(GCP_PROJECT) --app-dir $(APP_PATH)
-
-# Manual Repair App
-
-.PHONY: mr-setup
-mr-setup:
-	cd $(MR_APP_PATH); \
-	npm install -g typescript; \
-	npm i
-
-.PHONY: mr-dev
-mr-dev:
-	cd $(MR_APP_PATH); \
-	npm run dev
-
-.PHONY: mr-deps
-mr-deps:
-	cd $(MR_APP_PATH); \
-	npm install --no-save
-
-.PHONY: mr-up-dev
-mr-up-dev: mr-deps
-	cd $(MR_APP_PATH); \
-	npm run build-stage; \
-	gcloud app deploy --promote $(MR_APP_PATH)/app.stage.yaml \
-	$(PROJECT_PATH)/app/dispatch.yaml --project $(GCP_PROJECT_DEV)
-
-.PHONY: mr-up-prod
-mr-up-prod: mr-deps
-	cd $(MR_APP_PATH); \
-	npm run build-prod; \
-	gcloud app deploy --no-promote $(MR_APP_PATH)/app.prod.yaml \
-	$(PROJECT_PATH)/app/dispatch.yaml --project $(GCP_PROJECT)
-
-# Full Deployment
-
-.PHONY: up-dev-all
-up-dev-all:
-	up-dev
-	mr-up-dev
-
-.PHONY: up-prod-all
-up-prod-all:
-	up-prod
-	mr-up-prod
-
-.PHONY: switch-prod-all
-switch-prod-all:
-	switch-prod
