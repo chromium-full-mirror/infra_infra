@@ -262,6 +262,7 @@ func androidActions(actions map[string]*Action) {
 				"boot_timeout:150",
 				"boot_interval:10",
 				"boot_retry:1",
+				"install_timeout:1200",
 				"ignore_reboot_failure:true",
 				"after_reboot_check:true",
 				// Increase from 150 to 240 see b/389769971#comment3

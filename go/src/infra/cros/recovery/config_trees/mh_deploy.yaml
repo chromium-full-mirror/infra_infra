@@ -6739,6 +6739,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -6971,6 +6972,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -7163,6 +7165,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -8147,6 +8150,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -9074,6 +9078,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -9349,6 +9354,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -9989,6 +9995,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -10221,6 +10228,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -10452,6 +10460,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -10684,6 +10693,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -10888,6 +10898,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -11120,6 +11131,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -11312,6 +11324,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -12296,6 +12309,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -13069,6 +13083,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -13344,6 +13359,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -13489,6 +13505,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -13764,6 +13781,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -14048,6 +14066,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
@@ -14348,6 +14367,7 @@ plans:
                     - boot_timeout:150
                     - boot_interval:10
                     - boot_retry:1
+                    - install_timeout:1200
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:240
