@@ -72,7 +72,7 @@ func isAospTradefed() bool {
 
 func getTradefedBinary() string {
 	if isAospTradefed() {
-		return tradefedAospBinary
+		return fmt.Sprintf("%s-tradefed", testType)
 	} else {
 		return tradefedGoogleBinary
 	}

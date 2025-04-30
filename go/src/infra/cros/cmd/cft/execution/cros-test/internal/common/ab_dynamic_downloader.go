@@ -100,6 +100,10 @@ func FetchXtsSuite(testType string, branch string, target string, buildId int) (
 		return "", fmt.Errorf("failed linking xTS logs directory: %w", err)
 	}
 
+	//Add xTS specific launcher to the path
+	launcherDir := filepath.Join(xtsSuiteMountDir, fmt.Sprintf("android-%s", testType), "tools")
+	os.Setenv("PATH", fmt.Sprintf("%s:%s", launcherDir, os.Getenv("PATH")))
+	os.Setenv("USE_ATS", "false")
 	return xtsSuiteMountDir, nil
 }
 
@@ -114,6 +118,7 @@ func getAndroidOnePlatformClient() (*http.Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error fetching credentials: %w", err)
 	}
+
 	httpClient := &http.Client{
 		Timeout: 100 * time.Second,
 		Transport: &oauth2.Transport{

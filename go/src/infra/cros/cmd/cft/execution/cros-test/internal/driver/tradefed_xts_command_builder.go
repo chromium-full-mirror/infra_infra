@@ -148,16 +148,17 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 	var buildInfoReported = false
 	var invocationInfoReported = false
 	var branch, target, build string
-	branch, target, build = extractBuildInfoFromExecutionMetadata(metadata)
-	if len(branch) > 0 && len(target) > 0 && len(build) > 0 {
-		// If provided, use these to set branch, target and build. this will make internal
-		// TF ants plugin to work correctly with ATP created invocation.
-		cmd = append(cmd, "--branch", branch, "--build-flavor", target,
-			"--build-id", build)
-		invocationInfoReported = true
-		logger.Println("Setting build info from execution metadata - branch/target/build: ", branch, "/", target, "/", build)
+	if !isAospTradefed() {
+		branch, target, build = extractBuildInfoFromExecutionMetadata(metadata)
+		if len(branch) > 0 && len(target) > 0 && len(build) > 0 {
+			// If provided, use these to set branch, target and build. this will make internal
+			// TF ants plugin to work correctly with ATP created invocation.
+			cmd = append(cmd, "--branch", branch, "--build-flavor", target,
+				"--build-id", build)
+			invocationInfoReported = true
+			logger.Println("Setting build info from execution metadata - branch/target/build: ", branch, "/", target, "/", build)
+		}
 	}
-
 	for _, t := range tests {
 		testName := formatTestName(t.GetTestCase().GetId().GetValue())
 		ctsBranch, ctsTarget, ctsBuild := extractBuildInfo(t.TestCase, metadata, board, plan, logger)
