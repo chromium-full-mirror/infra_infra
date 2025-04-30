@@ -24,7 +24,7 @@ def RunSteps(api):
       url=LUCI_PY,
       ref=api.buildbucket.gitiles_commit.id or 'refs/heads/main',
       dir_path=checkout,
-      submodules=False)
+      submodules=True)
 
   # Run the script that stages Swarming bot files into a directory.
   staged_bot_dir = api.path.mkdtemp('swarming_bot')

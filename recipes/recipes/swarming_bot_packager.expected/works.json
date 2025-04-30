@@ -123,6 +123,52 @@
   },
   {
     "cmd": [
+      "git",
+      "submodule",
+      "sync"
+    ],
+    "cwd": "[CACHE]/builder/repo",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:bucket"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "submodule sync"
+  },
+  {
+    "cmd": [
+      "git",
+      "submodule",
+      "update",
+      "--init",
+      "--recursive"
+    ],
+    "cwd": "[CACHE]/builder/repo",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:bucket"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "submodule update"
+  },
+  {
+    "cmd": [
       "python3",
       "[CACHE]/builder/repo/appengine/swarming/tools/bot_archive.py",
       "--output-dir",
