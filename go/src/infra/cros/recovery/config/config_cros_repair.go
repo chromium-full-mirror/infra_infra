@@ -2205,7 +2205,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_has_default_gbb_flags",
 			RecoveryActions: []string{
 				"Reset GBB flags by host and reboot",
-				"Set defautlt GBB flags by servo and reboot",
+				"Set default GBB flags by servo and reboot",
 				"Install Android OS by booting from servo USB-drive",
 				"Foil: Install Android OS from servo USB-drive",
 				"Quick provision OS",
@@ -2229,10 +2229,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 300},
 			RecoveryActions: []string{
-				"Set defautlt GBB flags by servo and reboot",
+				"Set default GBB flags by servo and reboot",
 			},
 		},
-		"Set defautlt GBB flags by servo and reboot": {
+		"Set default GBB flags by servo and reboot": {
 			Docs: []string{
 				"This repair to set GBB to defaul and reboot.",
 			},
@@ -2242,7 +2242,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Set defautlt GBB flags by servo",
 				"Cold reset DUT by servo",
-				"Wait to be pingable (normal boot)",
+				"Wait to be pingable (long boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -2923,6 +2923,17 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:      "cros_ping",
 			ExecTimeout:   &durationpb.Duration{Seconds: 150},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Wait to be pingable (long boot)": {
+			// No recovery actions as that is help action.
+			Docs: []string{
+				"Wait DUT to be pingable after some action on it.",
+				"Waiting time 300 seconds.",
+			},
+			ExecName:      "cros_ping",
+			ExecTimeout:   &durationpb.Duration{Seconds: 300},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},

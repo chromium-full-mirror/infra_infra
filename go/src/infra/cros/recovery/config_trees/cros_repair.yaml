@@ -8877,11 +8877,11 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                   exec_name: cros_ping
                   docs:
                     - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
+                    - Waiting time 300 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
                   exec_args:
@@ -32079,11 +32079,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -97745,7 +97745,7 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Set defautlt GBB flags by servo and reboot (ALWAYS_RUN)
+                - name: Set default GBB flags by servo and reboot (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
                     - This repair to set GBB to defaul and reboot.
@@ -97809,11 +97809,11 @@ plans:
                               dependencies:
                                 - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -97908,11 +97908,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -98209,11 +98209,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -112214,11 +112214,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -113199,11 +113199,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -113973,11 +113973,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -116181,7 +116181,7 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Set defautlt GBB flags by servo and reboot (ALWAYS_RUN)
+                - name: Set default GBB flags by servo and reboot (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
                     - This repair to set GBB to defaul and reboot.
@@ -116245,11 +116245,11 @@ plans:
                               dependencies:
                                 - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -116344,11 +116344,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:
@@ -116645,11 +116645,11 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (long boot) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_ping
                       docs:
                         - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
+                        - Waiting time 300 seconds.
                     - name: ADB reconnect (ALWAYS_RUN)
                       exec_name: ctr_adb_connect
                       exec_args:

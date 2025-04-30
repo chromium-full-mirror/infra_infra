@@ -2313,7 +2313,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -2452,7 +2452,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -2577,7 +2577,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -2700,7 +2700,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -2998,7 +2998,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -3223,7 +3223,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -3341,7 +3341,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -3450,7 +3450,7 @@ plans:
                 - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
                 - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-            - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
+            - name: Set default GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
               dependencies:
@@ -3472,7 +3472,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -3498,7 +3498,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
@@ -3576,7 +3576,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')

@@ -223,7 +223,7 @@ func androidActions(actions map[string]*Action) {
 				"Call servod to download provision image to USB-key",
 				"Boot on USB-key and install AndroidOS",
 				// Re-ping and reconnect as the device may have gone to sleep.
-				"Wait to be pingable (normal boot)",
+				"Wait to be pingable (long boot)",
 				"ADB reconnect",
 				"ADB set Android as always awake",
 				"Remove REIMAGE_BY_USBKEY repair-request",
