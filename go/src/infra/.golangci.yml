@@ -10,6 +10,7 @@ linters:
     - copyloopvar
     - errorlint
     - intrange
+    - noctx
   disable:
     # There are also many unchecked errors.
     - errcheck
@@ -158,6 +159,10 @@ linters:
       - linters:
         - errorlint
         path: ^experimental/golangbuild
+      # TODO(gregorynisbet): Reduce this exclude by cleaning up instances where the context should be passed.
+      - linters:
+        - noctx
+        path: ^(appengine|build|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
