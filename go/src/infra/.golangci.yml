@@ -74,9 +74,6 @@ linters:
         # https://staticcheck.dev/docs/checks#S1000
         # Use plain channel send or receive instead of single-case select
         - "-S1000"
-        # https://staticcheck.dev/docs/checks#S1007
-        # Simplify regular expression by using raw string literal
-        - "-S1007"
         # https://staticcheck.dev/docs/checks#S1009
         # Omit redundant nil check on slices, maps, and channels
         - "-S1009"

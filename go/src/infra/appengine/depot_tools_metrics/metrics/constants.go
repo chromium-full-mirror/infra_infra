@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	pythonVersionRegex = regexp.MustCompile("^\\d\\.\\d{1,2}.\\d{1,2}$")
+	pythonVersionRegex = regexp.MustCompile(`^\d\.\d{1,2}\.\d{1,2}$`)
 
-	gitVersionRegex = regexp.MustCompile("^\\d\\.\\d{1,2}.\\d{1,2}$")
+	gitVersionRegex = regexp.MustCompile(`^\d\.\d{1,2}\.\d{1,2}$`)
 
 	knownCommands = stringset.NewFromSlice(
 		"gclient config",

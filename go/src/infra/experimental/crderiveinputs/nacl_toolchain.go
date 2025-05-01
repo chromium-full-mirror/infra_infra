@@ -57,7 +57,7 @@ type naclToolchainRevision struct {
 	// revision/revision_hash not needed... I think
 }
 
-var naclJsonComments = regexp.MustCompile("(?m)^\\s*#.*$")
+var naclJsonComments = regexp.MustCompile(`(?m)^\s*#.*$`)
 
 func (n NaclToolchain) readJsonWithComments(oracle *Oracle, path string, out any) error {
 	raw, err := oracle.ReadFullString(path)

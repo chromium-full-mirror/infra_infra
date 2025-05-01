@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	validHostnameRe = regexp.MustCompile("^[a-zA-Z0-9\\-_.]+$") // good enough
+	validHostnameRe = regexp.MustCompile(`^[a-zA-Z0-9\-_.]+$`) // good enough
 )
 
 // Normalize normalizes the contents of CookFlags, returning non-nil if there is
