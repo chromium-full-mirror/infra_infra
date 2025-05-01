@@ -98,10 +98,10 @@ func GetIncident(c context.Context, id string, serviceID string) (*ServiceIncide
 		ID:         id,
 		ServiceKey: datastore.NewKey(c, "Service", serviceID, 0, nil),
 	}
-	switch err := datastore.Get(c, &incident); {
-	case err == nil:
+	switch err := datastore.Get(c, &incident); err {
+	case nil:
 		return &incident, nil
-	case err == datastore.ErrNoSuchEntity:
+	case datastore.ErrNoSuchEntity:
 		logging.Errorf(
 			c, "entity not found, using serviceID: %s and incident id: %s",
 			serviceID, id)
@@ -189,10 +189,10 @@ func consolidateQueryResults(c context.Context, queries []*datastore.Query) ([]S
 // or (nil, err) on datastore errors.
 func GetService(c context.Context, serviceID string) (*Service, error) {
 	service := Service{ID: serviceID}
-	switch err := datastore.Get(c, &service); {
-	case err == nil:
+	switch err := datastore.Get(c, &service); err {
+	case nil:
 		return &service, nil
-	case err == datastore.ErrNoSuchEntity:
+	case datastore.ErrNoSuchEntity:
 		logging.Errorf(c, "entity not found: %s", err)
 		return nil, nil
 	default:

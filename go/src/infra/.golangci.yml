@@ -44,9 +44,6 @@ linters:
         # https://staticcheck.dev/docs/checks#QF1001
         # Apply De Morgan's law
         - "-QF1001"
-        # https://staticcheck.dev/docs/checks#QF1002
-        # Convert untagged switch to tagged switch
-        - "-QF1002"
         # https://staticcheck.dev/docs/checks#QF1003
         # Convert if/else-if chain to tagged switch
         - "-QF1003"

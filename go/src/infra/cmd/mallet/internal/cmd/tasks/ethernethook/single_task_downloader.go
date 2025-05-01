@@ -147,13 +147,13 @@ func (s *singleTaskDownloader) FindResultsSummary(ctx context.Context, e *extend
 		if err != nil {
 			return nil, errors.Annotate(err, "find results summary").Err()
 		}
-		switch {
-		case s.SwarmingTaskID == "" || s.SwarmingTaskID == swarmingTaskID:
+		switch s.SwarmingTaskID {
+		case "":
 			s.SwarmingTaskID = swarmingTaskID
+		case swarmingTaskID: // Nothing to do.
 		default:
 			return nil, errors.Reason("found two swarming task IDs %q and %q", s.SwarmingTaskID, swarmingTaskID).Err()
 		}
-		s.SwarmingTaskID = swarmingTaskID
 		out = append(out, entry)
 	}
 	if len(out) == 0 {
