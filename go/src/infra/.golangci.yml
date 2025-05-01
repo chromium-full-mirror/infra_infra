@@ -107,9 +107,6 @@ linters:
         # https://staticcheck.dev/docs/checks#ST1005
         # Incorrectly formatted error string
         - "-ST1005"
-        # https://staticcheck.dev/docs/checks#ST1008
-        # A function's error value should be its last return value
-        - "-ST1008"
         # https://staticcheck.dev/docs/checks#ST1011
         # Poorly chosen name for variable of type time.Duration
         - "-ST1011"

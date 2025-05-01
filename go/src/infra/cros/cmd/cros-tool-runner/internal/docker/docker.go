@@ -196,7 +196,7 @@ func (d *Docker) Run(ctx context.Context, block bool, netbind bool, service stri
 	return nil
 }
 
-func pullImage(ctx context.Context, image string, service string) (error, int) {
+func pullImage(ctx context.Context, image string, service string) (int, error) {
 	startTime := time.Now()
 	cmd := exec.Command("docker", "pull", image)
 	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 3*time.Minute, true)
@@ -206,32 +206,32 @@ func pullImage(ctx context.Context, image string, service string) (error, int) {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			exitCode := exitErr.ExitCode()
 
-			return errors.Annotate(err, "Pull image").Err(), exitCode
+			return exitCode, errors.Annotate(err, "Pull image").Err()
 		}
-		return errors.Annotate(err, "Pull image").Err(), 0
+		return 0, errors.Annotate(err, "Pull image").Err()
 	}
 	log.Printf("pull image %q: successful pulled.", image)
 	logPullTimeProd(ctx, startTime, service)
-	return nil, 0
+	return 0, nil
 }
 
-func pullWithRetry(ctx context.Context, image string, service string) (error, int) {
+func pullWithRetry(ctx context.Context, image string, service string) (int, error) {
 	var exitCode int
 	var err error
 	for range [RETRYNUM]int{} {
-		err, exitCode = pullImage(ctx, image, service)
+		exitCode, err = pullImage(ctx, image, service)
 		// do not retry if no err, or a non-critical failure.
 		if err == nil || !common.IsCriticalPullCrash(exitCode) {
 			break
 		}
 		log.Printf("Failed to pull with critical failure, retry .")
 	}
-	return err, exitCode
+	return exitCode, err
 
 }
 func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, service string) (string, error) {
 	d.Started = false
-	err, exitCode := pullWithRetry(ctx, d.RequestedImageName, service)
+	exitCode, err := pullWithRetry(ctx, d.RequestedImageName, service)
 	d.PullExitCode = exitCode
 	if err != nil {
 		if common.IsCriticalPullCrash(exitCode) {
@@ -470,7 +470,7 @@ func CreateImageNameFromInputInfo(di *api.DutInput_DockerImage, defaultRepoPath,
 }
 
 func maybeFindToken(forceNewAuth bool) (string, error) {
-	err, authFileDir := authFile(forceNewAuth)
+	authFileDir, err := authFile(forceNewAuth)
 	if err == nil && authFileDir != "" {
 		log.Println("Previously authenticated authorization token found. Skipping auth.")
 		return readToken(authFileDir)
@@ -566,9 +566,9 @@ func listAllSAOnBot(ctx context.Context) error {
 }
 
 // authFile returns the gcloud auth file if found, else ""
-func authFile(forceNewAuth bool) (error, string) {
+func authFile(forceNewAuth bool) (string, error) {
 	if forceNewAuth {
-		return nil, ""
+		return "", nil
 	}
 	dockerConfigPath, _ := homedir.Expand(baseDockerConfig)
 	podmanConfigPath, _ := homedir.Expand(basePodmanConfig)
@@ -579,18 +579,18 @@ func authFile(forceNewAuth bool) (error, string) {
 			modifiedTime := f.ModTime()
 			if time.Since(modifiedTime).Hours() >= 24 {
 				log.Println("Auth Token is more than 24 hours old, forcing a refresh.")
-				return nil, ""
+				return "", nil
 			}
 			log.Println("Found Auth file.")
-			return nil, dir
+			return dir, nil
 		} else if errors.Is(err, os.ErrNotExist) {
 			log.Printf("file doesn't exists: %s\n", dir)
 			continue
 		} else {
-			return err, ""
+			return "", err
 		}
 	}
-	return nil, ""
+	return "", nil
 }
 
 // readToken will read the given json, and return the decoded oath token for docker login.
