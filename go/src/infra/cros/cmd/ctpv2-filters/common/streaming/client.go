@@ -20,9 +20,11 @@ type ClientCommunicationHandler struct {
 	// To Client Channels.
 	logToClientChannel              chan *api.LogFragment
 	internalTestplanToClientChannel chan *api.InternalTestplanFragment
+	authorizationToClientChannel    chan *api.AuthorizationFragment
 
 	// From Client Channels.
 	internalTestplanFromClientChannel chan *api.InternalTestplanFragment
+	authorizationFromClientChannel    chan *api.AuthorizationFragment
 
 	// Atomic error broadcast.
 	// To be read by each From Client channel on close during a Get operation.
@@ -37,7 +39,9 @@ func NewClientCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 		stream:                            stream,
 		logToClientChannel:                make(chan *api.LogFragment),
 		internalTestplanToClientChannel:   make(chan *api.InternalTestplanFragment),
+		authorizationToClientChannel:      make(chan *api.AuthorizationFragment),
 		internalTestplanFromClientChannel: make(chan *api.InternalTestplanFragment),
+		authorizationFromClientChannel:    make(chan *api.AuthorizationFragment),
 		handlerError:                      atomic.Value{},
 	}
 }
@@ -46,6 +50,7 @@ func NewClientCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 func (handler *ClientCommunicationHandler) Close() {
 	close(handler.internalTestplanToClientChannel)
 	close(handler.logToClientChannel)
+	close(handler.authorizationToClientChannel)
 }
 
 // GetLogger sets up the client logger and passes it back to the caller.
@@ -78,6 +83,8 @@ func (handler *ClientCommunicationHandler) HandleStreamFromClient() {
 		switch req := request.GetMessage().(type) {
 		case *api.GenericFilterStreamRequest_InternalTestplanFragment:
 			handler.internalTestplanFromClientChannel <- req.InternalTestplanFragment
+		case *api.GenericFilterStreamRequest_AuthFragment:
+			handler.authorizationFromClientChannel <- req.AuthFragment
 		default:
 			handler.GetLogger().Printf("Unhandled request object: %s", req)
 		}
@@ -85,6 +92,7 @@ func (handler *ClientCommunicationHandler) HandleStreamFromClient() {
 
 	// Close the channels for `From Client` communication.
 	close(handler.internalTestplanFromClientChannel)
+	close(handler.authorizationFromClientChannel)
 }
 
 // HandlerStreamToClient reads each `To Client` channel and passes it along
@@ -92,6 +100,7 @@ func (handler *ClientCommunicationHandler) HandleStreamFromClient() {
 func (handler *ClientCommunicationHandler) HandleStreamToClient() {
 	isInternalTestplanToClientChannelClosed := false
 	isLogChannelClosed := false
+	isAuthorizationToChannelClosed := false
 	for {
 		select {
 		case logFragment, ok := <-handler.logToClientChannel:
@@ -116,9 +125,21 @@ func (handler *ClientCommunicationHandler) HandleStreamToClient() {
 				})
 				handler.internalTestplanToClientChannel <- nil
 			}
+		case authFragment, ok := <-handler.authorizationToClientChannel:
+			if !ok {
+				isAuthorizationToChannelClosed = true
+			} else {
+				handler.stream.Send(&api.GenericFilterStreamResponse{
+					Message: &api.GenericFilterStreamResponse_AuthFragment{
+						AuthFragment: authFragment,
+					},
+				})
+				handler.authorizationToClientChannel <- nil
+			}
 		}
 
 		if isInternalTestplanToClientChannelClosed &&
+			isAuthorizationToChannelClosed &&
 			isLogChannelClosed {
 			break
 		}
@@ -142,9 +163,21 @@ func (handler *ClientCommunicationHandler) GetInternalTestplan() (testplan *api.
 	return
 }
 
+// GetAuthorizationResponse receives the authorization from the client.
+func (handler *ClientCommunicationHandler) GetAuthorizationResponse() (authResponse *api.AuthorizationResponse, err error) {
+	authResponse = &api.AuthorizationResponse{}
+	err = getFromFragments(handler.authorizationFromClientChannel, handler.GetHandlerError, authResponse)
+	return
+}
+
 /* Senders, ie `To Client` communication. */
 
 // SendInternalTestplan will send the test plan to the client.
 func (handler *ClientCommunicationHandler) SendInternalTestplan(internalTestplan *api.InternalTestplan) error {
 	return sendAsFragments(internalTestplan, handler.internalTestplanToClientChannel, NewInternalTestplanFragment)
+}
+
+// SendAuthorizationRequest sends a request for an authorization token from the client.
+func (handler *ClientCommunicationHandler) SendAuthorizationRequest(authRequest *api.AuthorizationRequest) error {
+	return sendAsFragments(authRequest, handler.authorizationToClientChannel, NewAuthorizationFragment)
 }

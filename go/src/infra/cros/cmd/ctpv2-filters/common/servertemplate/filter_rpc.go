@@ -105,6 +105,8 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	}
 	logger.Printf("Received InternalTestplan: %s", testplan)
 
+	s.CommonParams.AuthHelper = streaming.NewAuthHandler(clientCommunicationHandler)
+
 	testplan, err = s.execute(testplan, logger)
 	if err != nil {
 		return errors.Annotate(err, "Executor: failed to run").Err()

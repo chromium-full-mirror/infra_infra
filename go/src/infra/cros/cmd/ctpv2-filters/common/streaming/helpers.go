@@ -109,6 +109,20 @@ func sendAsFragments[F Fragmented](in proto.Message, handlerChannel chan F, toFr
 		return err
 	}
 
+	// When length of bytes is 0, nothing would be sent over
+	// due to the for loop exiting early below.
+	// Force an empty fragment to be transferred.
+	if len(bytes) == 0 {
+		handlerChannel <- toFragmentFunc(&api.FragmentMetadata{
+			TotalSize:      0,
+			TotalFragments: 1,
+			Index:          0,
+			FragmentSize:   0,
+		}, []byte{})
+		<-handlerChannel
+		return nil
+	}
+
 	// Partition by 2 MB and stream
 	partitions := common.PartitionBytesBySize(bytes, TwoMB)
 	totalFragments := int64(len(partitions))
@@ -158,6 +172,13 @@ func getFromFragments[F Fragmented](handlerChannel chan F, errorFunc func() erro
 
 func NewInternalTestplanFragment(md *api.FragmentMetadata, b []byte) *api.InternalTestplanFragment {
 	return &api.InternalTestplanFragment{
+		Fragment: b,
+		Metadata: md,
+	}
+}
+
+func NewAuthorizationFragment(md *api.FragmentMetadata, b []byte) *api.AuthorizationFragment {
+	return &api.AuthorizationFragment{
 		Fragment: b,
 		Metadata: md,
 	}

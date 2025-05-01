@@ -191,6 +191,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	go serverCommuncationHandler.HandleStreamFromServer()
 	go serverCommuncationHandler.HandleStreamToServer()
 	go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
+	go serverCommuncationHandler.HandleAuthorizationRequests(ctx)
 
 	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
 	if err != nil {

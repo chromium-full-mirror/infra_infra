@@ -11,6 +11,7 @@ import (
 	"fmt"
 
 	"golang.org/x/exp/slices"
+	"golang.org/x/oauth2"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -47,7 +48,15 @@ var (
 	}
 )
 
+type FilterAuthInterface interface {
+	GetTokenSource(credentialPaths []string, scopes ...string) oauth2.TokenSource
+}
+
 type CommonFilterParams struct {
+	// Common supporting structs
+	AuthHelper FilterAuthInterface
+
+	// Common Args
 	FirestoreDatabaseName string
 	Environment           string
 }

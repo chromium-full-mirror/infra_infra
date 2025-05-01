@@ -5,12 +5,21 @@
 package streaming
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
+	"runtime/debug"
+	"slices"
 	"sync/atomic"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 type ServerCommunicationHandler struct {
@@ -19,10 +28,12 @@ type ServerCommunicationHandler struct {
 
 	// To Server Channels.
 	internalTestplanToServerChannel chan *api.InternalTestplanFragment
+	authorizationToServerChannel    chan *api.AuthorizationFragment
 
 	// From Server Channels.
 	logFromServerChannel              chan *api.LogFragment
 	internalTestplanFromServerChannel chan *api.InternalTestplanFragment
+	authorizationFromServerChannel    chan *api.AuthorizationFragment
 
 	// Atomic error broadcast.
 	// To be read by each `From Server` channel on close during a Get operation.
@@ -38,6 +49,8 @@ func NewServerCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 		logFromServerChannel:              make(chan *api.LogFragment),
 		internalTestplanFromServerChannel: make(chan *api.InternalTestplanFragment),
 		internalTestplanToServerChannel:   make(chan *api.InternalTestplanFragment),
+		authorizationToServerChannel:      make(chan *api.AuthorizationFragment),
+		authorizationFromServerChannel:    make(chan *api.AuthorizationFragment),
 		waitc:                             make(chan struct{}),
 		handlerError:                      atomic.Value{},
 	}
@@ -46,6 +59,7 @@ func NewServerCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 // Close the `To Server` channels and the stream.
 func (handler *ServerCommunicationHandler) Close() {
 	close(handler.internalTestplanToServerChannel)
+	close(handler.authorizationToServerChannel)
 	handler.stream.CloseSend()
 
 	<-handler.waitc
@@ -72,6 +86,8 @@ func (handler *ServerCommunicationHandler) HandleStreamFromServer() {
 			handler.internalTestplanFromServerChannel <- resp.InternalTestplanFragment
 		case *api.GenericFilterStreamResponse_LogFragment:
 			handler.logFromServerChannel <- resp.LogFragment
+		case *api.GenericFilterStreamResponse_AuthFragment:
+			handler.authorizationFromServerChannel <- resp.AuthFragment
 		default:
 			log.Printf("Unhandled response object: %s", resp)
 		}
@@ -80,6 +96,7 @@ func (handler *ServerCommunicationHandler) HandleStreamFromServer() {
 	// Close the channels for `From Client` communication.
 	close(handler.logFromServerChannel)
 	close(handler.internalTestplanFromServerChannel)
+	close(handler.authorizationFromServerChannel)
 
 	// Close wait channel. Signals the handler is done receiving.
 	close(handler.waitc)
@@ -89,6 +106,7 @@ func (handler *ServerCommunicationHandler) HandleStreamFromServer() {
 // on the stream to the server.
 func (handler *ServerCommunicationHandler) HandleStreamToServer() {
 	isInternalTestplanToServerChannelClosed := false
+	isAuthorizationToServerChannelClosed := false
 	for {
 		select {
 		case internalTestplanFragment, ok := <-handler.internalTestplanToServerChannel:
@@ -102,9 +120,21 @@ func (handler *ServerCommunicationHandler) HandleStreamToServer() {
 				})
 				handler.internalTestplanToServerChannel <- nil
 			}
+		case authorizationFragment, ok := <-handler.authorizationToServerChannel:
+			if !ok {
+				isAuthorizationToServerChannelClosed = true
+			} else {
+				handler.stream.Send(&api.GenericFilterStreamRequest{
+					Message: &api.GenericFilterStreamRequest_AuthFragment{
+						AuthFragment: authorizationFragment,
+					},
+				})
+				handler.authorizationToServerChannel <- nil
+			}
 		}
 
-		if isInternalTestplanToServerChannelClosed {
+		if isInternalTestplanToServerChannelClosed &&
+			isAuthorizationToServerChannelClosed {
 			break
 		}
 	}
@@ -151,9 +181,75 @@ func (handler *ServerCommunicationHandler) GetInternalTestplan() (testplan *api.
 	return
 }
 
+// GetAuthorizationRequest receives an authorization request from the server.
+func (handler *ServerCommunicationHandler) GetAuthorizationRequest() (authRequest *api.AuthorizationRequest, err error) {
+	authRequest = &api.AuthorizationRequest{}
+	err = getFromFragments(handler.authorizationFromServerChannel, handler.GetHandlerError, authRequest)
+	return
+}
+
 /* Senders, ie `To Server` communication */
 
 // SendInternalTestplan will send the test plan to the server.
 func (handler *ServerCommunicationHandler) SendInternalTestplan(internalTestplan *api.InternalTestplan) error {
 	return sendAsFragments(internalTestplan, handler.internalTestplanToServerChannel, NewInternalTestplanFragment)
+}
+
+// SendAuthorizationResponse sends the auth response to the server.
+func (handler *ServerCommunicationHandler) SendAuthorizationResponse(authResponse *api.AuthorizationResponse) error {
+	return sendAsFragments(authResponse, handler.authorizationToServerChannel, NewAuthorizationFragment)
+}
+
+/* Predefined request handlers */
+
+func (handler *ServerCommunicationHandler) HandleAuthorizationRequests(ctx context.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			richError := fmt.Errorf("%s\n%s", r, string(debug.Stack()))
+			logging.Infof(ctx, "%s", richError)
+		}
+	}()
+	for {
+		logging.Infof(ctx, "waiting on authorization request")
+		authRequest, err := handler.GetAuthorizationRequest()
+		if err != nil {
+			// Assume channel has been broken and connection to server is complete.
+			logging.Infof(ctx, "%s", err)
+			break
+		}
+
+		// Set scopes.
+		authOpts := chromeinfra.DefaultAuthOptions()
+		authOpts.Scopes = append(authOpts.Scopes, authRequest.GetScopes()...)
+
+		// Determine credentials source.
+		allowADC := len(authRequest.GetCredentialPaths()) == 0 || slices.Contains(authRequest.GetCredentialPaths(), "ADC")
+		credentialPath, _ := common.LocateFile(authRequest.GetCredentialPaths())
+		if credentialPath == "" && !allowADC {
+			msg := "Could not find credentials and ADC not enabled"
+			logging.Infof(ctx, msg)
+			handler.SendAuthorizationResponse(&api.AuthorizationResponse{Token: "ERROR: " + msg})
+			continue
+		}
+		authOpts.ServiceAccountJSONPath = credentialPath
+
+		// Fetch Access Token.
+		authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
+		token, err := authenticator.GetAccessToken(time.Minute * 10)
+		if err != nil {
+			logging.Infof(ctx, "error getting token from source: %s", err)
+			handler.SendAuthorizationResponse(&api.AuthorizationResponse{Token: "ERROR: " + err.Error()})
+			continue
+		}
+
+		// Send back response.
+		logging.Infof(ctx, "sending auth response")
+		err = handler.SendAuthorizationResponse(&api.AuthorizationResponse{
+			Token: token.AccessToken,
+		})
+		if err != nil {
+			logging.Infof(ctx, "err: %s", err)
+			break
+		}
+	}
 }
