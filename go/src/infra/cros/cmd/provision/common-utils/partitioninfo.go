@@ -11,13 +11,14 @@ import (
 )
 
 const (
-	PartitionNumStateful = "1"
-	PartitionNumKernelA  = "2"
-	PartitionNumKernelB  = "4"
-	PartitionNumRootA    = "3"
-	PartitionNumRootB    = "5"
-	PartitionNumMiniOSA  = "9"
-	PartitionNumMiniOSB  = "10"
+	PartitionNumStateful      = "1"
+	PartitionNumKernelA       = "2"
+	PartitionNumKernelB       = "4"
+	PartitionNumRootA         = "3"
+	PartitionNumRootB         = "5"
+	PartitionNumMiniOSA       = "9"
+	PartitionNumMiniOSB       = "10"
+	PartitionNumPowerwashData = "11"
 )
 
 const (
@@ -50,6 +51,8 @@ type PartitionInfo struct {
 	MiniOSB string
 	// The stateful partition path.
 	Stateful string
+	// Powerwash data partition.
+	PowerwashData string
 }
 
 // GetPartitionInfo retrieves relevant kernel and root info for a specific root
@@ -67,6 +70,7 @@ func GetPartitionInfo(root string, rootDisk string, rootPartNum string) Partitio
 			MiniOSA:         rootDiskPartDelim + PartitionNumMiniOSA,
 			MiniOSB:         rootDiskPartDelim + PartitionNumMiniOSB,
 			Stateful:        rootDiskPartDelim + PartitionNumStateful,
+			PowerwashData:   rootDiskPartDelim + PartitionNumPowerwashData,
 		}
 	case PartitionNumRootB:
 		return PartitionInfo{
@@ -78,6 +82,7 @@ func GetPartitionInfo(root string, rootDisk string, rootPartNum string) Partitio
 			MiniOSA:         rootDiskPartDelim + PartitionNumMiniOSB,
 			MiniOSB:         rootDiskPartDelim + PartitionNumMiniOSA,
 			Stateful:        rootDiskPartDelim + PartitionNumStateful,
+			PowerwashData:   rootDiskPartDelim + PartitionNumPowerwashData,
 		}
 	default:
 		panic(fmt.Sprintf("Unexpected root partition number of %s", rootPartNum))

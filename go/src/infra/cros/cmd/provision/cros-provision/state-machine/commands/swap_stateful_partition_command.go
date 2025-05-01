@@ -78,10 +78,25 @@ func (c *SwapStatefulPartitionCommand) Execute(log *log.Logger) error {
 		return fmt.Errorf("failed to freeze stateful filesystem, %w", err)
 	}
 
+	_, err = c.cs.Connection.RunCmd(c.ctx, "/sbin/fsfreeze", []string{"-f", "/mnt/chromeos_metadata_partition"})
+	if err != nil {
+		log.Printf("Failed to freeze chromeos_metadata filesystem")
+	}
+
 	pi := common_utils.GetPartitionInfo(c.cs.MachineMetadata.RootInfo.Root, c.cs.MachineMetadata.RootInfo.RootDisk, c.cs.MachineMetadata.RootInfo.RootPartNum)
 	_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/dd", []string{fmt.Sprintf("if=%s/fs", tmpMnt), fmt.Sprintf("of=%s", pi.Stateful), "bs=1M", "conv=fsync"})
 	if err != nil {
 		return fmt.Errorf("failed to unmount powerwash filesystem, %w", err)
+	}
+
+	// Get label for powerwash data partition via cgpt and make sure it is POWERWASH-DATA
+	part, err := c.cs.Connection.RunCmd(c.ctx, "cgpt", []string{"show", "-l", c.cs.MachineMetadata.RootInfo.RootDisk, "-i", common_utils.PartitionNumPowerwashData})
+	if err == nil && strings.TrimSpace(string(part)) == "POWERWASH-DATA" {
+		// Wipe powerwash data partition
+		_, err = c.cs.Connection.RunCmd(c.ctx, "/bin/dd", []string{"if=/dev/zero", fmt.Sprintf("of=%s", pi.PowerwashData), "bs=1M", "conv=fsync", "count=4"})
+		if err != nil {
+			log.Printf("failed to wipe powerwash data partition")
+		}
 	}
 
 	return nil

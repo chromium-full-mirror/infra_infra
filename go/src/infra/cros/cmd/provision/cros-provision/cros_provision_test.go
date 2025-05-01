@@ -32,6 +32,7 @@ const (
 	deviceDiskRootB                   = deviceDiskPartition + common_utils.PartitionNumRootB
 	deviceDiskMiniA                   = deviceDiskPartition + common_utils.PartitionNumMiniOSA
 	deviceDiskMiniB                   = deviceDiskPartition + common_utils.PartitionNumMiniOSB
+	deviceDiskPowerwashData           = deviceDiskPartition + common_utils.PartitionNumPowerwashData
 	mockedValidCrosidStdout           = "SKU=33\nCONFIG_INDEX=9\nFIRMWARE_MANIFEST_KEY='babytiger'\n"
 	mockedValidFirmwareManifestStdout = "{\n  \"babytiger\": {\n    \"host\": { \"versions\": { \"ro\": \"Google_Coral.10068.113.0\", \"rw\": \"Google_Coral.10068.113.0\" },\n      \"keys\": { \"root\": \"b11d74edd286c144e1135b49e7f0bc20cf041f10\", \"recovery\": \"c14bd720b70d97394257e3e826bd8f43de48d4ed\" },\n      \"image\": \"images/bios-coral.ro-10068-113-0.rw-10068-113-0.bin\" },\n    \"ec\": { \"versions\": { \"ro\": \"coral_v1.1.7302-d2b56e247\", \"rw\": \"coral_v1.1.7302-d2b56e247\" },\n      \"image\": \"images/ec-coral.ro-1-1-7302.rw-1-1-7302.bin\" },\n    \"signature_id\": \"babytiger\"\n  }\n}\n"
 )
@@ -132,6 +133,9 @@ var (
 	umountMnt        = RunCommandStructure{Command: "/bin/umount", Args: []string{wsTmp + "/mnt"}}
 	freezeStateful   = RunCommandStructure{Command: "/sbin/fsfreeze", Args: []string{"-f", "/mnt/stateful_partition"}}
 	hackStateful     = RunCommandStructure{Command: "/bin/dd", Args: []string{fmt.Sprintf("if=%s/fs", wsTmp), fmt.Sprintf("of=%s", deviceDiskStateful), "bs=1M", "conv=fsync"}}
+	freezeMetadata   = RunCommandStructure{Command: "/sbin/fsfreeze", Args: []string{"-f", "/mnt/chromeos_metadata_partition"}}
+	cgptPwDataLabel  = RunCommandStructure{Command: "cgpt", Args: []string{"show", "-l", deviceDisk, "-i", "11"}}
+	wipePwdata       = RunCommandStructure{Command: "/bin/dd", Args: []string{"if=/dev/zero", fmt.Sprintf("of=%s", deviceDiskPowerwashData), "bs=1M", "conv=fsync", "count=4"}}
 )
 
 // REVERT COMMANDS
@@ -214,7 +218,10 @@ func TestStateTransitions(t *testing.T) {
 		getRunCmdCommand(sam, markFsFastWipe).Return("", nil),
 		getRunCmdCommand(sam, umountMnt).Return("", nil),
 		getRunCmdCommand(sam, freezeStateful).Return("", nil),
+		getRunCmdCommand(sam, freezeMetadata).Return("", nil),
 		getRunCmdCommand(sam, hackStateful).Return("", nil),
+		getRunCmdCommand(sam, cgptPwDataLabel).Return("POWERWASH-DATA", nil),
+		getRunCmdCommand(sam, wipePwdata).Return("", nil),
 		getRunCmdCommand(sam, bootIDCheck).Return("rand-foo", nil),
 		getRunCmdCommand(sam, sysrqTrigger).Return("", nil),
 		getForceReconnectWithBackoffCommand(sam).Return(nil),
@@ -394,7 +401,10 @@ func TestStateTransitionsInstallationFallback(t *testing.T) {
 		getRunCmdCommand(sam, markFsFastWipe).Return("", nil),
 		getRunCmdCommand(sam, umountMnt).Return("", nil),
 		getRunCmdCommand(sam, freezeStateful).Return("", nil),
+		getRunCmdCommand(sam, freezeMetadata).Return("", nil),
 		getRunCmdCommand(sam, hackStateful).Return("", nil),
+		getRunCmdCommand(sam, cgptPwDataLabel).Return("POWERWASH-DATA", nil),
+		getRunCmdCommand(sam, wipePwdata).Return("", nil),
 		getRunCmdCommand(sam, bootIDCheck).Return("rand-foo", nil),
 		getRunCmdCommand(sam, sysrqTrigger).Return("", nil),
 		getForceReconnectWithBackoffCommand(sam).Return(nil),
@@ -572,7 +582,10 @@ func TestMismatchPostInstall(t *testing.T) {
 		getRunCmdCommand(sam, markFsFastWipe).Return("", nil),
 		getRunCmdCommand(sam, umountMnt).Return("", nil),
 		getRunCmdCommand(sam, freezeStateful).Return("", nil),
+		getRunCmdCommand(sam, freezeMetadata).Return("", nil),
 		getRunCmdCommand(sam, hackStateful).Return("", nil),
+		getRunCmdCommand(sam, cgptPwDataLabel).Return("POWERWASH-DATA", nil),
+		getRunCmdCommand(sam, wipePwdata).Return("", nil),
 		getRunCmdCommand(sam, bootIDCheck).Return("rand-foo", nil),
 		getRunCmdCommand(sam, sysrqTrigger).Return("", nil),
 		getForceReconnectWithBackoffCommand(sam).Return(nil),
