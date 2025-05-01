@@ -98,7 +98,7 @@ func (e *extendedGSClient) LsSmall(ctx context.Context, bucket string, query *st
 // Expand name takes the name of a bucket and an object or prefix in that bucket and produces a GSUrl.
 //
 // If given inconsistent or invalid data, produce an empty string.
-func (_ *extendedGSClient) ExpandName(bucket string, attrs *storage.ObjectAttrs) string {
+func (*extendedGSClient) ExpandName(bucket string, attrs *storage.ObjectAttrs) string {
 	hasPrefix := attrs.Prefix != ""
 	hasName := attrs.Name != ""
 	if hasPrefix && hasName {
@@ -115,7 +115,7 @@ func (_ *extendedGSClient) ExpandName(bucket string, attrs *storage.ObjectAttrs)
 }
 
 // CountSections counts the number of sections excluding the protocol specifier in a Google Storage URL.
-func (_ *extendedGSClient) CountSections(gsURL string) int {
+func (*extendedGSClient) CountSections(gsURL string) int {
 	trimLead := regexp.MustCompile(`\Ags://`)
 	trimTail := regexp.MustCompile(`/*\z`)
 	gsURL = trimLead.ReplaceAllString(gsURL, "")
@@ -133,7 +133,7 @@ func (_ *extendedGSClient) CountSections(gsURL string) int {
 }
 
 // EnsureTrailingSlash ensures exactly one trailing slash.
-func (_ *extendedGSClient) EnsureTrailingSlash(s string) string {
+func (*extendedGSClient) EnsureTrailingSlash(s string) string {
 	trimTail := regexp.MustCompile(`/*\z`)
 	s = trimTail.ReplaceAllString(s, "")
 	return fmt.Sprintf("%s/", s)
