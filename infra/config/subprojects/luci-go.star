@@ -49,7 +49,8 @@ def try_builder(
         experiment_percentage = None,
         owner_whitelist = None,
         mode_allowlist = None,
-        use_python3 = True):
+        use_python3 = True,
+        location_filters = None):
     infra.builder(
         name = name,
         bucket = "try",
@@ -66,6 +67,7 @@ def try_builder(
             experiment_percentage = experiment_percentage,
             owner_whitelist = owner_whitelist,
             mode_allowlist = mode_allowlist,
+            location_filters = location_filters,
         )
 
 ci_builder(name = "luci-go-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
@@ -119,5 +121,8 @@ try_builder(
     caches = [
         swarming.cache("nodejs"),
         swarming.cache("npmcache"),
+    ],
+    location_filters = [
+        cq.location_filter(path_regexp = "milo/ui/.+"),
     ],
 )
