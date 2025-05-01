@@ -6670,6 +6670,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                 - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                 - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -13342,6 +13343,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32342,6 +32344,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32420,6 +32423,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -36444,6 +36448,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -36742,6 +36747,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -36967,6 +36973,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -37655,6 +37662,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -37733,6 +37741,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)

@@ -8815,6 +8815,12 @@ plans:
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
                     - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Run for Android boards (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board support AndroidOS
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
                   exec_args:
@@ -32017,6 +32023,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -97846,6 +97858,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -98147,6 +98165,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -112152,6 +112176,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -113137,6 +113167,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -113911,6 +113947,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -116282,6 +116324,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -116583,6 +116631,12 @@ plans:
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
                         - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Run for Android boards (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board support AndroidOS
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:

@@ -215,6 +215,7 @@ func androidActions(actions map[string]*Action) {
 				"Is a Chromebook",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
+				"Run for Android boards",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -230,6 +231,17 @@ func androidActions(actions map[string]*Action) {
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Run for Android boards": {
+			Docs: []string{
+				"Check that board support AndroidOS",
+			},
+			ExecName: "dut_check_board",
+			ExecExtraArgs: []string{
+				"string_values:brya,corsola,dedede,fatcat,nissa,rauru",
+			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set CacheService address": {
 			Docs: []string{
