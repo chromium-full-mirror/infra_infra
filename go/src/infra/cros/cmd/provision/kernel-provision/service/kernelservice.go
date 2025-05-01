@@ -8,15 +8,17 @@ package service
 
 import (
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 // KernelProvisionService represents the overall kernel provisioning service.
 // This struct should contain all necessary values that needed to be accessed by
 // any of the state machine's states.
 type KernelProvisionService struct {
-	kpRequest *api.KernelPrebuilts
+	KPRequest *api.KernelPrebuilts
+	DUT       *labapi.Dut
 }
 
-func NewKernelProvisionService(kp *api.KernelPrebuilts) *KernelProvisionService {
-	return &KernelProvisionService{kpRequest: kp}
+func NewKernelProvisionService(kp *api.KernelPrebuilts, dut *labapi.Dut) *KernelProvisionService {
+	return &KernelProvisionService{KPRequest: kp, DUT: dut}
 }

@@ -61,7 +61,7 @@ func (s CrossOverTerminateState) Next() common_utils.ServiceState {
 	// TODO: b/405174207 - Move kernel provisioning to its own container.
 	if s.params.KernelPrebuilts != nil {
 		return kpStateMachine.NewKernelProvisionInitState(
-			kpService.NewKernelProvisionService(s.params.KernelPrebuilts))
+			kpService.NewKernelProvisionService(s.params.KernelPrebuilts, s.params.Dut))
 	}
 
 	return s.params.PostProvisionState
