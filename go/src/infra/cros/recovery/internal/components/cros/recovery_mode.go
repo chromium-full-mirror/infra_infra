@@ -40,6 +40,8 @@ type BootInRecoveryRequest struct {
 	AfterRebootVerify             bool
 	AfterRebootTimeout            time.Duration
 	AfterRebootAllowUseServoReset bool
+	// The image on the USB stick is a Light-Provision image used for booting.
+	UseLightProvisionImage bool
 }
 
 // BootInRecoveryMode perform boot device in recovery mode.
@@ -216,6 +218,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if cacheIsAndroid {
 			// With Android we can SSH only to the provision image.
 			// The provision image is very limited and does not have many tools.
+		} else if req.UseLightProvisionImage {
+			if _, err := dutRun(ctx, 10*time.Second, "which al-install"); err != nil {
+				return errors.Annotate(err, "retry boot: device is not booted from light-provision image").Err()
+			}
 		} else {
 			if err := storage.IsBootedFromExternalStorage(ctx, dutRun); err != nil {
 				log.Infof("Device booted from internal storage.")

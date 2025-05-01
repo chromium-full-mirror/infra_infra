@@ -365,6 +365,7 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
 		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
 		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
+		UseLightProvisionImage:        true,
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, dutHa, servod, log.Get(ctx)); err != nil {
 		return errors.Annotate(err, "cros provision actions in recovery mode").Err()
