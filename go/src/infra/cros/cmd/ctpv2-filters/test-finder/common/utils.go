@@ -97,7 +97,7 @@ func PullAllFilesFromGcsDir(ctx context.Context, bucket *storage.BucketHandle, d
 
 // ObjectExists checks if an object exists at the specified path.
 func ObjectExists(ctx context.Context, bucket *storage.BucketHandle, object string) (bool, error) {
-	if _, err := bucket.Object(object).Attrs(ctx); err == storage.ErrObjectNotExist {
+	if _, err := bucket.Object(object).Attrs(ctx); errors.Is(err, storage.ErrObjectNotExist) {
 		return false, nil
 	} else if err != nil {
 		return false, err
