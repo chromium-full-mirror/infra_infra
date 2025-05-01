@@ -65,9 +65,6 @@ linters:
         # https://staticcheck.dev/docs/checks#QF1009
         # Use time.Time.Equal instead of == operator
         - "-QF1009"
-        # https://staticcheck.dev/docs/checks#QF1011
-        # Omit redundant type from variable declaration
-        - "-QF1011"
         # https://staticcheck.dev/docs/checks#QF1012
         # Use fmt.Fprintf(x, ...) instead of x.Write(fmt.Sprintf(...))
         - "-QF1012"

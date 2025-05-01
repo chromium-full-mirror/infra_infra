@@ -318,7 +318,7 @@ func detectNVMEState(ctx context.Context, storageInfoSlice []string) (StorageSta
 	if err != nil {
 		return StorageStateUndefined, errors.Annotate(err, "detect nvme state").Err()
 	}
-	var usedValue int = -1
+	var usedValue = -1
 	for _, line := range storageInfoSlice {
 		m, err := regexpSubmatchToMap(nvmeFailRegexp, line)
 		if err == nil {
