@@ -42,8 +42,8 @@ type Call struct {
 	timeout time.Duration
 }
 
-// methodCall mirrors the structure of an XML-RPC method call.
-type methodCall struct {
+// MethodCall mirrors the structure of an XML-RPC method call.
+type MethodCall struct {
 	XMLName    xml.Name `xml:"methodCall"`
 	MethodName string   `xml:"methodName"`
 	Params     *[]Param `xml:"params>param"`
@@ -317,7 +317,7 @@ func serializeMethodCall(cl Call) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return xml.Marshal(&methodCall{MethodName: cl.method, Params: &params})
+	return xml.Marshal(&MethodCall{MethodName: cl.method, Params: &params})
 }
 
 // getTimeout returns the lowest of the default timeout or remaining duration
