@@ -304,6 +304,9 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/publish/cpcon-publish/${platform}"),
 			},
+			Resources: []string{
+				"cpcon_requirements_py3.txt",
+			},
 			Repositories: []*Repository{
 				DefaultRepository,
 				PartnerRepository,
