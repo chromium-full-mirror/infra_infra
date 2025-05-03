@@ -23,14 +23,35 @@ func GetServod(ctx context.Context, host string, port int32, control string) (*b
 	if err != nil {
 		return nil, fmt.Errorf("failed to get control %q from servod: %w", control, err)
 	}
-	value, err := translateValue(resp.Params)
+	value, err := xmlValueToServodValue(resp.Params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse value for control %q from servod: %w", control, err)
 	}
 	return &bols.GetServodResponse{Control: control, Value: value}, nil
 }
 
-func translateValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
+// SetServod gets a servod control value.
+func SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
+	host := req.GetStationId().GetContainerName()
+	if host == "" {
+		host = "localhost"
+	}
+	port := req.GetStationId().GetServodPort()
+	control := req.GetControl()
+	servodValue := req.GetValue()
+	cl := xmlrpc.New(host, int(port))
+	call, err := servodValueToXMLRequest("set", control, servodValue)
+	if err != nil {
+		return nil, fmt.Errorf("failed to translate value from servod request: %w", err)
+	}
+
+	if _, err := cl.Execute(ctx, call); err != nil {
+		return nil, fmt.Errorf("failed to get control %q from servod: %w", control, err)
+	}
+	return &bols.SetServodResponse{}, nil
+}
+
+func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 	if params == nil {
 		return nil, nil
 	}
@@ -91,4 +112,20 @@ func translateValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 		}, nil
 	}
 	return nil, fmt.Errorf("unsupport format")
+}
+
+func servodValueToXMLRequest(method, control string, servodValue *bols.ServodValue) (xmlrpc.Call, error) {
+	switch servodValue.GetValue().(type) {
+	case *bols.ServodValue_StringValue:
+		v := servodValue.GetStringValue()
+		return xmlrpc.NewCall(method, control, v), nil
+	case *bols.ServodValue_DoubleValue:
+		v := servodValue.GetDoubleValue()
+		return xmlrpc.NewCall(method, control, v), nil
+	case *bols.ServodValue_IntValue:
+		v := servodValue.GetIntValue()
+		return xmlrpc.NewCall(method, control, int(v)), nil
+	default:
+		return xmlrpc.Call{}, fmt.Errorf("unsupport type %T", servodValue.GetValue())
+	}
 }

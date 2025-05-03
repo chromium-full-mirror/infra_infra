@@ -118,14 +118,19 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 	rpsn, err := xmlrpc.GetServod(ctx, req.GetStationId().GetContainerName(),
 		req.GetStationId().GetServodPort(), req.GetControl())
 	if err != nil {
-		return nil, fmt.Errorf("failed to send get request to servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, fmt.Errorf("failed to send get %s request to servod at port %d: %w",
+			req.GetControl(), req.GetStationId().GetServodPort(), err)
 	}
 	return rpsn, nil
 }
 
-func (s *service) SetServod(context.Context, *bols.SetServodRequest) (*bols.SetServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetServod not implemented")
+func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
+	rpsn, err := xmlrpc.SetServod(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send set %s request to servod at port %d: %w",
+			req.GetControl(), req.GetStationId().GetServodPort(), err)
+	}
+	return rpsn, nil
 }
 
 func (s *service) GetServodVersion(context.Context, *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {

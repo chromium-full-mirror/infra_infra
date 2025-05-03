@@ -6,8 +6,13 @@ package xmlrpc
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"math"
+	"strconv"
 	"testing"
+
+	"go.chromium.org/chromiumos/config/go/test/api/bols"
 
 	"go.chromium.org/infra/cros/servo/xmlrpc"
 )
@@ -37,7 +42,7 @@ func TestGetServodDouble(t *testing.T) {
 	}
 	const threshold = 0.0001
 	if math.Abs(rspn.GetValue().GetDoubleValue()-3.14) > threshold {
-		t.Fatalf("reponse returned wrong value: got: %v wanted: 3.14", rspn.GetValue().GetDoubleValue())
+		t.Fatalf("response returned wrong value: got: %v wanted: 3.14", rspn.GetValue().GetDoubleValue())
 	}
 }
 
@@ -65,7 +70,7 @@ func TestGetServodInt(t *testing.T) {
 		t.Fatalf("failed to call GetServod: %v", err)
 	}
 	if rspn.GetValue().GetIntValue() != 314 {
-		t.Fatalf("reponse returned wrong value: got: %v wanted: 314", rspn.GetValue().GetDoubleValue())
+		t.Fatalf("response returned wrong value: got: %v wanted: 314", rspn.GetValue().GetDoubleValue())
 	}
 }
 
@@ -93,6 +98,163 @@ func TestGetServodString(t *testing.T) {
 		t.Fatalf("failed to call GetServod: %v", err)
 	}
 	if rspn.GetValue().GetStringValue() != stringValue {
-		t.Fatalf("reponse returned wrong value: got: %v wanted: %s", rspn.GetValue().GetDoubleValue(), stringValue)
+		t.Fatalf("response returned wrong value: got: %v wanted: %s", rspn.GetValue().GetDoubleValue(), stringValue)
 	}
+}
+
+func TestSetServodDouble(t *testing.T) {
+	var errCode error
+	wanted := 3.14
+	control := "control"
+	mh := setRequestHandler(control, wanted, &errCode)
+	ms, err := xmlrpc.NewMockServer(mh)
+	if err != nil {
+		t.Fatal("failed to create a mock server:", err)
+	}
+	host, port, err := ms.HostPort()
+	if err != nil {
+		t.Fatalf("failed to get host/port information: %v", err)
+	}
+	req := &bols.SetServodRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(port),
+			ContainerName: host,
+		},
+		Control: control,
+		Value:   &bols.ServodValue{Value: &bols.ServodValue_DoubleValue{DoubleValue: wanted}},
+	}
+	if _, err := SetServod(context.Background(), req); err != nil {
+		t.Fatalf("failed to call SetServod: %v", err)
+	}
+	if errCode != nil {
+		t.Fatalf("incorrect request in SetServod: %v", errCode)
+	}
+}
+
+func TestSetServodInt(t *testing.T) {
+	var errCode error
+	var wanted int32 = 3
+	control := "control"
+	mh := setRequestHandler(control, wanted, &errCode)
+	ms, err := xmlrpc.NewMockServer(mh)
+	if err != nil {
+		t.Fatal("failed to create a mock server:", err)
+	}
+	host, port, err := ms.HostPort()
+	if err != nil {
+		t.Fatalf("failed to get host/port information: %v", err)
+	}
+	req := &bols.SetServodRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(port),
+			ContainerName: host,
+		},
+		Control: control,
+		Value:   &bols.ServodValue{Value: &bols.ServodValue_IntValue{IntValue: wanted}},
+	}
+	if _, err := SetServod(context.Background(), req); err != nil {
+		t.Fatalf("failed to call SetServod: %v", err)
+	}
+	if errCode != nil {
+		t.Fatalf("incorrect request in SetServod: %v", errCode)
+	}
+}
+
+func TestSetServodString(t *testing.T) {
+	var errCode error
+	wanted := "hello world"
+	control := "control"
+	mh := setRequestHandler(control, wanted, &errCode)
+	ms, err := xmlrpc.NewMockServer(mh)
+	if err != nil {
+		t.Fatal("failed to create a mock server:", err)
+	}
+	host, port, err := ms.HostPort()
+	if err != nil {
+		t.Fatalf("failed to get host/port information: %v", err)
+	}
+	req := &bols.SetServodRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(port),
+			ContainerName: host,
+		},
+		Control: control,
+		Value:   &bols.ServodValue{Value: &bols.ServodValue_StringValue{StringValue: wanted}},
+	}
+	if _, err := SetServod(context.Background(), req); err != nil {
+		t.Fatalf("failed to call SetServod: %v", err)
+	}
+	if errCode != nil {
+		t.Fatalf("incorrect request in SetServod: %v", errCode)
+	}
+}
+
+func setRequestHandler(control string, expectedValue interface{}, errCode *error) xmlrpc.MockHandler {
+	mh := func(call *xmlrpc.MethodCall) *xmlrpc.MethodResponse {
+		if call.MethodName != "set" {
+			*errCode = fmt.Errorf("request has wrong method name got: %q wanted: %q", call.MethodName, "set")
+			return &xmlrpc.MethodResponse{}
+		}
+		if call.Params == nil || len(*call.Params) < 2 {
+			*errCode = errors.New("call request has no value")
+			return &xmlrpc.MethodResponse{}
+		}
+		params := *call.Params
+		if params[0].Value.Str == nil {
+			*errCode = errors.New("no control value in request")
+			return &xmlrpc.MethodResponse{}
+		}
+		if *params[0].Value.Str != control {
+			*errCode = fmt.Errorf("incorrect control value got: %q wanted: %q", *params[0].Value.Str, control)
+		}
+		if err := sameAsExpectedValue(params[1].Value, expectedValue); err != nil {
+			*errCode = fmt.Errorf("failed to compare value: %w", err)
+			return &xmlrpc.MethodResponse{}
+		}
+		return &xmlrpc.MethodResponse{}
+	}
+	return mh
+}
+
+func sameAsExpectedValue(xmlValue xmlrpc.Value, expectedValue interface{}) error {
+	switch o := expectedValue.(type) {
+	case string:
+		if xmlValue.Str == nil {
+			return fmt.Errorf("failed to get expected string value %q", o)
+		}
+		if *xmlValue.Str != o {
+			return fmt.Errorf("unexpected value: got: %q wanted: %q",
+				*xmlValue.Str, o)
+		}
+		return nil
+	case int32:
+		if xmlValue.Int == nil {
+			return fmt.Errorf("failed to get expected string value %d", o)
+		}
+		got, err := strconv.ParseInt(*xmlValue.Int, 10, 64)
+		if err != nil {
+			return fmt.Errorf("failed to parse int value %q", *xmlValue.Int)
+		}
+		if int32(got) != o {
+			return fmt.Errorf("unexpected value: got: %q wanted: %q",
+				*xmlValue.Str, o)
+		}
+		return nil
+	case float64:
+		if xmlValue.Double == nil {
+			return fmt.Errorf("failed to get expected string value %f", o)
+		}
+		got, err := strconv.ParseFloat(*xmlValue.Double, 64)
+		if err != nil {
+			return fmt.Errorf("failed to parse double value %q", *xmlValue.Double)
+		}
+		const threshold = 0.0001
+		if math.Abs(got-o) > threshold {
+			return fmt.Errorf("response returned wrong value: got: %f wanted: %f", got, o)
+		}
+		return nil
+	default:
+		return fmt.Errorf("unknown type %T", expectedValue)
+	}
+
 }
