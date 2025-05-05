@@ -256,5 +256,82 @@ func sameAsExpectedValue(xmlValue xmlrpc.Value, expectedValue interface{}) error
 	default:
 		return fmt.Errorf("unknown type %T", expectedValue)
 	}
+}
 
+func TestGetServodVersion(t *testing.T) {
+	version := "foo"
+	var mh xmlrpc.MockHandler
+	params := []xmlrpc.Param{
+		{Value: xmlrpc.Value{Str: &version}},
+	}
+	mh = func(*xmlrpc.MethodCall) *xmlrpc.MethodResponse {
+		return &xmlrpc.MethodResponse{
+			Params: &params,
+		}
+	}
+	ms, err := xmlrpc.NewMockServer(mh)
+	if err != nil {
+		t.Fatal("failed to create a mock server:", err)
+	}
+	host, port, err := ms.HostPort()
+	if err != nil {
+		t.Fatalf("failed to get host/port information: %v", err)
+	}
+	rspn, err := GetServodVersion(context.Background(),
+		&bols.GetServodVersionRequest{
+			StationId: &bols.StationIdentifier{
+				ServodPort:    int32(port),
+				ContainerName: host,
+			},
+		})
+	if err != nil {
+		t.Fatalf("failed to call GetServodVersion: %v", err)
+	}
+	if rspn.GetVersion() != version {
+		t.Errorf("unexpected value: got: %q wanted: %q", rspn.GetVersion(), version)
+	}
+}
+
+func TestEchoServod(t *testing.T) {
+	msg := "foo"
+	var mh xmlrpc.MockHandler
+	var errCode error
+	mh = func(call *xmlrpc.MethodCall) *xmlrpc.MethodResponse {
+		params := *call.Params
+		if params[0].Value.Str == nil {
+			errCode = errors.New("no control value in request")
+			return &xmlrpc.MethodResponse{}
+		}
+		if *params[0].Value.Str != msg {
+			errCode = fmt.Errorf("incorrect echo value got: %q wanted: %q", *params[0].Value.Str, msg)
+		}
+		return &xmlrpc.MethodResponse{
+			Params: &params,
+		}
+	}
+	ms, err := xmlrpc.NewMockServer(mh)
+	if err != nil {
+		t.Fatal("failed to create a mock server:", err)
+	}
+	host, port, err := ms.HostPort()
+	if err != nil {
+		t.Fatalf("failed to get host/port information: %v", err)
+	}
+	rspn, err := EchoServod(context.Background(),
+		&bols.EchoServodRequest{
+			StationId: &bols.StationIdentifier{
+				ServodPort:    int32(port),
+				ContainerName: host,
+			},
+			Echo: msg,
+		})
+	if err != nil {
+		t.Fatalf("failed to call EchoServod: %v", err)
+	}
+	if errCode != nil {
+		t.Fatal("encountered an error in serving EchoServod", errCode)
+	}
+	if rspn.GetResult() != msg {
+		t.Errorf("unexpected value: got: %q wanted: %q", rspn.GetResult(), msg)
+	}
 }

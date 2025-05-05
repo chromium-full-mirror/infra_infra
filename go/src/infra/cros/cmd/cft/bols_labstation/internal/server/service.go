@@ -363,13 +363,23 @@ func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*b
 }
 
 // GetServodVersion reads version of started servod.
-func (s *service) GetServodVersion(context.Context, *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetServodVersion not implemented")
+func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
+	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get version of servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
+	}
+	return rpsn, nil
 }
 
 // EchoServod calls echo method of servod.
-func (s *service) EchoServod(context.Context, *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EchoServod not implemented")
+func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
+	rpsn, err := xmlrpc.EchoServod(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send echo request to servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
+	}
+	return rpsn, nil
 }
 
 // GetServoTopology gets the servo topology.

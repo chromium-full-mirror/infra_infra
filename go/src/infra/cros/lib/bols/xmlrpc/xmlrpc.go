@@ -34,6 +34,7 @@ func GetServod(ctx context.Context, host string, port int32, control string) (*b
 func SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 	host := req.GetStationId().GetContainerName()
 	if host == "" {
+		// If container name is empty, it means that it is running locally.
 		host = "localhost"
 	}
 	port := req.GetStationId().GetServodPort()
@@ -49,6 +50,40 @@ func SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServod
 		return nil, fmt.Errorf("failed to get control %q from servod: %w", control, err)
 	}
 	return &bols.SetServodResponse{}, nil
+}
+
+// GetServodVersion gets the servod control value.
+func GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
+	host := req.GetStationId().GetContainerName()
+	if host == "" {
+		// If container name is empty, it means that it is running locally.
+		host = "localhost"
+	}
+	port := req.GetStationId().GetServodPort()
+	cl := xmlrpc.New(host, int(port))
+	var version string
+	err := cl.Run(ctx, xmlrpc.NewCall("servod_version"), &version)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get version of servod: %w", err)
+	}
+	return &bols.GetServodVersionResponse{Version: version}, nil
+}
+
+// EchoServod calls the Servo echo method.
+func EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
+	host := req.GetStationId().GetContainerName()
+	if host == "" {
+		// If container name is empty, it means that it is running locally.
+		host = "localhost"
+	}
+	port := req.GetStationId().GetServodPort()
+	cl := xmlrpc.New(host, int(port))
+	var val string
+	err := cl.Run(ctx, xmlrpc.NewCall("echo", req.GetEcho()), &val)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send echo request to servod: %w", err)
+	}
+	return &bols.EchoServodResponse{Result: val}, nil
 }
 
 func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
