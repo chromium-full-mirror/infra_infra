@@ -79,7 +79,7 @@ def try_builder(
 
 # CI Linux.
 ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True)
-ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "arm64", console_category = "linux|22.04|ARM", pool = "luci.flex.ci")
+ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "arm64", console_category = "linux|22.04|ARM", pool = "luci.flex.ci", tree_closing = True)
 
 # CI OSX.
 ci_builder(name = "infra-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True)
