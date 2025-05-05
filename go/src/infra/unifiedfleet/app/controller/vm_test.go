@@ -480,6 +480,7 @@ func TestUpdateVM(t *testing.T) {
 				Tags:         []string{"tag-1"},
 				MachineLseId: "update-host",
 				CpuCores:     16,
+				Vmid:         111,
 			}
 			_, err := CreateVM(ctx, vm, nil)
 			assert.Loosely(t, err, should.BeNil)
@@ -488,14 +489,16 @@ func TestUpdateVM(t *testing.T) {
 				Name:   "vm-7",
 				Tags:   []string{"tag-2"},
 				Memory: 1000,
+				Vmid:   222,
 			}
-			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags", "memory"}})
+			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags", "memory", "vmid"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetTags(), should.Match([]string{"tag-1", "tag-2"}))
 			assert.Loosely(t, resp.GetOsVersion().GetValue(), should.Equal("windows"))
 			assert.Loosely(t, resp.GetCpuCores(), should.Equal(16))
 			assert.Loosely(t, resp.GetMemory(), should.Equal(1000))
+			assert.Loosely(t, resp.GetVmid(), should.Equal(222))
 			// DeviceLabels
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/vms/vm-7")
 			assert.Loosely(t, err, should.BeNil)

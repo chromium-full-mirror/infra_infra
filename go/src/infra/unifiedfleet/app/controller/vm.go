@@ -326,6 +326,8 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 			oldVM.Memory = vm.GetMemory()
 		case "storage":
 			oldVM.Storage = vm.GetStorage()
+		case "vmid":
+			oldVM.Vmid = vm.GetVmid()
 		}
 	}
 	// return existing/old vm with new updated values
@@ -497,6 +499,7 @@ func validateVMUpdateMask(vm *ufspb.VM, mask *field_mask.FieldMask) error {
 			case "cpuCores":
 			case "memory":
 			case "storage":
+			case "vmid":
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateVM - unsupported update mask path %q", path)
