@@ -14,7 +14,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/testing/localonly"
+	"go.chromium.org/luci/common/testing/citest"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -22,7 +22,7 @@ import (
 )
 
 func TestFlashOsCommand(t *testing.T) {
-	localonly.Because(t, "b/402551644")
+	citest.LocalOnlyBecause(t, "b/402551644")
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

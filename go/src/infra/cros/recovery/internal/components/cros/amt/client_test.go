@@ -15,7 +15,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go.chromium.org/luci/common/testing/localonly"
+	"go.chromium.org/luci/common/testing/citest"
 )
 
 func TestFindReturnValue(t *testing.T) {
@@ -87,7 +87,7 @@ func TestParseURI(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	localonly.Because(t, "b/415142638")
+	citest.LocalOnlyBecause(t, "b/415142638")
 	ctx := context.Background()
 	// Success case.
 	amt := NewAMTClient(ctx, "127.0.0.1", "admin", "P@ssword123", false)

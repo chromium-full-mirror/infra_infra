@@ -19,7 +19,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	cssh "golang.org/x/crypto/ssh"
 
-	"go.chromium.org/luci/common/testing/localonly"
+	"go.chromium.org/luci/common/testing/citest"
 
 	"go.chromium.org/infra/cros/satlab/common/enumeration"
 	"go.chromium.org/infra/cros/satlab/common/paths"
@@ -96,7 +96,7 @@ func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 }
 
 func TestRunCommandOnIpShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -115,7 +115,7 @@ func TestRunCommandOnIpShouldWork(t *testing.T) {
 }
 
 func TestRunCommandOnIpsShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -132,7 +132,7 @@ func TestRunCommandOnIpsShouldWork(t *testing.T) {
 }
 
 func TestPingDUTsShouldSuccess(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	// We Set this test run in parallel
 	t.Parallel()
 
@@ -160,7 +160,7 @@ func TestPingDUTsShouldSuccess(t *testing.T) {
 }
 
 func TestFetchLeasesShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	// We Set this test run in parallel
 	t.Parallel()
 
@@ -209,7 +209,7 @@ func getConnectIPsHelper() executor.IExecCommander {
 }
 
 func Test_GetConnectedIPsAreNotPingableAndWithoutTestImageShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -238,7 +238,7 @@ func Test_GetConnectedIPsAreNotPingableAndWithoutTestImageShouldWork(t *testing.
 }
 
 func Test_GetConnectedIPsArePingableButWithoutTestImageShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -268,7 +268,7 @@ func Test_GetConnectedIPsArePingableButWithoutTestImageShouldWork(t *testing.T) 
 }
 
 func Test_GetConnectedIPsArePingableAndHasTestImageShouldWork(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := `CHROMEOS_RELEASE_TRACK=testimage-channel
 CHROMEOS_RELEASE_BUILDER_PATH=atlas-release/R122-15709.0.0
 CHROMEOS_RELEASE_BUILD_NUMBER=15709
@@ -305,7 +305,7 @@ CHROMEOS_RELEASE_UNIBUILD=1
 }
 
 func TestGetConnectedIPsShouldFail(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -324,7 +324,7 @@ func TestGetConnectedIPsShouldFail(t *testing.T) {
 }
 
 func Test_GetBoard(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "CHROMEOS_RELEASE_BOARD=brya\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -344,7 +344,7 @@ func Test_GetBoard(t *testing.T) {
 }
 
 func Test_GetModel(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "model\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -364,7 +364,7 @@ func Test_GetModel(t *testing.T) {
 }
 
 func Test_GetGSCSerialAndServoUSBCountSuccess(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"0880402c-4c1b4b03\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -387,7 +387,7 @@ func Test_GetGSCSerialAndServoUSBCountSuccess(t *testing.T) {
 }
 
 func Test_GetGSCSerialAndServoUSBCountCmdError(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -413,7 +413,7 @@ func Test_GetGSCSerialAndServoUSBCountCmdError(t *testing.T) {
 }
 
 func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -441,7 +441,7 @@ func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
 }
 
 func Test_GetServoSerialGscSerialNotFound(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -466,7 +466,7 @@ func Test_GetServoSerialGscSerialNotFound(t *testing.T) {
 }
 
 func Test_GetServoSerialNoServoConnected(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 0\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -500,7 +500,7 @@ func Test_GetServoSerialNoServoConnected(t *testing.T) {
 }
 
 func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -540,7 +540,7 @@ func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
 }
 
 func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -578,7 +578,7 @@ func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
 }
 
 func Test_GetCCDOpenedStatus(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "Opened\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -598,7 +598,7 @@ func Test_GetCCDOpenedStatus(t *testing.T) {
 }
 
 func Test_GetCCDUnknownStatus(t *testing.T) {
-	localonly.Because(t, "b/394325271")
+	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)

@@ -18,8 +18,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/citest"
 	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/localonly"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 )
@@ -53,7 +53,7 @@ func createFileWithModTime(t *testing.T, filePath string, mod time.Time) {
 }
 
 func TestSelectFileByPattern(t *testing.T) {
-	localonly.Because(t, "b/397939428")
+	citest.LocalOnlyBecause(t, "b/397939428")
 
 	baseTime := time.Now()
 

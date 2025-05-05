@@ -26,7 +26,7 @@ import (
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/testing/localonly"
+	"go.chromium.org/luci/common/testing/citest"
 
 	"go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/cli"
 	firmwareservice "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/service"
@@ -139,7 +139,7 @@ func newFileResponse(pb *api.File) *dutServiceFetchFileClient {
 }
 
 func TestDetailedRequestSSHStates(t *testing.T) {
-	localonly.Because(t, "b/402551644")
+	citest.LocalOnlyBecause(t, "b/402551644")
 	fakeGSPath := "gs://chromeos-image-archive/board-firmware-branch/R123-12345.0.0/board/firmware_from_source.tar.bz2"
 
 	makeRequest := func(main_rw, main_ro, ec_ro, ec_rw bool) *api.InstallRequest {

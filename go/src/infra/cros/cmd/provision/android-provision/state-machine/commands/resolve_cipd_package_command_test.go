@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	luci_cipd "go.chromium.org/luci/cipd/client/cipd"
 	luci_cipd_common "go.chromium.org/luci/cipd/common"
-	"go.chromium.org/luci/common/testing/localonly"
+	"go.chromium.org/luci/common/testing/citest"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/cipd"
@@ -24,7 +24,7 @@ import (
 )
 
 func TestResolveCIPDPackageCommand(t *testing.T) {
-	localonly.Because(t, "b/402551644")
+	citest.LocalOnlyBecause(t, "b/402551644")
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
