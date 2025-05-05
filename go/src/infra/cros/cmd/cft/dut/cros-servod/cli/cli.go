@@ -112,7 +112,7 @@ func newLogger(logFile *os.File) *log.Logger {
 }
 
 func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
-	// TODO: Add cache server address input. It is needed for building cache server url for download_image_to_usb_dev.
+	// TODO: Add cache server address input. It is needed for building cache server url for image_downloader.
 	a := model.CliArgs{}
 	fs := flag.NewFlagSet("Run servod", flag.ExitOnError)
 	fs.StringVar(&a.LogPath, "log_path", defaultLogDirectory, fmt.Sprintf("Path to record execution logs. The default value is %s", defaultLogDirectory))

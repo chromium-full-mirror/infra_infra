@@ -270,8 +270,6 @@ func newParams(args []interface{}) ([]param, error) {
 
 // NewCall creates a XML-RPC call.
 func NewCall(method string, args ...interface{}) Call {
-	// TODO: download_image_to_usb_dev takes a lot of time. Use the max timeout by default.
-	// 			 Input timeout from the API instead of using the max timeout for every call.
 	return NewCallTimeout(method, maxRPCTimeout, args...)
 }
 

@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
 	"go.chromium.org/infra/cros/recovery/internal/components/urlpath"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
@@ -69,12 +70,12 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}
-	servo := info.GetDut().GetChromeos().GetServo()
-	if servo == nil {
+	servoHost := info.GetDut().GetChromeos().GetServo()
+	if servoHost == nil {
 		return errors.Reason("download image to usb-drive: setup does not have servo").Err()
 	}
-	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
-	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
+	info.AddObservation(metrics.NewStringObservation("usbkey_model", servoHost.GetUsbDrive().GetManufacturer()))
+	info.AddObservation(metrics.NewStringObservation("usbkey_state", servoHost.GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
 	osImageName := argsMap.AsString(ctx, "os_name", sv.GetOsImagePath())
 	log.Debugf(ctx, "Used OS image name: %s", osImageName)
@@ -98,15 +99,25 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	image := fmt.Sprintf("%s/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin", pathWithIds)
 	log.Debugf(ctx, "Download image for USB-drive: %s", image)
-	val, err := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", image)
-	log.Debugf(ctx, "Received reponse: %v", val)
+
+	run := info.NewRunner(servoHost.GetName())
+	servod := info.NewServod()
+	usbDrivePath, _, err := servo.USBDrivePath(ctx, false, run, servod, info.NewLogger())
+	if err != nil {
+		return errors.Annotate(err, "download image to usb-drive: failed to get usb drive path").Err()
+	}
+	if _, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf("image_downloader --device=%s --image_path=%s", usbDrivePath, image)); err != nil {
+		log.Debugf(ctx, "image_downloader failed. reverting to servod control.  Error: %s", err)
+		val, _ := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", image)
+		log.Debugf(ctx, "Received response: %v", val)
+	}
 
 	// If we fail we can detect issues with USB-drive, so we can mark it for replacement.
 	// Example:
 	if err != nil && strings.Contains(err.Error(), "Read-only file system:") {
 		log.Debugf(ctx, "USB-drive is read-only, it is recommended to replace the device.")
 		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("servo_usb_replacement_reason", "read-only"))
-		servo.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		servoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
 	return errors.Annotate(err, "download image to usb-drive").Err()
 }
