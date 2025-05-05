@@ -54,7 +54,7 @@ const (
 // invalidDeviceNameCharacterRegex matches one or more invalid device name
 // characters and underscores so that they may be replaced with a single
 // underscore.
-var invalidDeviceNameCharacterRegex = regexp.MustCompile(`([^a-zA-Z0-9\-]|_)+`)
+var invalidDeviceNameCharacterRegex = regexp.MustCompile(`([^a-zA-Z0-9\-+]|_)+`)
 
 // buildModelName builds a tlw.WifiRouterHost.model name that is a combination
 // of the deviceType name and a sanitized deviceName. The deviceName is expected

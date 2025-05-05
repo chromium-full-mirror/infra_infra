@@ -541,6 +541,39 @@ func Test_collectCommonWifiRouterFeatures(t *testing.T) {
 	}
 }
 
+func TestBuildModelName(t *testing.T) {
+	tests := []struct {
+		name       string
+		routerType labapi.WifiRouterDeviceType
+		deviceName string
+		want       string
+	}{
+		{
+			name:       "u6_plus",
+			routerType: labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT,
+			deviceName: "Ubiquiti_UniFi_U6+",
+			want:       "OPENWRT[Ubiquiti_UniFi_U6+]",
+		},
+		{
+			name:       "valid_replace",
+			routerType: labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT,
+			deviceName: "Ubiquiti_UniFi_U6##",
+			want:       "OPENWRT[Ubiquiti_UniFi_U6_]",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := buildModelName(tt.routerType, tt.deviceName)
+			if got != tt.want {
+				t.Errorf("buildModelName() = %v, want %v", got, tt.want)
+			}
+			if !(len(tt.want) == 0 && len(got) == 0) && !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CollectOverallTestbedWifiRouterFeatures() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestCollectOverallTestbedWifiRouterFeatures(t *testing.T) {
 	type args struct {
 		routers []*tlw.WifiRouterHost
