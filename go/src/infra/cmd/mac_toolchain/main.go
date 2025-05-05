@@ -641,7 +641,7 @@ func packageRuntimeDMGFlagVars(c *packageRuntimeDMGRun) {
 	commonFlagVars(&c.commonFlags)
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
-	c.Flags.StringVar(&c.runtimeVersion, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
+	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. For example, 15A5161b (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }
