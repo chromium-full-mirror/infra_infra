@@ -128,25 +128,6 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// removeBluetoothDeviceExec removes bluetooth device from the labstation.
-func removeBluetoothDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.DefaultRunner()
-	out, err := run(ctx, info.GetExecTimeout(), "bluetoothctl devices")
-	if err != nil {
-		return errors.Reason("remote bluetooth device: failed to get available devices.").Err()
-	}
-	// The output of device info will looks like "Device F4:60:77:0C:7C:39 F4-60-77-0C-7C-39",
-	// and we need the middle part uuit as identifier to remove it.
-	s := strings.Fields(out)
-	if len(s) > 1 {
-		log.Debugf(ctx, "Removing bluetooth device %s", s[1])
-		if _, err := run(ctx, info.GetExecTimeout(), "bluetoothctl", "remove", s[1]); err != nil {
-			return errors.Reason("remote bluetooth device: failed to remove bluetooth device.").Err()
-		}
-	}
-	return nil
-}
-
 // checkGenesysLogicFirmwareImageExists checks if the OS image on labstation contains a specific GenesysLogic firmware image.
 func checkGenesysLogicFirmwareImageExists(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
@@ -209,7 +190,6 @@ func init() {
 	execs.Register("cros_allowed_reboot", allowedRebootExec)
 	execs.Register("cros_filesystem_io_not_blocked", filesystemIoNotBlockedExec)
 	execs.Register("cros_log_clean_up", logCleanupExec)
-	execs.Register("cros_remove_bt_devices", removeBluetoothDeviceExec)
 	execs.Register("cros_update_genesys_logic_firmware", updateGenesysLogicFirmwareForServos)
 	execs.Register("cros_genesys_logic_firmware_image_exists", checkGenesysLogicFirmwareImageExists)
 	execs.Register("cros_check_used_inode_percentage_lower_than_threshold", checkUsedInodePercentageLowerThanThreshold)

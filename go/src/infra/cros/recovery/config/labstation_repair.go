@@ -28,8 +28,7 @@ func LabstationRepairConfig() *Configuration {
 		"booted_from_right_kernel",
 		"reboot_by_request",
 		"Reboot labstation if uptime longer than 7 days",
-		// TODO(b/245824583): remove this action once the bug fixed.
-		"Cleanup bluetooth",
+		"Attempt to disable bluetooth adapter",
 		"Is crosid readable",
 		"Update inventory info",
 		"Set state: ready",
@@ -347,33 +346,14 @@ func LabstationRepairConfig() *Configuration {
 			ExecName:               "cros_log_clean_up",
 			AllowFailAfterRecovery: true,
 		},
-		"Attempt to remove bluetooth device": {
+		"Attempt to disable bluetooth adapter": {
 			Docs: []string{
-				"Attempt to remove bluetooth device from the labstation.",
-			},
-			ExecName:               "cros_remove_bt_devices",
-			AllowFailAfterRecovery: true,
-		},
-		"Attempt to power off bluetooth adapter": {
-			Docs: []string{
-				"Attempt to power off bluetooth adapter on the labstation.",
+				"Attempt to disable bluetooth adapter on the labstation.",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
-				"bluetoothctl power off",
+				"btclient -c \"adapter disable\"",
 			},
-			AllowFailAfterRecovery: true,
-		},
-		"Cleanup bluetooth": {
-			Docs: []string{
-				"Attempt to remove bluetooth device and then power off BT adapter.",
-				"This action should be removed once b/245824583 got fixed.",
-			},
-			Dependencies: []string{
-				"Attempt to remove bluetooth device",
-				"Attempt to power off bluetooth adapter",
-			},
-			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 		},
 		"Labstation image contains target GenesysLogic firmware": {

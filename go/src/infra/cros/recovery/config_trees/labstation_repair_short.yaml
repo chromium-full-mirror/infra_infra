@@ -333,10 +333,7 @@ plans:
                   dependencies:
                     - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
-        - name: Cleanup bluetooth (Allow to fail) ('sample_pass')
-          dependencies:
-            - name: Attempt to remove bluetooth device (Allow to fail) ('cros_remove_bt_devices')
-            - name: Attempt to power off bluetooth adapter (Allow to fail) ('cros_run_shell_command')
+        - name: Attempt to disable bluetooth adapter (Allow to fail) ('cros_run_shell_command')
         - name: Is crosid readable (Allow to fail) ('cros_run_command')
           conditions:
             - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')

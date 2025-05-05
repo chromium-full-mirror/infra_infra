@@ -1131,22 +1131,12 @@ plans:
                   docs:
                     - Remove all requests for reboot on the host.
                     - The action has to be called after reboot of the device.
-        - name: Cleanup bluetooth (Allow to fail)
-          exec_name: sample_pass
+        - name: Attempt to disable bluetooth adapter (Allow to fail)
+          exec_name: cros_run_shell_command
+          exec_args:
+            - btclient -c "adapter disable"
           docs:
-            - Attempt to remove bluetooth device and then power off BT adapter.
-            - This action should be removed once b/245824583 got fixed.
-          dependencies:
-            - name: Attempt to remove bluetooth device (Allow to fail)
-              exec_name: cros_remove_bt_devices
-              docs:
-                - Attempt to remove bluetooth device from the labstation.
-            - name: Attempt to power off bluetooth adapter (Allow to fail)
-              exec_name: cros_run_shell_command
-              exec_args:
-                - bluetoothctl power off
-              docs:
-                - Attempt to power off bluetooth adapter on the labstation.
+            - Attempt to disable bluetooth adapter on the labstation.
         - name: Is crosid readable (Allow to fail)
           exec_name: cros_run_command
           exec_args:
