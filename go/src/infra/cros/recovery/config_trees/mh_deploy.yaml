@@ -7251,16 +7251,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -8242,16 +8246,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -9176,16 +9184,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Update FW and install Android OS from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -11446,16 +11458,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -12437,16 +12453,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -13217,16 +13237,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Update FW and install Android OS from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -13645,16 +13669,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Update FW and install Android OS from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -14212,16 +14240,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Quick provision OS
               exec_name: sample_pass
               docs:
@@ -14519,16 +14551,20 @@ plans:
                       docs:
                         - 'Verify that cros-tool-runner service is up and running, '
                         - the tool expected to start as part of system preparation.
+                - name: Foil-provision Setup service
+                  exec_name: ctr_foil_provision_setup_service
+                  docs:
+                    - The setup method needs to be called once before performing install.
                 - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - Run install scrpt on the DUT.
-                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
-                    - requests:PROVISION
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
-                    - Remove a PROVISION repair-request.
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Quick provision OS
               exec_name: sample_pass
               docs:

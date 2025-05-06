@@ -2721,8 +2721,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -3020,8 +3021,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -3246,8 +3248,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -3365,8 +3368,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -3523,8 +3527,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Quick provision OS ('sample_pass')
               conditions:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -3602,8 +3607,9 @@ plans:
                 - name: Start Foil-provision ('ctr_start_foil_provision_container')
                   conditions:
                     - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Quick provision OS ('sample_pass')
               conditions:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)

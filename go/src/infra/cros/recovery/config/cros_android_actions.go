@@ -164,8 +164,9 @@ func androidActions(actions map[string]*Action) {
 			Dependencies: []string{
 				"Detect CacheService address",
 				"Start Foil-provision",
+				"Foil-provision Setup service",
 				"Foil-provision install OS",
-				"Remove PROVISION repair-request",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
