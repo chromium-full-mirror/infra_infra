@@ -143,6 +143,7 @@ var (
 	AssetType                      string = "assettype"
 	CommittishFilterName           string = "commitsh"
 	HiveFilterName                 string = "hive"
+	VmidFilterName                 string = "vmid"
 )
 
 const separator string = "/"

@@ -47,6 +47,7 @@ type VMEntity struct {
 	Customer       string                `gae:"customer"`
 	SecurityLevel  string                `gae:"security_level"`
 	MibaRealm      string                `gae:"miba_realm,noindex"` // deprecated
+	Vmid           int64                 `gae:"vmid"`
 	// Follow others entities, store ufspb.VM bytes.
 	VM []byte `gae:",noindex"`
 }
@@ -102,6 +103,7 @@ func newVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 		SwarmingServer: swarmingInstance,
 		Customer:       customer,
 		SecurityLevel:  securityLevel,
+		Vmid:           p.GetVmid(),
 		VM:             vm,
 	}, nil
 }
@@ -195,7 +197,7 @@ func GetVM(ctx context.Context, id string) (*ufspb.VM, error) {
 	return nil, err
 }
 
-func getVMID(pm proto.Message) string {
+func getVmName(pm proto.Message) string {
 	p := pm.(*ufspb.VM)
 	return p.GetName()
 }
@@ -206,7 +208,7 @@ func BatchGetVMs(ctx context.Context, ids []string) ([]*ufspb.VM, error) {
 	for i, n := range ids {
 		protos[i] = &ufspb.VM{Name: n}
 	}
-	pms, err := ufsds.BatchGet(ctx, protos, newVMEntity, getVMID)
+	pms, err := ufsds.BatchGet(ctx, protos, newVMEntity, getVmName)
 	if err != nil {
 		return nil, err
 	}
@@ -362,6 +364,8 @@ func GetVMIndexedFieldName(input string) (string, error) {
 		field = "memory"
 	case util.StorageFilterName:
 		field = "storage"
+	case util.VmidFilterName:
+		field = "vmid"
 	default:
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are vlan/state/host/zone/tag/os/cpucores/memory/storage", input)
 	}

@@ -161,7 +161,11 @@ func TestListVMs(t *testing.T) {
 		Memory: 1234,
 	}
 	vm4 := mockVM("vm-4")
-	vms := []*ufspb.VM{vm1, vm2, vm3, vm4}
+	vm5 := &ufspb.VM{
+		Name: "vm-5",
+		Vmid: 111,
+	}
+	vms := []*ufspb.VM{vm1, vm2, vm3, vm4, vm5}
 
 	ftt.Run("ListVMs", t, func(t *ftt.Test) {
 		_, err := BatchUpdateVMs(ctx, vms)
@@ -175,7 +179,7 @@ func TestListVMs(t *testing.T) {
 		})
 
 		t.Run("List vms - Full listing with no pagination", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListVMs(ctx, 4, 4, "", nil, false, nil)
+			resp, nextPageToken, err := ListVMs(ctx, 5, 5, "", nil, false, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
@@ -198,8 +202,8 @@ func TestListVMs(t *testing.T) {
 	ftt.Run("ListVMs with Filters", t, func(t *ftt.Test) {
 		_, err := BatchUpdateVMs(ctx, vms)
 		assert.Loosely(t, err, should.BeNil)
-		filterMap := make(map[string][]interface{})
 		t.Run("List vms - Filter by state", func(t *ftt.Test) {
+			filterMap := make(map[string][]interface{})
 			filterMap["state"] = []interface{}{"STATE_DECOMMISSIONED"}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
 			assert.Loosely(t, err, should.BeNil)
@@ -208,6 +212,7 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm1}))
 		})
 		t.Run("List vms - Filter by tags", func(t *ftt.Test) {
+			filterMap := make(map[string][]interface{})
 			filterMap["tags"] = []interface{}{"tag-1"}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
 			assert.Loosely(t, err, should.BeNil)
@@ -216,12 +221,22 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm2}))
 		})
 		t.Run("List vms - Filter by memory", func(t *ftt.Test) {
+			filterMap := make(map[string][]interface{})
 			filterMap["memory"] = []interface{}{1234}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm3}))
+		})
+		t.Run("List vms - Filter by vmid", func(t *ftt.Test) {
+			filterMap := make(map[string][]interface{})
+			filterMap["vmid"] = []interface{}{111}
+			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm5}))
 		})
 	})
 }
