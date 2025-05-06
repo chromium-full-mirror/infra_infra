@@ -84,6 +84,43 @@ plans:
             - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
         - name: Clean up logs if necessary (Allow to fail) ('cros_log_clean_up')
         - name: Filesystem is writable (Allow to fail) ('cros_is_file_system_writable')
+        - name: Is check_ethernet.hook disabled (Allow to fail) ('cros_run_shell_command')
+          dependencies:
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
+              recoveries:
+                - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: rpm_action_enabled
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: rpm_power_cycle
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+                - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: rpm_action_enabled
+                        - name: has_rpm_info
+                    - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: rpm_action_enabled
+                        - name: has_rpm_info
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+          recoveries:
+            - name: Disable check_ethernet.hook ('cros_run_shell_command')
+              dependencies:
+                - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
         - name: Used Inodes percentage on stateful partition is lower than 50% ('cros_check_used_inode_percentage_lower_than_threshold')
           conditions:
             - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')

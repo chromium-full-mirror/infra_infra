@@ -21,6 +21,7 @@ func LabstationRepairConfig() *Configuration {
 		"System services is up",
 		"Clean up logs if necessary",
 		"Filesystem is writable",
+		"Is check_ethernet.hook disabled",
 		"Used Inodes percentage on stateful partition is lower than 50%",
 		"Check servod dependencies",
 		"cros_is_on_stable_version",
@@ -528,6 +529,34 @@ func LabstationRepairConfig() *Configuration {
 			},
 			RecoveryActions: []string{
 				"Powerwash repair labstation",
+			},
+		},
+		"Is check_ethernet.hook disabled": {
+			Docs: []string{
+				"Check and fail if the lab machine flag file exists",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"test ! -f /mnt/stateful_partition/.labmachine",
+			},
+			RecoveryActions: []string{
+				"Disable check_ethernet.hook",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Disable check_ethernet.hook": {
+			Docs: []string{
+				"Remove lab machine flag file so check_ethernet hook is disabled",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_shell_command",
+			ExecExtraArgs: []string{
+				"rm /mnt/stateful_partition/.labmachine",
 			},
 		},
 	}
