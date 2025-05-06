@@ -139,7 +139,15 @@ func tcDepsToSwarmingLabels(tcDeps []string) []string {
 	return swarmingLabels
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type LegacyHWFilter struct {
+	servertemplate.Filter
+}
+
+func NewLegacyHWFilter() servertemplate.Filter {
+	return &LegacyHWFilter{}
+}
+
+func (*LegacyHWFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Step 1. Get all the HWTargets from the suite metadata
 	// these might contain provision info.
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()
@@ -186,7 +194,7 @@ func generateTcHwReqsLegacy2(hwTargets []*api.SwarmingDefinition, tcDeps []strin
 }
 
 func main() {
-	err := servertemplate.Server(executor, binName)
+	err := servertemplate.Server(NewLegacyHWFilter, binName)
 	if err != nil {
 		os.Exit(2)
 	}

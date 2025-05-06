@@ -25,14 +25,14 @@ type TestFinderServiceServer struct {
 }
 
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executor servertemplate.ExecutorFunc) *grpc.Server {
+func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executorGenerator servertemplate.ExecutorGeneratorFunc) *grpc.Server {
 	s := &TestFinderServiceServer{
 		GenericFilterServiceServer: &servertemplate.GenericFilterServiceServer{
-			LogPath:      logPath,
-			Name:         name,
-			ServerLogger: logger,
-			CommonParams: commonParams,
-			Executor:     executor,
+			LogPath:            logPath,
+			Name:               name,
+			ServerLogger:       logger,
+			CommonParams:       commonParams,
+			ExecutionGenerator: executorGenerator,
 		},
 	}
 

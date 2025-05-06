@@ -29,15 +29,23 @@ const (
 )
 
 func main() {
-	if err := servertemplate.Server(executor, BinName); err != nil {
+	if err := servertemplate.Server(NewPartnerStagingFilter, BinName); err != nil {
 		os.Exit(2)
 	}
 	os.Exit(0)
 }
 
+type PartnerStagingFilter struct {
+	servertemplate.Filter
+}
+
+func NewPartnerStagingFilter() servertemplate.Filter {
+	return &PartnerStagingFilter{}
+}
+
 // executor is the main function that processes the InternalTestplan request.
 // It extracts the builds to stage, creates a Moblab client, and stages the builds.
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+func (*PartnerStagingFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	buildsToStage, cft := extractBuildsToStage(req)
 	log.Printf("Found builds to stage: %d\n", len(buildsToStage))
 	ctx := context.Background()

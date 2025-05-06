@@ -18,7 +18,15 @@ import (
 
 var binName = "testFinder"
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type TestFinderFilter struct {
+	servertemplate.Filter
+}
+
+func NewTestFinderFilter() servertemplate.Filter {
+	return &TestFinderFilter{}
+}
+
+func (*TestFinderFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	err := service.FindTests(ctx, req, log)
@@ -27,8 +35,9 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.C
 	}
 	return req, nil
 }
+
 func main() {
-	err := servertemplate.Server(executor, binName)
+	err := servertemplate.Server(NewTestFinderFilter, binName)
 	if err != nil {
 		os.Exit(2)
 	}

@@ -14,8 +14,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
@@ -38,7 +36,7 @@ type args struct {
 }
 
 // startServer is the entry point for running post-process (TestFinderService) in server mode.
-func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error), name string) error {
+func startServer(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc, name string) error {
 	a := args{}
 	commonParams := common.CommonFilterParams{}
 	t := time.Now()
@@ -67,7 +65,7 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 	if err != nil {
 		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
-	server, closer := NewServer(logger, a.logPath, name, &commonParams, executor)
+	server, closer := NewServer(logger, a.logPath, name, &commonParams, executorGenerator)
 	defer closer()
 
 	err = server.Serve(l)
@@ -80,13 +78,13 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 }
 
 // Server starts the generic filter server.
-func Server(executor func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error), name string) error {
+func Server(executorGenerator ExecutorGeneratorFunc, name string) error {
 	fs := flag.NewFlagSet("Run generic-filter server", flag.ExitOnError)
-	return startServer(fs, executor, name)
+	return startServer(fs, executorGenerator, name)
 }
 
 // ServerWithFlagSet starts the generic filter server
 // with a custom flagSet extending the default flags.
-func ServerWithFlagSet(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error), name string) error {
-	return startServer(flagSet, executor, name)
+func ServerWithFlagSet(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc, name string) error {
+	return startServer(flagSet, executorGenerator, name)
 }

@@ -71,7 +71,15 @@ func fillTestCases(ctx context.Context, testPlan *api.InternalTestplan, resp *ap
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type TestFinderFilter struct {
+	servertemplate.Filter
+}
+
+func NewTestFinderFilter() servertemplate.Filter {
+	return &TestFinderFilter{}
+}
+
+func (*TestFinderFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	testFinderResponse, err := startAndRunTestFinder(req, log)
@@ -112,7 +120,7 @@ func startAndRunTestFinder(testPlan *api.InternalTestplan, log *log.Logger) (*ap
 }
 
 func main() {
-	err := servertemplate.Server(executor, binName)
+	err := servertemplate.Server(NewTestFinderFilter, binName)
 	if err != nil {
 		os.Exit(2)
 	}

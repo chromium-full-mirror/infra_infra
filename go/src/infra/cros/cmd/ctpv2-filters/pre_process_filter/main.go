@@ -217,12 +217,20 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 	return req
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type PreProcessFilter struct {
+	servertemplate.Filter
+}
+
+func NewPreProcessFilter() servertemplate.Filter {
+	return &PreProcessFilter{}
+}
+
+func (*PreProcessFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	return innerMain(req, log), nil
 }
 
 func main() {
-	err := servertemplate.Server(executor, binName)
+	err := servertemplate.Server(NewPreProcessFilter, binName)
 	if err != nil {
 		os.Exit(2)
 	}

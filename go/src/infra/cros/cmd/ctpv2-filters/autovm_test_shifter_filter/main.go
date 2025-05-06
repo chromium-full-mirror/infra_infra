@@ -143,7 +143,11 @@ func updateSchedulingUnitOptions(req *api.InternalTestplan, board string, versio
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type AutoVMTestShifterFilter struct {
+	servertemplate.Filter
+}
+
+func (*AutoVMTestShifterFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 
 	available, board, version := isAnyVMImageAvailable(context.Background(), req, log)
 
@@ -160,8 +164,12 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.C
 	return req, nil
 }
 
+func NewFilter() servertemplate.Filter {
+	return &AutoVMTestShifterFilter{}
+}
+
 func main() {
-	err := servertemplate.Server(executor, binName)
+	err := servertemplate.Server(NewFilter, binName)
 	if err != nil {
 		os.Exit(2)
 	}

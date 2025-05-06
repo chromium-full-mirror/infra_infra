@@ -25,23 +25,27 @@ import (
 // GenericFilterServiceServer ...
 type GenericFilterServiceServer struct {
 	api.GenericFilterServiceServer
-	LogPath      string
-	Name         string
-	ServerLogger *log.Logger
-	CommonParams *common.CommonFilterParams
-	Executor     func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+	LogPath            string
+	Name               string
+	ServerLogger       *log.Logger
+	CommonParams       *common.CommonFilterParams
+	ExecutionGenerator ExecutorGeneratorFunc
 }
 
-type ExecutorFunc func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+type Filter interface {
+	Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+}
+
+type ExecutorGeneratorFunc func() Filter
 
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executor ExecutorFunc) (*grpc.Server, func()) {
+func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executorGenerator ExecutorGeneratorFunc) (*grpc.Server, func()) {
 	s := &GenericFilterServiceServer{
-		LogPath:      logPath,
-		Name:         name,
-		ServerLogger: logger,
-		CommonParams: commonParams,
-		Executor:     executor,
+		LogPath:            logPath,
+		Name:               name,
+		ServerLogger:       logger,
+		CommonParams:       commonParams,
+		ExecutionGenerator: executorGenerator,
 	}
 
 	server := grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*32), grpc.MaxSendMsgSize(1024*1024*32))
@@ -79,7 +83,8 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 
 	logger.Printf("Received Request: %s", req)
 
-	rspn, err := s.Executor(req, logger, s.CommonParams)
+	executor := s.ExecutionGenerator()
+	rspn, err := executor.Executor(req, logger, s.CommonParams)
 	if err != nil {
 		return nil, errors.Annotate(err, "Executor: failed to run").Err()
 	}
@@ -123,7 +128,8 @@ func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *
 	defer CapturePanic(logger, &err)
 	resp = req
 
-	resp, err = s.Executor(req, logger, s.CommonParams)
+	executor := s.ExecutionGenerator()
+	resp, err = executor.Executor(req, logger, s.CommonParams)
 	return
 }
 

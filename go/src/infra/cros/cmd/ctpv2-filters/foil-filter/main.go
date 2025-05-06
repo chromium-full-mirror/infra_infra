@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
-type FoilRequestUpdater struct {
+type FoilFilterServerArgs struct {
 	TestPath          string
 	GcsPublishPath    string
 	RdbPublishPath    string
@@ -25,7 +25,29 @@ type FoilRequestUpdater struct {
 	EnableXtsArchiver bool
 }
 
-func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+func (serverArgs *FoilFilterServerArgs) GenerateFilterExecutor() servertemplate.Filter {
+	return &FoilRequestUpdater{
+		TestPath:          serverArgs.TestPath,
+		GcsPublishPath:    serverArgs.GcsPublishPath,
+		RdbPublishPath:    serverArgs.RdbPublishPath,
+		CpconPublishPath:  serverArgs.CpconPublishPath,
+		FilterTests:       serverArgs.FilterTests,
+		EnableXtsArchiver: serverArgs.EnableXtsArchiver,
+	}
+}
+
+type FoilRequestUpdater struct {
+	servertemplate.Filter
+
+	TestPath          string
+	GcsPublishPath    string
+	RdbPublishPath    string
+	CpconPublishPath  string
+	FilterTests       bool
+	EnableXtsArchiver bool
+}
+
+func (ru *FoilRequestUpdater) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	var err error
 	log.Println("Executing request-updater filter.")
 
@@ -62,16 +84,16 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 }
 
 func main() {
-	requestUpdater := &FoilRequestUpdater{}
+	serverArgs := &FoilFilterServerArgs{}
 	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
-	fs.StringVar(&requestUpdater.TestPath, "test-path", "", "SHA256 value for test container")
-	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
-	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
-	fs.StringVar(&requestUpdater.CpconPublishPath, "cpcon-path", "", "SHA256 value for cpcon publish container")
-	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
-	fs.BoolVar(&requestUpdater.EnableXtsArchiver, "enable-xts-archiver", false, "Whether to archive xTS results for release qualification")
+	fs.StringVar(&serverArgs.TestPath, "test-path", "", "SHA256 value for test container")
+	fs.StringVar(&serverArgs.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
+	fs.StringVar(&serverArgs.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
+	fs.StringVar(&serverArgs.CpconPublishPath, "cpcon-path", "", "SHA256 value for cpcon publish container")
+	fs.BoolVar(&serverArgs.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
+	fs.BoolVar(&serverArgs.EnableXtsArchiver, "enable-xts-archiver", false, "Whether to archive xTS results for release qualification")
 
-	err := servertemplate.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
+	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "request-updater")
 	if err != nil {
 		os.Exit(2)
 	}

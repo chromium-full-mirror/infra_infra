@@ -28,6 +28,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 const (
@@ -287,7 +288,7 @@ func runCLI(ctx context.Context, d []string) int {
 }
 
 // startServer is the entry point for running cros-test-finder (TestFinderService) in server mode.
-func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error), name string) error {
+func startServer(flagSet *flag.FlagSet, executorGenerator servertemplate.ExecutorGeneratorFunc, name string) error {
 	a := args{}
 	commonParams := common.CommonFilterParams{}
 	t := time.Now()
@@ -316,7 +317,7 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 	if err != nil {
 		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
-	server := NewServer(logger, a.logPath, name, &commonParams, executor)
+	server := NewServer(logger, a.logPath, name, &commonParams, executorGenerator)
 
 	err = server.Serve(l)
 	if err != nil {
@@ -360,7 +361,15 @@ func getRunMode() (runMode, error) {
 	return runCliDefault, nil
 }
 
-func filterExecutor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+type TestFinderFilter struct {
+	servertemplate.Filter
+}
+
+func NewTestFinderFilter() servertemplate.Filter {
+	return &TestFinderFilter{}
+}
+
+func (*TestFinderFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing cros-test-finder as filter.")
 
 	findTestReq, _ := common.ToTestFinderRequest(req)
@@ -397,7 +406,7 @@ func TestFinderInternal(ctx context.Context) int {
 	case runServer:
 		log.Printf("Running server mode!")
 		fs := flag.NewFlagSet("Run cros-test-finder server", flag.ExitOnError)
-		err := startServer(fs, filterExecutor, "cros-test-finder")
+		err := startServer(fs, NewTestFinderFilter, "cros-test-finder")
 		if err != nil {
 			return 2
 		}

@@ -24,8 +24,23 @@ const (
 	gceServiceAccountJSONPath          = "/creds/service_accounts/service-account-chromeos.json"
 )
 
+type ALProvisionServerArgs struct {
+	ProvisionPath string
+	ServoPath     string
+}
+
+func (serverArgs *ALProvisionServerArgs) GenerateFilterExecutor() servertemplate.Filter {
+	return &ALProvisionRequestUpdater{
+		ProvisionPath:       serverArgs.ProvisionPath,
+		ServoPath:           serverArgs.ServoPath,
+		LatestBuildsByBoard: make(map[string]int),
+	}
+}
+
 // ALProvisionRequestUpdater struct stores
 type ALProvisionRequestUpdater struct {
+	servertemplate.Filter
+
 	ProvisionPath string
 	ServoPath     string
 
@@ -33,7 +48,7 @@ type ALProvisionRequestUpdater struct {
 	AndroidAuthHandler  *android.CloudRunFilterAuthenticator
 }
 
-func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+func (pru *ALProvisionRequestUpdater) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	var err error
 	pru.AndroidAuthHandler = &android.CloudRunFilterAuthenticator{
 		AuthHandler: commonParams.AuthHelper,
@@ -60,13 +75,11 @@ func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *l
 }
 
 func main() {
-	provisionRequestUpdater := &ALProvisionRequestUpdater{
-		LatestBuildsByBoard: make(map[string]int),
-	}
+	serverArgs := &ALProvisionServerArgs{}
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
-	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
-	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
-	err := servertemplate.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
+	fs.StringVar(&serverArgs.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
+	fs.StringVar(&serverArgs.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
+	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "request-updater")
 	if err != nil {
 		os.Exit(2)
 	}
