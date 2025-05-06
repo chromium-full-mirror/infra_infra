@@ -8,7 +8,8 @@ import (
 	"context"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
 	testsupport "go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
@@ -25,7 +26,5 @@ func TestPing(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if diff := typed.Got(response).Want(&fleetcostAPI.PingResponse{}).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, response, should.Match(&fleetcostAPI.PingResponse{}))
 }

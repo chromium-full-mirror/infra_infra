@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/libs/skylab/inventory"
 )
@@ -41,9 +41,7 @@ func TestGetDeviceSpecs(t *testing.T) {
 			Hostname: stringPtr("this-other-hostname"),
 		},
 	}
-	if !proto.Equal(want, got) {
-		t.Errorf("incorrect response from GetDeviceSpecs, -want, +got:\n%s", typed.Got(got).Want(want).Diff())
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestGetDeviceSpecsAbortOnError(t *testing.T) {
@@ -120,9 +118,7 @@ func TestGetDeviceSpecsIterateOnError(t *testing.T) {
 			Hostname: stringPtr("yourhost"),
 		},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Incorrect response from GetDeviceSpecs, -want, +got:\n%s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestCommentLines(t *testing.T) {
@@ -135,10 +131,7 @@ second line will be commented.
 //     third line has spaces at the start.
 // 		fourth has tabs.`
 	got := commentLines(text)
-	if want != got {
-		t.Errorf("Incorrect output from commentLines(), -want, +got:\n%s",
-			typed.Got(got).Want(want).Diff())
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestDropCommentLines(t *testing.T) {
@@ -149,10 +142,7 @@ second line will survive.
 //fifth line has no space before comment, will be dropped.`
 	want := "second line will survive."
 	got := DropCommentLines(text)
-	if want != got {
-		t.Errorf("Incorrect output from dropCommentLines(), -want, +got:\n%s",
-			typed.Got(got).Want(want).Diff())
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 // newRegexpReplacer returns an inputFunc that replaces text matching re with
@@ -199,20 +189,14 @@ text with some-hostname in the middle`))
 	got := string(r)
 	want := `Some multi-line.
 text with this-other-hostname in the middle`
-	if want != got {
-		t.Errorf("Incorrect output from regexpEditor.InteractiveInput(), -want, +got:\n%s",
-			typed.Got(got).Want(want).Diff())
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 // TestMcsvFieldsConsistentWithMcsvPrompt checks whether the prompt string for the mcsv file
 // and the field names themselves are consistent.
 func TestMcsvFieldsConsistentWithMcsvPrompt(t *testing.T) {
 	got := strings.Join(mcsvFields, ",")
-	if got != mcsvFieldsPrompt {
-		t.Errorf("mcsvFields not consistent with prompt -want +got:\n%s",
-			typed.Got(got).Want(mcsvFieldsPrompt).Diff())
-	}
+	assert.That(t, got, should.Match(mcsvFieldsPrompt))
 }
 
 // TestMcsvFieldsNoDuplicates checks whether the mcsvfields contains any duplicates.

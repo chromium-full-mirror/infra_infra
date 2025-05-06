@@ -7,7 +7,8 @@ package maskutils
 import (
 	"testing"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
 )
@@ -118,9 +119,7 @@ func TestUpdateCostIndicatorProto(t *testing.T) {
 			UpdateCostIndicatorProto(tt.dst, tt.src, tt.fieldmask)
 			got := tt.dst
 			want := tt.output
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }

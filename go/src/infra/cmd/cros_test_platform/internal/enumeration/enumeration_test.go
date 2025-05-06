@@ -12,7 +12,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cmd/cros_test_platform/internal/enumeration"
 )
@@ -37,9 +38,7 @@ func TestGetForTests(t *testing.T) {
 				t.Errorf("unexpected error %s", err.Error())
 			}
 			got := extractTestNames(tests)
-			if diff := typed.Got(got).Want(c.want).Diff(); diff != "" {
-				t.Errorf("enumerated tests differ, -want +got: %s", diff)
-			}
+			assert.That(t, got, should.Match(c.want))
 		})
 	}
 }
@@ -160,9 +159,7 @@ func TestGetForSuites(t *testing.T) {
 		t.Run(c.tag, func(t *testing.T) {
 			tests := enumeration.GetForSuites(c.metadata, c.request)
 			got := extractTestNames(tests)
-			if diff := typed.Got(got).Want(c.want).Diff(); diff != "" {
-				t.Errorf("enumerated tests differ, -want +got: %s", diff)
-			}
+			assert.That(t, got, should.Match(c.want))
 		})
 	}
 }
@@ -182,9 +179,7 @@ func TestGetForSuitesSetsSuiteKeyval(t *testing.T) {
 	}
 	want := map[string]string{"suite": "selected"}
 	got := tests[0].GetResultKeyvals()
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Result keyvals differ, -want +got: %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 
 }
 
@@ -207,9 +202,7 @@ func TestGetForSuitesSetsSuiteKeyvalsForTestSelectedTwice(t *testing.T) {
 		got.Add(t.GetResultKeyvals()["suite"])
 	}
 	want := stringset.NewFromSlice("selected", "another_selected")
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Result keyvals differ, -want +got: %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func suiteRequest(ns ...string) []*test_platform.Request_Suite {
@@ -288,9 +281,7 @@ func TestGetForSuitesSetsSuiteDependency(t *testing.T) {
 			}
 
 			tests := enumeration.GetForSuites(m, suiteRequest("mysuite"))
-			if diff := typed.Got(extractTestNames(tests)).Want(stringset.NewFromSlice("mytest")).Diff(); diff != "" {
-				t.Fatalf("enumerated tests differ, -want +got: %s", diff)
-			}
+			assert.That(t, extractTestNames(tests), should.Match(stringset.NewFromSlice("mytest")))
 
 			gotDeps := []string{}
 			for _, d := range tests[0].GetTest().GetDependencies() {
@@ -298,9 +289,8 @@ func TestGetForSuitesSetsSuiteDependency(t *testing.T) {
 			}
 			sort.Strings(c.WantDependencies)
 			sort.Strings(gotDeps)
-			if diff := typed.Got(gotDeps).Want(c.WantDependencies).Diff(); diff != "" {
-				t.Errorf("test dependencies differ, -want +got: %s", diff)
-			}
+
+			assert.That(t, gotDeps, should.Match(c.WantDependencies))
 		})
 	}
 }
@@ -327,9 +317,7 @@ func TestGetForEnumeration(t *testing.T) {
 		t.Run(c.Tag, func(t *testing.T) {
 			tests := enumeration.GetForEnumeration(c.Request)
 			got := extractTestNames(tests)
-			if diff := typed.Got(got).Want(c.Want).Diff(); diff != "" {
-				t.Errorf("enumerated tests differ, -want +got: %s", diff)
-			}
+			assert.That(t, got, should.Match(c.Want))
 		})
 	}
 }

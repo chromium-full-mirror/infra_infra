@@ -12,7 +12,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/data/strpair"
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -299,10 +300,7 @@ func TestConvertToDimensions(t *testing.T) {
 					t.Fatalf("TaskDoneTime returned unexpected error: %s", err)
 				}
 			}
-			diff := typed.Diff(got, c.want)
-			if diff != "" {
-				t.Errorf("Test faild for %#v = %s", c.desc, diff)
-			}
+			assert.That(t, got, should.Match(c.want))
 		})
 	}
 }
@@ -377,9 +375,7 @@ func TestAsPairs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := asPairs(tt.input)
-			if diff := typed.Diff(got, tt.output); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.output))
 		})
 	}
 }

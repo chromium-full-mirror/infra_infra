@@ -9,7 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
@@ -25,7 +26,5 @@ func TestClockSmokeTest(t *testing.T) {
 	later := tf.Clock().Now()
 
 	delta := later.Sub(now)
-	if diff := typed.Got(delta).Want(time.Hour).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, delta, should.Match(time.Hour))
 }

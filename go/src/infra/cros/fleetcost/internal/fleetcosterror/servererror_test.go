@@ -11,7 +11,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
 )
@@ -44,9 +45,7 @@ func TestWithDefaultCode(t *testing.T) {
 			t.Parallel()
 			expected := tt.outCode
 			actual := status.Code(fleetcosterror.WithDefaultCode(tt.code, tt.in))
-			if diff := typed.Got(actual).Want(expected).Diff(); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, actual, should.Match(expected))
 		})
 	}
 }

@@ -11,7 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
@@ -74,16 +75,14 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := typed.Got(item).Want(&entities.CostIndicatorEntity{
+	assert.That(t, item, should.Match(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Primary:   "e",
 			Secondary: "w",
 		},
 		Board: "e",
 		Model: "w",
-	}).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
-		t.Errorf("unexpected error (-want +got): %s", diff)
-	}
+	}, cmp.AllowUnexported(entities.CostIndicatorEntity{})))
 }
 
 // TestCostIndicatorClone tests cloning a cost indicator
@@ -99,9 +98,7 @@ func TestCostIndicatorClone(t *testing.T) {
 
 	newIndicator := oldIndicator.Clone()
 
-	if diff := typed.Got(newIndicator).Want(oldIndicator).Options(cmp.AllowUnexported(*oldIndicator)).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, newIndicator, should.Match(oldIndicator, cmp.AllowUnexported(*oldIndicator)))
 }
 
 func TestPutCostIndicator(t *testing.T) {
@@ -155,9 +152,7 @@ func TestGetCostIndicator(t *testing.T) {
 		Board: "e",
 	}
 
-	if diff := typed.Got(costIndicator).Want(want).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, costIndicator, should.Match(want, cmp.AllowUnexported(entities.CostIndicatorEntity{})))
 }
 
 // TestListCostIndicator tests listing all cost indicators in a scenario where this is only
@@ -179,9 +174,7 @@ func TestListCostIndicator(t *testing.T) {
 		},
 	}
 
-	if diff := typed.Got(costIndicators).Want(want).Options(cmp.AllowUnexported(entities.CostIndicatorEntity{})).Diff(); diff != "" {
-		t.Errorf("unexpected diff: %s", diff)
-	}
+	assert.That(t, costIndicators, should.Match(want, cmp.AllowUnexported(entities.CostIndicatorEntity{})))
 }
 
 // TestListCostIndicatorWithModelFilter tests listing devices with a model filter.
@@ -245,9 +238,7 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if diff := typed.Got(len(resp.GetCostIndicator())).Want(2).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, len(resp.GetCostIndicator()), should.Equal(2))
 }
 
 // TestListCostIndicatorWithSkuFilter tests listing devices with a SKU filter.
@@ -314,9 +305,7 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if diff := typed.Got(len(resp.GetCostIndicator())).Want(2).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, len(resp.GetCostIndicator()), should.Equal(2))
 }
 
 // TestUpdateCostIndicatorHappyPath tests updating a cost indicator that already exists.
@@ -349,16 +338,14 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		t.Errorf("unexpected error: %q", err)
 	}
 
-	if diff := typed.Got(got).Want(&entities.CostIndicatorEntity{
+	assert.That(t, got, should.Match(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Primary:     "fake-board",
 			BurnoutRate: 14.0,
 			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 		Board: "fake-board",
-	}).Options(cmp.AllowUnexported(*got)).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	}, cmp.AllowUnexported(*got)))
 }
 
 func TestDeleteCostIndicatorEntity(t *testing.T) {

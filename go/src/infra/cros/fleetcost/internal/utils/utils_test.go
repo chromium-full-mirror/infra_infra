@@ -14,7 +14,6 @@ import (
 
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
@@ -68,9 +67,7 @@ func TestToIndicatorType(t *testing.T) {
 			t.Parallel()
 			got := tt.output
 			want, _ := utils.ToIndicatorType(tt.input)
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }
@@ -131,9 +128,7 @@ func TestToUSD(t *testing.T) {
 			t.Parallel()
 			got := tt.output
 			want, _ := utils.ToUSD(tt.input)
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }
@@ -184,9 +179,7 @@ func TestToCostCadence(t *testing.T) {
 			t.Parallel()
 			want := tt.output
 			got, _ := utils.ToCostCadence(tt.input)
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }
@@ -237,9 +230,7 @@ func TestToLocation(t *testing.T) {
 			t.Parallel()
 			want := tt.output
 			got, _ := utils.ToLocation(tt.input)
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }

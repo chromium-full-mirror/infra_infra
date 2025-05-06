@@ -11,7 +11,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
 	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
@@ -244,7 +245,5 @@ func TestTotalCostOfDUT(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if diff := typed.Got(resp).Want(expected).Options(cmpopts.EquateApprox(0, 0.000001)).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, resp, should.Match(expected, cmpopts.EquateApprox(0, 0.000001)))
 }

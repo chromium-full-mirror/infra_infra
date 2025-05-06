@@ -15,7 +15,8 @@ import (
 
 	"cloud.google.com/go/bigquery"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	bqpb "go.chromium.org/infra/cros/fleetcost/api/bigquery"
 	"go.chromium.org/infra/cros/fleetcost/api/bigquery/bqvaluesavers"
@@ -50,7 +51,5 @@ func TestResultSaverSimple(t *testing.T) {
 		"hourly_cloud_cost":     0.02,
 	}
 
-	if diff := typed.Got(row).Want(expected).Diff(); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
+	assert.That(t, row, should.Match(expected))
 }

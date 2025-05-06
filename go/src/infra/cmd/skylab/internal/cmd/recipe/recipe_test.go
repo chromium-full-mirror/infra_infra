@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 )
 
 func TestRequest(t *testing.T) {
@@ -83,12 +82,8 @@ func TestRequest(t *testing.T) {
 			},
 		},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Unexpected diff (-got +want): %s", diff)
-	}
-	if err != nil {
-		t.Errorf("Unexpected error %s", err)
-	}
+	assert.That(t, got, should.Match(want))
+	assert.Loosely(t, err, should.BeNil)
 }
 
 func TestDummyAutotestArg(t *testing.T) {
@@ -112,9 +107,7 @@ func TestDummyAutotestArg(t *testing.T) {
 	want := []*test_platform.Request_Test{
 		{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "test-with-args", TestArgs: "dummy=crbug.com/984103 foo-arg1=val1 foo-arg2=val2"}}},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Unexpected diff (-got +want): %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestNoDummyAutotestArg(t *testing.T) {
@@ -138,9 +131,7 @@ func TestNoDummyAutotestArg(t *testing.T) {
 	want := []*test_platform.Request_Test{
 		{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "test-without-args", TestArgs: ""}}},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("Unexpected diff (-got +want): %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestSchedulingParam(t *testing.T) {

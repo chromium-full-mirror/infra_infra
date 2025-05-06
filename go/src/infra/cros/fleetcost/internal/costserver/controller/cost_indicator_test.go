@@ -11,7 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	models "go.chromium.org/infra/cros/fleetcost/api/models"
 	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
@@ -105,9 +106,7 @@ func TestGetIndicatorFallbacks(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			actual, err := controller.GetIndicatorFallbacks(tt.input)
-			if diff := typed.Got(actual).Want(tt.output).Diff(); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, actual, should.Match(tt.output))
 			switch {
 			case tt.ok && err != nil:
 				t.Errorf("unexpected error: %s", err)
@@ -174,9 +173,7 @@ func TestNormalizeToHourlyCost(t *testing.T) {
 			case !tt.ok && err == nil:
 				t.Error("err is unexpectedly nil")
 			}
-			if diff := typed.Got(actual).Want(tt.out).Options(cmpopts.EquateApprox(0, 0.000001)).Diff(); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, actual, should.Match(tt.out, cmpopts.EquateApprox(0, 0.00001)))
 		})
 	}
 }

@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -232,9 +231,7 @@ func TestCreateVlanTableTest(t *testing.T) {
 				t.Errorf("unexpected error: %s", err)
 			}
 
-			if diff := typed.Diff(got, tt.output); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.output))
 		})
 	}
 }
