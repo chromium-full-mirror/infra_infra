@@ -11,6 +11,7 @@ linters:
     - errorlint
     - intrange
     - noctx
+    - gomodguard
   disable:
     # There are also many unchecked errors.
     - errcheck
@@ -23,6 +24,20 @@ linters:
       asserts: false
       # == is okay on errors (for now)
       comparison: false
+    # prevent direct dependencies on bad modules.
+    # Write this stanza in JSON syntax, it's more readable anyway.
+    gomodguard: {
+      "blocked": {
+        "modules": [
+          {
+            "github.com/smartystreets/goconvey": {
+              "reason": "see go/noconvey-psa for more information",
+              "recommendations": ["go.chromium.org/luci/common/testing/ftt"]
+            }
+          }
+        ]
+      }
+    }
     # Go vet exposes a disable switch, so we can enable everything and disable stuff in a piecemeal fashion.
     govet:
       disable:
@@ -148,6 +163,10 @@ linters:
       - linters:
         - noctx
         path: ^(appengine|build|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
+      # TODO(gregorynisbet): Reduce this by removing goconvey (for real this time™)
+      - linters:
+        - gomodguard
+        path: ^(cros/cmd/provision|cros/cmd/cft/publish|cros/cmd/ctpv2-filters/common/dynamic_updates/generators/generate_test.go)
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
