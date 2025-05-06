@@ -2185,7 +2185,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			const machineName = "machine-labdata-3"
 			topology := &chromeosLab.ServoTopology{
 				Main: &chromeosLab.ServoTopologyItem{
-					Type: "v4",
+					Type: "servo_v4",
 				},
 				Children: []*chromeosLab.ServoTopologyItem{
 					{
@@ -2236,7 +2236,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
 			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4", "c2d2"}))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"servo_v4", "servo_pd", "debug", "c2d2"}))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetHostname(), should.Equal(machineName+"-router"))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetState(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[1].GetHostname(), should.Equal(machineName+"-pcap"))
@@ -2274,8 +2274,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 		t.Run("Update a OS machine LSE - two servo components", func(t *ftt.Test) {
 			const machineName = "machine-labdata-5"
 			topology := &chromeosLab.ServoTopology{
-				Main:     &chromeosLab.ServoTopologyItem{Type: "v4"},
-				Children: []*chromeosLab.ServoTopologyItem{{Type: "v4"}},
+				Main:     &chromeosLab.ServoTopologyItem{Type: "servo_v4"},
+				Children: []*chromeosLab.ServoTopologyItem{{Type: "servo_v4"}},
 			}
 			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
 				SmartUsbhub:   true,
@@ -2298,13 +2298,13 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo"))
 			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4"}))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"servo_v4", "servo_pd"}))
 		})
 		t.Run("Update a OS machine LSE - three servo components", func(t *ftt.Test) {
 			const machineName = "machine-labdata-6"
 			topology := &chromeosLab.ServoTopology{
-				Main:     &chromeosLab.ServoTopologyItem{Type: "v4"},
-				Children: []*chromeosLab.ServoTopologyItem{{Type: "v5"}},
+				Main:     &chromeosLab.ServoTopologyItem{Type: "servo_v4"},
+				Children: []*chromeosLab.ServoTopologyItem{{Type: "ccd_gsc"}},
 			}
 			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
 				SmartUsbhub:   true,
@@ -2327,7 +2327,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo_and_bar"))
 			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4", "v5"}))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"servo_v4", "servo_pd", "ccd_gsc"}))
 		})
 		t.Run("Update a OS machine LSE with no servo_type", func(t *ftt.Test) {
 			const machineName = "machine-labdata-7"

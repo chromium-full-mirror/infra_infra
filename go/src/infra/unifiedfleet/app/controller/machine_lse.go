@@ -2022,6 +2022,14 @@ func updateRecoveryPeripheralDolos(ctx context.Context, p *chromeosLab.Periphera
 	dolos.FwVersion = labData.GetDolos().GetFwVersion()
 }
 
+// servoComponentAliases is standardized names for components that vary, but serve the same purpose.
+var servoComponentAliases = map[string]string{
+	"c2d2":        "debug",
+	"servo_micro": "debug",
+	"servo_v4":    "servo_pd",
+	"servo_v4p1":  "servo_pd",
+}
+
 // extractServoComponents extracts servo components based on servo-topology.
 // TODO(xianuowang): Move this function out of UFS since UFS doesn't have knowledge of
 // how this should works.
@@ -2031,11 +2039,19 @@ func extractServoComponents(st *chromeosLab.ServoTopology) []string {
 		components := make(map[string]bool)
 		components[st.GetMain().GetType()] = true
 		servoComponents = append(servoComponents, st.GetMain().GetType())
+		if alias, ok := servoComponentAliases[st.GetMain().GetType()]; ok && !components[alias] {
+			components[alias] = true
+			servoComponents = append(servoComponents, alias)
+		}
 		for _, c := range st.GetChildren() {
 			if c == nil || c.GetType() == "" || components[c.GetType()] {
 				continue
 			}
 			components[c.GetType()] = true
+			if alias, ok := servoComponentAliases[c.GetType()]; ok && !components[alias] {
+				components[alias] = true
+				servoComponents = append(servoComponents, alias)
+			}
 			servoComponents = append(servoComponents, c.GetType())
 		}
 	}
