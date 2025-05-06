@@ -56,30 +56,8 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 				// as it will be handled by the caller.
 				machineLSE, err := CreateDUT(ctx, machinelse)
 
-				// Publish the MachineLSE creation via Pub/Sub.
-				if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-					logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming CreateMachineLSE results.")
-					if err == nil {
-						// Create a new object so we are not
-						// accidentally mutating the original struct.
-						pubsubMachineLSE := proto.Clone(machineLSE).(*ufspb.MachineLSE)
-						// Generate the message for Pub/Sub
-						row := &apibq.MachineLSERow{
-							MachineLse: pubsubMachineLSE,
-							Delete:     false,
-						}
-						data, err_ps := json.Marshal(&row)
-						if err_ps != nil {
-							logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-							return machineLSE, nil
-						}
-
-						// Publish the message via Pub/Sub.
-						err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-						if err_ps != nil {
-							logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-						}
-					}
+				if err == nil {
+					publishLSEsEvent(ctx, "CreateMachineLSE", machineLSE)
 				}
 
 				return machineLSE, err
@@ -236,15 +214,15 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 
 	// If its a labstation, make the Hostname of the Labstation same as the machinelse name
 	// Labstation hostname must be same as the machinelse hostname
-	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
-		machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hostname = machinelse.GetHostname()
+	if labstation := machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation(); labstation != nil {
+		labstation.Hostname = machinelse.GetHostname()
 		return UpdateLabstation(ctx, machinelse, mask)
 	}
 
 	// If its a DUT
-	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
+	if dut := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
 		// ChromeOSMachineLSE for a DUT
-		machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = machinelse.GetHostname()
+		dut.Hostname = machinelse.GetHostname()
 		return UpdateDUT(ctx, machinelse, mask)
 	}
 
@@ -296,12 +274,12 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			return errors.Annotate(err, "Validation error - Failed to update MachineLSE").Err()
 		}
 
-		if machinelse.GetChromeBrowserMachineLse() != nil {
+		if lse := machinelse.GetChromeBrowserMachineLse(); lse != nil {
 			// We dont update the vms in UpdateMachineLSE call.
 			// We dont store vm object inside MachineLSE object in MachineLSE table.
 			// vm objects are stored in separate VM table
 			// user has to use VM CRUD apis to update vm
-			machinelse.GetChromeBrowserMachineLse().Vms = nil
+			lse.Vms = nil
 		}
 
 		// Copy for logging
@@ -399,27 +377,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		setMachineLSE(ctx, machinelse)
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming UpdateMachineLSE results.")
-		// Create a new object so we are not accidentally mutating the original struct.
-		pubsubMachineLSE := proto.Clone(updatedMachinelse).(*ufspb.MachineLSE)
-		// Generate the message for Pub/Sub
-		row := &apibq.MachineLSERow{
-			MachineLse: pubsubMachineLSE,
-			Delete:     false,
-		}
-		data, err_ps := json.Marshal(&row)
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			return machinelse, nil
-		}
-
-		// Publish the message via Pub/Sub.
-		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-		}
-	}
+	publishLSEsEvent(ctx, "UpdateMachineLSE", updatedMachinelse)
 
 	return machinelse, nil
 }
@@ -701,35 +659,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 		}
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		// Publish the list to Pub/Sub.
-		if len(lses) > 0 {
-			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming ListMachineLSE results.")
-			// Generate the message for Pub/Sub
-			msgs := [][]byte{}
-			for _, machinelse := range lses {
-				// Create a new object so we are not accidentally mutating the original struct.
-				pubsubMachineLSE := proto.Clone(machinelse).(*ufspb.MachineLSE)
-
-				row := &apibq.MachineLSERow{
-					MachineLse: pubsubMachineLSE,
-					Delete:     false,
-				}
-				data, err_ps := json.Marshal(row)
-				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-					return lses, nextPageToken, err
-				}
-				msgs = append(msgs, data)
-			}
-
-			// Publish the message via Pub/Sub.
-			err_ps := publish(ctx, machinelsePubsubTopicID, msgs)
-			if err_ps != nil {
-				logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			}
-		}
-	}
+	publishLSEsEvent(ctx, "ListMachineLSE", lses...)
 
 	return lses, nextPageToken, err
 }
@@ -875,30 +805,42 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		return err
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming DeleteMachineLSE results.")
-		// Create a new object so we are not accidentally mutating the original struct.
-		pubsubMachineLSE := proto.Clone(existingMachinelse).(*ufspb.MachineLSE)
+	publishLSEsEvent(ctx, "DeleteMachineLSE", existingMachinelse)
 
+	return nil
+}
+
+// publishLSEsEvent publishes MachineLSE evnets to a pubsub topic.
+func publishLSEsEvent(ctx context.Context, experimentName string, lses ...*ufspb.MachineLSE) {
+	if rand.Float32() > config.Get(ctx).GetSendMessagesToPubsubRatio() {
+		return
+	}
+	if len(lses) == 0 {
+		return
+	}
+	logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming %s results.", experimentName)
+	// Generate the message for Pub/Sub
+	msgs := [][]byte{}
+	for _, machinelse := range lses {
+		// Create a new object so we are not accidentally mutating the original struct.
+		pubsubMachineLSE := proto.Clone(machinelse).(*ufspb.MachineLSE)
 		// Generate the message for Pub/Sub
 		row := &apibq.MachineLSERow{
 			MachineLse: pubsubMachineLSE,
-			Delete:     true,
+			Delete:     experimentName == "DeleteMachineLSE",
 		}
 		data, err_ps := json.Marshal(row)
 		if err_ps != nil {
 			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			return nil
+			return
 		}
-
-		// Publish the message via Pub/Sub.
-		err_ps = publish(ctx, machinelsePubsubTopicID, [][]byte{data})
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-		}
+		msgs = append(msgs, data)
 	}
-
-	return nil
+	// Publish the message via Pub/Sub.
+	err_ps := publish(ctx, machinelsePubsubTopicID, msgs)
+	if err_ps != nil {
+		logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
+	}
 }
 
 // validateServoInfoForDUT Checks if the DUT Machinelse has ServoHostname and ServoPort
