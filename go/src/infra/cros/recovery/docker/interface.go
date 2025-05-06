@@ -8,6 +8,7 @@ package docker
 
 import (
 	"context"
+	"io"
 	"time"
 )
 
@@ -54,6 +55,9 @@ type StartResponse struct {
 type ExecRequest struct {
 	Cmd     []string
 	Timeout time.Duration
+	Stdin   io.Reader
+	Stdout  io.Writer
+	Stderr  io.Writer
 }
 
 // ExecResponse holds result of the execution.

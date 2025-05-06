@@ -295,12 +295,29 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 	}
 	defer aresp.Close()
 
+	inputDone := make(chan error, 1)
+	if req.Stdin != nil {
+		// if users define its stdin, connect stdin
+		go func() {
+			_, err := io.Copy(aresp.Conn, req.Stdin)
+			inputDone <- err
+		}()
+	}
+
 	var outBuf, errBuf bytes.Buffer
 	outputDone := make(chan error, 1)
+	stdout := req.Stdout
+	stderr := req.Stderr
+	if stdout == nil {
+		stdout = &outBuf
+	}
+	if stderr == nil {
+		stderr = &errBuf
+	}
 
 	go func() {
 		// Demultiplexing the exec stdout into two buffers
-		_, err = stdcopy.StdCopy(&outBuf, &errBuf, aresp.Reader)
+		_, err = stdcopy.StdCopy(stdout, stderr, aresp.Reader)
 		outputDone <- err
 	}()
 
@@ -311,7 +328,12 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 			return &ExecResponse{ExitCode: 1}, err
 		}
 		break
-
+	case err := <-inputDone:
+		if err != nil && err != io.EOF {
+			log.Debugf(ctx, "Failed to read stdin during docker exec cmd %+v on container %q\n",
+				req.Cmd, containerName)
+			return &ExecResponse{ExitCode: 1}, err
+		}
 	case <-ctx.Done():
 		return &ExecResponse{ExitCode: 124}, errors.Reason("run with timeout %s: exceeded timeout", req.Timeout).Err()
 	}
@@ -321,6 +343,8 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 	if err != nil {
 		return &ExecResponse{ExitCode: 1}, errors.Annotate(err, "docker exec: fail to get exit code").Err()
 	}
+	// If users define Stdout and Stderr, outBuf and errBuf will be empty strings.
+	// This is okay because users can use the stdout and stdin from their custom io.writer.
 	res := &ExecResponse{ExitCode: iresp.ExitCode, Stdout: outBuf.String(), Stderr: errBuf.String()}
 	log.Debugf(ctx, "Run docker exec using sdk %q: exitcode: %v", containerName, res.ExitCode)
 	log.Debugf(ctx, "Run docker exec using sdk %q: stdout: %v", containerName, res.Stdout)
