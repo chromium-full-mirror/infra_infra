@@ -140,10 +140,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		cmd = append(cmd, "--max-testcase-run-count", "1", "--retry-strategy", "NO_RETRY")
 	}
 
-	// disabling because it breaks some tests.
-	// for _, driverArgCmd := range generateDriverArgsCmds(metadata) {
-	// 	cmd = append(cmd, driverArgCmd)
-	// }
+	cmd = append(cmd, generateDriverArgsCmds(metadata)...)
 
 	var buildInfoReported = false
 	var invocationInfoReported = false
