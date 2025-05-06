@@ -228,7 +228,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 	if strings.HasPrefix(gcsPath, "android-build") {
 		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
 		installPath = gcsPath
-		branch, err = buildApi.GetBranchFromBuildID(androidapi.ContainerGce, buildGetReq(board, "", buildId))
+		branch, err = buildApi.GetBranchFromBuildID(updater.AndroidAuthHandler, buildGetReq(board, "", buildId))
 		if err != nil {
 			log.Printf("Error getting branch for build number %s: target: %s %v", buildId, buildTarget, err)
 		}
@@ -238,7 +238,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = buildApi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch, ""))
+			latestGreenBuild, err = buildApi.GetLatestGreenBuildNumber(updater.AndroidAuthHandler, buildGetReq(board, branch, ""))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				return err

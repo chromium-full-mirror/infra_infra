@@ -12,6 +12,7 @@ import (
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/oauth2"
+	"google.golang.org/api/option"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -69,7 +70,7 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 
 		// Try and grab the filter from the firestore DB
 		// of infra/infra containers.
-		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDBName, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
+		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDBName, ctpVersion, defaultFilterName, option.WithCredentialsFile(creds)); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", defaultFilterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = defaultFilterName
@@ -302,7 +303,7 @@ func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
 
 // ProcessContainerPath processes a provided path and determines whether it needs to
 // pull from the firestoreDatabase provided.
-func ProcessContainerPath(ctx context.Context, commonParams *CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
+func ProcessContainerPath(ctx context.Context, commonParams *CommonFilterParams, path, firestoreName string) (processedPath string, err error) {
 	if path != "" {
 		return path, nil
 	}
@@ -315,7 +316,8 @@ func ProcessContainerPath(ctx context.Context, commonParams *CommonFilterParams,
 		env = LabelStaging
 	}
 
-	testContainer, err := FetchFilterFromFirestore(ctx, commonParams.FirestoreDatabaseName, creds, env, firestoreName)
+	tokenSource := commonParams.AuthHelper.GetTokenSource(CTPv2DockerKeyFileLocations, DatastoreScope)
+	testContainer, err := FetchFilterFromFirestore(ctx, commonParams.FirestoreDatabaseName, env, firestoreName, option.WithTokenSource(tokenSource))
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
 	}

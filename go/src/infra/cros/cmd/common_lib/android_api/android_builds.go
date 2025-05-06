@@ -86,9 +86,9 @@ func getResponseFromAndroidBuildAPI(buildsReq BuildGetRequest, client *http.Clie
 		return "", fmt.Errorf("error creating GET request: %w", err)
 	}
 	// required for local run only
-	if rt == Local {
+	switch rt.(type) {
+	case *LocalType:
 		req.Header.Set("x-goog-user-project", "chromeos-bot")
-
 	}
 	resp, err := client.Do(req)
 	if err != nil {

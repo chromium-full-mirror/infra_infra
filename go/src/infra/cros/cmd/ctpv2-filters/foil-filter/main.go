@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
@@ -27,29 +26,25 @@ type FoilRequestUpdater struct {
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+	var err error
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
-	if err != nil {
-		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
-	}
-
-	ru.TestPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.TestPath, "foil-test")
+	ru.TestPath, err = common.ProcessContainerPath(ctx, commonParams, ru.TestPath, "foil-test")
 	if err != nil {
 		return req, err
 	}
-	ru.GcsPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
+	ru.GcsPublishPath, err = common.ProcessContainerPath(ctx, commonParams, ru.GcsPublishPath, "gcs-publish")
 	if err != nil {
 		return req, err
 	}
-	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
+	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams, ru.RdbPublishPath, "rdb-publish")
 	if err != nil {
 		return req, err
 	}
 	if commonParams.FirestoreDatabaseName == common.PartnerTestPlatformFireStore {
-		ru.CpconPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.CpconPublishPath, common.CpconPublish)
+		ru.CpconPublishPath, err = common.ProcessContainerPath(ctx, commonParams, ru.CpconPublishPath, common.CpconPublish)
 		if err != nil {
 			return req, err
 		}
@@ -64,21 +59,6 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 	log.Println("Finished generating dyanmic updates.")
 
 	return req, nil
-}
-
-func processContainerPath(ctx context.Context, firestoreDatabasename, creds, path, firestoreName string) (processedPath string, err error) {
-	switch path {
-	case common.LabelProd, common.LabelStaging:
-		testContainer, err := common.FetchFilterFromFirestore(ctx, firestoreDatabasename, creds, path, firestoreName)
-		if err != nil {
-			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
-		}
-		processedPath, err = common.CreateImagePath(testContainer.GetContainerInfo().GetContainer())
-	default:
-		processedPath = path
-	}
-
-	return
 }
 
 func main() {

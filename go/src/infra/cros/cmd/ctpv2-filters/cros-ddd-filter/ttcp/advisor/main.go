@@ -125,7 +125,6 @@ func InventoryPropertiesCommand(cliArgs *InventoryPropertiesCmd) {
 			},
 		},
 		cliArgs.InventorySwarmingPool,
-		"",
 		logger,
 	)
 
@@ -272,7 +271,6 @@ func ListLabInventorySubCommand(cliArgs *ListLabInventoryCmd) {
 			},
 		},
 		cliArgs.InventorySwarmingPool,
-		"",
 		logger)
 
 	if cliArgs.OutPath != "" {

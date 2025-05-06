@@ -45,7 +45,7 @@ func (ddd *Filter3D) executor(req *ctpApi.InternalTestplan, log *log.Logger, com
 		})
 	}
 	// Compute the TTCP variants
-	solutions, err := computeVariants(requests, pool, ddd.googleApiCredsPath, log)
+	solutions, err := computeVariants(requests, pool, commonParams.AuthHelper, log)
 	if err != nil {
 		log.Println("Compute Varaints err", err)
 		return req, err

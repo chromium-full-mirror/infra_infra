@@ -796,7 +796,7 @@ func filterSwarmingDevices(
 
 func getInventoryByHWID(pool string, logger *log.Logger) map[string][]swarmingdata.SwarmingdataEntry {
 	// Get the lab data which is cached if data on the pool has been queried
-	swarmDataResc, err := croslab.GetInventory(pool, "", logger)
+	swarmDataResc, err := croslab.GetInventory(pool, logger)
 	if err != nil {
 		if logger != nil {
 			logger.Println("Could not retrieve swarming inventory:", err)

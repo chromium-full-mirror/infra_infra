@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/option"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -46,35 +47,8 @@ func NewContainerInfoItem(host, project, digest, name, binary string) *Container
 	}
 }
 
-// FetchFiltersFromFirestore grabs every filter stored within the
-// the firestore database.
-func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters []*api.CTPFilter, err error) {
-	firestoreClient, err := EstablishFirestoreConnection(ctx, TestPlatformFireStore, creds)
-	if err != nil {
-		err = errors.Annotate(err, "failed to initialize firestore client").Err()
-		return
-	}
-	defer func() {
-		closeErr := firestoreClient.Close()
-		if closeErr != nil {
-			logging.Infof(ctx, "failed to close firestore client, %s", closeErr)
-		}
-	}()
-
-	collectionName := GetFirestoreCollection(tag)
-	collection := firestoreClient.Collection(collectionName)
-	containerInfos, err := fetchContainerInfosFromFirestoreCollection(ctx, collection)
-	for _, containerInfo := range containerInfos {
-		filters = append(filters, &api.CTPFilter{
-			ContainerInfo: containerInfo,
-		})
-	}
-
-	return
-}
-
-func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName, creds, tag, name string) (containerInfo *api.ContainerInfo, err error) {
-	firestoreClient, err := EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
+func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName, tag, name string, clientOpts ...option.ClientOption) (containerInfo *api.ContainerInfo, err error) {
+	firestoreClient, err := EstablishFirestoreConnection(ctx, firestoreDatabaseName, clientOpts...)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -92,8 +66,8 @@ func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName,
 	return
 }
 
-func FetchFilterFromFirestore(ctx context.Context, firestoreDatabaseName, creds, tag, name string) (filter *api.CTPFilter, err error) {
-	containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDatabaseName, creds, tag, name)
+func FetchFilterFromFirestore(ctx context.Context, firestoreDatabaseName, tag, name string, clientOpts ...option.ClientOption) (filter *api.CTPFilter, err error) {
+	containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDatabaseName, tag, name, clientOpts...)
 	filter = &api.CTPFilter{
 		ContainerInfo: containerInfo,
 	}
@@ -132,30 +106,6 @@ func GetFirestoreCollection(tag string) string {
 		return FireStoreContainersProdCollection
 	}
 	return FireStoreContainersStagingCollection
-}
-
-// fetchContainerInfosFromFirestoreCollection grabs every filter from the
-// provided firestored collection reference.
-func fetchContainerInfosFromFirestoreCollection(ctx context.Context, collection *firestore.CollectionRef) (containerInfos []*api.ContainerInfo, err error) {
-	containerInfos = []*api.ContainerInfo{}
-
-	documentRefs, err := collection.DocumentRefs(ctx).GetAll()
-	if err != nil {
-		err = errors.Annotate(err, "failed to get document refs from filter's firestore").Err()
-		return
-	}
-
-	for _, documentRef := range documentRefs {
-		container, innerErr := buildContainerInfoFromDocumentRef(ctx, documentRef)
-		if innerErr != nil {
-			err = errors.Annotate(innerErr, "%s failed", documentRef.ID).Err()
-			return
-		}
-
-		containerInfos = append(containerInfos, container)
-	}
-
-	return
 }
 
 func buildContainerInfoFromDocumentRef(ctx context.Context, documentRef *firestore.DocumentRef) (containerInfo *api.ContainerInfo, err error) {

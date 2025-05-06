@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -24,7 +25,7 @@ func UpdateShaStorage(ctx context.Context, firestoreDatabaseName string, contain
 	step, ctx := build.StartStep(ctx, "Update SHAs")
 	defer func() { step.End(err) }()
 
-	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, option.WithCredentialsFile(creds))
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -49,7 +50,7 @@ func UpdateShaStorage(ctx context.Context, firestoreDatabaseName string, contain
 // RevertShas swaps the previous sha with the current sha
 // and updates the firestore.
 func RevertShas(ctx context.Context, containerNames []string, firestoreDatabaseName, creds, tag string) (err error) {
-	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, option.WithCredentialsFile(creds))
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return

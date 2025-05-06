@@ -32,8 +32,8 @@ var GetInventory = getSwarmingInventory
 // Add inventory cache to minimize cost on inventory data access requests
 var inventoryCache = map[string]*swarmingdata.SwarmDataResources{}
 
-func GenerateAvailableDevicesInfo(resc datasets.AllDatasetsResources, pool string, googleApiCredsPath string, logger *log.Logger) []deviceinfo.TargetVariant {
-	swarmResc, err := GetInventory(pool, googleApiCredsPath, logger)
+func GenerateAvailableDevicesInfo(resc datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []deviceinfo.TargetVariant {
+	swarmResc, err := GetInventory(pool, logger, clientOpts...)
 	if err != nil {
 		if logger != nil {
 			logger.Println("Could not retrieve swarming inventory:", err)
@@ -169,7 +169,7 @@ func mergeSwarmPropsToHwid(resc swarmingdata.SwarmDataResources, hwidTargetVaria
 // to first run: gcloud auth application-default login
 // The command will install the necessairy certificates so getSwarmingInventory
 // can access Bigquery.
-func getSwarmingInventory(pool string, googleApiCredsPath string, logger *log.Logger) (swarmingdata.SwarmDataResources, error) {
+func getSwarmingInventory(pool string, logger *log.Logger, clientOpts ...option.ClientOption) (swarmingdata.SwarmDataResources, error) {
 	// The body of this function to temporary. It is only here to check
 	// that the access to bigquery from golang was functional as it required
 	// a lot of changes in the build files.
@@ -184,15 +184,7 @@ func getSwarmingInventory(pool string, googleApiCredsPath string, logger *log.Lo
 	if ok {
 		return *inventoryData, nil
 	}
-	if googleApiCredsPath == "" {
-		c, err = bigquery.NewClient(ctx, projectID)
-	} else {
-		if logger != nil {
-			logger.Println("Using provided credential file:", googleApiCredsPath)
-		}
-		c, err = bigquery.NewClient(ctx, projectID,
-			option.WithCredentialsFile(googleApiCredsPath))
-	}
+	c, err = bigquery.NewClient(ctx, projectID, clientOpts...)
 	if err != nil {
 		if logger != nil {
 			logger.Println("Could not connect to bigquery:", err)

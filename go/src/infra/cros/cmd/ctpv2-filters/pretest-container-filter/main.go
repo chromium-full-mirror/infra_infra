@@ -27,16 +27,12 @@ type PreTestContainerUpdater struct {
 }
 
 func (gcu *PreTestContainerUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+	var err error
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
-	if err != nil {
-		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
-	}
-
-	gcu.ContainerPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, gcu.ContainerPath, gcu.ContainerName)
+	gcu.ContainerPath, err = common.ProcessContainerPath(ctx, commonParams, gcu.ContainerPath, gcu.ContainerName)
 	if err != nil {
 		return req, err
 	}

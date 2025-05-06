@@ -10,6 +10,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
@@ -124,7 +126,7 @@ func (c *serviceInfoImpl) GenerateContainerImagePath(ctx context.Context, imageN
 	if namespace.IsPartner(ctx) {
 		datastoreName = common.PartnerTestPlatformFireStore
 	}
-	containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, datastoreName, c.dockerKeyFileLocation, c.ctr.Version, imageName)
+	containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, datastoreName, c.ctr.Version, imageName, option.WithCredentialsFile(c.dockerKeyFileLocation))
 	if err != nil {
 		return "", errors.Annotate(err, "generate container name: fail to fetch container info").Err()
 	}

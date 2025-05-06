@@ -18,44 +18,79 @@ import (
 )
 
 const (
-	androidBuildInternalScope    = "https://www.googleapis.com/auth/androidbuild.internal"
-	cloudPlatformScope           = "https://www.googleapis.com/auth/cloud-platform"
+	AndroidBuildInternalScope    = "https://www.googleapis.com/auth/androidbuild.internal"
+	CloudPlatformScope           = "https://www.googleapis.com/auth/cloud-platform"
 	gceServiceAccountJSONPath    = "/creds/service_accounts/service-account-chromeos.json"
 	satlabServiceAccountJSONPath = "/creds/service_accounts/skylab-drone.json"
 )
 
-// RunType is enum defining where would client be executed
-type RunType int
-
-// Define constants for RunType
-const (
-	Local RunType = iota
-	ContainerGce
-	ContainerSatlab
-	ServiceAccount
+var (
+	Local           = &LocalType{}
+	ContainerGce    = &ContainerGceType{}
+	ContainerSatlab = &ContainerSatlabType{}
+	ServiceAccount  = &ServiceAccountType{}
 )
 
-// String method to get a string representation of RunType
-func (rt RunType) String() string {
-	switch rt {
-	case Local:
-		return "local"
-	case ContainerGce:
-		return "containerGCE"
-	case ContainerSatlab:
-		return "containerSatlab"
-	case ServiceAccount:
-		return "serviceAccount"
-	default:
-		return "unknown"
-	}
+// RunType is enum defining where would client be executed
+type RunType interface {
+	FetchCredentials() (*google.Credentials, error)
+	String() string
+}
+
+type LocalType struct {
+	RunType
+}
+
+func (run *LocalType) FetchCredentials() (*google.Credentials, error) {
+	localPath := guessUnixHomeDir() + "/.config/gcloud/application_default_credentials.json"
+	return fetchCredentialsFromJSON(localPath)
+}
+
+func (run *LocalType) String() string {
+	return "local"
+}
+
+type ContainerGceType struct {
+	RunType
+}
+
+func (run *ContainerGceType) FetchCredentials() (*google.Credentials, error) {
+	return fetchCredentialsFromJSON(gceServiceAccountJSONPath)
+}
+
+func (run *ContainerGceType) String() string {
+	return "containerGCE"
+}
+
+type ContainerSatlabType struct {
+	RunType
+}
+
+func (run *ContainerSatlabType) FetchCredentials() (*google.Credentials, error) {
+	return fetchCredentialsFromJSON(satlabServiceAccountJSONPath)
+}
+
+func (run *ContainerSatlabType) String() string {
+	return "containerSatlab"
+}
+
+type ServiceAccountType struct {
+	RunType
+}
+
+func (run *ServiceAccountType) FetchCredentials() (*google.Credentials, error) {
+	return fetchDefaultCredentialsFromSA()
+}
+
+func (run *ServiceAccountType) String() string {
+	return "serviceAccount"
 }
 
 // GetAndroidOnePlatformClient returns an HTTP client for making REST calls to Android One platform APIs.
 // The rt parameter specifies the environment, determining whether the client is used on a bot with an attached Service Account (SA),
 // within a container, or in a local environment.
 func GetAndroidOnePlatformClient(rt RunType) (*http.Client, error) {
-	creds, err := FetchCredentials(rt)
+	creds, err := rt.FetchCredentials()
 	if err != nil {
 		return nil, fmt.Errorf("error fetching credentials: %w", err)
 	}
@@ -78,28 +113,11 @@ func getAuthorizedHTTP(credentials *oauth2.TokenSource, timeout time.Duration) (
 	return client, nil
 }
 
-// FetchCredentials fetches creds for authentication.
-func FetchCredentials(rt RunType) (*google.Credentials, error) {
-	switch rt {
-	case Local:
-		localPath := guessUnixHomeDir() + "/.config/gcloud/application_default_credentials.json"
-		return fetchCredentialsFromJSON(localPath)
-	case ContainerGce:
-		return fetchCredentialsFromJSON(gceServiceAccountJSONPath)
-	case ContainerSatlab:
-		return fetchCredentialsFromJSON(satlabServiceAccountJSONPath)
-	case ServiceAccount:
-		return fetchDefaultCredentialsFromSA()
-	default:
-		return nil, fmt.Errorf("unknown run type")
-	}
-}
-
 // fetchDefaultCredentialsFromSA retrieves credentials if running on a bot with a Service Account (SA) attached.
 // Application Default Credentials (ADC) or GOOGLE_DEFAULT_CREDENTIALS environment variable is not set on the bot,
 // credentials are obtained from the metadata server. Note that this method will not work if executed inside a container.
 func fetchDefaultCredentialsFromSA() (*google.Credentials, error) {
-	creds, err := google.FindDefaultCredentials(context.Background(), cloudPlatformScope, androidBuildInternalScope)
+	creds, err := google.FindDefaultCredentials(context.Background(), CloudPlatformScope, AndroidBuildInternalScope)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading credentials: %v\n", err)
 		os.Exit(1)
@@ -117,7 +135,7 @@ func fetchCredentialsFromJSON(serviceAccountJSONPath string) (*google.Credential
 	if err != nil {
 		return nil, fmt.Errorf("failed to read key file: %w", err)
 	}
-	creds, err := google.CredentialsFromJSON(context.Background(), jsonData, cloudPlatformScope, androidBuildInternalScope)
+	creds, err := google.CredentialsFromJSON(context.Background(), jsonData, CloudPlatformScope, AndroidBuildInternalScope)
 	if err != nil {
 		return nil, err
 	}

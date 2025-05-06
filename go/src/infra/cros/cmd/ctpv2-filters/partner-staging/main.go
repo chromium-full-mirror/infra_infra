@@ -18,7 +18,6 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/site"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/tools"
 )
 
@@ -42,12 +41,10 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.C
 	buildsToStage, cft := extractBuildsToStage(req)
 	log.Printf("Found builds to stage: %d\n", len(buildsToStage))
 	ctx := context.Background()
-	options := make([]option.ClientOption, 0, 1)
-	saPath := site.ServiceAccountPath()
-	if saPath != "" {
-		log.Printf("Using service account key path: %s\n", saPath)
-		options = append(options, option.WithCredentialsFile(saPath))
-	}
+	options := []option.ClientOption{}
+
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{"ADC"}, common.MoblabScope)
+	options = append(options, option.WithTokenSource(tokenSource))
 	moblabClient, err := tools.NewMobLabClient(ctx, options...)
 	if err != nil {
 		return req, err

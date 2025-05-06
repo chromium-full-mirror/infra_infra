@@ -10,16 +10,18 @@ import (
 	"log"
 	"strings"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/errors"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory/croslab"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory/deviceinfo"
 )
 
-func RetreiveInventoryProperties(useSwarmingInventory bool, inventoryFile string, resc datasets.AllDatasetsResources, pool string, googleApiCredsPath string, logger *log.Logger) []deviceinfo.TargetVariant {
+func RetreiveInventoryProperties(useSwarmingInventory bool, inventoryFile string, resc datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []deviceinfo.TargetVariant {
 	var inventoryInfo []deviceinfo.TargetVariant
 	if useSwarmingInventory {
-		inventoryInfo = croslab.GenerateAvailableDevicesInfo(resc, pool, googleApiCredsPath, logger)
+		inventoryInfo = croslab.GenerateAvailableDevicesInfo(resc, pool, logger, clientOpts...)
 
 	} else if inventoryFile != "" {
 		fileContent, err := ioutil.ReadFile(inventoryFile)

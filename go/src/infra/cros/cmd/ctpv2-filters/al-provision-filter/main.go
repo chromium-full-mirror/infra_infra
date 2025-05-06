@@ -6,13 +6,13 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/android"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -30,20 +30,21 @@ type ALProvisionRequestUpdater struct {
 	ServoPath     string
 
 	LatestBuildsByBoard map[string]int
+	AndroidAuthHandler  *android.CloudRunFilterAuthenticator
 }
 
 func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
-	log.Println("Executing AL provision Filter - Updates provision request.")
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
-	if err != nil {
-		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
+	var err error
+	pru.AndroidAuthHandler = &android.CloudRunFilterAuthenticator{
+		AuthHandler: commonParams.AuthHelper,
 	}
+	log.Println("Executing AL provision Filter - Updates provision request.")
 
-	pru.ProvisionPath, err = common.ProcessContainerPath(context.Background(), commonParams, dockerKeyFile, pru.ProvisionPath, "foil-provision")
+	pru.ProvisionPath, err = common.ProcessContainerPath(context.Background(), commonParams, pru.ProvisionPath, "foil-provision")
 	if err != nil {
 		return req, err
 	}
-	pru.ServoPath, err = common.ProcessContainerPath(context.Background(), commonParams, dockerKeyFile, pru.ServoPath, "servo-nexus")
+	pru.ServoPath, err = common.ProcessContainerPath(context.Background(), commonParams, pru.ServoPath, "servo-nexus")
 	if err != nil {
 		return req, err
 	}

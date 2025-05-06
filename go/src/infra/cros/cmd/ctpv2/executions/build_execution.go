@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -491,7 +492,7 @@ func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, c
 			fireStoreDB = common.PartnerTestPlatformFireStore
 		}
 		// Fetch the filter from the firestore.
-		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, fireStoreDB, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
+		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, fireStoreDB, ctpVersion, filterName, option.WithCredentialsFile(creds)); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", filterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = filterName

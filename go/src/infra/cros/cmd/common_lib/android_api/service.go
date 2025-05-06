@@ -98,7 +98,7 @@ func retry[K comparable](ctx context.Context, fn func(opts ...googleapi.CallOpti
 // NewAndroidBuildService returns a new service which is used to interact with the android build api.
 // It initializes the build client depending on rt RunType(environment SA, container or local)
 func NewAndroidBuildService(ctx context.Context, rt RunType, env common.Environment) (*Service, error) {
-	creds, err := FetchCredentials(rt)
+	creds, err := rt.FetchCredentials()
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,8 @@ func NewAndroidBuildService(ctx context.Context, rt RunType, env common.Environm
 	}
 
 	// This breaks the other run types.
-	if rt == Local {
+	switch rt.(type) {
+	case *LocalType:
 		opts = append(opts, option.WithQuotaProject(quotaProject))
 	}
 

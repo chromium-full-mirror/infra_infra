@@ -79,7 +79,7 @@ func CreateTtcpClasessAndCategories(hwidResc db.HwidDbResources, buildResc build
 	extractBuildClassesAndCategories(buildResc, &categoriesAndClasses)
 	extractDlmClassesAndCategories(dlmResc, &categoriesAndClasses)
 
-	swarmResc, err := croslab.GetInventory("", "", nil)
+	swarmResc, err := croslab.GetInventory("", nil)
 	if err != nil {
 		log.Fatal("Could not retrieve swarming inventory:", err)
 	}

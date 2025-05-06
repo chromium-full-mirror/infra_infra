@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
@@ -579,7 +580,7 @@ func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMet
 		}
 
 		for _, firestoreDocName := range PullFromFirestore {
-			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, firestoreDBName, creds, envVersion, firestoreDocName)
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, firestoreDBName, envVersion, firestoreDocName, option.WithCredentialsFile(creds))
 			common.LogWarningIfErr(ctx, err)
 			if containerInfo != nil {
 				containers[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()

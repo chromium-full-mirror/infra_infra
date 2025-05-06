@@ -106,6 +106,13 @@ const (
 	MaxPublishMsgSize = 4000 * MB
 )
 
+// Auth Scopes
+const (
+	DatastoreScope = "https://www.googleapis.com/auth/datastore"
+	BigqueryScope  = "https://www.googleapis.com/auth/bigquery"
+	MoblabScope    = "https://www.googleapis.com/auth/moblabapi"
+)
+
 // AL related constants
 const (
 	ATPSupportedTimeFormat         = "2006-01-02T15:04:05.000000"
@@ -206,6 +213,13 @@ func DockerEnvVarsToPreserve() []string {
 		"DOCKER_TLS_VERIFY",
 		"DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER"}
 }
+
+var (
+	CTPv2DockerKeyFileLocations = []string{
+		VMLabDockerKeyFileLocation,
+		LabDockerKeyFileLocation,
+	}
+)
 
 var (
 	// ctpv2WithFifo stores the pools which are expected to run inside CTPv2 but

@@ -73,16 +73,12 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 }
 
 func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+	var err error
 	ctx := context.Background()
 
 	log.Println("Executing ants publish request-updater filter")
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
-	if err != nil {
-		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
-	}
-
-	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, apu.PublishPath, "ants-publish")
+	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams, apu.PublishPath, "ants-publish")
 	if err != nil {
 		return req, err
 	}

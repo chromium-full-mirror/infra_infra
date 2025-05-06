@@ -138,7 +138,6 @@ func computeVariants(cliArgs CliArgs) solver_proto.SolvedCategory {
 			},
 		},
 		cliArgs.InventorySwarmingPool,
-		"",
 		logger,
 	)
 

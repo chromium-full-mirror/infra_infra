@@ -30,14 +30,8 @@ func InitClient(ctx context.Context, projectID, databaseID string, opts ...optio
 
 // EstablishFirestoreConnection uses provided credentials
 // to establish a connection to the test platform firestore database.
-func EstablishFirestoreConnection(ctx context.Context, firestoreDatabaseName, creds string) (client *firestore.Client, err error) {
+func EstablishFirestoreConnection(ctx context.Context, firestoreDatabaseName string, clientOpts ...option.ClientOption) (client *firestore.Client, err error) {
 	projectID := TestPlatformDataProjectID
-
-	clientOpts := []option.ClientOption{}
-
-	if creds != "" {
-		clientOpts = append(clientOpts, option.WithCredentialsFile(creds))
-	}
 
 	retryFunc := func() (*firestore.Client, error) {
 		return InitClient(ctx, projectID, firestoreDatabaseName, clientOpts...)

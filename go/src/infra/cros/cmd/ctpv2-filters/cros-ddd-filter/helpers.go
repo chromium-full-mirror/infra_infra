@@ -13,10 +13,12 @@ import (
 	"sort"
 	"strings"
 
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	ctpApi "go.chromium.org/chromiumos/config/go/test/api"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	solver_proto "go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos/ttcp/solver"
 	ttcpSyntax "go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/protos/ttcp/syntax"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets"
@@ -48,10 +50,14 @@ type requestTestCaseVariants struct {
 //
 //	for each variant need to belong to. If the pool is "" the pool will be defaulted
 //	to the quota pool
-func computeVariants(requests []requestTestCaseVariants, pool string, googleApiCredsPath string, logger *log.Logger) (map[string]solver_proto.SolvedCategory, error) {
+func computeVariants(requests []requestTestCaseVariants, pool string, authHelper common.FilterAuthInterface, logger *log.Logger) (map[string]solver_proto.SolvedCategory, error) {
 	if pool == "" {
 		pool = "DUT_POOL_QUOTA"
 	}
+
+	// Retrieve the authentication for reaching database.
+	tokenSource := authHelper.GetTokenSource(common.CTPv2DockerKeyFileLocations, common.BigqueryScope)
+
 	// retrieve the set of devices in the inventory specified in the options.
 	// This involves a large cost to retrieve the inventory from BQ swarming or
 	// Databake.
@@ -68,8 +74,8 @@ func computeVariants(requests []requestTestCaseVariants, pool string, googleApiC
 				Path: "dlm_devices.json",
 			}},
 		pool,
-		googleApiCredsPath,
-		logger)
+		logger,
+		option.WithTokenSource(tokenSource))
 
 	solutions := map[string]solver_proto.SolvedCategory{}
 
