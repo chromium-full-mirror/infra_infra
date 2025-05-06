@@ -145,10 +145,11 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 		}
 
 		board := assetResponse.GetInfo().GetBuildTarget()
+		dutId := assetResponse.GetInfo().GetAssetTag()
 
 		var dims = make(map[string]string)
 
-		dims["dut_name"] = host
+		dims["dut_id"] = dutId
 
 		if c.imagePath == "" {
 			stdErrLog.Print("No image provided, using lab stable configuration image")
