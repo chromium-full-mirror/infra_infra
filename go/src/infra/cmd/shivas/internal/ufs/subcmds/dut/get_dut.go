@@ -16,13 +16,11 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 	"go.chromium.org/infra/cmd/shivas/cmdhelp"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/host"
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
-	"go.chromium.org/infra/libs/skylab/autotest/hostinfo"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
@@ -65,7 +63,6 @@ Gets the ChromeOS DUT and prints the output in user-specified format.`,
 		c.Flags.Var(flag.StringSlice(&c.pools), "pools", "Name(s) of a tag to filter by. Can be specified multiple times.")
 		c.Flags.Var(flag.StringSlice(&c.logicalzones), "logicalzone", "Name(s) of a logical zone to filter by. Can be specified multiple times."+cmdhelp.LogicalZoneHelpText)
 		c.Flags.Var(flag.StringSlice(&c.hive), "hive", "Name(s) of a hive to filter by. Can be specified multiple times.")
-		c.Flags.BoolVar(&c.wantHostInfoStore, "host-info-store", false, "write host info store to stdout")
 
 		return c
 	},
@@ -93,9 +90,8 @@ type getDut struct {
 	logicalzones []string
 	hive         []string
 
-	pageSize          int
-	keysOnly          bool
-	wantHostInfoStore bool
+	pageSize int
+	keysOnly bool
 }
 
 func (c *getDut) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -131,17 +127,6 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 		args[i] = heuristics.NormalizeBotNameToDeviceName(arg)
 	}
 
-	if c.wantHostInfoStore {
-		invWithSVClient := fleet.NewInventoryPRPCClient(
-			&prpc.Client{
-				C:       hc,
-				Host:    e.AdminService,
-				Options: site.DefaultPRPCOptions(c.envFlags),
-			},
-		)
-		return c.getHostInfoStore(ctx, a, invWithSVClient, ic, args)
-	}
-
 	emit := !utils.NoEmitMode(c.outputFlags.NoEmit())
 	full := utils.FullMode(c.outputFlags.Full())
 	var res []proto.Message
@@ -162,20 +147,6 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 // function for testing purposes
 func (c *getDut) getNamespace() (string, error) {
 	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
-}
-
-// getHostInfoStore gets the host-info-store file content from the ufsAPT.FleetClient and print it out.
-func (c *getDut) getHostInfoStore(ctx context.Context, a subcommands.Application, invWithSVClient fleet.InventoryClient, ic ufsAPI.FleetClient, hostnames []string) error {
-	g := hostinfo.NewGetter(ic, invWithSVClient)
-	for _, hostname := range hostnames {
-		contents, err := g.GetContentsForHostname(ctx, hostname)
-		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s\n", err)
-			continue
-		}
-		fmt.Printf("%s\n", contents)
-	}
-	return nil
 }
 
 func (c *getDut) formatFilters() []string {
