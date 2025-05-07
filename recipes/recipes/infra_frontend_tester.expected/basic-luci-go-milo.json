@@ -294,6 +294,49 @@
   },
   {
     "cmd": [
+      "git",
+      "diff",
+      "--name-only",
+      "--cached",
+      "milo/ui"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
+    "env": {
+      "UV_USE_IO_URING": "0",
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra/luci/luci-go:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get change list on milo/ui",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@change list@milo/ui/foo.js@@@",
+      "@@@STEP_LOG_END@change list@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "milo-ui"
+  },
+  {
+    "cmd": [
       "npm",
       "ci",
       "--loglevel",
@@ -323,7 +366,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "milo npm install"
+    "name": "milo-ui.milo npm install",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -354,7 +400,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "milo lint"
+    "name": "milo-ui.milo lint",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -385,7 +434,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "milo build"
+    "name": "milo-ui.milo build",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
   },
   {
     "cmd": [
@@ -424,7 +476,48 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "milo test"
+    "name": "milo-ui.milo test",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff",
+      "--name-only",
+      "--cached",
+      "swarming/server/ui2"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
+    "env": {
+      "UV_USE_IO_URING": "0",
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra/luci/luci-go:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "get change list on swarming/server/ui2",
+    "~followup_annotations": [
+      "@@@STEP_LOG_END@change list@@@"
+    ]
   },
   {
     "name": "$result"

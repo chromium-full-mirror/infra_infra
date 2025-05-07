@@ -1807,39 +1807,43 @@ So that we don't spend time waiting for some exotic platform to build first
 before we discover that e.g. amd64 is broken.
 ### *recipes* / [infra\_frontend\_tester](/recipes/recipes/infra_frontend_tester.py)
 
-[DEPS](/recipes/recipes/infra_frontend_tester.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/infra_frontend_tester.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [BuildAndLintFrontend](/recipes/recipes/infra_frontend_tester.py#118)(api, cwd, app_name):**
+&mdash; **def [BuildAndLintFrontend](/recipes/recipes/infra_frontend_tester.py#144)(api, cwd, app_name):**
 
 Build and run ESLint on a UI.
 To use this step your UI must have:
   1. A `Makefile` that contains a `build` command.
   2. A `lint` npm script in the `package.json` file.
 
-&mdash; **def [RunFrontendBuildAndLint](/recipes/recipes/infra_frontend_tester.py#142)(api, cwd, app_name):**
+&mdash; **def [RunFrontendBuildAndLint](/recipes/recipes/infra_frontend_tester.py#174)(api, cwd, app_name):**
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#130)(api, cwd, app_name, module_name=None):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#156)(api, cwd, app_name, module_name=None):**
 
-&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#84)(api, root_path):**
+&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#85)(api, root_path):**
 
 This function runs the UI tests in `infra` project.
   
 
-&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#63)(api, root_path):**
+&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#64)(api, root_path):**
 
 This function runs UI tests in `infra_internal` project.
   
 
-&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#99)(api, root_path):**
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#100)(api, root_path):**
 
 This function runs UI tests in the `luci-go` project.
 If the UI project is configured to test a build and be linted,
 then this function will run those commands on the UI too.
 
-&mdash; **def [RunNpmInstall](/recipes/recipes/infra_frontend_tester.py#112)(api, cwd, app_name):**
+&mdash; **def [RunMiloUITests](/recipes/recipes/infra_frontend_tester.py#126)(api, root_path):**
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_frontend_tester.py#25)(api):**
+&mdash; **def [RunNpmInstall](/recipes/recipes/infra_frontend_tester.py#138)(api, cwd, app_name):**
+
+&mdash; **def [RunSteps](/recipes/recipes/infra_frontend_tester.py#26)(api):**
+
+&mdash; **def [RunSwarmingUITests](/recipes/recipes/infra_frontend_tester.py#168)(api, root_path):**
 ### *recipes* / [infra\_repo\_trybot](/recipes/recipes/infra_repo_trybot.py)
 
 [DEPS](/recipes/recipes/infra_repo_trybot.py#11): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]

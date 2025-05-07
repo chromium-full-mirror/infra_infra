@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
-
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
+    'depot_tools/git',
     'infra_checkout',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
@@ -16,11 +15,13 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
     'recipe_engine/resultdb',
     'recipe_engine/step',
     'depot_tools/bot_update',
     'depot_tools/gclient',
 ]
+
 
 def RunSteps(api):
   assert api.platform.is_linux, 'Unsupported platform, only Linux is supported.'
@@ -101,12 +102,37 @@ def RunLuciGoTests(api, root_path):
   If the UI project is configured to test a build and be linted,
   then this function will run those commands on the UI too.
   """
+  with api.context(cwd=root_path):
+    if _has_changed_files(api, 'milo/ui'):
+      RunMiloUITests(api, root_path)
+    if _has_changed_files(api, 'swarming/server/ui2'):
+      RunSwarmingUITests(api, root_path)
 
+
+def _has_changed_files(api, path):
+  result = api.m.git(
+      'diff',
+      '--name-only',
+      '--cached',
+      path,
+      name='get change list on %s' % path,
+      stdout=api.m.raw_io.output_text())
+  files = result.stdout.splitlines()
+
+  result.presentation.logs['change list'] = sorted(files)
+  return len(files) > 0
+
+
+def RunMiloUITests(api, root_path):
   cwd = root_path.joinpath('milo', 'ui')
-  RunNpmInstall(api, cwd, 'milo')
-  BuildAndLintFrontend(api, cwd, 'milo')
-  RunFrontendTests(
-      api, cwd, 'milo', module_name='infra/luci/luci-go > //milo/ui:jest_tests')
+  with api.step.nest('milo-ui'):
+    RunNpmInstall(api, cwd, 'milo')
+    BuildAndLintFrontend(api, cwd, 'milo')
+    RunFrontendTests(
+        api,
+        cwd,
+        'milo',
+        module_name='infra/luci/luci-go > //milo/ui:jest_tests')
 
 
 def RunNpmInstall(api, cwd, app_name):
@@ -139,18 +165,35 @@ def RunFrontendTests(api, cwd, app_name, module_name=None):
       api.step(('%s test' % app_name), ['npm', 'run', 'test'])
 
 
+def RunSwarmingUITests(api, root_path):
+  ui_dir = root_path.joinpath('swarming', 'server', 'ui2')
+  with api.context(cwd=ui_dir):
+    api.step('swarming ui tests', ['make', 'presubmit_test'])
+
+
 def RunFrontendBuildAndLint(api, cwd, app_name):
   with api.context(cwd=cwd):
     api.step(('%s lint' % app_name), ['npm', 'run', 'lint'])
     api.step(('%s build' % app_name), ['npm', 'run', 'build'])
 
 def GenTests(api):
+
+  def _step_data_changed_files(directory, files):
+    return api.step_data(
+        'get change list on %s' % directory,
+        api.raw_io.stream_output_text('\n'.join(files)),
+        stream='stdout')
+
   yield (
       api.test('basic') +
       api.buildbucket.try_build(project='infra/infra'))
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
-  yield (
-      api.test('basic-luci-go') +
-      api.buildbucket.try_build(project='infra/luci/luci-go'))
+  yield (api.test('basic-luci-go-milo') +
+         api.buildbucket.try_build(project='infra/luci/luci-go') +
+         _step_data_changed_files('milo/ui', ['milo/ui/foo.js']))
+  yield (api.test('basic-luci-go-swarming') +
+         api.buildbucket.try_build(project='infra/luci/luci-go') +
+         _step_data_changed_files('swarming/server/ui2',
+                                  ['swarming/server/ui2/foo.js']))
