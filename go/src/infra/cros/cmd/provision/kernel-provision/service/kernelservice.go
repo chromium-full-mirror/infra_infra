@@ -17,8 +17,16 @@ import (
 type KernelProvisionService struct {
 	KPRequest *api.KernelPrebuilts
 	DUT       *labapi.Dut
+	// LocalArtifactPaths contains the local paths to the downloaded kernel prebuilt artifacts that will be flashed.
+	// The keys are the full Android Build paths (i.e., partition_image.image_path.Path),
+	// and the values are absolute local paths to the downloaded files..
+	LocalArtifactPaths map[string]string
 }
 
 func NewKernelProvisionService(kp *api.KernelPrebuilts, dut *labapi.Dut) *KernelProvisionService {
-	return &KernelProvisionService{KPRequest: kp, DUT: dut}
+	return &KernelProvisionService{
+		KPRequest:          kp,
+		DUT:                dut,
+		LocalArtifactPaths: map[string]string{},
+	}
 }

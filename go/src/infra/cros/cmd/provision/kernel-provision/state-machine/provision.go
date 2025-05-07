@@ -10,14 +10,12 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/url"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
-	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	"go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 )
 
@@ -32,27 +30,15 @@ func NewKernelProvisionProvisionState(service *service.KernelProvisionService) c
 }
 
 func (s *KernelProvisionProvisionState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
-	cacheClient, err := s.createCacheClient()
-	if err != nil {
-		return nil, api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
-	}
 	for _, pi := range s.service.KPRequest.GetPartitionImages() {
-		localPath, err := cacheClient.DownloadABArtifactByStoragePath(pi.GetImagePath())
-		if err != nil {
-			return nil, api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, fmt.Errorf("downloading kernel prebuilts: %w", err)
+		// s.LocalArtifactPaths should have been populated during DownloadArtifactsState.
+		_, ok := s.service.LocalArtifactPaths[pi.GetImagePath().GetPath()]
+		if !ok {
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, fmt.Errorf("no local path found for partition image %+v; only have %+v", pi, s.service.LocalArtifactPaths)
 		}
-		log.Printf("Downloaded artifact '%s' to container at path '%s'", pi, localPath)
+		// TODO: b/396483984 - Flash this prebuilt onto DUT via fastbootd
 	}
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
-}
-
-func (s *KernelProvisionProvisionState) createCacheClient() (*cache.Client, error) {
-	cacheServerAddr, err := cache.IPEndpointToHostPort(s.service.DUT.GetCacheServer().GetAddress())
-	if err != nil {
-		return nil, fmt.Errorf("invalid cache server address: %w", err)
-	}
-	cacheURL := url.URL{Scheme: "http", Host: cacheServerAddr}
-	return cache.NewClient(cacheURL)
 }
 
 func (s *KernelProvisionProvisionState) Next() common_utils.ServiceState {

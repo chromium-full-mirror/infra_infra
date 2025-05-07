@@ -33,7 +33,7 @@ func (s *KernelProvisionInitState) Execute(ctx context.Context, log *log.Logger)
 }
 
 func (s *KernelProvisionInitState) Next() common_utils.ServiceState {
-	return NewKernelProvisionProvisionState(s.service)
+	return NewDownloadArtifactsState(s.service)
 }
 
 func (s *KernelProvisionInitState) Name() string {
