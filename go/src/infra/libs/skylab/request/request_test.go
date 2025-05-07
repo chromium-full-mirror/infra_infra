@@ -26,7 +26,6 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 
 	"go.chromium.org/infra/libs/skylab/inventory"
 	"go.chromium.org/infra/libs/skylab/request"
@@ -474,12 +473,10 @@ func TestProvisionableDimensions(t *testing.T) {
 					fmt.Sprintf("label-model:%s", model),
 					"k1:v1",
 				})
-				diff := typed.Got(sortDimensions(s1.Properties.Dimensions)).Want(sortDimensions(s1Expect)).Diff()
-				assert.Loosely(t, diff, should.BeEmpty)
+				assert.That(t, sortDimensions(s1.Properties.Dimensions), should.Match(sortDimensions(s1Expect)))
 
 				s0Expect := append(s1Expect, toStringPairs([]string{"k2:v2", "k3:v3"})...)
-				diff = typed.Got(sortDimensions(s0.Properties.Dimensions)).Want(sortDimensions(s0Expect)).Diff()
-				assert.Loosely(t, diff, should.BeEmpty)
+				assert.That(t, sortDimensions(s0.Properties.Dimensions), should.Match(sortDimensions(s0Expect)))
 
 				// First slice command doesn't include provisioning.
 				// Second slice (fallback) does.
@@ -637,9 +634,7 @@ func TestStaticDimensions(t *testing.T) {
 			}
 			want := sortDimensions(c.Want)
 			got = sortDimensions(got)
-			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-				t.Errorf("Incorrect static dimensions, -want +got: %s", diff)
-			}
+			assert.That(t, got, should.Match(want))
 		})
 	}
 }

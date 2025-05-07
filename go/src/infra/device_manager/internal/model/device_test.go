@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 
 	"go.chromium.org/infra/device_manager/internal/database"
 	"go.chromium.org/infra/libs/skylab/inventory/swarming"
@@ -159,9 +158,7 @@ func TestGetDeviceByID(t *testing.T) {
 			if !errors.Is(err, tt.err) {
 				t.Errorf("unexpected error: %v; want: %v", err, tt.err)
 			}
-			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, device, should.Match(tt.expectedDevice))
 		})
 	}
 
@@ -221,9 +218,7 @@ func TestGetDeviceByID(t *testing.T) {
 			if err.Error() != tt.err.Error() {
 				t.Errorf("unexpected error: %s", err)
 			}
-			if diff := typed.Got(device).Want(tt.expectedDevice).Diff(); diff != "" {
-				t.Errorf("unexpected diff: %s", diff)
-			}
+			assert.That(t, device, should.Match(tt.expectedDevice))
 		})
 	}
 }

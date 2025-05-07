@@ -10,7 +10,8 @@ import (
 	"net"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestIncrByte(t *testing.T) {
@@ -51,12 +52,8 @@ func TestRawIncr(t *testing.T) {
 
 			got, overflow := RawIncr(tt.ip)
 
-			if diff := typed.Diff(got, tt.want); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
-			if diff := typed.Diff(overflow, tt.overflow); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.want))
+			assert.That(t, overflow, should.Match(tt.overflow))
 		})
 	}
 }
@@ -94,9 +91,7 @@ func TestPad(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := string(pad([]byte(tt.in), tt.n))
-			if diff := typed.Diff(got, tt.out); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.out))
 		})
 	}
 }
@@ -140,12 +135,8 @@ func TestAddIP(t *testing.T) {
 
 			got := AddToIP(tt.ip, big.NewInt(tt.offset))
 
-			if diff := typed.Diff(got.String(), tt.want.String()); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
-			if diff := typed.Diff(got != nil, tt.ok); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.want))
+			assert.That(t, (got != nil), should.Match(tt.ok))
 		})
 	}
 }
@@ -213,9 +204,7 @@ func TestIPDiff(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := IPDiff(tt.x, tt.y).String()
-			if diff := typed.Diff(got, tt.difference); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.difference))
 		})
 	}
 }
@@ -230,10 +219,6 @@ func TestIPIterSmokeTest(t *testing.T) {
 		return nil
 	})
 
-	if diff := typed.Diff(3, tally); diff != "" {
-		t.Errorf("unexpected diff (-want +got): %s", diff)
-	}
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
+	assert.That(t, tally, should.Equal(3))
+	assert.Loosely(t, err, should.BeNil)
 }

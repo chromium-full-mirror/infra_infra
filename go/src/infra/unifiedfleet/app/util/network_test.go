@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/util/iputil"
@@ -175,9 +174,7 @@ func TestParseVlanTableTest(t *testing.T) {
 
 			got.ips, got.length, got.freeStartIP, got.freeEndIP, got.reservedNum, err = ParseVlan(tt.vlanName, tt.cidr, tt.freeStartIP, tt.freeEndIP)
 
-			if diff := typed.Diff(tt.want, got, cmp.AllowUnexported(parseVlanOutput{})); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, tt.want, should.Match(got, cmp.AllowUnexported(parseVlanOutput{})))
 			switch {
 			case err == nil && !tt.ok:
 				t.Error("error is unexpectedly nil")
@@ -292,15 +289,8 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 			t.Parallel()
 			got, err := makeIPv4sInVlan(tt.vlanName, tt.startIP, tt.length, tt.freeStartIP, tt.freeEndIP)
 
-			if diff := typed.Diff(got, tt.want); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
-			if diff := typed.Diff(err == nil, tt.ok); diff != "" {
-				if err != nil {
-					t.Error(err)
-				}
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.want))
+			assert.That(t, (err == nil), should.Match(tt.ok))
 		})
 	}
 }
@@ -390,15 +380,8 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 
 			got, err := makeReservedIPsInVlan(tt.vlanName, tt.begin, tt.end, tt.maximum)
 
-			if diff := typed.Diff(got, tt.want); diff != "" {
-				t.Errorf("unexpected error (-want +got): %s", diff)
-			}
-			switch {
-			case err == nil && !tt.ok:
-				t.Error("error unexpectedly nil")
-			case err != nil && tt.ok:
-				t.Errorf("unexpected error: %s", err)
-			}
+			assert.That(t, got, should.Match(tt.want))
+			assert.That(t, (err == nil), should.Match(tt.ok))
 		})
 	}
 }
@@ -528,9 +511,7 @@ func TestFormatIP(t *testing.T) {
 
 			got := FormatIP(tt.vlanName, tt.ipAddress, tt.reserve, tt.occupied)
 
-			if diff := typed.Diff(got, tt.want); diff != "" {
-				t.Errorf("unexpected diff (-want+got): %s", diff)
-			}
+			assert.That(t, got, should.Match(tt.want))
 		})
 	}
 }

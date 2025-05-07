@@ -7,7 +7,8 @@ package cipd
 import (
 	"testing"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestUnmarshalPackages(t *testing.T) {
@@ -40,7 +41,5 @@ func TestUnmarshalPackages(t *testing.T) {
 			Tracking: "latest",
 		},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("InstalledPackages returned bad result -want +got, %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }

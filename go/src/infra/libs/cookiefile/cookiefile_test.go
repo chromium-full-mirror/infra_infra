@@ -8,7 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestNewJar(t *testing.T) {
@@ -34,9 +35,7 @@ func TestNewJar(t *testing.T) {
 			Value: "git-bob.chromium.org=1/AAAAAAA",
 		},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("j.Cookies() differ -want +got, %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestRead(t *testing.T) {

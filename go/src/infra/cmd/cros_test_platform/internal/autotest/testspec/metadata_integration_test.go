@@ -8,7 +8,8 @@ import (
 	"testing"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cmd/cros_test_platform/internal/autotest/testspec"
 	"go.chromium.org/infra/cmd/cros_test_platform/internal/testutils"
@@ -47,9 +48,7 @@ func TestLoadAndParseSimple(t *testing.T) {
 			},
 		},
 	}
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("response differs, -want +got: %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func createTestFileOrDie(t *testing.T, root string, text string) {

@@ -8,7 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
@@ -102,9 +103,7 @@ func TestAddHmr(t *testing.T) {
 		HmrGen:      lab.HumanMotionRobot_HMR_GEN_1,
 	}
 
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("created hmr is invalid -want +got, %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestAddHmrGen2(t *testing.T) {
@@ -139,9 +138,7 @@ func TestAddHmrGen2(t *testing.T) {
 		HmrGen:      lab.HumanMotionRobot_HMR_GEN_2,
 	}
 
-	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
-		t.Errorf("created hmr is invalid -want +got, %s", diff)
-	}
+	assert.That(t, got, should.Match(want))
 }
 
 func TestDeleteHmr(t *testing.T) {

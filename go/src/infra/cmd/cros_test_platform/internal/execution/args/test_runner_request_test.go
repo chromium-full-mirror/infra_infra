@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/common/testing/truth"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 )
 
 func defaultTest(t testing.TB, tests map[string]*skylab_test_runner.Request_Test) *skylab_test_runner.Request_Test {
@@ -88,9 +87,7 @@ func TestSoftwareDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("g.testRunnerRequest() returned error: %s", err)
 			}
-			if diff := typed.Got(got.GetPrejob().GetSoftwareDependencies()).Want(c.Deps).Diff(); diff != "" {
-				t.Errorf("Incorrect software dependencies, -want +got: %s", diff)
-			}
+			assert.That(t, got.GetPrejob().GetSoftwareDependencies(), should.Match(c.Deps))
 		})
 	}
 }

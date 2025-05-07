@@ -9,7 +9,8 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/testing/typed"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestParseTestControlName(t *testing.T) {
@@ -170,9 +171,7 @@ func TestParseTestControlDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseTestControl: %s", err)
 			}
-			if diff := typed.Got(autotestLabelSet(tm.Dependencies)).Want(c.Want).Diff(); diff != "" {
-				t.Errorf("Dependencies differ for |%s|, -want, +got, %s", c.Text, diff)
-			}
+			assert.That(t, autotestLabelSet(tm.Dependencies), should.Match(c.Want))
 		})
 	}
 }
@@ -242,9 +241,7 @@ func TestParseTestControlSuites(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseTestControl: %s", err)
 			}
-			if diff := typed.Got(stringset.NewFromSlice(tm.Suites...)).Want(c.Want).Diff(); diff != "" {
-				t.Errorf("Suites differ for |%s|, -want, +got, %s", c.Text, diff)
-			}
+			assert.That(t, stringset.NewFromSlice(tm.Suites...), should.Match(c.Want))
 		})
 	}
 }
@@ -291,9 +288,7 @@ func TestParseSuiteControlChildDependencies(t *testing.T) {
 			if err != nil {
 				t.Fatalf("parseSuiteControl: %s", err)
 			}
-			if diff := typed.Got(autotestLabelSet(as.ChildDependencies)).Want(c.Want).Diff(); diff != "" {
-				t.Errorf("ChildDependencies differ for |%s|, -want, +got, %s", c.Text, diff)
-			}
+			assert.That(t, autotestLabelSet(as.ChildDependencies), should.Match(c.Want))
 		})
 	}
 }
