@@ -711,10 +711,12 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
-	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(osRestriction)]; osRestriction != "" && ok {
-		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
-	} else if !ok {
-		return nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
+	if osRestriction != "" {
+		if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(osRestriction)]; ok {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
+		} else if !ok {
+			return nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
+		}
 	}
 	lse.Machines = machines
 
