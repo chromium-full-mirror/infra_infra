@@ -9,7 +9,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -18,6 +20,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
 
+	"go.chromium.org/infra/cros/lib/bols/util"
 	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
 	"go.chromium.org/infra/cros/recovery/docker"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
@@ -59,8 +62,56 @@ func (s *service) RemoveDir(context.Context, *bols.RemoveDirRequest) (*bols.Remo
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveDir not implemented")
 }
 
-func (s *service) DMesg(*bols.DMesgRequest, bols.BolsService_DMesgServer) error {
-	return status.Errorf(codes.Unimplemented, "method DMesg not implemented")
+func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgServer) error {
+	ctx := stream.Context()
+	args := []string{"dmesg", "-H"}
+	c, err := dockerClient(ctx, req.StationId.GetContainerName())
+	if err != nil {
+		return fmt.Errorf("fail to create docker client: %w", err)
+	}
+
+	tmpStdout, err := os.CreateTemp("", "dmesg-stdout-*.txt")
+	if err != nil {
+		return fmt.Errorf("failed to create temporary file to capture dmesg stdout: %w", err)
+	}
+	stdoutFileName := tmpStdout.Name()
+	defer os.Remove(stdoutFileName)
+	timeout := timeRemaining(ctx)
+	eReq := &docker.ExecRequest{
+		Timeout: timeout,
+		Cmd:     args,
+		Stdout:  tmpStdout,
+	}
+	res, err := c.Exec(ctx, req.StationId.GetContainerName(), eReq)
+	tmpStdout.Close()
+	if err != nil {
+		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+	}
+	if res != nil && res.ExitCode != 0 {
+		return fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
+	}
+	const size int = 1024 * 1024
+	buffer := make([]byte, size)
+	file, err := os.Open(stdoutFileName)
+	if err != nil {
+		return fmt.Errorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err)
+	}
+	defer file.Close()
+	for {
+		n, err := file.Read(buffer)
+		if err != nil {
+			if err != io.EOF {
+				return fmt.Errorf("failed to read %s for stdout of dmesg: %w", stdoutFileName, err)
+			}
+			break // End of file
+		}
+		stream.Send(&bols.DMesgResponse{
+			Output: &bols.OutputStream{
+				Stdout: buffer[:n],
+			},
+		})
+	}
+	return nil
 }
 
 func (s *service) WriteFileByBlock(bols.BolsService_WriteFileByBlockServer) error {
@@ -159,12 +210,46 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServoFirmware not implemented")
 }
 
-func (s *service) RunFutility(context.Context, *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunFutility not implemented")
+func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
+	if err := util.CheckFutilityParams(req); err != nil {
+		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+	}
+	args := append([]string{"futility"}, req.GetParams()...)
+	c, err := docker.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fail to create docker client: %w", err)
+	}
+	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
+		timeRemaining(ctx))
+	if err != nil {
+		return nil, fmt.Errorf("fail to execute futility command: %w", err)
+	}
+	return &bols.RunFutilityResponse{
+		Output: &bols.OutputStream{
+			Stdout: []byte(stdout),
+			Stderr: []byte(stderr),
+		}}, nil
 }
 
-func (s *service) RunFlashEC(context.Context, *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunFlashEC not implemented")
+func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
+	if err := util.CheckFlashECParams(req); err != nil {
+		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+	}
+	args := append([]string{"flash_ec"}, req.GetParams()...)
+	c, err := docker.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fail to create docker client: %w", err)
+	}
+	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
+		timeRemaining(ctx))
+	if err != nil {
+		return nil, fmt.Errorf("fail to execute flash_ec command: %w", err)
+	}
+	return &bols.RunFlashECResponse{
+		Output: &bols.OutputStream{
+			Stdout: []byte(stdout),
+			Stderr: []byte(stderr),
+		}}, nil
 }
 
 func (s *service) GetDolosVersion(context.Context, *bols.GetDolosVersionRequest) (*bols.GetDolosVersionResponse, error) {
@@ -306,4 +391,23 @@ func getServodStatus(ctx context.Context, dockerClient docker.Client, dockerCont
 		return bols.ServodStatus_SERVOD_RUNNING
 	}
 	return bols.ServodStatus_SERVOD_STOPPED
+}
+
+func dockerClient(ctx context.Context, containerName string) (docker.Client, error) {
+	if containerName == "" {
+		return nil, errors.New("servod docker container name is required")
+	}
+	c, err := docker.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fail to create docker client: %w", err)
+	}
+	return c, nil
+}
+
+func timeRemaining(ctx context.Context) time.Duration {
+	const defaultTimeout = time.Minute
+	if deadline, ok := ctx.Deadline(); ok {
+		return time.Until(deadline)
+	}
+	return defaultTimeout
 }

@@ -13,8 +13,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strconv"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -22,6 +20,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
 
+	"go.chromium.org/infra/cros/lib/bols/util"
 	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
 )
 
@@ -394,28 +393,10 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 
 // RunFutility run futility tool on labstation.
 func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
-	var args []string
-	args = append(args, req.GetParams()...)
-	port := req.GetStationId().GetServodPort()
-	hasPortParam := false
-	// Make sure that the port argument is valid.
-	for _, a := range args {
-		if hasPortParam {
-			// Check if the port argument is valid.
-			num, err := strconv.Atoi(a)
-			if err != nil {
-				return nil, fmt.Errorf("invalid port number %s: %w", a, err)
-			}
-			if num != int(port) {
-				return nil, fmt.Errorf("port number %s does not match port %d in station id: %w", a, port, err)
-			}
-			break
-		}
-		if a == "--servo_port" {
-			hasPortParam = true
-		}
+	if err := util.CheckFutilityParams(req); err != nil {
+		return nil, fmt.Errorf("failed to validate parameters: %w", err)
 	}
-	cmd := exec.CommandContext(ctx, "futility", args...)
+	cmd := exec.CommandContext(ctx, "futility", req.GetParams()...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -432,24 +413,10 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 // RunFlashEC runs EC firmware flashing from the servo.
 // In most of implementation, it runs flash_ec tool on labstation.
 func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
-	var args []string
-	args = append(args, req.GetParams()...)
-	port := req.GetStationId().GetServodPort()
-	// Make sure that the port argument is valid.
-	for _, a := range args {
-		if strings.HasPrefix(a, "--port=") {
-			// Check if the port argument is valid.
-			num, err := strconv.Atoi(a[len("--port="):])
-			if err != nil {
-				return nil, fmt.Errorf("invalid port number %s: %w", a, err)
-			}
-			if num != int(port) {
-				return nil, fmt.Errorf("port number %s does not match port %d in station id: %w", a, port, err)
-			}
-			break
-		}
+	if err := util.CheckFlashECParams(req); err != nil {
+		return nil, fmt.Errorf("failed to validate parameters: %w", err)
 	}
-	cmd := exec.CommandContext(ctx, "flash_ec", args...)
+	cmd := exec.CommandContext(ctx, "flash_ec", req.GetParams()...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
