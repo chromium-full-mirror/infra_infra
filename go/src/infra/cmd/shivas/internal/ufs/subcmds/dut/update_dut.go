@@ -119,7 +119,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 
-		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTUpdateFileText)
+		c.Flags.StringVar(&c.newSpecsFile, "f", "", fmt.Sprintf(cmdhelp.DUTUpdateFileText, strings.Join(mcsvFields, ",")))
 
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
 		c.Flags.StringVar(&c.machine, "asset", "", "asset tag of the DUT.")
@@ -525,18 +525,13 @@ func (c updateDUT) validateArgs() error {
 		// Cannot accept cmdline inputs for DUT when csv/json mode is specified
 		// The following flags can be set with JSON/MCSV mode.
 		allowList := map[string]interface{}{
-			"dev":                  nil,
-			"f":                    nil,
-			"ticket":               nil,
-			"tag":                  nil,
-			"desc":                 nil,
-			"deploy_timeout":       nil,
-			"force-deploy":         nil,
-			"deploy-tags":          nil,
-			"force-download-image": nil,
-			"force-install-fw":     nil,
-			"force-install-os":     nil,
-			"force-update-labels":  nil,
+			"dev":          nil,
+			"f":            nil,
+			"ticket":       nil,
+			"tag":          nil,
+			"desc":         nil,
+			"force-deploy": nil,
+			"deploy-tags":  nil,
 		}
 		// If a flag not in allow list is set. Throw an error
 		for name, set := range c.flagInputs {
@@ -645,7 +640,7 @@ func (c *updateDUT) parseMCSV() ([]*ufsAPI.UpdateMachineLSERequest, error) {
 }
 
 func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.MachineLSE, *field_mask.FieldMask, error) {
-	var name, servo, servoSerial, servoSetup, rpmHost, rpmOutlet, rpmType string
+	var name, servo, servoSerial, servoSetup, rpmHost, rpmOutlet, rpmType, hive, ateHost, osRestriction string
 	var pools, machines []string
 	if recMap != nil {
 		// CSV map. Assign all the params to the variables.
@@ -663,6 +658,12 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		rpmType = recMap["rpm_type"]
 		machines = []string{recMap["asset"]}
 		pools = strings.Fields(recMap["pools"])
+		hive = recMap["hive"]
+		ateHost = recMap["ate_host"]
+		if ateHost != "" && hive != "" {
+			return nil, nil, fmt.Errorf("cannot specifi hive and ate_host at at the same time")
+		}
+		osRestriction = recMap["os_restriction"]
 	} else {
 		// command line parameters. Update vars with the correct values.
 		name = c.hostname
@@ -676,6 +677,9 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		rpmType = c.rpmType
 		machines = []string{c.machine}
 		pools = c.pools
+		hive = c.hive
+		ateHost = c.ateHost
+		osRestriction = c.osRestriction
 	}
 
 	// Generate lse and mask
@@ -745,28 +749,28 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	}
 
 	// Check if hive field is being updated.
-	if c.hive != "" {
+	if hive != "" {
 		mask.Paths = append(mask.Paths, hivePath)
-		if c.hive != utils.ClearFieldValue {
-			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
+		if hive != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = hive
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
 		}
 	}
 
 	// Check if ate-host field is being updated.
-	if c.ateHost != "" {
+	if ateHost != "" {
 		mask.Paths = append(mask.Paths, ateHostPath)
-		if c.ateHost != utils.ClearFieldValue {
-			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = c.ateHost
+		if ateHost != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = ateHost
 			// Force ATE_HIVE hive
 			mask.Paths = append(mask.Paths, hivePath)
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ATE_HIVE
 			// Force OSRestriction to be ANDROID_ONLY
-			c.osRestriction = chromeosLab.DeviceUnderTest_OSRestriction_name[int32(chromeosLab.DeviceUnderTest_OSR_ANDROID_ONLY)][len(cmdhelp.OSRestrictionPrefix):]
+			osRestriction = chromeosLab.DeviceUnderTest_OSRestriction_name[int32(chromeosLab.DeviceUnderTest_OSR_ANDROID_ONLY)][len(cmdhelp.OSRestrictionPrefix):]
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = ""
-			if c.hive == "" {
+			if hive == "" {
 				// remove from ATE_HIVE hive
 				mask.Paths = append(mask.Paths, hivePath)
 				lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
@@ -783,8 +787,11 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		}
 	}
 
-	if c.osRestriction != "" {
-		restriction := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]
+	if osRestriction != "" {
+		restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(osRestriction)]
+		if !ok {
+			return nil, nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
+		}
 		newValue := chromeosLab.DeviceUnderTest_OSRestriction(restriction)
 		if newValue != lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetOsRestriction() {
 			mask.Paths = append(mask.Paths, osRestrictionPath)

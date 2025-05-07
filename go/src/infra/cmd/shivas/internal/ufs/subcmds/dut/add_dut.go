@@ -67,7 +67,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 
-		c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
+		c.Flags.StringVar(&c.newSpecsFile, "f", "", fmt.Sprintf(cmdhelp.DUTRegistrationFileText, strings.Join(mcsvFields, ",")))
 
 		// Asset location fields
 		c.Flags.StringVar(&c.zone, "zone", "", "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
@@ -229,6 +229,9 @@ var mcsvFields = []string{
 	"rpm_outlet",
 	"rpm_type",
 	"pools",
+	"hive",
+	"ate_host",
+	"os_restriction",
 }
 
 // dutDeployUFSParams contains all the data that are needed for deployment of a single DUT
@@ -637,7 +640,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 			},
 		},
 	}
-	var name, servoHost, servoSerial, subrailConfig, rpmHost, rpmOutlet, rpmType, model, board string
+	var name, servoHost, servoSerial, subrailConfig, rpmHost, rpmOutlet, rpmType, model, board, hive, ateHost, osRestriction string
 	var pools, machines []string
 	var servoPort int32
 	var servoSetup chromeosLab.ServoSetupType
@@ -669,6 +672,12 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		pools = strings.Fields(recMap["pools"])
 		model = recMap["model"]
 		board = recMap["board"]
+		hive = recMap["hive"]
+		ateHost = recMap["ate_host"]
+		if ateHost != "" && hive != "" {
+			return nil, fmt.Errorf("cannot specifi hive and ate_host at at the same time")
+		}
+		osRestriction = recMap["os_restriction"]
 	} else {
 		// command line parameters
 		name = c.hostname
@@ -689,18 +698,23 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		model = c.model
 		board = c.board
 		subrailConfig = c.subrailConfig
+		hive = c.hive
+		ateHost = c.ateHost
+		osRestriction = c.osRestriction
 	}
 	lse.Name = name
 	lse.Hostname = name
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = name
-	if c.ateHost != "" {
-		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = c.ateHost
+	if ateHost != "" {
+		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = ateHost
 		c.hive = ATE_HIVE
 	}
-	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
+	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
-	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]; c.osRestriction != "" && ok {
+	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(osRestriction)]; osRestriction != "" && ok {
 		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
+	} else if !ok {
+		return nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
 	}
 	lse.Machines = machines
 

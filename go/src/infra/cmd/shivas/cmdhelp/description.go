@@ -215,7 +215,7 @@ It is possible to update the underlying asset using -zone, -rack, -model or -boa
 
 [MCSV Mode]
 The file may have multiple or one dut csv record.
-The header format and sequence should be: [name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools]
+The header format and sequence should be: [%s]
 Example mcsv format:
 name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools
 dut-1,asset-1,eve,eve,servo-1,9998,ServoXdw,REGULAR,rpm-1,23,TYPE_SENTRY,"CTS QUOTA"
@@ -345,7 +345,7 @@ The protobuf definition of DeviceUnderTest is a part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/device.proto
 
 The file may have multiple or one dut csv record.
-The header format and sequence should be: [name,asset,servo_host,servo_port,servo_serial,rpm_host,rpm_outlet,rpm_type,pools]
+The header format and sequence should be: [%s]
 
 Example mcsv format:
 name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools
