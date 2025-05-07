@@ -124,5 +124,6 @@ try_builder(
     ],
     location_filters = [
         cq.location_filter(path_regexp = "milo/ui/.+"),
+        cq.location_filter(path_regexp = "swarming/server/ui2/.+"),
     ],
 )
