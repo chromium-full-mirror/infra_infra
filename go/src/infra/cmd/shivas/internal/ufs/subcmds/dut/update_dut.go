@@ -792,11 +792,8 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		if !ok {
 			return nil, nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
 		}
-		newValue := chromeosLab.DeviceUnderTest_OSRestriction(restriction)
-		if newValue != lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetOsRestriction() {
-			mask.Paths = append(mask.Paths, osRestrictionPath)
-			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = newValue
-		}
+		mask.Paths = append(mask.Paths, osRestrictionPath)
+		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
 	}
 
 	// Create and assign servo and corresponding masks.
