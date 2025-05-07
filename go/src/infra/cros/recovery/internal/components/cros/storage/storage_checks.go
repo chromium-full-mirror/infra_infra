@@ -682,7 +682,7 @@ func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.S
 		storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Setting the DUT state: %q", string(dutstate.NeedsReplacement))
 		dut.State = dutstate.NeedsReplacement
-		dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromSMARTInfo
+		dut.DutStateReason = tlw.DutStateReasonInternalStoragePartitionHashesMismatch
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	}
 	log.Debugf(ctx, "Partition hashes match. No action needed.")

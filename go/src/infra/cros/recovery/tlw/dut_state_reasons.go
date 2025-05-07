@@ -11,6 +11,7 @@ const (
 	DutStateReasonEmpty                                    = ""
 	DutStateReasonInternalStorageFailureFromSMARTInfo      = "INTERNAL_STORAGE_FAILURE_FROM_SMART_INFO"
 	DutStateReasonInternalStorageFailureFromBadblocksCheck = "INTERNAL_STORAGE_FAILURE_FROM_BADBLOCKS_CHECK"
+	DutStateReasonInternalStoragePartitionHashesMismatch   = "INTERNAL_STORAGE_FAILURE_FROM_PARTITION_HASHES_MISMATCH"
 	DutStateReasonInternalStorageCannotDetected            = "INTERNAL_STORAGE_CANNOT_DETECTED"
 	DutStateReasonInternalStorageNoSpaceLeft               = "INTERNAL_STORAGE_NO_SPACE_LEFT"
 	DutStateReasonInternalStorageIOError                   = "INTERNAL_STORAGE_IO_ERROR_DETECTED"
