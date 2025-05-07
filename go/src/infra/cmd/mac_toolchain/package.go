@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/exp/maps"
 	"gopkg.in/yaml.v2"
 
 	cipd "go.chromium.org/luci/cipd/client/cipd/builder"
@@ -413,6 +414,7 @@ type PackageRuntimeDMGArgs struct {
 	runtimePath        string
 	runtimeVersion     string
 	runtimeBuild       string
+	runtimeType        string
 	xcodeVersion       string
 	cipdPackagePrefix  string
 	serviceAccountJSON string
@@ -425,6 +427,12 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 	if err != nil {
 		err = errors.Annotate(err, "failed to create an absolute path from %s", runtimeDir).Err()
 		return err
+	}
+
+	runtimeType := strings.Trim(strings.ToLower(args.runtimeType), " ")
+	runtimeRuntimePackageName, ok := RuntimeTypeToDMGPackageName[runtimeType]
+	if !ok {
+		return errors.Reason("runtime type could be %s, but got %s", strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ","), runtimeType).Err()
 	}
 
 	// validate files in the runtime dir
@@ -444,7 +452,7 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 	}
 
 	runtimeMakePackageArgs := MakePackageArgs{
-		cipdPackageName:   IosRuntimeDMGPackageName,
+		cipdPackageName:   runtimeRuntimePackageName,
 		cipdPackagePrefix: args.cipdPackagePrefix,
 		rootPath:          runtimeDir,
 		includePrefixes:   []string{},
@@ -455,9 +463,11 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 		return errors.Annotate(err, "failed to create cipd package definition for %s/%s", runtimeDir, args.runtimeVersion).Err()
 	}
 
+	tagPrefix := runtimeType
+
 	tags := []string{
-		"ios_runtime_version:" + args.runtimeVersion,
-		"ios_runtime_build:" + args.runtimeBuild,
+		tagPrefix + "_runtime_version:" + args.runtimeVersion,
+		tagPrefix + "_runtime_build:" + args.runtimeBuild,
 	}
 	xcodeBuildVersion := strings.ToLower(args.xcodeVersion)
 	refs := []string{

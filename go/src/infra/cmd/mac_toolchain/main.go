@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"golang.org/x/exp/maps"
 
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -45,6 +46,9 @@ const IosRuntimePackageName = "ios_runtime"
 // IosRuntimeDMGPackageName package name of iOS runtime in DMG format in CIPD.
 const IosRuntimeDMGPackageName = "ios_runtime_dmg"
 
+// TvosRuntimeDMGPackageName package name of tvOS runtime in DMG format in CIPD.
+const TvosRuntimeDMGPackageName = "tvos_runtime_dmg"
+
 // XcodeArchivePackageName package name of iOS runtime in DMG format in CIPD.
 const XcodeArchivePackageName = "xcode_archive"
 
@@ -61,17 +65,24 @@ const MaxIOSRuntimeKeepDays = "14"
 // Maximum time to wait for Xcode launch before failing the process.
 const MaxXcodeLaunchWaitTime = 5 * time.Minute
 
+// RuntimeTypeToDMGPackageName maps runtimeType from runtime-type flags to the corresponding DMG package name.
+var RuntimeTypeToDMGPackageName = map[string]string{
+	"ios":  IosRuntimeDMGPackageName,
+	"tvos": TvosRuntimeDMGPackageName,
+}
+
 // KindType is the type for enum values for the -kind argument.
 type KindType string
 
 var _ flag.Value = (*KindType)(nil)
 
 const (
-	macKind           = KindType(MacPackageName)
-	iosKind           = KindType(IosPackageName)
-	iosRuntimeKind    = KindType(IosRuntimePackageName)
-	iosRuntimeDMGKind = KindType(IosRuntimeDMGPackageName)
-	xcodeArchiveKind  = KindType(XcodeArchivePackageName)
+	macKind            = KindType(MacPackageName)
+	iosKind            = KindType(IosPackageName)
+	iosRuntimeKind     = KindType(IosRuntimePackageName)
+	iosRuntimeDMGKind  = KindType(IosRuntimeDMGPackageName)
+	tvosRuntimeDMGKind = KindType(TvosRuntimeDMGPackageName)
+	xcodeArchiveKind   = KindType(XcodeArchivePackageName)
 	// DefaultKind is the default value for the -kind flag.
 	DefaultKind = macKind
 )
@@ -134,6 +145,7 @@ type uploadRuntimeDMGRun struct {
 	runtimePath        string
 	runtimeVersion     string
 	runtimeBuild       string
+	runtimeType        string
 	xcodeVersion       string
 	serviceAccountJSON string
 }
@@ -156,6 +168,7 @@ type packageRuntimeDMGRun struct {
 	runtimePath    string
 	runtimeVersion string
 	runtimeBuild   string
+	runtimeType    string
 	xcodeVersion   string
 	outputDir      string
 }
@@ -378,6 +391,7 @@ func (c *uploadRuntimeDMGRun) Run(a subcommands.Application, args []string, env 
 		runtimePath:        stripLastTrailingSlash(c.runtimePath),
 		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
 		runtimeBuild:       stripLastTrailingSlash(c.runtimeBuild),
+		runtimeType:        c.runtimeType,
 		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
 		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
 		serviceAccountJSON: c.serviceAccountJSON,
@@ -472,6 +486,7 @@ func (c *packageRuntimeDMGRun) Run(a subcommands.Application, args []string, env
 		runtimePath:        stripLastTrailingSlash(c.runtimePath),
 		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
 		runtimeBuild:       stripLastTrailingSlash(c.runtimeBuild),
+		runtimeType:        c.runtimeType,
 		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
 		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
 		serviceAccountJSON: "",
@@ -614,6 +629,7 @@ func uploadRuntimeDMGFlagVars(c *uploadRuntimeDMGRun) {
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
 	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
+	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ", "))
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "The latest Xcode version \"bundled\" with this runtime. For example, 14c18 for iOS16.2 (required)")
 }
 
@@ -642,6 +658,7 @@ func packageRuntimeDMGFlagVars(c *packageRuntimeDMGRun) {
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
 	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
+	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ", "))
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. For example, 15A5161b (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }

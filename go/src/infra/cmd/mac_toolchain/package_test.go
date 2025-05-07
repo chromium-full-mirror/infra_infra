@@ -495,11 +495,12 @@ func TestPackageRuntimeDMG(t *testing.T) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		t.Run("package a test runtime dmg", func(t *ftt.Test) {
+		t.Run("package a test runtime dmg with valid runtime type", func(t *ftt.Test) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
+				runtimeType:        "ios",
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -522,11 +523,29 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
+		t.Run("package a test runtime dmg with invalid runtime type", func(t *ftt.Test) {
+			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
+				runtimeVersion:     "test-ios-version",
+				runtimeBuild:       "test-ios-build",
+				runtimeType:        "invalid-type",
+				xcodeVersion:       "test-xcode-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         false,
+			}
+			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("runtime type could be"))
+		})
+
 		t.Run("package a test runtime dmg without refs & tags", func(t *ftt.Test) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
+				runtimeType:        "ios",
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -551,6 +570,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtimes"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
+				runtimeType:        "ios",
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -569,6 +589,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
+				runtimeType:        "ios",
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
