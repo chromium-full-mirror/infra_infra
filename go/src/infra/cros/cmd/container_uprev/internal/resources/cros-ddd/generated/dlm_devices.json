@@ -131,6 +131,16 @@
       "model": "moxie"
     },
     {
+      "device_id": 817,
+      "soc": "Raptor Lake Refresh",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "brox",
+      "model": "caboc"
+    },
+    {
       "device_id": 738,
       "soc": "Raptor Lake Refresh",
       "form_factor": "CLAMSHELL",
@@ -2561,6 +2571,16 @@
       "model": "ahsoka"
     },
     {
+      "device_id": 816,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "anakin"
+    },
+    {
       "device_id": 811,
       "soc": "MT8189 / MT8189+",
       "form_factor": "CLAMSHELL",
@@ -2747,7 +2767,7 @@
       "soc_vendor": "Intel",
       "architecture": "X86",
       "device_type": "DEVICE",
-      "build_targets": "trulo",
+      "build_targets": "nissa",
       "model": "pujjocento"
     },
     {
@@ -2757,7 +2777,7 @@
       "soc_vendor": "Intel",
       "architecture": "X86",
       "device_type": "DEVICE",
-      "build_targets": "trulo",
+      "build_targets": "nissa",
       "model": "pujjolo"
     },
     {
@@ -2769,6 +2789,16 @@
       "device_type": "DEVICE",
       "build_targets": "trulo",
       "model": "pujjoquince"
+    },
+    {
+      "device_id": 815,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "nissa",
+      "model": "pujjoteenlo"
     },
     {
       "device_id": 745,
@@ -3221,16 +3251,6 @@
       "model": "yoruk"
     },
     {
-      "device_id": 136,
-      "soc": "Ice Lake-Y",
-      "form_factor": "CONVERTIBLE",
-      "soc_vendor": "Intel",
-      "architecture": "X86_64",
-      "device_type": "DEVICE",
-      "build_targets": "dragonegg",
-      "model": "dragonegg"
-    },
-    {
       "device_id": 272,
       "soc": "NONE",
       "form_factor": "NONE",
@@ -3239,6 +3259,16 @@
       "device_type": "DEVICE",
       "build_targets": "NONE",
       "model": "ryu"
+    },
+    {
+      "device_id": 136,
+      "soc": "Ice Lake-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dragonegg",
+      "model": "dragonegg"
     },
     {
       "device_id": 123,
