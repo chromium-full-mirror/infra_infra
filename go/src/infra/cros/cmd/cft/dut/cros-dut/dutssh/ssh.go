@@ -11,15 +11,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// This file only exists because go cannot mock structs and the ssh client
-// library does not provide interfaces for testing.
-type ClientInterface interface {
-	Close() error
-	NewSession() (SessionInterface, error)
-	Wait() error
-	IsAlive() bool
-}
-
 type SSHClient struct {
 	*ssh.Client
 }
@@ -55,18 +46,6 @@ func (c *SSHClient) IsAlive() bool {
 	}
 	_, _, err := c.Client.SendRequest("keepalive@openssh.org", true, nil)
 	return err == nil
-}
-
-type SessionInterface interface {
-	Close() error
-	SetStdout(writer io.Writer)
-	SetStderr(writer io.Writer)
-	SetStdin(reader io.Reader)
-	Run(cmd string) error
-	Start(cmd string) error
-	Output(cmd string) ([]byte, error)
-	StdoutPipe() (io.Reader, error)
-	StderrPipe() (io.Reader, error)
 }
 
 type SSHSession struct {
