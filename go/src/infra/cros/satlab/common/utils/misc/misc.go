@@ -13,6 +13,9 @@ import (
 	"strconv"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/prototext"
+
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/models"
@@ -200,4 +203,13 @@ func RemovePrefixFromTestArgs(m map[string]string, prefix string) map[string]str
 
 func IsCustomBuild(build string) bool {
 	return strings.ContainsAny(build, "-_")
+}
+
+// TopologyJsonToStr converts PASIT topology in JSON format to string formatted as textproto.
+func TopologyJsonToStr(t *api.PasitHost) (string, error) {
+	data, err := prototext.MarshalOptions{Multiline: true}.Marshal(t.ProtoReflect().Interface())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }

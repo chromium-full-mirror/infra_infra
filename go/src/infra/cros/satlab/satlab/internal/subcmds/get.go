@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/commands/dns"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/components/dut"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/topology"
 )
 
 // GetBase is a placeholder command for "get".
@@ -54,5 +55,6 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		dut.GetDUTCmd,
 		dns.GetDNSCmd,
+		topology.GetTopologyCmd,
 	}
 }

@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/components/dut"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/topology"
 )
 
 // AddBase is the type for the add placeholder command.
@@ -52,5 +53,6 @@ func (c addApp) GetCommands() []*subcommands.Command {
 	return []*subcommands.Command{
 		subcommands.CmdHelp,
 		dut.AddDUTCmd,
+		topology.AddTopologyCmd,
 	}
 }

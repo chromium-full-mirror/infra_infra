@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/commands/dns"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/components/dut"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/topology"
 )
 
 // DeleteBase is the placeholder for the delete command.
@@ -55,5 +56,6 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		dut.DeleteDUTCmd,
 		dns.DeleteDNSCmd,
+		topology.DeleteTopologyCmd,
 	}
 }
