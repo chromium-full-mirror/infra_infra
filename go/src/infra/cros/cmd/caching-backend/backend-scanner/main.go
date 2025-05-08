@@ -312,7 +312,7 @@ func getK8sClientSet() (*kubernetes.Clientset, error) {
 }
 
 // genConfig generates the final template data.
-func genConfig(templateName, configTmpl string, configData interface{}) (string, error) {
+func genConfig(templateName, configTmpl string, configData any) (string, error) {
 	var buf bytes.Buffer
 	tmpl := template.Must(template.New(templateName).Parse(configTmpl))
 	if err := tmpl.Execute(&buf, configData); err != nil {

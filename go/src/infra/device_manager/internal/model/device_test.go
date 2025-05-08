@@ -535,7 +535,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 		pageSize   int
 		filter     string
 		wantQuery  string
-		wantArgs   []interface{}
+		wantArgs   []any
 		wantErrStr string
 	}{
 		{
@@ -557,7 +557,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 		FROM "Devices"
 		ORDER BY created_time
 		LIMIT $1;`,
-			wantArgs:   []interface{}{11},
+			wantArgs:   []any{11},
 			wantErrStr: "",
 		},
 		{
@@ -589,7 +589,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 		WHERE created_time > $1 AND is_active = $2
 		ORDER BY created_time
 		LIMIT $3;`,
-			wantArgs:   []interface{}{"2024-05-15T21:47:23.822283Z", "true", 11},
+			wantArgs:   []any{"2024-05-15T21:47:23.822283Z", "true", 11},
 			wantErrStr: "",
 		},
 	}

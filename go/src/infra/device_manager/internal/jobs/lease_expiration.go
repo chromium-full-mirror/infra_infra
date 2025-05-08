@@ -156,7 +156,7 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 
 	// Populate temporary table.
 	var valueStrings []string
-	var valueArgs []interface{}
+	var valueArgs []any
 	for _, device := range updatedDevices {
 		l := len(valueArgs)
 		valueStrings = append(

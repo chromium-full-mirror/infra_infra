@@ -38,10 +38,10 @@ func DecodePageToken(ctx context.Context, token PageToken) (string, error) {
 //
 // Parse filter from string. Assume filters are separated by "AND" based on
 // AIP-160.
-func BuildQueryFilter(ctx context.Context, filter string) (string, []interface{}) {
+func BuildQueryFilter(ctx context.Context, filter string) (string, []any) {
 	var (
 		filterExprs []string
-		filterArgs  []interface{}
+		filterArgs  []any
 		queryFilter string
 	)
 

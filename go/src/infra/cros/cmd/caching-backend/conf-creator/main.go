@@ -126,7 +126,7 @@ func innerMain() error {
 	return buildAndWriteConfig("keepalived", keepalivedTemplate, k, *keepalivedConfigFilePath)
 }
 
-func buildAndWriteConfig(name string, templ string, data interface{}, path string) error {
+func buildAndWriteConfig(name string, templ string, data any, path string) error {
 	log.Printf("Configuring %q and writing to %q ...", name, path)
 	d, err := buildConfig(templ, data)
 	if err != nil {

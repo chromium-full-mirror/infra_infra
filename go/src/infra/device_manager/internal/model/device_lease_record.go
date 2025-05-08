@@ -169,7 +169,7 @@ func BulkCreateDeviceLeaseRecords(ctx context.Context, tx *sql.Tx, records []Dev
 	// Populate temporary table and errors.
 	var (
 		valueStrings []string
-		valueArgs    []interface{}
+		valueArgs    []any
 	)
 	for i, r := range records {
 		l := len(valueArgs)
@@ -454,8 +454,8 @@ func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, p
 }
 
 // buildListLeasesQuery builds a ListLeases query using given params.
-func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []interface{}, error) {
-	var queryArgs []interface{}
+func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []any, error) {
+	var queryArgs []any
 	query := `
 		SELECT
 			id,

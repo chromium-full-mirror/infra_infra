@@ -55,7 +55,7 @@ type keepalivedConfData struct {
 }
 
 // buildConfig generates the final template data.
-func buildConfig(configTmpl string, configData interface{}) (string, error) {
+func buildConfig(configTmpl string, configData any) (string, error) {
 	var buf bytes.Buffer
 	tmpl := template.Must(template.New("base").Parse(configTmpl))
 	if err := tmpl.Execute(&buf, configData); err != nil {

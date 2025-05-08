@@ -72,7 +72,7 @@ func (SchedulableLabels) GormDataType() string {
 }
 
 // Scan implements scanner interface for SchedulableLabels.
-func (s *SchedulableLabels) Scan(value interface{}) error {
+func (s *SchedulableLabels) Scan(value any) error {
 	var bytes []byte
 	switch v := value.(type) {
 	case []byte:
@@ -270,8 +270,8 @@ func ExpireLeasesCron(ctx context.Context, tx *sql.Tx, t time.Time) (leaseIDs, d
 }
 
 // buildListDevicesQuery builds a ListDevices query using given params.
-func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []interface{}, error) {
-	var queryArgs []interface{}
+func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []any, error) {
+	var queryArgs []any
 	query := `
 		SELECT
 			id,

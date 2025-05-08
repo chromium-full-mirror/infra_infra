@@ -16,7 +16,7 @@ func TestConfigTemplate(t *testing.T) {
 	tests := []struct {
 		name      string
 		template  string
-		data      interface{}
+		data      any
 		wantLines []string
 	}{
 		{
