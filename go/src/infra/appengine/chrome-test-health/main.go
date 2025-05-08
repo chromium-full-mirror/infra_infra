@@ -251,7 +251,7 @@ func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, re
 }
 
 func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error) {
-	requiredFields := []interface{}{
+	requiredFields := []any{
 		[]string{"Gitiles Host", req.GitilesHost, ""},
 		[]string{"Gitiles Project", req.GitilesProject, ""},
 		[]string{"Gitiles Ref", req.GitilesRef, ""},
@@ -439,7 +439,7 @@ func validateRequest[T proto.Message](ctx context.Context, requiredChecker proto
 // validatePresence takes in an interface{} and checks if
 // the it's present (not nil). In case of string it also
 // checks if the string is empty.
-func validatePresence(value interface{}) bool {
+func validatePresence(value any) bool {
 	if value == nil {
 		return false
 	}

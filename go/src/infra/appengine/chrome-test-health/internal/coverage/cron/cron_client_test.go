@@ -107,7 +107,7 @@ func TestUpdatePresubmitData(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 					for _, rep := range reports {
 						matchesHost := queryFilters[0].Value == rep.ServerHost
 						t := queryFilters[1].Value.(time.Time)
@@ -127,7 +127,7 @@ func TestUpdatePresubmitData(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, entities interface{}, keys interface{}) error {
+				func(c context.Context, entities any, keys any) error {
 					return nil
 				},
 			)
@@ -150,7 +150,7 @@ func TestUpdatePresubmitData(t *testing.T) {
 					mock.Anything,
 					mock.Anything,
 				).Return(
-					func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 						return fmt.Errorf("PresubmitCoverageData: No matching index")
 					},
 				)
@@ -174,7 +174,7 @@ func TestUpdatePresubmitData(t *testing.T) {
 					mock.Anything,
 					mock.Anything,
 				).Return(
-					func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+					func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 						for _, rep := range reports {
 							matchesHost := queryFilters[0].Value == rep.ServerHost
 							t := queryFilters[1].Value.(time.Time)
@@ -194,7 +194,7 @@ func TestUpdatePresubmitData(t *testing.T) {
 					mock.Anything,
 					mock.Anything,
 				).Return(
-					func(c context.Context, entities interface{}, keys interface{}) error {
+					func(c context.Context, entities any, keys any) error {
 						return fmt.Errorf("PresubmitCoverageData: Error storing the entity")
 					},
 				)
@@ -226,7 +226,7 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				for _, rep := range reports {
 					matchesHost := queryFilters[0].Value == rep.ServerHost
 					t := queryFilters[1].Value.(time.Time)
@@ -262,7 +262,7 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				return fmt.Errorf("PresubmitCoverageData: %s", "No matching indexes found")
 			},
 		)
@@ -368,7 +368,7 @@ func TestCreateCqSummaryDatat(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, entities interface{}, keys interface{}) error {
+				func(c context.Context, entities any, keys any) error {
 					return nil
 				},
 			)
@@ -391,7 +391,7 @@ func TestCreateCqSummaryDatat(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, entities interface{}, keys interface{}) error {
+				func(c context.Context, entities any, keys any) error {
 					return fmt.Errorf("Datastore: %s", "Error putting entities")
 				},
 			)

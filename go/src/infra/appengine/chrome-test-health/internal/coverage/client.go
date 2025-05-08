@@ -68,7 +68,7 @@ func (c *Client) getProjectConfig(
 	project string,
 	config *api.GetProjectDefaultConfigResponse,
 ) error {
-	code_cov_settings := map[string]interface{}{}
+	code_cov_settings := map[string]any{}
 	err := json.Unmarshal(finditConfig.CodeCoverageSettings, &code_cov_settings)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to unmarshall CodeCoverageSettings: %s", err)
@@ -81,16 +81,16 @@ func (c *Client) getProjectConfig(
 		return ErrInternalServerError
 	}
 
-	projectConfig := defaultPostSubmitConfig.(map[string]interface{})[project]
+	projectConfig := defaultPostSubmitConfig.(map[string]any)[project]
 	if projectConfig == nil {
 		logging.Errorf(ctx, "Missing config for project %s", project)
 		return ErrInternalServerError
 	}
-	projectConfig = projectConfig.(map[string]interface{})
+	projectConfig = projectConfig.(map[string]any)
 
-	config.GitilesHost = projectConfig.(map[string]interface{})["host"].(string)
-	config.GitilesProject = projectConfig.(map[string]interface{})["project"].(string)
-	config.GitilesRef = projectConfig.(map[string]interface{})["ref"].(string)
+	config.GitilesHost = projectConfig.(map[string]any)["host"].(string)
+	config.GitilesProject = projectConfig.(map[string]any)["project"].(string)
+	config.GitilesRef = projectConfig.(map[string]any)["ref"].(string)
 
 	return nil
 }
@@ -103,7 +103,7 @@ func (c *Client) getBuilderOptions(
 	finditConfig *entities.FinditConfig,
 	config *api.GetProjectDefaultConfigResponse,
 ) error {
-	code_cov_settings := map[string]interface{}{}
+	code_cov_settings := map[string]any{}
 	err := json.Unmarshal(finditConfig.CodeCoverageSettings, &code_cov_settings)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to unmarshall CodeCoverageSettings: %s", err)
@@ -116,12 +116,12 @@ func (c *Client) getBuilderOptions(
 		return ErrInternalServerError
 	}
 
-	platformListForProject := postsubmitPlatformInfoMap.(map[string]interface{})[luciProject]
+	platformListForProject := postsubmitPlatformInfoMap.(map[string]any)[luciProject]
 
 	var builderConfigDetails []*api.BuilderConfig
-	for platform, builderConfigDetail := range platformListForProject.(map[string]interface{}) {
-		bucket := builderConfigDetail.(map[string]interface{})["bucket"].(string)
-		builder := builderConfigDetail.(map[string]interface{})["builder"].(string)
+	for platform, builderConfigDetail := range platformListForProject.(map[string]any) {
+		bucket := builderConfigDetail.(map[string]any)["bucket"].(string)
+		builder := builderConfigDetail.(map[string]any)["builder"].(string)
 		postsubmitReport := entities.PostsubmitReport{}
 		err := postsubmitReport.Filter(ctx, c.coverageV1DsClient, project, host, bucket, builder)
 		if err != nil {
@@ -132,7 +132,7 @@ func (c *Client) getBuilderOptions(
 			Platform:       platform,
 			Bucket:         bucket,
 			Builder:        builder,
-			UiName:         builderConfigDetail.(map[string]interface{})["ui_name"].(string),
+			UiName:         builderConfigDetail.(map[string]any)["ui_name"].(string),
 			LatestRevision: postsubmitReport.GitilesCommitRevision,
 		})
 	}
@@ -472,8 +472,8 @@ func (c *Client) getCoverageNumbersHelper(
 			continue
 		}
 		metrics := coverageDetailsStruct.AsMap()
-		for _, metric := range metrics["summaries"].([]interface{}) {
-			metricMap := metric.(map[string]interface{})
+		for _, metric := range metrics["summaries"].([]any) {
+			metricMap := metric.(map[string]any)
 			if metricMap["name"] == "line" {
 				covNumber := CoveragePerDate{
 					date:    report.CommitTimestamp.Format(time.DateOnly),

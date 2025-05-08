@@ -10,7 +10,7 @@ import "context"
 type QueryFilter struct {
 	Field    string
 	Operator string
-	Value    interface{}
+	Value    any
 }
 
 // IDataClient interface has necessary data related functions that need
@@ -25,10 +25,10 @@ type IDataClient interface {
 	// Returns an error if the data item cannot be found.
 	Get(
 		ctx context.Context,
-		result interface{},
+		result any,
 		dataType string,
-		key interface{},
-		options ...interface{},
+		key any,
+		options ...any,
 	) error
 
 	// Query function performs a data storage query with the given filters,
@@ -47,12 +47,12 @@ type IDataClient interface {
 	// The result is reflected in the "result" argument.
 	Query(
 		ctx context.Context,
-		result interface{},
+		result any,
 		dataType string,
 		queryFilters []QueryFilter,
-		order interface{},
+		order any,
 		limit int,
-		options ...interface{},
+		options ...any,
 	) error
 
 	// BatchPut function performs a data storage query to save
@@ -62,7 +62,7 @@ type IDataClient interface {
 	// Returns an error if the operation fails.
 	BatchPut(
 		ctx context.Context,
-		entities interface{},
-		keys interface{},
+		entities any,
+		keys any,
 	) error
 }

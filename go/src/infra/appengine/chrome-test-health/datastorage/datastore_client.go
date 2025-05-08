@@ -59,7 +59,7 @@ func NewDataStoreClient(ctx context.Context, cloudProject string) (*DataStoreCli
 // Example 1: dsClient.Get(ctx, &str, "EntityA", "EntityAKey", "AncestorEntity", "AncestorEntityKey")
 // Example 2: dsClient.Get(ctx, &str, "EntityA", 123, "AncestorEntity", 345)
 // Example 3: dsClient.Get(ctx, &str, "EntityA", "k")
-func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName string, key interface{}, options ...interface{}) error {
+func (c DataStoreClient) Get(ctx context.Context, result any, entityName string, key any, options ...any) error {
 	if !(len(options) == 0 || len(options) == 2) {
 		return fmt.Errorf("%w: Expected 4 or 6 arguments but got %d", ErrInsufficientArgs, len(options)+4)
 	}
@@ -144,12 +144,12 @@ func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName
 // dsclient.Query(ctx, &str, "EntityA", queryFilters, "-attribute")
 func (c DataStoreClient) Query(
 	ctx context.Context,
-	result interface{},
+	result any,
 	entityName string,
 	filters []QueryFilter,
-	order interface{},
+	order any,
 	limit int,
-	options ...interface{}) error {
+	options ...any) error {
 	q := datastore.NewQuery(entityName)
 	for _, filterQuery := range filters {
 		q = q.FilterField(filterQuery.Field, filterQuery.Operator, filterQuery.Value)
@@ -207,8 +207,8 @@ func (c DataStoreClient) Query(
 // dsclient.BatchPut(ctx, entities, keys)
 func (c DataStoreClient) BatchPut(
 	ctx context.Context,
-	entities interface{},
-	keys interface{},
+	entities any,
+	keys any,
 ) error {
 	datastoreKeys, ok := keys.([]*datastore.Key)
 	if !ok {

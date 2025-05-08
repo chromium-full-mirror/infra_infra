@@ -327,7 +327,7 @@ func TestGetBuilderOptions(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 					for _, rep := range postsubmitReports {
 						if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
 							res := reflect.ValueOf(result).Elem()
@@ -392,7 +392,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				res := reflect.ValueOf(result).Elem()
 				res.Set(reflect.Append(res, reflect.ValueOf(finditConfigRoot).Elem()))
 				return nil
@@ -408,7 +408,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+			func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 				res := reflect.ValueOf(result).Elem()
 				res.Set(reflect.ValueOf(finditConfig).Elem())
 				return nil
@@ -424,7 +424,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				for _, rep := range postsubmitReports {
 					if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
 						res := reflect.ValueOf(result).Elem()
@@ -471,7 +471,7 @@ func TestGetCoverageSummary(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 					if key.(string) != summaryData.Key.Name {
 						return ErrEntityNotFound
 					}
@@ -520,7 +520,7 @@ func TestGetCoverageSummary(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 					if key.(string) != summaryData.Key.Name {
 						return ErrEntityNotFound
 					}
@@ -557,7 +557,7 @@ func TestGetCoverageSummaryForComponents(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+			func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 				for _, sum := range summaryData {
 					if key.(string) == sum.Key.Name {
 						res := reflect.ValueOf(result).Elem()
@@ -605,7 +605,7 @@ func TestGetCoverageReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				for _, rep := range postsubmitReports {
 					if queryFilters[2].Value == rep.Bucket && queryFilters[3].Value == rep.Builder {
 						res := reflect.ValueOf(result).Elem()
@@ -644,7 +644,7 @@ func TestGetCoverageReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				return fmt.Errorf("PostsubmitReport: %s", "No matching indexes found")
 			},
 		)
@@ -674,7 +674,7 @@ func TestGetIncCoverageReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				for _, rep := range reports {
 					matchesPath := queryFilters[0].Value == rep.Path
 					matchesIsUnitTests := queryFilters[1].Value == rep.IsUnitTest
@@ -711,7 +711,7 @@ func TestGetIncCoverageReportsForLastYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				return fmt.Errorf("CQSummaryCoverageData: %s", "No matching indexes found")
 			},
 		)
@@ -741,7 +741,7 @@ func TestGetCoverageNumbersForPath(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+			func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 				if key.(string) != summaryData.Key.Name {
 					return ErrEntityNotFound
 				}
@@ -788,7 +788,7 @@ func TestGetCoverageNumbersForComponent(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+			func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 				for _, sum := range summaryData {
 					if key.(string) == sum.Key.Name {
 						res := reflect.ValueOf(result).Elem()
@@ -844,7 +844,7 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 					for _, rep := range postsubmitReports {
 						if queryFilters[2].Value == rep.Bucket &&
 							queryFilters[3].Value == rep.Builder &&
@@ -867,7 +867,7 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(ctx context.Context, result interface{}, dataType string, key interface{}, options ...interface{}) error {
+				func(ctx context.Context, result any, dataType string, key any, options ...any) error {
 					if strings.Contains(key.(string), "dirs") {
 						if key.(string) != summaryData.Key.Name {
 							return ErrEntityNotFound
@@ -955,7 +955,7 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 				mock.Anything,
 				mock.Anything,
 			).Return(
-				func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+				func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 					return fmt.Errorf("PostsubmitReport: %s", "entity not found")
 				},
 			)
@@ -995,7 +995,7 @@ func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				for _, rep := range reports {
 					matchesPath := queryFilters[0].Value == rep.Path
 					matchesIsUnitTests := queryFilters[1].Value == rep.IsUnitTest
@@ -1055,7 +1055,7 @@ func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
 			mock.Anything,
 			mock.Anything,
 		).Return(
-			func(c context.Context, result interface{}, dataType string, queryFilters []datastorage.QueryFilter, order interface{}, limit int, options ...interface{}) error {
+			func(c context.Context, result any, dataType string, queryFilters []datastorage.QueryFilter, order any, limit int, options ...any) error {
 				return fmt.Errorf("CQSummaryCoverageData: %s", "entity not found")
 			},
 		)
