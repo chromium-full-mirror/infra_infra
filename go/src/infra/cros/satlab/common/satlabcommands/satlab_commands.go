@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -206,4 +207,13 @@ func GetSatlabStartTime(ctx context.Context, executor executor.IExecCommander) (
 	}
 
 	return timestamppb.New(timeObj), nil
+}
+
+// IsUpdateAvailable checks if new versions of satlab is available.
+func IsUpdateAvailable(ctx context.Context, executor executor.IExecCommander) (bool, error) {
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.IsUpdateAvailablePath))
+	if err != nil {
+		return false, errors.Annotate(err, "get is update available").Err()
+	}
+	return strconv.ParseBool(misc.TrimOutput(out))
 }

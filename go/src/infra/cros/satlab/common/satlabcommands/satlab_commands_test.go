@@ -247,3 +247,66 @@ BUILD_VERSION=R-4.2.3`), nil
 		t.Errorf("unexpected result, expected: %v, got %v\n", expected, res)
 	}
 }
+
+func TestIsUpdateAvailable(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	tests := []struct {
+		name          string
+		cmdOutput     string
+		cmdError      error
+		expectedValue bool
+		expectedError bool
+		errorMsg      string
+	}{
+		{
+			name:          "Update Available",
+			cmdOutput:     "true\n",
+			cmdError:      nil,
+			expectedValue: true,
+			expectedError: false,
+		},
+		{
+			name:          "Update Not Available",
+			cmdOutput:     "false\n",
+			cmdError:      nil,
+			expectedValue: false,
+			expectedError: false,
+		},
+		{
+			name:          "Command Execution Error",
+			cmdOutput:     "",
+			cmdError:      errors.New("command failed"),
+			expectedValue: false,
+			expectedError: true,
+			errorMsg:      "get is update available: command failed",
+		},
+		{
+			name:          "Invalid Boolean Output",
+			cmdOutput:     "maybe\n",
+			cmdError:      nil,
+			expectedValue: false,
+			expectedError: true,
+			errorMsg:      `strconv.ParseBool: parsing "maybe": invalid syntax`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			commandExecutor := &executor.FakeCommander{CmdOutput: tt.cmdOutput, Err: tt.cmdError}
+			actualValue, err := IsUpdateAvailable(ctx, commandExecutor)
+
+			if actualValue != tt.expectedValue {
+				t.Errorf("IsUpdateAvailable() value = %v, want %v", actualValue, tt.expectedValue)
+			}
+
+			if (err != nil) != tt.expectedError {
+				t.Errorf("IsUpdateAvailable() error = %v, expectedError %v", err, tt.expectedError)
+			} else if err != nil && err.Error() != tt.errorMsg {
+				t.Errorf("IsUpdateAvailable() error message = %q, want %q", err.Error(), tt.errorMsg)
+			}
+		})
+	}
+}

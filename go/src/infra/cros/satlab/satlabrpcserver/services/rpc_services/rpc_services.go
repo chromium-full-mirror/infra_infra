@@ -1864,3 +1864,16 @@ func (s *SatlabRpcServiceServer) IsAuth(ctx context.Context, _ *pb.IsAuthRequest
 
 	return &pb.IsAuthResponse{IsAuth: false}, nil
 }
+
+// IsUpdateAvailable returns whether satlab update is available
+func (s *SatlabRpcServiceServer) IsUpdateAvailable(ctx context.Context, in *pb.IsUpdateAvailableRequest) (*pb.IsUpdateAvailableResponse, error) {
+	ava, err := satlabcommands.IsUpdateAvailable(ctx, s.commandExecutor)
+	if err != nil {
+		logging.Errorf(ctx, "gRPC Service error: IsUpdateAvailable: %w", err)
+		return nil, err
+	}
+
+	return &pb.IsUpdateAvailableResponse{
+		IsUpdateAvailable: ava,
+	}, nil
+}

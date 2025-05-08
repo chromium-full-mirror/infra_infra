@@ -63,6 +63,7 @@ func getApplication() *cli.Application {
 			subcmds.PruneCmd,
 			subcmds.CCDCmd,
 			subcmds.SupportCmd,
+			subcmds.SettingsCmd,
 		},
 	}
 }

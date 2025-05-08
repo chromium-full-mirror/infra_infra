@@ -41,6 +41,12 @@ const (
 	// Reboot the path of reboot command.
 	Reboot = "/usr/local/bin/reboot"
 
-	// PubSubKey is the path to the key used to authenticate to Google Cloud Platform
+	// PubSubKey is the path to the key used to authenticate to Google Cloud Platform.
 	PubSubKey = "/home/satlab/keys/pubsub-key-do-not-delete.json"
+
+	// IsUpdateAvailablePath is the path to the is_update_available script.
+	IsUpdateAvailablePath = "/usr/local/bin/is_update_available"
+
+	// UserSettingsPath the path of user settings json file.
+	UserSettingsPath = "/home/satlab/shared/satlab-user-settings.json"
 )

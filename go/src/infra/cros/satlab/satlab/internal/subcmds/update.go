@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 
 	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/commands/box"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/commands/dns"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/components/dut"
 )
@@ -57,5 +58,6 @@ func (c updateApp) GetCommands() []*subcommands.Command {
 		// dut.UpdateDUTCmd,
 		dns.UpdateDNSCmd,
 		dut.UpdateDUTStateCmd,
+		box.UpdateSatlabCmd,
 	}
 }

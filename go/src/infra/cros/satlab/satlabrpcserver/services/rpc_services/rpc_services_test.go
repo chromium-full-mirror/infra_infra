@@ -2522,3 +2522,55 @@ func Test_removeAllPoolShouldSuccessWhenCommandSuccess(t *testing.T) {
 		return
 	}
 }
+
+func Test_IsUpdateAvailable(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	tests := []struct {
+		name                string
+		fakeExecutor        *executor.FakeCommander
+		expectedIsAvailable bool
+		expectedError       bool
+		errorMsg            string
+	}{
+		{
+			name:                "Update Available",
+			fakeExecutor:        &executor.FakeCommander{CmdOutput: "true\n"},
+			expectedIsAvailable: true,
+			expectedError:       false,
+		},
+		{
+			name:                "Update Not Available",
+			fakeExecutor:        &executor.FakeCommander{CmdOutput: "false\n"},
+			expectedIsAvailable: false,
+			expectedError:       false,
+		},
+		{
+			name:                "Command Error",
+			fakeExecutor:        &executor.FakeCommander{Err: errors.New("script failed")},
+			expectedIsAvailable: false,
+			expectedError:       true,
+			errorMsg:            "get is update available: script failed",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := createMockServer(t)
+			s.commandExecutor = tt.fakeExecutor
+
+			resp, err := s.IsUpdateAvailable(ctx, &pb.IsUpdateAvailableRequest{})
+
+			if (err != nil) != tt.expectedError {
+				t.Errorf("IsUpdateAvailable() error = %v, expectedError %v", err, tt.expectedError)
+			} else if err != nil && err.Error() != tt.errorMsg {
+				t.Errorf("IsUpdateAvailable() error message = %q, want %q", err.Error(), tt.errorMsg)
+			}
+
+			if err == nil && resp.GetIsUpdateAvailable() != tt.expectedIsAvailable {
+				t.Errorf("IsUpdateAvailable() response.IsUpdateAvailable = %v, want %v", resp.GetIsUpdateAvailable(), tt.expectedIsAvailable)
+			}
+		})
+	}
+}
