@@ -30,7 +30,7 @@ func NewGetEnginePidSetup(ctx context.Context, cs *service.FoilService) *GetEngi
 
 func (c *GetEnginePid) Execute(log *log.Logger) error {
 	log.Printf("Start GetEnginePid Execute, with reboot")
-	pidOut, _ := adb.AdbShellCmd([]string{"pgrep", "update_engine"}, c.cs.DutIp, log)
+	pidOut, _ := adb.AdbShellCmd([]string{"pgrep", "update_engine"}, c.cs.DutIp, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
 	pf := strings.ReplaceAll(strings.ReplaceAll(pidOut, " ", ""), "\n", "")
 	log.Println("PID FOUND: ", pf)

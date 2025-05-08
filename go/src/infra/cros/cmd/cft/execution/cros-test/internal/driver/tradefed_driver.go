@@ -127,7 +127,7 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 			return fmt.Errorf("setupAdb failed for %s", s)
 		}
 		// Force the disablement of the test_harness setting to resolve bootloops.
-		_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(s), "root"}, logger)
+		_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(s), "root"}, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
 		if err != nil {
 			logger.Println("Failed to establish ADB root post test")
@@ -136,9 +136,9 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 		if err != nil {
 			logger.Println("Failed to recoonec to ADB post test")
 		}
-		_, _ = adb.AdbShellCmd([]string{"echo", "demo", ">", "/sys/power/wake_lock"}, s, logger)
+		_, _ = adb.AdbShellCmd([]string{"echo", "demo", ">", "/sys/power/wake_lock"}, s, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
-		_, _ = adb.AdbShellCmd([]string{"cat", "/sys/power/wake_lock"}, s, logger)
+		_, _ = adb.AdbShellCmd([]string{"cat", "/sys/power/wake_lock"}, s, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 	}
 
 	exit := make(chan struct{})
@@ -147,7 +147,7 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 		for _, s := range serials {
 
 			// Force the disablement of the test_harness setting to resolve bootloops.
-			_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(s), "root"}, logger)
+			_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(s), "root"}, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
 			if err != nil {
 				logger.Println("Failed to establish ADB root post test")
@@ -157,7 +157,7 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 				logger.Println("Failed to recoonec to ADB post test")
 			}
 
-			_, _ = adb.AdbShellCmd([]string{"setprop", "persist.sys.test_harness", "0"}, s, logger)
+			_, _ = adb.AdbShellCmd([]string{"setprop", "persist.sys.test_harness", "0"}, s, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
 			if err := adb.TeardownAdb(logger, s); err != nil {
 				logger.Printf("Failed to tear down adb connection to %s: %s", s, err)

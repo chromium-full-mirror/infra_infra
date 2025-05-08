@@ -23,8 +23,9 @@ import (
 )
 
 const (
-	adbInterval = 3 * time.Minute
-	adbTimeout  = 15 * time.Minute
+	adbInterval         = 3 * time.Minute
+	adbTimeout          = 15 * time.Minute
+	powerStayOnAttempts = 3
 )
 
 // ValidateState checks if the correct version was provisioned or not.
@@ -73,18 +74,18 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 		}
 		collectUARTLogs(ctx, log, s.params)
 		// As soon as we get the ADB connection, immediately set the keep awake settings.
-		c1, err := adb.AdbShellCmd([]string{"svc", "power", "stayon", "true"}, dutAddress, log)
+		c1, err := adb.AdbShellCmd([]string{"svc", "power", "stayon", "true"}, dutAddress, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
 			log.Println("Unable to set stay awake:", c1)
 			return common_utils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
-		c2, err := adb.AdbShellCmd([]string{"settings", "put", "global", "stay_on_while_plugged_in", "7"}, dutAddress, log)
+		c2, err := adb.AdbShellCmd([]string{"settings", "put", "global", "stay_on_while_plugged_in", "7"}, dutAddress, log, powerStayOnAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
 			log.Println("Unable to set stay awake:", c2)
 			return common_utils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 
-		dutVersion, err := adb.AdbShellCmd([]string{"getprop", "ro.system.build.version.incremental"}, dutAddress, log)
+		dutVersion, err := adb.AdbShellCmd([]string{"getprop", "ro.system.build.version.incremental"}, dutAddress, log, powerStayOnAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
 			return common_utils.WrapStringInAny("PLATFORM: unable to get build from device post install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}

@@ -36,7 +36,7 @@ func NewRebootCommand(ctx context.Context, cs *service.FoilService, optRebootArg
 
 func (c *RebootCommand) Execute(log *log.Logger) error {
 	log.Printf("Start RebootCommand Execute")
-	outStr, err := adb.AdbCmd([]string{"-s", c.cs.DutIp, "reboot"}, log)
+	outStr, err := adb.AdbCmd([]string{"-s", c.cs.DutIp, "reboot"}, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 	log.Println(outStr)
 	addr := c.cs.DutIp
 

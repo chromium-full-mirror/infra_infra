@@ -29,8 +29,8 @@ func NewSetSelinuxCommandSetup(ctx context.Context, cs *service.FoilService) *Se
 
 func (c *SetSelinuxCommand) Execute(log *log.Logger) error {
 	log.Printf("Start SetSelinuxCommand Execute, with reboot")
-	adb.AdbShellCmd([]string{"setenforce", "0"}, c.cs.DutIp, log)
-	adb.AdbShellCmd([]string{"getenforce"}, c.cs.DutIp, log)
+	adb.AdbShellCmd([]string{"setenforce", "0"}, c.cs.DutIp, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
+	adb.AdbShellCmd([]string{"getenforce"}, c.cs.DutIp, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 	return nil
 }
 

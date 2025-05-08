@@ -38,7 +38,7 @@ func (c *AdbRoot) Execute(log *log.Logger) error {
 	addr := c.cs.DutIp
 	adb.RetrySetupAdb(log, addr, retryTimeout)
 
-	_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(addr), "root"}, log)
+	_, err := adb.AdbCmd([]string{"-s", adb.FmtAddr(addr), "root"}, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 	if err != nil {
 		return err
 	}

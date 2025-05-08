@@ -15,10 +15,14 @@ import (
 	"time"
 )
 
-const retryInterval = 1 * time.Second
+const (
+	retryInterval         = 1 * time.Second
+	DefaultCommandSeconds = 15
+	DefaultRetryAttempts  = 1
+)
 
 func TeardownAdb(logger *log.Logger, addr string) error {
-	if out, err := AdbCmd([]string{"-s", FmtAddr(addr), "disconnect"}, logger); err != nil {
+	if out, err := AdbCmd([]string{"-s", FmtAddr(addr), "disconnect"}, logger, DefaultRetryAttempts, DefaultCommandSeconds); err != nil {
 		return fmt.Errorf("ADB disconnect failed. %w: %s", err, string(out))
 	}
 	return nil
@@ -26,7 +30,7 @@ func TeardownAdb(logger *log.Logger, addr string) error {
 
 func AdbConnect(logger *log.Logger, addr string) (err error) {
 	// Assumes the ADB port on the CrOS device is visible directly.
-	outStr, err := AdbCmd([]string{"connect", FmtAddr(addr)}, logger)
+	outStr, err := AdbCmd([]string{"connect", FmtAddr(addr)}, logger, DefaultRetryAttempts, DefaultCommandSeconds)
 	if err != nil {
 		return fmt.Errorf("ADB Start failed. %w: %s", err, outStr)
 	}
@@ -40,21 +44,42 @@ func AdbConnect(logger *log.Logger, addr string) (err error) {
 	return err
 }
 
-func AdbCmd(args []string, log *log.Logger) (string, error) {
-	// Add a 15 second ctx timeout to prevent cmds from hanging.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, "adb", args...)
-	log.Println("Running ADB SHELL CMD: ", cmd.String())
+func AdbCmd(args []string, log *log.Logger, retryCount, deadlineSeconds int) (string, error) {
+	// Define a function to run in the retry loop below.
+	f := func(deadlineSeconds int, args []string) (string, string, error) {
+		// Add a ctx timeout to prevent cmds from hanging.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(deadlineSeconds)*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "adb", args...)
+		log.Println("Running ADB SHELL CMD: ", cmd.String())
 
-	out, err := cmd.CombinedOutput()
-	if ctx.Err() == context.DeadlineExceeded {
-		return "", fmt.Errorf("CMD ABOVE DEADLINE EXCEEEDED")
+		out, err := cmd.CombinedOutput()
+		if ctx.Err() == context.DeadlineExceeded {
+			return "", "", fmt.Errorf("cmd %s exceeded deadline", cmd.String())
+		}
+		if err != nil {
+			return "", "", err
+		}
+
+		outStr := string(out)
+		return cmd.String(), outStr, nil
 	}
-	outStr := string(out)
-	log.Println("ADB SHELL OUT: ", outStr)
 
-	return outStr, err
+	// Run the adb command in a retry loop.
+	var outStr, cmd string
+	var err error
+	for range retryCount {
+		cmd, outStr, err = f(deadlineSeconds, args)
+		if err != nil {
+			log.Printf("ADB command %s failed: %s", cmd, err.Error())
+			continue
+		}
+
+		// If the command succeeded then break the loop and return the results.
+		break
+	}
+
+	return outStr, nil
 }
 
 func RetrySetupAdb(log *log.Logger, addr string, timeout time.Duration) error {
@@ -153,7 +178,7 @@ func KeepAdbAlive(logger *log.Logger, addrs []string, exit chan struct{}) {
 }
 
 func AdbDeviceFound(addr string, logger *log.Logger) (bool, error) {
-	outStr, err := AdbCmd([]string{"devices"}, logger)
+	outStr, err := AdbCmd([]string{"devices"}, logger, DefaultRetryAttempts, DefaultCommandSeconds)
 	deviceRegex := regexp.MustCompile(fmt.Sprintf(`%s\sdevice`, FmtAddr(addr)))
 	if !deviceRegex.MatchString(outStr) {
 
@@ -170,12 +195,12 @@ func FmtAddr(addr string) string {
 	return fmt.Sprintf("%s:5555", addr)
 }
 
-func AdbShellCmd(cmdStr []string, addr string, log *log.Logger) (string, error) {
-	return AdbCmd(append([]string{"-s", FmtAddr(addr), "shell"}, cmdStr...), log)
+func AdbShellCmd(cmdStr []string, addr string, log *log.Logger, retryCount, deadlineSeconds int) (string, error) {
+	return AdbCmd(append([]string{"-s", FmtAddr(addr), "shell"}, cmdStr...), log, retryCount, deadlineSeconds)
 }
 
 func GetBuildVersion(addr string, log *log.Logger) (string, error) {
-	s, err := AdbShellCmd([]string{"getprop", "ro.system.build.version.incremental"}, addr, log)
+	s, err := AdbShellCmd([]string{"getprop", "ro.system.build.version.incremental"}, addr, log, DefaultRetryAttempts, DefaultCommandSeconds)
 	s = strings.ReplaceAll(s, "\n", "")
 	return s, err
 

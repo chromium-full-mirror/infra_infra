@@ -139,7 +139,7 @@ func TestScanner(stream io.Reader, logger *log.Logger, harness string) (bool, st
 }
 
 func logcat(log *log.Logger, pid string, addr string) {
-	outStr, _ := adb.AdbCmd([]string{"-s", addr, "logcat", "-d", "--pid", pid}, log)
+	outStr, _ := adb.AdbCmd([]string{"-s", addr, "logcat", "-d", "--pid", pid}, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
 	log.Println("Finished co")
 	log.Println("logcat out", outStr)
