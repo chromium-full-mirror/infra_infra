@@ -21,7 +21,7 @@ func TestRequest(t *testing.T) {
 			Build: "build",
 			Model: "model",
 			Pool:  "pool",
-			ReimageAndRunArgs: map[string]interface{}{
+			ReimageAndRunArgs: map[string]any{
 				"arg_1": 1,
 				"arg_2": []string{"v1", "v2"},
 			},
@@ -53,7 +53,7 @@ func TestLegacyRequest(t *testing.T) {
 			Build: "build",
 			Model: "model",
 			Pool:  "pool",
-			ReimageAndRunArgs: map[string]interface{}{
+			ReimageAndRunArgs: map[string]any{
 				"arg_1": 1,
 				"arg_2": []string{"v1", "v2"},
 			},

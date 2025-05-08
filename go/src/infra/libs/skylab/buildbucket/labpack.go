@@ -60,8 +60,8 @@ type Params struct {
 //
 // Note that some fields, for example "builder_name" and "expected_state" intentionally do NOT
 // end up as properties here.
-func (p *Params) AsMap() map[string]interface{} {
-	return map[string]interface{}{
+func (p *Params) AsMap() map[string]any {
+	return map[string]any{
 		"unit_name":           p.UnitName,
 		"task_name":           p.TaskName,
 		"enable_recovery":     p.EnableRecovery,

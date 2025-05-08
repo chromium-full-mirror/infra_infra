@@ -31,7 +31,7 @@ type RunSuiteArgs struct {
 	Timeout         time.Duration
 	// SuiteArgs are the arguments to be passed into the suite. This object
 	// must be json-encodable, or an error will be returned.
-	SuiteArgs interface{}
+	SuiteArgs any
 }
 
 // NewRunSuite creates a new swarming request for the given run suite args.

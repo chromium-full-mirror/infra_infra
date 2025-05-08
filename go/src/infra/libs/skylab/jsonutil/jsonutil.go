@@ -84,15 +84,15 @@ func segmentJSONArray(in []byte) ([][]byte, error) {
 // If the toplevel item is anything other than an array, we pack it into an a singleton array.
 //
 // parseToArray returns a non-nil error if and only if the item does not parse as JSON.
-func parseToArray(msg []byte) ([]interface{}, error) {
-	var out interface{}
+func parseToArray(msg []byte) ([]any, error) {
+	var out any
 	if err := json.Unmarshal(msg, &out); err != nil {
 		return nil, errors.Annotate(err, "parse to array").Err()
 	}
 	switch v := out.(type) {
-	case []interface{}:
+	case []any:
 		return v, nil
 	default:
-		return []interface{}{out}, nil
+		return []any{out}, nil
 	}
 }

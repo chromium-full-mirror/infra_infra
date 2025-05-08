@@ -216,7 +216,7 @@ func validateErrorContainsSubstring(e error, msg string) error {
 	}
 }
 
-func unmarshalOrPanic(content string, dest interface{}) {
+func unmarshalOrPanic(content string, dest any) {
 	if err := json.Unmarshal([]byte(content), dest); err != nil {
 		panic(err.Error())
 	}

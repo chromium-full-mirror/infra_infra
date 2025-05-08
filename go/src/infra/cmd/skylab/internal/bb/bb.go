@@ -118,7 +118,7 @@ func (c *Client) ScheduleCTPBuild(ctx context.Context, requests map[string]*test
 // buildbucket build ID for the scheduled build on success, without waiting for the
 // scheduled build to start.
 func (c *Client) ScheduleDUTLeaserBuild(ctx context.Context, dims map[string]string, tags []string, length int32) (int64, error) {
-	propsMap := map[string]interface{}{
+	propsMap := map[string]any{
 		"lease_length_minutes": length,
 	}
 	props, err := structbuilder.NewStruct(propsMap)

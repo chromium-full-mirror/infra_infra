@@ -35,7 +35,7 @@ type Args struct {
 	// ReimageAndRunArgs specifies arguments to be passed into
 	// autotest.dynamic_suite.reimage_and_run. This object must be
 	// json-encodable.
-	ReimageAndRunArgs interface{}
+	ReimageAndRunArgs any
 	// If specified, ignore ReimageAndRunArgs and just run this named
 	// autotest suite.
 	LegacySuite string
@@ -49,11 +49,11 @@ func NewRequest(args Args) (*swarming.SwarmingRpcsNewTaskRequest, error) {
 		return nil, errors.Annotate(err, "new dynamicsuite request").Err()
 	}
 	s := suiteName
-	suiteArgs := map[string]interface{}{
+	suiteArgs := map[string]any{
 		argsKey: string(encodedArgs),
 	}
 	if args.LegacySuite != "" {
-		suiteArgs = map[string]interface{}{}
+		suiteArgs = map[string]any{}
 		s = args.LegacySuite
 	}
 

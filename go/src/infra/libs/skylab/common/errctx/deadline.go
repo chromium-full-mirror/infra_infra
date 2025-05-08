@@ -42,7 +42,7 @@ func (c *deadlineContext) Err() error {
 }
 
 // Value implements context.Context.
-func (c *deadlineContext) Value(key interface{}) interface{} {
+func (c *deadlineContext) Value(key any) any {
 	return c.cancelContext.Value(key)
 }
 

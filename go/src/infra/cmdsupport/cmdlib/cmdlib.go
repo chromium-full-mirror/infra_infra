@@ -71,7 +71,7 @@ func PrintError(a subcommands.Application, err error) {
 
 // NewUsageError creates a new error that also reports flags usage error
 // details.
-func NewUsageError(flags flag.FlagSet, format string, a ...interface{}) error {
+func NewUsageError(flags flag.FlagSet, format string, a ...any) error {
 	return &usageError{
 		error: fmt.Errorf(format, a...),
 		flags: flags,
@@ -94,7 +94,7 @@ func (e *usageError) ReportUserError(w io.Writer) {
 }
 
 // NewQuietUsageError creates a new error that only reports flags usage error details
-func NewQuietUsageError(flags flag.FlagSet, format string, a ...interface{}) error {
+func NewQuietUsageError(flags flag.FlagSet, format string, a ...any) error {
 	return &usageError{
 		error: fmt.Errorf(format, a...),
 		flags: flags,

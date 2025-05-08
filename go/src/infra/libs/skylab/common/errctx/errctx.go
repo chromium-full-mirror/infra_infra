@@ -52,7 +52,7 @@ func (c *cancelContext) Err() error {
 }
 
 // Value implements context.Context.
-func (c *cancelContext) Value(key interface{}) interface{} {
+func (c *cancelContext) Value(key any) any {
 	return c.parent.Value(key)
 }
 

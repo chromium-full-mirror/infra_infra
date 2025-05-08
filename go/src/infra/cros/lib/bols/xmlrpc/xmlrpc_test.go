@@ -189,7 +189,7 @@ func TestSetServodString(t *testing.T) {
 	}
 }
 
-func setRequestHandler(control string, expectedValue interface{}, errCode *error) xmlrpc.MockHandler {
+func setRequestHandler(control string, expectedValue any, errCode *error) xmlrpc.MockHandler {
 	mh := func(call *xmlrpc.MethodCall) *xmlrpc.MethodResponse {
 		if call.MethodName != "set" {
 			*errCode = fmt.Errorf("request has wrong method name got: %q wanted: %q", call.MethodName, "set")
@@ -216,7 +216,7 @@ func setRequestHandler(control string, expectedValue interface{}, errCode *error
 	return mh
 }
 
-func sameAsExpectedValue(xmlValue xmlrpc.Value, expectedValue interface{}) error {
+func sameAsExpectedValue(xmlValue xmlrpc.Value, expectedValue any) error {
 	switch o := expectedValue.(type) {
 	case string:
 		if xmlValue.Str == nil {
