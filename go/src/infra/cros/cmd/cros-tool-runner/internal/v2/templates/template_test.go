@@ -41,7 +41,7 @@ func getMockCmdExecutorWithError(errMsg string) cmdExecutor {
 	}
 }
 
-func check(t *testing.T, a interface{}, b interface{}) {
+func check(t *testing.T, a any, b any) {
 	if !cmp.Equal(a, b) {
 		t.Fatalf("%v should match %v", a, b)
 	}

@@ -75,7 +75,7 @@ func (o *ownershipState) GetIdsToClearOwnership() []string {
 	var result []string
 	cloneMapping := sync.Map{}
 
-	o.mapping.Range(func(k, v interface{}) bool {
+	o.mapping.Range(func(k, v any) bool {
 		vm, ok := v.(string)
 		if ok {
 			cloneMapping.Store(k, vm)

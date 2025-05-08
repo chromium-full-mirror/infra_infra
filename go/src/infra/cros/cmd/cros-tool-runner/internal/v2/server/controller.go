@@ -45,9 +45,9 @@ func NewContainerServer() (*grpc.Server, func()) {
 // panicInterceptor implements grpc.UnaryServerInterceptor to handle panic
 // (caused by bugs) with proper cleanup for CTRv2 container service.
 func panicInterceptor(ctx context.Context,
-	req interface{},
+	req any,
 	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler) (interface{}, error) {
+	handler grpc.UnaryHandler) (any, error) {
 	defer serverCleanup.handlePanic()
 	return handler(ctx, req)
 }

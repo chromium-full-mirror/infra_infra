@@ -38,7 +38,7 @@ func New(host string, port int) *XMLRpc {
 // Call represents a XML-RPC call request.
 type Call struct {
 	method  string
-	args    []interface{}
+	args    []any
 	timeout time.Duration
 }
 
@@ -214,7 +214,7 @@ func xmlBase64ToBytes(base64Encoded string) ([]byte, error) {
 }
 
 // newValue creates an XML-RPC <value>.
-func newValue(in interface{}) (Value, error) {
+func newValue(in any) (Value, error) {
 	// TODO(crbug.com/1201727): Support more data types, such as Golang map to XML-RPC struct.
 	inType := reflect.TypeOf(in)
 	if (inType.Kind() == reflect.Slice || inType.Kind() == reflect.Array) &&
@@ -257,7 +257,7 @@ func newValue(in interface{}) (Value, error) {
 			s.Members = append(s.Members, Member{Name: key, Value: Value{Str: &str}})
 		}
 		return Value{Struct: &s}, nil
-	case map[string]interface{}:
+	case map[string]any:
 		var s XMLStruct
 		for key, obj := range v {
 			val, err := newValue(obj)
@@ -288,7 +288,7 @@ func newValue(in interface{}) (Value, error) {
 }
 
 // newParams creates a list of XML-RPC <params>.
-func newParams(args []interface{}) ([]Param, error) {
+func newParams(args []any) ([]Param, error) {
 	var params []Param
 
 	for _, arg := range args {
@@ -302,12 +302,12 @@ func newParams(args []interface{}) ([]Param, error) {
 }
 
 // NewCall creates a XML-RPC call.
-func NewCall(method string, args ...interface{}) Call {
+func NewCall(method string, args ...any) Call {
 	return Call{method, args, defaultRPCTimeout}
 }
 
 // NewCallTimeout creates a XML-RPC call.
-func NewCallTimeout(method string, timeout time.Duration, args ...interface{}) Call {
+func NewCallTimeout(method string, timeout time.Duration, args ...any) Call {
 	return Call{method, args, timeout}
 }
 
@@ -334,7 +334,7 @@ func getTimeout(ctx context.Context, cl Call) time.Duration {
 }
 
 // unpackValue unpacks a value struct into the given pointers.
-func unpackValue(val Value, out interface{}) error {
+func unpackValue(val Value, out any) error {
 	//TODO(crbug.com/1201727): Support unpack more data types, such as XML-RPC struct.
 	switch o := out.(type) {
 	case *string:
@@ -444,18 +444,18 @@ func unpackValue(val Value, out interface{}) error {
 			}
 			*o = append(*o, value)
 		}
-	case *[]interface{}:
+	case *[]any:
 		values := val.Array.Values
-		*o = make([]interface{}, 0)
+		*o = make([]any, 0)
 		for _, eVal := range values {
 			if eVal.Array != nil {
-				var unpackedValue []interface{}
+				var unpackedValue []any
 				if err := unpackValue(eVal, &unpackedValue); err != nil {
 					return err
 				}
 				*o = append(*o, unpackedValue)
 			} else if eVal.Struct != nil {
-				var unpackedValue map[string]interface{}
+				var unpackedValue map[string]any
 				if err := unpackValue(eVal, &unpackedValue); err != nil {
 					return err
 				}
@@ -488,20 +488,20 @@ func unpackValue(val Value, out interface{}) error {
 				return errors.Errorf("unable to deduce type of struct value %q", eVal.String())
 			}
 		}
-	case *map[string]interface{}:
+	case *map[string]any:
 		if val.Struct == nil {
 			return errors.Errorf("value %s is not a map", val)
 		}
 		for _, e := range val.Struct.Members {
 			eVal := e.Value
 			if eVal.Array != nil {
-				var unpackedValue []interface{}
+				var unpackedValue []any
 				if err := unpackValue(eVal, &unpackedValue); err != nil {
 					return err
 				}
 				(*o)[e.Name] = unpackedValue
 			} else if eVal.Struct != nil {
-				var unpackedValue map[string]interface{}
+				var unpackedValue map[string]any
 				if err := unpackValue(eVal, &unpackedValue); err != nil {
 					return err
 				}
@@ -534,7 +534,7 @@ func unpackValue(val Value, out interface{}) error {
 				return errors.Errorf("unable to deduce type of struct value %q", eVal.String())
 			}
 		}
-	case *interface{}:
+	case *any:
 
 	default:
 		return errors.Errorf("%q is not a supported type for unpackValue", reflect.TypeOf(out))
@@ -543,7 +543,7 @@ func unpackValue(val Value, out interface{}) error {
 }
 
 // unpack extracts a response's arguments into a list of given pointers.
-func (r *MethodResponse) unpack(out []interface{}) error {
+func (r *MethodResponse) unpack(out []any) error {
 	if r.Params == nil {
 		if len(out) != 0 {
 			return errors.Errorf("response contains no args; want %d", len(out))
@@ -634,7 +634,7 @@ func (r *XMLRpc) Execute(ctx context.Context, cl Call) (*MethodResponse, error) 
 }
 
 // Run makes an XML-RPC call to the server.
-func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...interface{}) error {
+func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...any) error {
 	body, err := serializeMethodCall(cl)
 	if err != nil {
 		return err

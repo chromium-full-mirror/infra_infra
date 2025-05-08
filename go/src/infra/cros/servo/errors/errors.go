@@ -124,7 +124,7 @@ func New(msg string) *E {
 // Errorf creates a new error with the given message.
 // This is similar to the standard fmt.Errorf, but also records the location
 // where it was called.
-func Errorf(format string, args ...interface{}) *E {
+func Errorf(format string, args ...any) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, nil}
@@ -143,7 +143,7 @@ func Wrap(cause error, msg string) *E {
 // This function also records the location where it was called.
 // If cause is nil, this is the same as Errorf. Note that the above behaviour
 // is different from the popular github.com/pkg/errors package.
-func Wrapf(cause error, format string, args ...interface{}) *E {
+func Wrapf(cause error, format string, args ...any) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
 	return &E{msg, s, cause}
@@ -159,7 +159,7 @@ func Unwrap(err error) error {
 // As is a wrapper of built-in errors.As. It finds the first error in err's
 // chain that matches target, and if so, sets target to that error value and
 // returns true.
-func As(err error, target interface{}) bool {
+func As(err error, target any) bool {
 	return errors.As(err, target)
 }
 

@@ -342,7 +342,7 @@ func TestNewValue(t *testing.T) {
 	type newIntType int
 	var intVal newIntType = -1
 
-	mapStrOfInterface := map[string]interface{}{boolKey: boolVal, floatKey: floatVal, intKey: intVal, strKey: strVal}
+	mapStrOfInterface := map[string]any{boolKey: boolVal, floatKey: floatVal, intKey: intVal, strKey: strVal}
 	expectedMapStrOfInterface := XMLStruct{Members: []Member{
 		{Name: boolKey, Value: Value{Boolean: &expectedBoolStr}},
 		{Name: floatKey, Value: Value{Double: &expectedDoubleStr}},
@@ -372,7 +372,7 @@ func TestNewValue(t *testing.T) {
 }
 
 func TestNewParams(t *testing.T) {
-	actual, err := newParams([]interface{}{"rutabaga", true, -3.14})
+	actual, err := newParams([]any{"rutabaga", true, -3.14})
 
 	if err != nil {
 		t.Errorf("got unexpected error: %v", err)
@@ -425,12 +425,12 @@ func TestUnpack(t *testing.T) {
 	resp := MethodResponse{Params: nil}
 	var out string
 	expErr := "response contains no args; want 1"
-	if err := resp.unpack([]interface{}{&out}); err == nil {
+	if err := resp.unpack([]any{&out}); err == nil {
 		t.Errorf("unpacking got no error")
 	} else if err.Error() != expErr {
 		t.Errorf("unpacking got %q; want %q", err.Error(), expErr)
 	}
-	if err := resp.unpack([]interface{}{}); err != nil {
+	if err := resp.unpack([]any{}); err != nil {
 		t.Errorf("unpacking got error %v", err)
 	}
 
@@ -438,7 +438,7 @@ func TestUnpack(t *testing.T) {
 	strMapIn := map[string]string{"One": "1", "Two": "2"}
 	arrArrStringIn := [][]string{{"v11", "v12"}, {"v21", "v22"}}
 	bytesIn := []byte("some binary data")
-	params, err := newParams([]interface{}{"rutabaga", true, 1, -3.14, arrIntIn, strMapIn, arrArrStringIn, bytesIn})
+	params, err := newParams([]any{"rutabaga", true, 1, -3.14, arrIntIn, strMapIn, arrArrStringIn, bytesIn})
 	if err != nil {
 		t.Fatal("creating params: ", err)
 	}
@@ -451,7 +451,7 @@ func TestUnpack(t *testing.T) {
 	var arrArrStringOut [][]string
 	var bytesOut []byte
 	strMapOut := make(map[string]string)
-	if err := resp.unpack([]interface{}{&stringOut, &boolOut, &intOut, &floatOut, &arrIntOut, &strMapOut, &arrArrStringOut, &bytesOut}); err != nil {
+	if err := resp.unpack([]any{&stringOut, &boolOut, &intOut, &floatOut, &arrIntOut, &strMapOut, &arrArrStringOut, &bytesOut}); err != nil {
 		t.Fatal("unpacking:", err)
 	}
 	if stringOut != "rutabaga" {
@@ -556,7 +556,7 @@ func TestXMLResponse(t *testing.T) {
 	var arrDoubleOut []float64
 	var arrStrOut []string
 	var bytesOut []byte
-	if err := res.unpack([]interface{}{&floatOut, &intOut, &stringOut, &boolOut,
+	if err := res.unpack([]any{&floatOut, &intOut, &stringOut, &boolOut,
 		&arrIntOut, &arrBoolOut, &arrDoubleOut, &arrStrOut, &bytesOut}); err != nil {
 		t.Fatal("response unpack:", err)
 	}

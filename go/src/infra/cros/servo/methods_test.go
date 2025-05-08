@@ -14,17 +14,17 @@ func TestParseStringList(t *testing.T) {
 	type testCase struct {
 		pslParam  string
 		expectErr bool
-		expected  interface{}
+		expected  any
 	}
 	for _, tc := range []testCase{
-		{"[]", false, []interface{}(nil)},
+		{"[]", false, []any(nil)},
 		{"", true, nil},
-		{`['foo', 'bar\'', 'ba\\z']`, false, []interface{}{"foo", "bar'", `ba\z`}},
-		{`[['one', 'two'], ['three']]`, false, []interface{}{[]interface{}{"one", "two"}, []interface{}{"three"}}},
-		{`["\x00\u0001\U00000002"]`, false, []interface{}{"\000\001\002"}},
-		{`["\x4a\u1E0A\U0001F6B4"]`, false, []interface{}{"JḊ🚴"}},
-		{`[('chg.*:\r\n\tvoltage = 8200mV', '8200')]`, false, []interface{}{[]interface{}{"chg.*:\r\n\tvoltage = 8200mV", "8200"}}},
-		{`[19, 28, 37]`, false, []interface{}{19, 28, 37}},
+		{`['foo', 'bar\'', 'ba\\z']`, false, []any{"foo", "bar'", `ba\z`}},
+		{`[['one', 'two'], ['three']]`, false, []any{[]any{"one", "two"}, []any{"three"}}},
+		{`["\x00\u0001\U00000002"]`, false, []any{"\000\001\002"}},
+		{`["\x4a\u1E0A\U0001F6B4"]`, false, []any{"JḊ🚴"}},
+		{`[('chg.*:\r\n\tvoltage = 8200mV', '8200')]`, false, []any{[]any{"chg.*:\r\n\tvoltage = 8200mV", "8200"}}},
+		{`[19, 28, 37]`, false, []any{19, 28, 37}},
 		{`[
 			{
 			    "prefix": [
@@ -56,30 +56,30 @@ func TestParseStringList(t *testing.T) {
 				"ccd_ti50 (18d1:504a) 01818054-54283135"
 			    ]
 			}
-		    ]`, false, []interface{}{
-			map[string]interface{}{
-				"prefix":          []interface{}{string("main"), string(""), string("ccd_ti50"), string("ccd_gsc")},
+		    ]`, false, []any{
+			map[string]any{
+				"prefix":          []any{string("main"), string(""), string("ccd_ti50"), string("ccd_gsc")},
 				"type":            string("ccd_ti50"),
 				"vendor_id":       int(6353),
 				"product_id":      int(20554),
 				"serial":          string("01818054-54283135"),
 				"sysfs_path":      string("/sys/bus/usb/devices/1-1.3"),
 				"root_hub_device": string("servo_v4p1 (18d1:520d) SERVOV4P1-S-2107250640"),
-				"child_devices":   []interface{}(nil),
+				"child_devices":   []any(nil),
 			},
-			map[string]interface{}{
-				"prefix":          []interface{}{string("root"), string("servo_v4p1")},
+			map[string]any{
+				"prefix":          []any{string("root"), string("servo_v4p1")},
 				"type":            string("servo_v4p1"),
 				"vendor_id":       int(6353),
 				"product_id":      int(21005),
 				"serial":          string("SERVOV4P1-S-2107250640"),
 				"root_hub_device": string("servo_v4p1 (18d1:520d) SERVOV4P1-S-2107250640"),
 				"sysfs_path":      string("/sys/bus/usb/devices/1-1.5"),
-				"child_devices":   []interface{}{string("ccd_ti50 (18d1:504a) 01818054-54283135")},
+				"child_devices":   []any{string("ccd_ti50 (18d1:504a) 01818054-54283135")},
 			},
 		}},
-		{`[("pd 0 hard\r\nec:~> '\\x1b'[6D'\\x1b'[J[1078.462100 C0: PE_SNK_Hard_Reset", None, 'PE_SNK_Hard_Reset')]`, false, []interface{}{
-			[]interface{}{
+		{`[("pd 0 hard\r\nec:~> '\\x1b'[6D'\\x1b'[J[1078.462100 C0: PE_SNK_Hard_Reset", None, 'PE_SNK_Hard_Reset')]`, false, []any{
+			[]any{
 				string("pd 0 hard\r\nec:~> '\\x1b'[6D'\\x1b'[J[1078.462100 C0: PE_SNK_Hard_Reset"),
 				nil,
 				string("PE_SNK_Hard_Reset"),
@@ -101,20 +101,20 @@ func TestParseStringList(t *testing.T) {
 
 func TestPropertyToString(t *testing.T) {
 	type testCase struct {
-		propertyParam interface{}
+		propertyParam any
 		nameParam     string
 		expectErr     bool
 		expected      string
 	}
 	for _, tc := range []testCase{
-		{[]interface{}(nil), "", true, "[]"},
-		{map[string]interface{}{
+		{[]any(nil), "", true, "[]"},
+		{map[string]any{
 			"type": string("servo_v4p1"),
 		}, "serial", true, "servo_v4p1"},
-		{map[string]interface{}{
+		{map[string]any{
 			"product_id": int(21005),
 		}, "product_id", true, "servo_v4p1"},
-		{map[string]interface{}{
+		{map[string]any{
 			"type": string("servo_v4p1"),
 		}, "type", false, "servo_v4p1"},
 	} {

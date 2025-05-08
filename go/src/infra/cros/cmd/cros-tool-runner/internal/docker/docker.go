@@ -604,19 +604,19 @@ func readToken(dir string) (string, error) {
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	var result map[string]interface{}
+	var result map[string]any
 	if err := json.Unmarshal(byteValue, &result); err != nil {
 		log.Printf("Error unmarshalling token JSON: %s", err)
 		return "", err
 	}
 
 	// safely parse the nested structure
-	auths, ok := result["auths"].(map[string]interface{})
+	auths, ok := result["auths"].(map[string]any)
 	if !ok {
 		return "", fmt.Errorf("auths key not found or is not in expected format")
 	}
 
-	registry, ok := auths[dockerRegistry].(map[string]interface{})
+	registry, ok := auths[dockerRegistry].(map[string]any)
 	if !ok {
 		return "", fmt.Errorf("dockerRegistry key not found or is not in expected format")
 	}

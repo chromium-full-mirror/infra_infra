@@ -65,26 +65,26 @@ func loggerFromContext(ctx context.Context) (Logger, bool) {
 }
 
 // Info emits a log with info level.
-func Info(ctx context.Context, args ...interface{}) {
+func Info(ctx context.Context, args ...any) {
 	log(ctx, LevelInfo, args...)
 }
 
 // Infof is similar to Info but formats its arguments using fmt.Sprintf.
-func Infof(ctx context.Context, format string, args ...interface{}) {
+func Infof(ctx context.Context, format string, args ...any) {
 	logf(ctx, LevelInfo, format, args...)
 }
 
 // Debug emits a log with debug level.
-func Debug(ctx context.Context, args ...interface{}) {
+func Debug(ctx context.Context, args ...any) {
 	log(ctx, LevelDebug, args...)
 }
 
 // Debugf is similar to Debug but formats its arguments using fmt.Sprintf.
-func Debugf(ctx context.Context, format string, args ...interface{}) {
+func Debugf(ctx context.Context, format string, args ...any) {
 	logf(ctx, LevelDebug, format, args...)
 }
 
-func log(ctx context.Context, level Level, args ...interface{}) {
+func log(ctx context.Context, level Level, args ...any) {
 	ts := time.Now() // get the time as early as possible
 	logger, ok := loggerFromContext(ctx)
 	if !ok {
@@ -94,7 +94,7 @@ func log(ctx context.Context, level Level, args ...interface{}) {
 	logger.Log(level, ts, ReplaceInvalidUTF8(prefix+fmt.Sprint(args...)))
 }
 
-func logf(ctx context.Context, level Level, format string, args ...interface{}) {
+func logf(ctx context.Context, level Level, format string, args ...any) {
 	ts := time.Now() // get the time as early as possible
 	logger, ok := loggerFromContext(ctx)
 	if !ok {

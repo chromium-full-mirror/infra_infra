@@ -16,12 +16,12 @@ import (
 // ctx. It is intended to be used for informational logging by packages
 // providing support for tests. If testing.State is available, just call
 // State.Log or State.Logf instead.
-func ContextLog(ctx context.Context, args ...interface{}) {
+func ContextLog(ctx context.Context, args ...any) {
 	logging.Info(ctx, args...)
 }
 
 // ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.
-func ContextLogf(ctx context.Context, format string, args ...interface{}) {
+func ContextLogf(ctx context.Context, format string, args ...any) {
 	logging.Infof(ctx, format, args...)
 }
 
@@ -29,12 +29,12 @@ func ContextLogf(ctx context.Context, format string, args ...interface{}) {
 // ctx at the debug (verbose) level. It is intended to be used for verbose logging by packages
 // providing support for tests. If testing.State is available, just call
 // State.VLog or State.VLogf instead.
-func ContextVLog(ctx context.Context, args ...interface{}) {
+func ContextVLog(ctx context.Context, args ...any) {
 	logging.Debug(ctx, args...)
 }
 
 // ContextVLogf is similar to ContextVLog but formats its arguments using fmt.Sprintf.
-func ContextVLogf(ctx context.Context, format string, args ...interface{}) {
+func ContextVLogf(ctx context.Context, format string, args ...any) {
 	logging.Debugf(ctx, format, args...)
 }
 
@@ -45,22 +45,22 @@ type Logger struct {
 }
 
 // Print formats its arguments using default formatting and logs them.
-func (l *Logger) Print(args ...interface{}) {
+func (l *Logger) Print(args ...any) {
 	l.logger(fmt.Sprint(args...))
 }
 
 // Printf is similar to Print but formats its arguments using fmt.Sprintf.
-func (l *Logger) Printf(format string, args ...interface{}) {
+func (l *Logger) Printf(format string, args ...any) {
 	l.logger(fmt.Sprintf(format, args...))
 }
 
 // VPrint formats its arguments using default formatting and logs them at the debug (verbose) level.
-func (l *Logger) VPrint(args ...interface{}) {
+func (l *Logger) VPrint(args ...any) {
 	l.debug(fmt.Sprint(args...))
 }
 
 // VPrintf is similar to VPrint but formats its arguments using fmt.Sprintf.
-func (l *Logger) VPrintf(format string, args ...interface{}) {
+func (l *Logger) VPrintf(format string, args ...any) {
 	l.debug(fmt.Sprintf(format, args...))
 }
 

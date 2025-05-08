@@ -67,8 +67,8 @@ type CallBuilder struct {
 	xmlrpc              *XMLRpc
 	methodNamePrefix    string
 	methodName          string
-	methodArgs          []interface{}
-	methodReturns       []interface{}
+	methodArgs          []any
+	methodReturns       []any
 	callTimeoutOverride time.Duration
 }
 
@@ -97,7 +97,7 @@ func (b *CallBuilder) NamePrefix(methodNamePrefix string) *CallBuilder {
 // the XMLRPC call.
 // Each passed argument must be of a data type that can be marshalled for an
 // XMLRPC call by XMLRpc.
-func (b *CallBuilder) Args(methodArgs ...interface{}) *CallBuilder {
+func (b *CallBuilder) Args(methodArgs ...any) *CallBuilder {
 	b.methodArgs = methodArgs
 	return b
 }
@@ -114,7 +114,7 @@ func (b *CallBuilder) Timeout(timeout time.Duration) *CallBuilder {
 //
 // Each passed return pointer must point to a data type that can be unmarshalled
 // from an XMLRPC call response by XMLRpc.
-func (b *CallBuilder) Returns(returnPointers ...interface{}) *CallBuilder {
+func (b *CallBuilder) Returns(returnPointers ...any) *CallBuilder {
 	b.methodReturns = returnPointers
 	return b
 }
@@ -134,10 +134,10 @@ func (b *CallBuilder) Call(ctx context.Context) error {
 		methodName = b.methodNamePrefix + methodName
 	}
 	if b.methodArgs == nil {
-		b.methodArgs = []interface{}{}
+		b.methodArgs = []any{}
 	}
 	if b.methodReturns == nil {
-		b.methodReturns = []interface{}{}
+		b.methodReturns = []any{}
 	}
 	var call Call
 	if b.callTimeoutOverride != 0 {

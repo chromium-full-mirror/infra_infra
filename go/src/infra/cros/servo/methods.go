@@ -572,7 +572,7 @@ func parseQuotedStringInternal(value []rune, index *int) (string, error) {
 }
 
 // parseValueInternal parses `value` as a string, list, map, or integer. Moves `*index` to the end of the value.
-func parseValueInternal(value []rune, index *int) (interface{}, error) {
+func parseValueInternal(value []rune, index *int) (any, error) {
 	if *index >= len(value) {
 		return nil, errors.Errorf("unexpected end of string at %d in %s", *index, string(value))
 	}
@@ -617,8 +617,8 @@ func parseValueInternal(value []rune, index *int) (interface{}, error) {
 }
 
 // parseStringListInternal parses `value` as a possibly nested list of strings, each quoted and separated by commas. Moves `*index` to the index of the closing ] rune.
-func parseStringListInternal(value []rune, index *int) ([]interface{}, error) {
-	var result []interface{}
+func parseStringListInternal(value []rune, index *int) ([]any, error) {
+	var result []any
 	if *index >= len(value) {
 		return nil, errors.Errorf("unexpected end of string at %d in %s", *index, string(value))
 	}
@@ -648,8 +648,8 @@ func parseStringListInternal(value []rune, index *int) ([]interface{}, error) {
 }
 
 // parseStringMapInternal parses `value` as a map of string:value, each quoted and separated by commas. Moves `*index` to the index of the closing } rune.
-func parseStringMapInternal(value []rune, index *int) (map[string]interface{}, error) {
-	result := make(map[string]interface{})
+func parseStringMapInternal(value []rune, index *int) (map[string]any, error) {
+	result := make(map[string]any)
 	if *index >= len(value) {
 		return nil, errors.Errorf("unexpected end of string at %d in %s", *index, string(value))
 	}
@@ -704,7 +704,7 @@ func parseStringMapInternal(value []rune, index *int) (map[string]interface{}, e
 				break valueLoop
 			}
 		}
-		var subVal interface{}
+		var subVal any
 		subVal, err := parseValueInternal(value, index)
 		if err != nil {
 			return nil, err
@@ -732,8 +732,8 @@ func parseStringMapInternal(value []rune, index *int) (map[string]interface{}, e
 }
 
 // PropertyToString returns the string value assigned to a property
-func PropertyToString(property interface{}, name string) (string, error) {
-	propertyMap, ok := property.(map[string]interface{})
+func PropertyToString(property any, name string) (string, error) {
+	propertyMap, ok := property.(map[string]any)
 	if !ok {
 		return "", errors.Errorf("failed to cast %+v to map", property)
 	}
@@ -750,7 +750,7 @@ func PropertyToString(property interface{}, name string) (string, error) {
 }
 
 // ParseStringList parses `value` as a possibly nested list of strings, each quoted and separated by commas.
-func ParseStringList(value string) ([]interface{}, error) {
+func ParseStringList(value string) ([]any, error) {
 	index := 0
 	// Skip over newlines
 	for ; index < len(value) && value[index] == '\n'; index++ {
@@ -765,7 +765,7 @@ func ParseQuotedString(value string) (string, error) {
 }
 
 // GetStringList parses the value of a control as an encoded list
-func (s *Servo) GetStringList(ctx context.Context, control StringControl) ([]interface{}, error) {
+func (s *Servo) GetStringList(ctx context.Context, control StringControl) ([]any, error) {
 	v, err := s.GetString(ctx, control)
 	if err != nil {
 		return nil, err
@@ -774,7 +774,7 @@ func (s *Servo) GetStringList(ctx context.Context, control StringControl) ([]int
 }
 
 // ConvertToStringArrayArray takes a stringList from GetStringList and converts it to [][]string
-func ConvertToStringArrayArray(ctx context.Context, stringList []interface{}) ([][]string, error) {
+func ConvertToStringArrayArray(ctx context.Context, stringList []any) ([][]string, error) {
 	var ret [][]string
 	for i, x := range stringList {
 		switch t := x.(type) {
@@ -782,7 +782,7 @@ func ConvertToStringArrayArray(ctx context.Context, stringList []interface{}) ([
 			ret = append(ret, []string{t})
 		case []string:
 			ret = append(ret, t)
-		case []interface{}:
+		case []any:
 			var strings []string
 			for _, y := range t {
 				strings = append(strings, fmt.Sprint(y))
