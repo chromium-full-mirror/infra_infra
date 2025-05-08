@@ -27,7 +27,7 @@ type Runner struct {
 	Shell   string
 
 	Logger interface {
-		Printf(string, ...interface{})
+		Printf(string, ...any)
 	}
 }
 
@@ -131,7 +131,7 @@ func (r *Runner) Warnings(paths ...string) ([]Warning, error) {
 	return warns, nil
 }
 
-func (r *Runner) log(format string, v ...interface{}) {
+func (r *Runner) log(format string, v ...any) {
 	if r.Logger != nil {
 		r.Logger.Printf(format, v...)
 	}
