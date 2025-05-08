@@ -555,8 +555,15 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				Value: attemptWUID,
 			},
 		}
-		if atpConfigTag, ok := cmd.atpConfigNameTag(); ok {
+
+		atpConfigTag := cmd.buildTag("atp_config_name")
+		if atpConfigTag != nil {
 			alTags = append(alTags, atpConfigTag)
+		}
+
+		atpTriggerTag := cmd.buildTag("atp_trigger_type")
+		if atpTriggerTag != nil {
+			alTags = append(alTags, atpTriggerTag)
 		}
 
 		// If we have a proper build request then add the atp tags to the req.
@@ -1283,13 +1290,13 @@ func NewScheduleTasksCmd() *ScheduleTasksCmd {
 	return &ScheduleTasksCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }
 
-// atpConfigNameTag returns the ATP config name from the build's BB tags, and a
+// buildTag returns a build's BB tag based on the specific tag name, and a
 // bool indicating whether it was found.
-func (cmd *ScheduleTasksCmd) atpConfigNameTag() (*buildbucketpb.StringPair, bool) {
+func (cmd *ScheduleTasksCmd) buildTag(tagName string) *buildbucketpb.StringPair {
 	for _, t := range cmd.BuildState.Build().GetTags() {
-		if t.GetKey() == "atp_config_name" {
-			return t, true
+		if t.GetKey() == tagName {
+			return t
 		}
 	}
-	return nil, false
+	return nil
 }
