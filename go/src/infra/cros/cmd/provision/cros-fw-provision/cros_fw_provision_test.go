@@ -47,7 +47,7 @@ func newCurlMatcher(target string, fileMatcher gomock.Matcher, log *log.Logger) 
 		log:         log,
 	}
 }
-func (c curlMatcher) Matches(x interface{}) bool {
+func (c curlMatcher) Matches(x any) bool {
 	req, ok := x.(*api.ExecCommandRequest)
 	if ok {
 		if req.Command != "curl" {
@@ -82,7 +82,7 @@ type rpcMsg struct {
 	msg proto.Message
 }
 
-func (r *rpcMsg) Matches(msg interface{}) bool {
+func (r *rpcMsg) Matches(msg any) bool {
 	m, ok := msg.(proto.Message)
 	if !ok {
 		return false
@@ -94,7 +94,7 @@ func (r *rpcMsg) String() string {
 	return fmt.Sprintf("is %s", prototext.Format(r.msg))
 }
 
-func (r *rpcMsg) Got(got interface{}) string {
+func (r *rpcMsg) Got(got any) string {
 	return prototext.Format(got.(proto.Message))
 }
 
@@ -444,7 +444,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 		}
 
-		unexpected := dsc.EXPECT().ExecCommand(gomock.Any(), gomock.Any()).AnyTimes().Do(func(ctx context.Context, in *api.ExecCommandRequest, opts ...grpc.CallOption) interface{} {
+		unexpected := dsc.EXPECT().ExecCommand(gomock.Any(), gomock.Any()).AnyTimes().Do(func(ctx context.Context, in *api.ExecCommandRequest, opts ...grpc.CallOption) any {
 			t.Fatalf("Unexpected ExecCommand: %s", in.String())
 			return newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{Status: 1}, Stderr: []byte("Unmocked call\n"), Stdout: []byte("Unmocked call\n")})
 		})
