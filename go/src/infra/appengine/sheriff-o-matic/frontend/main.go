@@ -95,7 +95,7 @@ func (s *SOMHandlers) indexPage(ctx *router.Context) {
 	}
 
 	if !isGoogler {
-		err = accessDeniedPage.Execute(w, map[string]interface{}{
+		err = accessDeniedPage.Execute(w, map[string]any{
 			"Group":     authGroup,
 			"LogoutURL": logoutURL,
 		})
@@ -121,7 +121,7 @@ func (s *SOMHandlers) indexPage(ctx *router.Context) {
 		logging.Errorf(c, "while getting trees: %s", err)
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"User":           user.Email(),
 		"LogoutUrl":      logoutURL,
 		"IsDevAppServer": s.IsDevAppServer,
@@ -178,7 +178,7 @@ func newAnnotationHandler() *handler.AnnotationHandler {
 
 func (s *SOMHandlers) getAnnotationsHandler(ctx *router.Context) {
 	ah := newAnnotationHandler()
-	activeKeys := map[string]interface{}{}
+	activeKeys := map[string]any{}
 	activeAlerts := handler.GetAlertsCommonHandler(ctx, true, false)
 	for _, alrt := range activeAlerts.Alerts {
 		activeKeys[alrt.Key] = nil

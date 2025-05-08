@@ -131,9 +131,9 @@ func makeAnnotationResponse(annotations *model.Annotation, meta []*MonorailBugDa
 	return &AnnotationResponse{*annotations, bugs}
 }
 
-func filterAnnotations(annotations []*model.Annotation, activeKeys map[string]interface{}) []*model.Annotation {
+func filterAnnotations(annotations []*model.Annotation, activeKeys map[string]any) []*model.Annotation {
 	ret := []*model.Annotation{}
-	groups := map[string]interface{}{}
+	groups := map[string]any{}
 
 	// Process annotations not belonging to a group
 	for _, a := range annotations {
@@ -155,7 +155,7 @@ func filterAnnotations(annotations []*model.Annotation, activeKeys map[string]in
 }
 
 // GetAnnotationsHandler retrieves a set of annotations.
-func (ah *AnnotationHandler) GetAnnotationsHandler(ctx *router.Context, activeKeys map[string]interface{}) {
+func (ah *AnnotationHandler) GetAnnotationsHandler(ctx *router.Context, activeKeys map[string]any) {
 	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 
 	tree := p.ByName("tree")

@@ -36,7 +36,7 @@ import (
 
 func TestFilterAnnotations(t *testing.T) {
 	ftt.Run("Test filter annotation", t, func(t *ftt.Test) {
-		activeKeys := map[string]interface{}{
+		activeKeys := map[string]any{
 			"alert_1": nil,
 			"alert_2": nil,
 			"alert_3": nil,
@@ -218,7 +218,7 @@ func TestAnnotations(t *testing.T) {
 				ah.GetAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
-				}, map[string]interface{}{ann.Key: nil})
+				}, map[string]any{ann.Key: nil})
 
 				r, err := ioutil.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
@@ -246,8 +246,8 @@ func TestAnnotations(t *testing.T) {
 			})
 		})
 
-		addXSRFToken := func(data map[string]interface{}, tok string) string {
-			change, err := json.Marshal(map[string]interface{}{
+		addXSRFToken := func(data map[string]any, tok string) string {
+			change, err := json.Marshal(map[string]any{
 				"xsrf_token": tok,
 				"data":       data,
 			})
@@ -287,7 +287,7 @@ func TestAnnotations(t *testing.T) {
 			t.Run("add, bad xsrf token", func(t *ftt.Test) {
 				ah.PostAnnotationsHandler(&router.Context{
 					Writer: w,
-					Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
+					Request: makePostRequest(c, addXSRFToken(map[string]any{
 						"snoozeTime": 123123,
 					}, "no good token")),
 					Params: makeParams("annKey", "foobar", "action", "add"),
@@ -303,11 +303,11 @@ func TestAnnotations(t *testing.T) {
 					KeyDigest:        fmt.Sprintf("%x", sha1.Sum([]byte("foobar"))),
 					ModificationTime: datastore.RoundTime(clock.Now(c)),
 				}
-				change := map[string]interface{}{}
+				change := map[string]any{}
 				t.Run("snoozeTime", func(t *ftt.Test) {
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer: w,
-						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
+						Request: makePostRequest(c, addXSRFToken(map[string]any{
 							"snoozeTime": 123123,
 							"key":        "foobar",
 						}, tok)),
@@ -339,7 +339,7 @@ func TestAnnotations(t *testing.T) {
 				t.Run("can't remove non-existent annotation", func(t *ftt.Test) {
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer:  w,
-						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{"key": "foobar"}, tok)),
+						Request: makePostRequest(c, addXSRFToken(map[string]any{"key": "foobar"}, tok)),
 						Params:  makeParams("action", "remove", "tree", "tree.unknown"),
 					})
 
@@ -354,7 +354,7 @@ func TestAnnotations(t *testing.T) {
 
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer: w,
-						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
+						Request: makePostRequest(c, addXSRFToken(map[string]any{
 							"key":        "foobar",
 							"snoozeTime": true,
 						}, tok)),

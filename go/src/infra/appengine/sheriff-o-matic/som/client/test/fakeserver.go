@@ -10,10 +10,10 @@ import (
 // FakeServer is a test helper to run local in-process http servers for testing fakes.
 type FakeServer struct {
 	// JSONResponse will always be returned (json-encoded) for any request to the server.
-	JSONResponse interface{}
+	JSONResponse any
 	// PerURLResponse allows test clients to mock out specific URLs that are requested from this server.
 	// If a URL matches, the resulting json-encoded blob will be returned, rather than JSONResponse.
-	PerURLResponse map[string]interface{}
+	PerURLResponse map[string]any
 	// Server is the local in-process server used for faking a service.
 	Server *httptest.Server
 }

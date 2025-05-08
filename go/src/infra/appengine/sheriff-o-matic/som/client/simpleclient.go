@@ -37,7 +37,7 @@ func retry(f func() (bool, error), maxAttempts int) error {
 	return fmt.Errorf("error max retries exceeded")
 }
 
-func (sc *simpleClient) attemptReq(ctx context.Context, r *http.Request, v interface{}) (int, error) {
+func (sc *simpleClient) attemptReq(ctx context.Context, r *http.Request, v any) (int, error) {
 	r.Header.Set("User-Agent", "Go-http-client/1.1 infra/monitoring/simpleclient")
 	client, err := getAsSelfOAuthClient(ctx)
 	if err != nil {
@@ -72,7 +72,7 @@ func (sc *simpleClient) attemptReq(ctx context.Context, r *http.Request, v inter
 // postJSON does a simple HTTP POST on a endpoint, with retries and backoff.
 //
 // Returns the status code and the error, if any.
-func (sc *simpleClient) postJSON(ctx context.Context, url string, data []byte, v interface{}) (status int, err error) {
+func (sc *simpleClient) postJSON(ctx context.Context, url string, data []byte, v any) (status int, err error) {
 	req, err := http.NewRequest("POST", url, bytes.NewReader(data))
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {

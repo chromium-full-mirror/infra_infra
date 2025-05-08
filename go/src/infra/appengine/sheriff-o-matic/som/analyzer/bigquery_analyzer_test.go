@@ -38,7 +38,7 @@ type mockResults struct {
 	curr     int
 }
 
-func (m *mockResults) Next(dst interface{}) error {
+func (m *mockResults) Next(dst any) error {
 	if m.curr >= len(m.failures) {
 		return iterator.Done
 	}

@@ -133,7 +133,7 @@ func (hc *trackingHTTPClient) trackRequestStats(cb func() (int64, error)) error 
 	return err
 }
 
-func (hc *trackingHTTPClient) attemptJSONGet(ctx context.Context, url string, v interface{}) (bool, int, int64, error) {
+func (hc *trackingHTTPClient) attemptJSONGet(ctx context.Context, url string, v any) (bool, int, int64, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		logging.Errorf(ctx, "error while creating request: %q, possibly retrying.", err.Error())
@@ -143,7 +143,7 @@ func (hc *trackingHTTPClient) attemptJSONGet(ctx context.Context, url string, v 
 	return hc.attemptReq(ctx, req, v)
 }
 
-func (hc *trackingHTTPClient) attemptReq(ctx context.Context, r *http.Request, v interface{}) (bool, int, int64, error) {
+func (hc *trackingHTTPClient) attemptReq(ctx context.Context, r *http.Request, v any) (bool, int, int64, error) {
 	resp, err := hc.c.Do(r)
 	if err != nil {
 		logging.Errorf(ctx, "error: %q, possibly retrying.", err.Error())
@@ -173,7 +173,7 @@ func (hc *trackingHTTPClient) attemptReq(ctx context.Context, r *http.Request, v
 // getJSON does a simple HTTP GET on a getJSON endpoint.
 //
 // Returns the status code and the error, if any.
-func (hc *trackingHTTPClient) getJSON(ctx context.Context, url string, v interface{}) (status int, err error) {
+func (hc *trackingHTTPClient) getJSON(ctx context.Context, url string, v any) (status int, err error) {
 	err = hc.trackRequestStats(func() (length int64, err error) {
 		attempts := 0
 		for {
