@@ -597,8 +597,8 @@ func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress stri
 	logger.Printf("GetConnection Start!")
 	if env.IsCloudBot() {
 		logger.Printf("CloudBot detected. Will connecting to dut through proxy.")
-		if client, err := dutssh.CloudbotsDutProxyClient(ctx, dutIdentifier); err == nil {
-			return &dutssh.SSHClient{Client: client}, nil
+		if ssh, err := dutssh.CloudbotsDutProxyClient(ctx, dutIdentifier); err == nil {
+			return dutssh.NewClientInterface(ctx, dutIdentifier, ssh)
 		} else {
 			return nil, err
 		}
@@ -629,7 +629,7 @@ func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress stri
 	}
 
 	logger.Printf("GetConnection FINISHED Dial! %s\n", err)
-	return &dutssh.SSHClient{Client: ssh}, nil
+	return dutssh.NewClientInterface(ctx, dutIdentifier, ssh)
 }
 
 // runCmd run remote command returning return value, stdout, stderr, and error if any
