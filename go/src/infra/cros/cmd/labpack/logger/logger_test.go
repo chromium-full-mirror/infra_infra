@@ -30,7 +30,7 @@ func TestBasic(t *testing.T) {
 		}
 		for _, entry := range []struct {
 			L logging.Level
-			F func(string, ...interface{})
+			F func(string, ...any)
 			T string
 		}{
 			{logging.Debug, l.Debugf, "DEBU"},
@@ -41,7 +41,7 @@ func TestBasic(t *testing.T) {
 			t.Run(fmt.Sprintf("Can log to %s", entry.L), func(t *ftt.Test) {
 				entry.F("%s", entry.T)
 				assert.Loosely(t, len(ml.Messages()), should.Equal(1))
-				msg := ml.Get(entry.L, entry.T, map[string]interface{}(nil))
+				msg := ml.Get(entry.L, entry.T, map[string]any(nil))
 				assert.Loosely(t, msg, should.NotBeNil)
 				assert.Loosely(t, msg.CallDepth, should.Equal(3))
 			})

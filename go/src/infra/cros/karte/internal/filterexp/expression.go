@@ -44,7 +44,7 @@ type Expression interface {
 
 // A Constant is a Go value such as "foo" or 4 that represents the value of a CEL constant.
 type Constant struct {
-	Value interface{}
+	Value any
 }
 
 // isExpression is a placeholder method for type safety.
@@ -138,7 +138,7 @@ func NewIdentifier(identifier string) Expression {
 }
 
 // NewConstant produces a new constant expression.
-func NewConstant(constant interface{}) Expression {
+func NewConstant(constant any) Expression {
 	return &Constant{constant}
 }
 

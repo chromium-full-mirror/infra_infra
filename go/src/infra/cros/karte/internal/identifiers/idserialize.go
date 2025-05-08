@@ -29,7 +29,7 @@ type idInfo struct {
 // correspond to lexicographical byte comparisons.
 func (i *idInfo) VersionlessBytes() ([]byte, error) {
 	buf := new(bytes.Buffer)
-	for _, x := range []interface{}{
+	for _, x := range []any{
 		i.CoarseTime,
 		i.FineTime,
 		i.Disambiguation,

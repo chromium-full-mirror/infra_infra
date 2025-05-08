@@ -55,7 +55,7 @@ type comparisonParseResult struct {
 	comparator string
 	field      string
 	// Supported types: string
-	value interface{}
+	value any
 }
 
 // validateComparison takes an expression that should be a comparison, confirms that it really is

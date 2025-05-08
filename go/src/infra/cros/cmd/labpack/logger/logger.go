@@ -118,25 +118,25 @@ func (l *loggerImpl) Close() {
 }
 
 // Debugf log message at Debug level.
-func (l *loggerImpl) Debugf(format string, args ...interface{}) {
+func (l *loggerImpl) Debugf(format string, args ...any) {
 	l.log.LogCall(logging.Debug, l.callDepth, format, args)
 	l.lastStepLogger().LogCall(logging.Debug, l.callDepth, format, args)
 }
 
 // Infof is like Debugf, but logs at Info level.
-func (l *loggerImpl) Infof(format string, args ...interface{}) {
+func (l *loggerImpl) Infof(format string, args ...any) {
 	l.log.LogCall(logging.Info, l.callDepth, format, args)
 	l.lastStepLogger().LogCall(logging.Info, l.callDepth, format, args)
 }
 
 // Warningf is like Debugf, but logs at Warning level.
-func (l *loggerImpl) Warningf(format string, args ...interface{}) {
+func (l *loggerImpl) Warningf(format string, args ...any) {
 	l.log.LogCall(logging.Warning, l.callDepth, format, args)
 	l.lastStepLogger().LogCall(logging.Warning, l.callDepth, format, args)
 }
 
 // Errorf is like Debug, but logs at Error level.
-func (l *loggerImpl) Errorf(format string, args ...interface{}) {
+func (l *loggerImpl) Errorf(format string, args ...any) {
 	l.log.LogCall(logging.Error, l.callDepth, format, args)
 	l.lastStepLogger().LogCall(logging.Error, l.callDepth, format, args)
 }
