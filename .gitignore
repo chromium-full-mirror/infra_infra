@@ -1,6 +1,13 @@
 # Python local environment:
 /.wheelcache
 
+# This is for Go workspace configuration.
+# refs:
+# * https://go.dev/ref/mod#workspaces
+# * https://github.com/golang/tools/blob/master/gopls/doc/workspace.md
+/go.work
+/go.work.sum
+
 # TODO(crbug/1002047): Have these auto-generated.
 /bootstrap/virtualenv-ext
 /go/src/go.chromium.org
