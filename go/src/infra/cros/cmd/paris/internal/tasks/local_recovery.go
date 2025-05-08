@@ -356,22 +356,22 @@ func (l *recoveryLogger) Close() {
 }
 
 // Debugf log message at Debug level.
-func (l *recoveryLogger) Debugf(format string, args ...interface{}) {
+func (l *recoveryLogger) Debugf(format string, args ...any) {
 	l.log.Debugf(l.indentString(format), args...)
 }
 
 // Infof is like Debugf, but logs at Info level.
-func (l *recoveryLogger) Infof(format string, args ...interface{}) {
+func (l *recoveryLogger) Infof(format string, args ...any) {
 	l.log.Infof(l.indentString(format), args...)
 }
 
 // Warningf is like Debugf, but logs at Warning level.
-func (l *recoveryLogger) Warningf(format string, args ...interface{}) {
+func (l *recoveryLogger) Warningf(format string, args ...any) {
 	l.log.Warningf(l.indentString(format), args...)
 }
 
 // Errorf is like Debug, but logs at Error level.
-func (l *recoveryLogger) Errorf(format string, args ...interface{}) {
+func (l *recoveryLogger) Errorf(format string, args ...any) {
 	l.log.Errorf(l.indentString(format), args...)
 }
 

@@ -82,7 +82,7 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 	if err != nil {
 		return errors.Annotate(err, "inner run").Err()
 	}
-	var obj interface{}
+	var obj any
 	if c.planName == "" {
 		if c.asTree {
 			obj = tree.ConvertConfiguration(config, c.asShortTree)
