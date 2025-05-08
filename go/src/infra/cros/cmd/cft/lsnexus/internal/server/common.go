@@ -15,7 +15,12 @@ import (
 	"path/filepath"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 
+	"go.chromium.org/chromiumos/config/go/test/api/bols"
+	"go.chromium.org/chromiumos/config/go/test/api/lsnexus"
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
@@ -29,21 +34,38 @@ type Server interface {
 
 // service holds info for server.
 type service struct {
-	logPath string
-	port    int
+	lsnexus.UnimplementedLSNexusServiceServer
+	logPath     string
+	port        int
+	bolsAddr    string
+	cl          bols.BolsServiceClient
+	dutTopology *api.Dut
 
 	// Initialized later.
 	logger *log.Logger
 }
 
 // New creates new server to perform.
-func New(ctx context.Context, logPath string, port int) (Server, error) {
-	a := &service{
-		logPath: logPath,
-		port:    port,
+func New(ctx context.Context, bolsAddr, dutTopologyFile, logPath string, port int) (Server, error) {
+	cl, err := connectToBOLS(bolsAddr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to BOLS at %s: %w", bolsAddr, err)
 	}
-
-	return a, nil
+	dut := api.Dut{}
+	dutTopologyContent, err := os.ReadFile(dutTopologyFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read dut topology file %s: %w", dutTopologyFile, err)
+	}
+	if err := protojson.Unmarshal(dutTopologyContent, &dut); err != nil {
+		return nil, fmt.Errorf("failed to unmarshall dut topology file %s: %w", dutTopologyFile, err)
+	}
+	return &service{
+		logPath:     logPath,
+		port:        port,
+		bolsAddr:    bolsAddr,
+		cl:          cl,
+		dutTopology: &dut,
+	}, nil
 }
 
 // startServer starts service on requested port.
@@ -72,13 +94,21 @@ func (s *service) Run(ctx context.Context) error {
 		logger.Println("Warning: error when writing to metadata file: ", err)
 	}
 	srv := grpc.NewServer()
-	// TODO register API. like api.RegisterLsNexusServiceServer(srv, s)
+	lsnexus.RegisterLSNexusServiceServer(srv, s)
 	logger.Println("service listen to request at ", l.Addr().String())
 	if err := srv.Serve(l); err != nil {
 		return err
 	}
 	logger.Println("Server stopped!")
 	return err
+}
+
+func connectToBOLS(bolsAddr string) (bols.BolsServiceClient, error) {
+	conn, err := grpc.NewClient(bolsAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return bols.NewBolsServiceClient(conn), nil
 }
 
 // createLogFile creates a file and its parent directory for logging purpose.

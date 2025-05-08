@@ -47,13 +47,17 @@ const (
 func parseServer(ctx context.Context, d []string) (Runner, error) {
 	var logPath string
 	var port int
+	var bolsHost string
+	var configFile string
 	fs := flag.NewFlagSet("Start server", flag.ExitOnError)
 	fs.StringVar(&logPath, "log-path", defaultLogDir, fmt.Sprintf("Path to record execution logs. Default value is %s", defaultLogDir))
 	fs.IntVar(&port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
+	fs.StringVar(&logPath, "bols_host", "", "The BOLS host address")
+	fs.StringVar(&configFile, "dut_topology", "", "A jsonpb file that represents the structure of a DUT Topology.")
 	if err := fs.Parse(d); err != nil {
 		return nil, errors.Annotate(err, "parse server args").Err()
 	}
-	return server.New(ctx, logPath, port)
+	return server.New(ctx, bolsHost, configFile, logPath, port)
 }
 
 // parseRunMode extract run-mode for CLI.
