@@ -20,7 +20,7 @@ import (
 var RenameAssetCmd = rename.GenGenericRenameCmd("asset", renameAsset, printAsset, site.OSLikeNamespaces, ufsUtil.OSNamespace)
 
 // renameAsset calls the RPC that renames the given asset
-func renameAsset(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
+func renameAsset(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (any, error) {
 	// Change  this  API if you want to reuse the command somewhere else.
 	return ic.RenameAsset(ctx, &ufsAPI.RenameAssetRequest{
 		Name:    ufsUtil.AddPrefix(ufsUtil.AssetCollection, name),

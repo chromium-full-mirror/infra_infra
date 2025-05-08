@@ -552,7 +552,7 @@ func (c *updateLabstation) updateLabstationToUFS(ctx context.Context, ic ufsAPI.
 	return nil
 }
 
-func (c *updateLabstation) verbosePrint(format string, a ...interface{}) (int, error) {
+func (c *updateLabstation) verbosePrint(format string, a ...any) (int, error) {
 	if c.commonFlags.Verbose() {
 		return fmt.Printf(format, a...)
 	}

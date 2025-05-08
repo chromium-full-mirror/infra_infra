@@ -15,7 +15,7 @@ import (
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
-func fakeRename(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
+func fakeRename(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (any, error) {
 	return &ufspb.Asset{}, nil
 }
 

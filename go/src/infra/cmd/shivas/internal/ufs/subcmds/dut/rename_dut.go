@@ -20,7 +20,7 @@ import (
 var RenameDUTCmd = rename.GenGenericRenameCmd("dut", renameDUT, printDUT, site.OSLikeNamespaces, ufsUtil.OSNamespace)
 
 // renameDUT calls the RPC that renames the given dut
-func renameDUT(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
+func renameDUT(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (any, error) {
 	// Change  this  API if you want to reuse the command somewhere else.
 	return ic.RenameMachineLSE(ctx, &ufsAPI.RenameMachineLSERequest{
 		Name:    ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),

@@ -20,7 +20,7 @@ import (
 var RenameLabstationCmd = rename.GenGenericRenameCmd("labstation", renameLabstation, printLabstation, site.OSLikeNamespaces, ufsUtil.OSNamespace)
 
 // renameLabstation calls the RPC that renames the given dut
-func renameLabstation(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
+func renameLabstation(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (any, error) {
 	// Change  this  API if you want to reuse the command somewhere else.
 	return ic.RenameMachineLSE(ctx, &ufsAPI.RenameMachineLSERequest{
 		Name:    ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),

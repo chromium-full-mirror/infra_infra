@@ -221,7 +221,7 @@ func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll
 	wg.Wait()
 
 	// iterate over sync map to copy data to a normal map for filter->errors
-	merr.Range(func(key, value interface{}) bool {
+	merr.Range(func(key, value any) bool {
 		errs[fmt.Sprint(key)] = value.(error)
 		return true
 	})
@@ -462,7 +462,7 @@ func PrintListTableFormat(ctx context.Context, ic ufsAPI.FleetClient, f printAll
 }
 
 // PrintJSON prints the interface output as json
-func PrintJSON(t interface{}) error {
+func PrintJSON(t any) error {
 	switch reflect.TypeOf(t).Kind() {
 	case reflect.Slice:
 		s := reflect.ValueOf(t)

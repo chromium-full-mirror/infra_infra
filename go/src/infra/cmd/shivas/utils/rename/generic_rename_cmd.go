@@ -58,7 +58,7 @@ func GenGenericRenameCmd(kind string, rename RenameFunc, printRes PrintResFunc, 
 }
 
 // RenameFunc template to be used to call the rename API RPC.
-type RenameFunc func(context.Context, ufsAPI.FleetClient, string, string) (interface{}, error)
+type RenameFunc func(context.Context, ufsAPI.FleetClient, string, string) (any, error)
 
 // PrintResFunc template to be used to call the print results API.
 type PrintResFunc func(proto.Message)

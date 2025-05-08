@@ -524,7 +524,7 @@ func (c updateDUT) validateArgs() error {
 		}
 		// Cannot accept cmdline inputs for DUT when csv/json mode is specified
 		// The following flags can be set with JSON/MCSV mode.
-		allowList := map[string]interface{}{
+		allowList := map[string]any{
 			"dev":          nil,
 			"f":            nil,
 			"ticket":       nil,

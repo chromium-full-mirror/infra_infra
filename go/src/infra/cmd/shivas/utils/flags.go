@@ -31,7 +31,7 @@ func (f *CSVStringFlag) Set(val string) error {
 }
 
 // Get retrieves the flag value.
-func (f CSVStringFlag) Get() interface{} {
+func (f CSVStringFlag) Get() any {
 	return []string(f)
 }
 
@@ -64,7 +64,7 @@ func (f *CSVStringListFlag) Set(val string) error {
 }
 
 // Get retrieves the flag value.
-func (f CSVStringListFlag) Get() interface{} {
+func (f CSVStringListFlag) Get() any {
 	return [][]string(f)
 }
 
