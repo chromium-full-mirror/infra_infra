@@ -7,14 +7,15 @@ package service
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/clients/rdbclient"
 )
@@ -22,7 +23,7 @@ import (
 func TestIsChromiumTest(t *testing.T) {
 	t.Parallel()
 
-	Convey("Is Chromium Test", t, func() {
+	ftt.Run("Is Chromium Test", t, func(t *ftt.Test) {
 		// Create a test result proto with resultdb_settings flag in test args.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -40,10 +41,10 @@ func TestIsChromiumTest(t *testing.T) {
 		isChromium := isChromiumTest(testResult)
 
 		// Verify that the function returns true.
-		So(isChromium, ShouldBeTrue)
+		assert.That(t, isChromium, should.BeTrue)
 	})
 
-	Convey("Is not Chromium Test", t, func() {
+	ftt.Run("Is not Chromium Test", t, func(t *ftt.Test) {
 		// Create a test result proto without resultdb_settings flag in test
 		// args.
 		testResult := &artifact.TestResult{
@@ -60,14 +61,14 @@ func TestIsChromiumTest(t *testing.T) {
 		isChromium := isChromiumTest(testResult)
 
 		// Verify that the function returns false.
-		So(isChromium, ShouldBeFalse)
+		assert.That(t, isChromium, should.BeFalse)
 	})
 }
 
 func TestExtractBaseChromiumRDBConfig(t *testing.T) {
 	t.Parallel()
 
-	Convey("Extract Base Chromium RDB Config", t, func() {
+	ftt.Run("Extract Base Chromium RDB Config", t, func(t *ftt.Test) {
 		// Create a test args map with resultdb_settings flag.
 		testArgs := map[string]string{
 			"resultdb_settings": "eyJiYXNlX3ZhcmlhbnQiOiB7ImJ1aWxkZXIiOiAiY2hyb21lb3MtYmV0dHktY2hyb21lIiwgImNyb3NfaW1nIjogImJldHR5LXJlbGVhc2UvUjEyNy0xNTkxMi4wLjAiLCAiZGV2aWNlX3R5cGUiOiAiYmV0dHkiLCAib3MiOiAiQ2hyb21lT1MiLCAidGVzdF9zdWl0ZSI6ICJtZWRpYV91bml0dGVzdHMgUkVMRUFTRV9MS0dNIn0sICJjb2VyY2VfbmVnYXRpdmVfZHVyYXRpb24iOiB0cnVlLCAiZXhvbmVyYXRlX3VuZXhwZWN0ZWRfcGFzcyI6IHRydWUsICJpbmNsdWRlIjogZmFsc2UsICJyZXN1bHRfZm9ybWF0IjogImd0ZXN0IiwgInRlc3RfaWRfcHJlZml4IjogIm5pbmphOi8vbWVkaWE6bWVkaWFfdW5pdHRlc3RzLyJ9",
@@ -91,11 +92,11 @@ func TestExtractBaseChromiumRDBConfig(t *testing.T) {
 		gotRDBSettings, err := extractBaseChromiumRDBConfig(testArgs)
 
 		// Verify that the function returns the correct rdb settings.
-		So(err, ShouldBeNil)
-		So(gotRDBSettings, ShouldResemble, wantRDBConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, gotRDBSettings, should.Match(wantRDBConfig))
 	})
 
-	Convey("Extract Base Chromium RDB Config with invalid base64 string", t, func() {
+	ftt.Run("Extract Base Chromium RDB Config with invalid base64 string", t, func(t *ftt.Test) {
 		// Create a test args map with invalid resultdb_settings flag.
 		testArgs := map[string]string{
 			"resultdb_settings": "invalid_base64_string",
@@ -105,11 +106,11 @@ func TestExtractBaseChromiumRDBConfig(t *testing.T) {
 		gotRDBSettings, err := extractBaseChromiumRDBConfig(testArgs)
 
 		// Verify that the function returns an error.
-		So(err, ShouldNotBeNil)
-		So(gotRDBSettings, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, gotRDBSettings, should.BeNil)
 	})
 
-	Convey("Extract Base Chromium RDB Config with invalid JSON string", t, func() {
+	ftt.Run("Extract Base Chromium RDB Config with invalid JSON string", t, func(t *ftt.Test) {
 		// Create a test args map with invalid resultdb_settings flag.
 		testArgs := map[string]string{
 			"resultdb_settings": "eyJiYXNlX3ZhcmlhbnQiOiB7ImJ1aWxkZXIiOiAiY2hyb21lb3MtYmV0dHktY2hyb21lIiwgImNyb3NfaW1nIjogImJldHR5LXJlbGVhc2UvUjEyNy0xNTkxMi4wLjAiLCAiZGV2aWNlX3R5cGUiOiAiYmV0dHkiLCAib3MiOiAiQ2hyb21lT1MiLCAidGVzdF9zdWl0ZSI6ICJtZWRpYV91bml0dGVzdHMgUkVMRUFTRV9MS0dNIn0sICJjb2VyY2VfbmVnYXRpdmVfZHVyYXRpb24iOiB0cnVlLCAiZXhvbmVyYXRlX3VuZXhwZWN0ZWRfcGFzcyI6IHRydWUsICJpbmNsdWRlIjogZmFsc2UsICJyZXN1bHRfZm9ybWF0IjogImd0ZXN0IiwgInRlc3RfaWRfcHJlZml4IjogIm5pbmphOi8vbWVkaWE6bWV9",
@@ -119,15 +120,15 @@ func TestExtractBaseChromiumRDBConfig(t *testing.T) {
 		rdbSettings, err := extractBaseChromiumRDBConfig(testArgs)
 
 		// Verify that the function returns an error.
-		So(err, ShouldNotBeNil)
-		So(rdbSettings, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, rdbSettings, should.BeNil)
 	})
 }
 
 func TestChromiumTestRDBConfig(t *testing.T) {
 	t.Parallel()
 
-	Convey("Chromium Test RDB Config for gtest result format", t, func() {
+	ftt.Run("Chromium Test RDB Config for gtest result format", t, func(t *ftt.Test) {
 		// Create a test result proto with resultdb_settings flag in test args.
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
@@ -190,11 +191,11 @@ func TestChromiumTestRDBConfig(t *testing.T) {
 		gotRDBconfig, err := chromiumTestRDBConfig(testResult, map[string]string{}, map[string]string{}, "testhaus_url", "")
 
 		// Verify that the function returns the correct rdb config.
-		So(err, ShouldBeNil)
-		So(gotRDBconfig, ShouldResemble, wantRDBConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, gotRDBconfig, should.Match(wantRDBConfig))
 	})
 
-	Convey("Chromium Test RDB Config for gtest result format", t, func() {
+	ftt.Run("Chromium Test RDB Config for gtest result format", t, func(t *ftt.Test) {
 		// Create a test result proto with resultdb_settings flag in test args.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -244,11 +245,11 @@ func TestChromiumTestRDBConfig(t *testing.T) {
 		gotRDBconfig, err := chromiumTestRDBConfig(testResult, map[string]string{}, map[string]string{}, "testhaus_url", "")
 
 		// Verify that the function returns the correct rdb config.
-		So(err, ShouldBeNil)
-		So(gotRDBconfig, ShouldResemble, wantRDBConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, gotRDBconfig, should.Match(wantRDBConfig))
 	})
 
-	Convey("Chromium Test RDB Config for tast result format", t, func() {
+	ftt.Run("Chromium Test RDB Config for tast result format", t, func(t *ftt.Test) {
 		// Create a test result proto with resultdb_settings flag in test args.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -291,11 +292,11 @@ func TestChromiumTestRDBConfig(t *testing.T) {
 		gotRDBconfig, err := chromiumTestRDBConfig(testResult, map[string]string{}, map[string]string{}, "testhaus_url", wantResultFile)
 
 		// Verify that the function returns the correct rdb config.
-		So(err, ShouldBeNil)
-		So(gotRDBconfig, ShouldResemble, wantRDBConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, gotRDBconfig, should.Match(wantRDBConfig))
 	})
 
-	Convey("Chromium Test RDB Config with invalid resultdb_settings flag", t, func() {
+	ftt.Run("Chromium Test RDB Config with invalid resultdb_settings flag", t, func(t *ftt.Test) {
 		// Create a test result proto with invalid resultdb_settings flag in test args.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -320,15 +321,15 @@ func TestChromiumTestRDBConfig(t *testing.T) {
 		config, err := chromiumTestRDBConfig(testResult, map[string]string{}, map[string]string{}, "testhaus_url", "")
 
 		// Verify that the function returns an error.
-		So(err, ShouldNotBeNil)
-		So(config, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, config, should.BeNil)
 	})
 }
 
 func TestIngestPostProcessResponses(t *testing.T) {
 	t.Parallel()
 
-	Convey("Ingest post process responses", t, func() {
+	ftt.Run("Ingest post process responses", t, func(t *ftt.Test) {
 		// Create a test result proto.
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
@@ -450,15 +451,15 @@ func TestIngestPostProcessResponses(t *testing.T) {
 			AvlPartFirmware:  "0xa200000000000000",
 			AvlPartModel:     "0x0000f5 MMC32G",
 		}
-		So(testResult.TestInvocation.PrimaryExecutionInfo.BuildInfo.BuildMetadata, ShouldResembleProto, wantBuildMetadata)
-		So(testResult.TestRuns[0].TestCaseInfo.AvlInfo, ShouldResembleProto, wantAVL)
+		assert.That(t, testResult.TestInvocation.PrimaryExecutionInfo.BuildInfo.BuildMetadata, should.Match(wantBuildMetadata))
+		assert.That(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.Match(wantAVL))
 	})
 }
 
 func TestPopulateFirmwareInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Populates Firmware info", t, func() {
+	ftt.Run("Populates Firmware info", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -476,10 +477,10 @@ func TestPopulateFirmwareInfo(t *testing.T) {
 			RoVersion: "Google_Voema.13672.224.0",
 			RwVersion: "Google_Voema.13672.224.1",
 		}
-		So(buildMetadata.Firmware, ShouldResembleProto, wantFwInfo)
+		assert.That(t, buildMetadata.Firmware, should.Match(wantFwInfo))
 	})
 
-	Convey("Populates Firmware info with empty values", t, func() {
+	ftt.Run("Populates Firmware info with empty values", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -490,10 +491,10 @@ func TestPopulateFirmwareInfo(t *testing.T) {
 		populateFirmwareInfo(buildMetadata, fwInfoResp)
 
 		// Verify that the firmware info is populated correctly.
-		So(buildMetadata.Firmware, ShouldResembleProto, &artifact.BuildMetadata_Firmware{})
+		assert.That(t, buildMetadata.Firmware, should.Match(&artifact.BuildMetadata_Firmware{}))
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -501,14 +502,14 @@ func TestPopulateFirmwareInfo(t *testing.T) {
 		populateFirmwareInfo(buildMetadata, nil)
 
 		// Verify no value is populated.
-		So(buildMetadata.Firmware, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.Firmware, should.BeNil)
 	})
 }
 
 func TestPopulateKernelInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Populates Kernel info", t, func() {
+	ftt.Run("Populates Kernel info", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -524,10 +525,10 @@ func TestPopulateKernelInfo(t *testing.T) {
 		wantKernel := &artifact.BuildMetadata_Kernel{
 			Version: "5.4.151-16902-g93699f4e73de",
 		}
-		So(buildMetadata.Kernel, ShouldResembleProto, wantKernel)
+		assert.That(t, buildMetadata.Kernel, should.Match(wantKernel))
 	})
 
-	Convey("Populates Kernel info with empty values", t, func() {
+	ftt.Run("Populates Kernel info with empty values", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -538,10 +539,10 @@ func TestPopulateKernelInfo(t *testing.T) {
 		populateKernelInfo(buildMetadata, fwInfoResp)
 
 		// Verify that the kernel info is populated correctly.
-		So(buildMetadata.Kernel, ShouldResembleProto, &artifact.BuildMetadata_Kernel{})
+		assert.That(t, buildMetadata.Kernel, should.Match(&artifact.BuildMetadata_Kernel{}))
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -549,14 +550,14 @@ func TestPopulateKernelInfo(t *testing.T) {
 		populateKernelInfo(buildMetadata, nil)
 
 		// Verify no value is populated.
-		So(buildMetadata.Kernel, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.Kernel, should.BeNil)
 	})
 }
 
 func TestPopulateGSCFirmwareInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Populates GSC Firmware info", t, func() {
+	ftt.Run("Populates GSC Firmware info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -582,10 +583,10 @@ func TestPopulateGSCFirmwareInfo(t *testing.T) {
 			GscRoVersion: "Google_Voema.13672.224.0",
 			GscRwVersion: "Google_Voema.13672.224.1",
 		}
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldResembleProto, wantGscFwInfo)
+		assert.That(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.Match(wantGscFwInfo))
 	})
 
-	Convey("Populates GSC Firmware info with empty values", t, func() {
+	ftt.Run("Populates GSC Firmware info with empty values", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -604,10 +605,10 @@ func TestPopulateGSCFirmwareInfo(t *testing.T) {
 		populateGSCFirmwareInfo(testResult, fwInfoResp)
 
 		// Verify that the GSC firmware info is populated correctly.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldResembleProto, &artifact.GscInfo{})
+		assert.That(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.Match(&artifact.GscInfo{}))
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -623,14 +624,14 @@ func TestPopulateGSCFirmwareInfo(t *testing.T) {
 		populateGSCFirmwareInfo(testResult, nil)
 
 		// Verify no value is populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 }
 
 func TestPopulateGfxInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Populates Graphics info", t, func() {
+	ftt.Run("Populates Graphics info", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -674,10 +675,10 @@ func TestPopulateGfxInfo(t *testing.T) {
 			PlatformDiskSize:   128,
 			PlatformMemorySize: 32,
 		}
-		So(buildMetadata.GfxInfo, ShouldResembleProto, wantGFXInfo)
+		assert.Loosely(t, buildMetadata.GfxInfo, should.Match(wantGFXInfo))
 	})
 
-	Convey("Populates Graphics info with empty values", t, func() {
+	ftt.Run("Populates Graphics info with empty values", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -688,10 +689,10 @@ func TestPopulateGfxInfo(t *testing.T) {
 		populateGfxInfo(buildMetadata, gfxInfoResp)
 
 		// Verify that the Graphics info is populated correctly.
-		So(buildMetadata.GfxInfo, ShouldResembleProto, &artifact.BuildMetadata_GfxInfo{})
+		assert.That(t, buildMetadata.GfxInfo, should.Match(&artifact.BuildMetadata_GfxInfo{}))
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -699,14 +700,14 @@ func TestPopulateGfxInfo(t *testing.T) {
 		populateGfxInfo(buildMetadata, nil)
 
 		// Verify no value is populated.
-		So(buildMetadata.GfxInfo, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.GfxInfo, should.BeNil)
 	})
 }
 
 func TestPopulateAVLInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Populates AVL info", t, func() {
+	ftt.Run("Populates AVL info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -741,10 +742,10 @@ func TestPopulateAVLInfo(t *testing.T) {
 			AvlPartFirmware:  "0xa200000000000000",
 			AvlPartModel:     "0x0000f5 MMC32G",
 		}
-		So(testResult.TestRuns[0].TestCaseInfo.AvlInfo, ShouldResembleProto, wantAVL)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.Match(wantAVL))
 	})
 
-	Convey("Populates AVL info with missing test case", t, func() {
+	ftt.Run("Populates AVL info with missing test case", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run without any test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -768,10 +769,10 @@ func TestPopulateAVLInfo(t *testing.T) {
 		// Call populateAVLInfo.
 		populateAVLInfo(testResult, avlInfoResp)
 
-		So(testResult.TestRuns[0].TestCaseInfo.AvlInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.BeNil)
 	})
 
-	Convey("Populates AVL info with missing AVL info", t, func() {
+	ftt.Run("Populates AVL info with missing AVL info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -795,10 +796,10 @@ func TestPopulateAVLInfo(t *testing.T) {
 		// Call populateAVLInfo.
 		populateAVLInfo(testResult, avlInfoResp)
 
-		So(testResult.TestRuns[0].TestCaseInfo.AvlInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.BeNil)
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -817,7 +818,7 @@ func TestPopulateAVLInfo(t *testing.T) {
 		// Call populateAVLInfo.
 		populateAVLInfo(testResult, nil)
 
-		So(testResult.TestRuns[0].TestCaseInfo.AvlInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.BeNil)
 	})
 }
 
@@ -844,7 +845,7 @@ func TestPopulateGSCInfo(t *testing.T) {
 		},
 	}
 
-	Convey("Populates GSC devboard info", t, func() {
+	ftt.Run("Populates GSC devboard info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -863,10 +864,10 @@ func TestPopulateGSCInfo(t *testing.T) {
 		// Call populateGSCInfo.
 		populateGSCInfo(testResult, gscInfoResp)
 
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldResembleProto, gscInfo)
+		assert.That(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.Match(gscInfo))
 	})
 
-	Convey("Populates GSC devboard info with missing test case", t, func() {
+	ftt.Run("Populates GSC devboard info with missing test case", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run without any test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -880,10 +881,10 @@ func TestPopulateGSCInfo(t *testing.T) {
 		populateGSCInfo(testResult, gscInfoResp)
 
 		// Verify that the GSC devboard info is not populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 
-	Convey("Populates GSC devboard info with missing GSC devboard info", t, func() {
+	ftt.Run("Populates GSC devboard info with missing GSC devboard info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -908,10 +909,10 @@ func TestPopulateGSCInfo(t *testing.T) {
 		populateGSCInfo(testResult, gscInfoResp)
 
 		// Verify that the GSC devboard info is not populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 
-	Convey("Populates GSC devboard info with empty GSC devboard info", t, func() {
+	ftt.Run("Populates GSC devboard info with empty GSC devboard info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -939,10 +940,10 @@ func TestPopulateGSCInfo(t *testing.T) {
 		populateGSCInfo(testResult, gscInfoResp)
 
 		// Verify that the GSC devboard info is not populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -962,10 +963,10 @@ func TestPopulateGSCInfo(t *testing.T) {
 		populateGSCInfo(testResult, nil)
 
 		// Verify that the GSC devboard info is not populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 
-	Convey("Handles invalid GSC devboard info", t, func() {
+	ftt.Run("Handles invalid GSC devboard info", t, func(t *ftt.Test) {
 		// Create a test result proto with a test run and a test case.
 		testResult := &artifact.TestResult{
 			TestRuns: []*artifact.TestRun{
@@ -995,7 +996,7 @@ func TestPopulateGSCInfo(t *testing.T) {
 		populateGSCInfo(testResult, invalidGSCInfoResp)
 
 		// Verify that the GSC devboard info is not populated.
-		So(testResult.TestRuns[0].TestCaseInfo.GscInfo, ShouldBeNil)
+		assert.Loosely(t, testResult.TestRuns[0].TestCaseInfo.GscInfo, should.BeNil)
 	})
 }
 
@@ -1009,7 +1010,7 @@ func TestPopulateServoInfo(t *testing.T) {
 	}
 	servoInfoAny, _ := anypb.New(servoInfo)
 
-	Convey("Populates servo info", t, func() {
+	ftt.Run("Populates servo info", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -1027,10 +1028,10 @@ func TestPopulateServoInfo(t *testing.T) {
 			ServoType:     "servo_v4_with_c2d2_and_ccd_ti50",
 			ServoVersions: "c2d2_v2.4.73-d771c18ba9,0.24.40/ti50_common_prepvt-15086.B:v0.0.355-15c69d7f,fizz-labstation-release/R115-15474.55.0,servo_v4_v2.4.58-c37246f9c",
 		}
-		So(buildMetadata.ServoInfo, ShouldResembleProto, wantServoInfo)
+		assert.That(t, buildMetadata.ServoInfo, should.Match(wantServoInfo))
 	})
 
-	Convey("Skip if the servo info has empty values", t, func() {
+	ftt.Run("Skip if the servo info has empty values", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -1041,10 +1042,10 @@ func TestPopulateServoInfo(t *testing.T) {
 		populateServoInfo(buildMetadata, servoInfoResp)
 
 		// Verify no value is populated.
-		So(buildMetadata.GfxInfo, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.GfxInfo, should.BeNil)
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		// Create a build metadata proto.
 		buildMetadata := &artifact.BuildMetadata{}
 
@@ -1052,7 +1053,7 @@ func TestPopulateServoInfo(t *testing.T) {
 		populateServoInfo(buildMetadata, nil)
 
 		// Verify no value is populated.
-		So(buildMetadata.GfxInfo, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.GfxInfo, should.BeNil)
 	})
 }
 
@@ -1081,7 +1082,7 @@ func TestNewRdbPublishService(t *testing.T) {
 	}
 
 	// In this unit test, why the sizeCaches of the wantService and the goService are different?
-	Convey("Valid request", t, func() {
+	ftt.Run("Valid request", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{
 			Is_3DRun: true,
 			ArtifactDirPath: &_go.StoragePath{
@@ -1094,7 +1095,7 @@ func TestNewRdbPublishService(t *testing.T) {
 			EqcHash: "9073744604696850342",
 		}
 		eqcInfoMap := map[string]string{
-			"eqcCategoryExpression": "WifiBtChipset_Soc_Kernel_Intel",
+			"eqcCategoryExpression": "WifiBtChipset_assert.Thatc_Kernel_Intel",
 			"eqcDimensions":         "{\"dlm:soc\":\"Cometlake-U\",\"image:_kernel_version\":\"5.15\",\"wireless_field\":\"INTEL_HRP2_AX201\"}",
 			"eqcHash":               "9073744604696850342",
 			"eqcName":               "Cometlake-U__INTEL_HRP2_AX201__5.15",
@@ -1130,11 +1131,11 @@ func TestNewRdbPublishService(t *testing.T) {
 
 		gotService, err := NewRdbPublishService(req)
 
-		So(err, ShouldBeNil)
-		So(gotService, ShouldResemble, wantService)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, gotService, should.Match(wantService))
 	})
 
-	Convey("Valid request with retry count", t, func() {
+	ftt.Run("Valid request with retry count", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{
 			RetryCount: 2,
 			ArtifactDirPath: &_go.StoragePath{
@@ -1150,21 +1151,21 @@ func TestNewRdbPublishService(t *testing.T) {
 
 		service, err := NewRdbPublishService(req)
 
-		So(err, ShouldBeNil)
-		So(service.RetryCount, ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.That(t, service.RetryCount, should.Equal(2))
 	})
 
-	Convey("Invalid metadata", t, func() {
+	ftt.Run("Invalid metadata", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{}
 		req.Metadata, _ = anypb.New(&artifact.TestResult{}) // Incorrect type
 
 		service, err := NewRdbPublishService(req)
 
-		So(err, ShouldNotBeNil)
-		So(service, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, service, should.BeNil)
 	})
 
-	Convey("Missing invocation id", t, func() {
+	ftt.Run("Missing invocation id", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{}
 		metadata := &metadata.PublishRdbMetadata{
 			TestResult: testResult,
@@ -1173,11 +1174,11 @@ func TestNewRdbPublishService(t *testing.T) {
 
 		service, err := NewRdbPublishService(req)
 
-		So(err, ShouldNotBeNil)
-		So(service, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, service, should.BeNil)
 	})
 
-	Convey("Missing test result", t, func() {
+	ftt.Run("Missing test result", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{}
 		metadata := &metadata.PublishRdbMetadata{
 			CurrentInvocationId: "inv_id",
@@ -1185,15 +1186,15 @@ func TestNewRdbPublishService(t *testing.T) {
 		req.Metadata, _ = anypb.New(metadata)
 		service, err := NewRdbPublishService(req)
 
-		So(err, ShouldNotBeNil)
-		So(service, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, service, should.BeNil)
 	})
 }
 
 func TestIngestFirmwareProvisionResponse(t *testing.T) {
 	t.Parallel()
 
-	Convey("Ingest firmware provision response", t, func() {
+	ftt.Run("Ingest firmware provision response", t, func(t *ftt.Test) {
 		buildMetadata := &artifact.BuildMetadata{}
 
 		// Create a firmware provision response proto.
@@ -1214,10 +1215,10 @@ func TestIngestFirmwareProvisionResponse(t *testing.T) {
 			EcRoVersion: "vilboz_v2.0.5705-a8a7681f94",
 			EcRwVersion: "vilboz_v2.0.5705-a8a7681f95",
 		}
-		So(buildMetadata.Firmware, ShouldResembleProto, wantFirmware)
+		assert.That(t, buildMetadata.Firmware, should.Match(wantFirmware))
 	})
 
-	Convey("Ingest firmware provision response with empty values", t, func() {
+	ftt.Run("Ingest firmware provision response with empty values", t, func(t *ftt.Test) {
 		buildMetadata := &artifact.BuildMetadata{}
 
 		// Create a firmware provision response proto with empty values.
@@ -1227,16 +1228,16 @@ func TestIngestFirmwareProvisionResponse(t *testing.T) {
 		ingestFirmwareProvisionResponse(buildMetadata, fwProvisionResponse)
 
 		// Verify that the firmware info is populated correctly.
-		So(buildMetadata.Firmware, ShouldResembleProto, &artifact.BuildMetadata_Firmware{})
+		assert.That(t, buildMetadata.Firmware, should.Match(&artifact.BuildMetadata_Firmware{}))
 	})
 
-	Convey("Skip if the response is nil", t, func() {
+	ftt.Run("Skip if the response is nil", t, func(t *ftt.Test) {
 		buildMetadata := &artifact.BuildMetadata{}
 
 		// Call ingestFirmwareProvisionResponse.
 		ingestFirmwareProvisionResponse(buildMetadata, nil)
 
 		// Verify no value is populated.
-		So(buildMetadata.Firmware, ShouldBeNil)
+		assert.Loosely(t, buildMetadata.Firmware, should.BeNil)
 	})
 }
