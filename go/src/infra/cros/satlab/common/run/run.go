@@ -44,7 +44,7 @@ const (
 	prodTag                     = "prod"
 	desktopPrefix               = "AL."
 	dummySuiteName              = "TestSuite"
-	aospProdTag                 = "AOSP-Prod"
+	partnerCrosTest             = "foil-test-aosp"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -357,7 +357,8 @@ func (c *Run) foilFilter() *api.CTPFilter {
 		},
 	}
 	if site.IsPartner() {
-		foilFilter.ContainerInfo.BinaryArgs = []string{"-test-path", fmt.Sprintf("%s/cros-registry/%s/cros-test:%s", hostname, site.GetGCSImageBucket(), aospProdTag)}
+		foilFilter.ContainerInfo.BinaryArgs = []string{"-test-path",
+			fmt.Sprintf("%s/%s/%s:%s_%s", hostname, testServicesPartnerRegistry, partnerCrosTest, prodTag, partnerCrosTest)}
 	}
 	return foilFilter
 }
@@ -366,10 +367,14 @@ func (c *Run) foilFilter() *api.CTPFilter {
 // For classic, it constructs the image tag using the board, milestone, and build, or falls back to the image name.
 // For desktop AOSP Prod tag is used.
 func (c *Run) partnerCrosTestFinderFilter() *api.CTPFilter {
-	var tag string
+	var binaryName, project, tag string
 	if c.Desktop {
-		tag = aospProdTag
+		binaryName = "test-finder"
+		project = testServicesPartnerRegistry
+		tag = "prod_test-finder"
 	} else {
+		binaryName = "cros-test-finder"
+		project = fmt.Sprintf("cros-registry/%s", site.GetGCSImageBucket())
 		tag = fmt.Sprintf("%s-release.R%s-%s", c.Board, c.Milestone, c.Build)
 		if c.Board == "" || c.Milestone == "" || c.Build == "" {
 			tag = strings.Replace(c.Image, "/", ".", -1)
@@ -381,12 +386,13 @@ func (c *Run) partnerCrosTestFinderFilter() *api.CTPFilter {
 			Container: &buildapi.ContainerImageInfo{
 				Repository: &buildapi.GcrRepository{
 					Hostname: hostname,
-					Project:  fmt.Sprintf("cros-registry/%s", site.GetGCSImageBucket()),
+					Project:  project,
 				},
 				Name:   "cros-test-finder",
 				Digest: "sha256:",
 				Tags:   []string{tag},
 			},
+			BinaryName: binaryName,
 		},
 	}
 }

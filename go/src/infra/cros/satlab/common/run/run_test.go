@@ -422,7 +422,7 @@ func TestPartnerFilters(t *testing.T) {
 
 		t.Run("PartnerStagingFilter", func(t *testing.T) {
 			t.Parallel()
-			assertFilter(t, filters[0], "cros-test-finder", "AOSP-Prod")
+			assertFilter(t, filters[0], "cros-test-finder", "prod_test-finder")
 		})
 	})
 
