@@ -450,6 +450,16 @@ func GetConfigs() []*UprevConfig {
 			},
 			Prepper: preppers.PrepareCrosDDD,
 		},
+		{
+			Name: "bols_satlab",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/bols_satlab/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 	}
 
 	return CleanConfigs(configs)
