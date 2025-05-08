@@ -351,7 +351,7 @@ func WriteCurrentStability(ctx context.Context, builder string, testSuite string
 	return writeStabilityFrom(ctx, w, it.Next)
 }
 
-func writeStabilityFrom(ctx context.Context, w io.Writer, source func(dest interface{}) error) error {
+func writeStabilityFrom(ctx context.Context, w io.Writer, source func(dest any) error) error {
 	test := &proto.TestStability{}
 	for {
 		if ctx.Err() != nil {

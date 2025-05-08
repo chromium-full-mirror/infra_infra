@@ -44,7 +44,7 @@ func WriteTestFiles(ctx context.Context, bqClient *bigquery.Client, w io.Writer)
 
 // writeTestFilesFrom writes test files returned by source to w.
 // If source returns iterator.Done, writeTestFilesFrom exits.
-func writeTestFilesFrom(ctx context.Context, w io.Writer, source func(dest interface{}) error) error {
+func writeTestFilesFrom(ctx context.Context, w io.Writer, source func(dest any) error) error {
 	testFile := &TestFile{}
 	for {
 		if ctx.Err() != nil {

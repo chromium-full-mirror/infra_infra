@@ -155,12 +155,12 @@ func (h spHeap) Swap(i, j int) {
 	h[i], h[j] = h[j], h[i]
 }
 
-func (h *spHeap) Push(x interface{}) {
+func (h *spHeap) Push(x any) {
 	item := x.(*ShortestPath)
 	*h = append(*h, item)
 }
 
-func (h *spHeap) Pop() interface{} {
+func (h *spHeap) Pop() any {
 	old := *h
 	n := len(old)
 	item := old[n-1]

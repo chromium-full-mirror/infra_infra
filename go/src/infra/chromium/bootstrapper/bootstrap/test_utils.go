@@ -21,7 +21,7 @@ func jsonToStruct(json string) *structpb.Struct {
 }
 
 func setPropertiesFromJson(build *buildbucketpb.Build, propsJson map[string]string) {
-	props := make(map[string]interface{}, len(propsJson))
+	props := make(map[string]any, len(propsJson))
 	for key, p := range propsJson {
 		s := &structpb.Value{}
 		util.PanicOnError(protojson.Unmarshal([]byte(p), s))

@@ -626,7 +626,7 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 		ConfigSource:        c.configSource,
 		SkipAnalysisReasons: c.skipAnalysisReasons,
 	}
-	if err := exe.WriteProperties(properties, map[string]interface{}{
+	if err := exe.WriteProperties(properties, map[string]any{
 		"$build/chromium_bootstrap": modProperties,
 	}); err != nil {
 		return errors.Annotate(err, "failed to write out properties for chromium_bootstrap module: {%s}", modProperties).Err()

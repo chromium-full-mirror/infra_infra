@@ -102,7 +102,7 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 
 	// Check for the presence of required properties
 	exeProperties := &BootstrapExeProperties{}
-	propsToParse := map[string]interface{}{
+	propsToParse := map[string]any{
 		"$bootstrap/exe": exeProperties,
 	}
 

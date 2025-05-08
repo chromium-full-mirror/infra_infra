@@ -438,12 +438,12 @@ func (f furthestRejections) Less(i, j int) bool {
 	return f[i].MostAffected.Distance < f[j].MostAffected.Distance
 }
 func (f furthestRejections) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
-func (f *furthestRejections) Push(x interface{}) {
+func (f *furthestRejections) Push(x any) {
 	// Push and Pop use pointer receivers because they modify the slice's length,
 	// not just its contents.
 	*f = append(*f, x.(affectedRejection))
 }
-func (f *furthestRejections) Pop() interface{} {
+func (f *furthestRejections) Pop() any {
 	old := *f
 	n := len(old)
 	x := old[n-1]

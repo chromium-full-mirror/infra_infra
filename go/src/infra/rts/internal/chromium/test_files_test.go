@@ -33,7 +33,7 @@ func TestTestFileSet(t *testing.T) {
 
 		// Write expected protos.
 		remaining := expected
-		err := writeTestFilesFrom(ctx, buf, func(dest interface{}) error {
+		err := writeTestFilesFrom(ctx, buf, func(dest any) error {
 			if len(remaining) == 0 {
 				return iterator.Done
 			}

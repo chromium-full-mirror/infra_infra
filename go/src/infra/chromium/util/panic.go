@@ -19,7 +19,7 @@ import (
 //
 // This should be limited to test code and fakes. The code for the actual binary
 // should use proper error handling.
-func PanicIf(condition bool, message string, args ...interface{}) {
+func PanicIf(condition bool, message string, args ...any) {
 	if condition {
 		panic(fmt.Errorf(message, args...))
 	}

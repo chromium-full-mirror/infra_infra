@@ -73,7 +73,7 @@ func (v *validator) validate(x validatable, name string) {
 // The arguments to errorf are interpreted the same as for fmt.Errorf, with the
 // addition that all occurrences of the substring "${}" in the format string
 // will be replaced by the value of v.location before formatting takes place.
-func (v *validator) errorf(format string, a ...interface{}) {
+func (v *validator) errorf(format string, a ...any) {
 	format = strings.ReplaceAll(format, "${}", v.location)
 	v.errs = append(v.errs, fmt.Errorf(format, a...))
 }
