@@ -19,6 +19,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/streaming"
 	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
@@ -83,7 +84,7 @@ func (ex *FilterExecutor) filterExecutionCommandExecution(
 
 	common.WriteProtoToStepLog(ctx, step, cmd.InputTestPlan, "filter request")
 
-	fitlerResp, err := ex.ExecuteFilter(ctx, step, cmd.InputTestPlan)
+	fitlerResp, err := ex.ExecuteFilter(ctx, step, cmd, cmd.InputTestPlan)
 	if err != nil {
 		errorLog := step.Log("Filter Error")
 		_, _ = errorLog.Write([]byte(err.Error()))
@@ -134,6 +135,7 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 func (ex *FilterExecutor) ExecuteFilter(
 	ctx context.Context,
 	step *build.Step,
+	cmd *commands.FilterExecutionCmd,
 	filterReq *testapi.InternalTestplan) (resp *testapi.InternalTestplan, err error) {
 
 	if filterReq == nil {
@@ -142,14 +144,31 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if ex.ContainerInfo == nil {
 		return nil, fmt.Errorf("cannot execute filter with nil container info")
 	}
-	if ex.ContainerInfo.ServiceEndpoint == nil {
-		return nil, fmt.Errorf("cannot execute filter for nil service endpoint")
-	}
 
-	filterEndpointStr, err := ex.ContainerInfo.GetEndpointString()
-	if err != nil {
-		return nil, errors.Annotate(err, "error while getting filter endpoint str: ").Err()
+	responseChannel := make(chan *commontypes.ContainerManagementResponse)
+	containerRequest := commontypes.ContainerManagementRequest{
+		Container:            cmd.ContainerInfo.Request,
+		ContainerInstruction: commontypes.ProvideContainer,
+		ResponseChannel:      responseChannel,
 	}
+	cmd.ContainerRequestChannel <- containerRequest
+	response := <-responseChannel
+	if response == nil || response.Address == nil {
+		return nil, fmt.Errorf("error while getting filter endpoint, found nil")
+	}
+	defer func() {
+		cmd.ContainerLogsChannel <- &commontypes.ContainerLogInfo{
+			Name:        cmd.ContainerInfo.Request.DynamicIdentifier,
+			LogLocation: response.LogLocation,
+		}
+	}()
+
+	filterEndpointStr := fmt.Sprintf("%s:%d", response.Address.GetAddress(), response.Address.GetPort())
+	defer func() {
+		containerRequest.ContainerInstruction = commontypes.FinishedUsingContainer
+		cmd.ContainerRequestChannel <- containerRequest
+		<-responseChannel
+	}()
 
 	// Connect with the filter service.
 	conn, err := common.ConnectWithService(ctx, filterEndpointStr)

@@ -26,9 +26,10 @@ var SummarizeNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType
 var CtrStartAsyncCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStartAsyncCmdType, ExecutorType: commonexecutors.CtrExecutorType}
 var CtrStopCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStopCmdType, ExecutorType: commonexecutors.CtrExecutorType}
 var GcloudAuthCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.GcloudAuthCmdType, ExecutorType: commonexecutors.CtrExecutorType}
-var ContainerStartContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerStartCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
-var ContainerReadLogsContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerReadLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
-var ContainerCloseLogsContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerCloseLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerManagerStartContainerManagerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerManagerStartCmdType, ExecutorType: commonexecutors.ContainerManagerExecutorType}
+var ContainerManagerStopContainerManagerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerManagerStopCmdType, ExecutorType: commonexecutors.ContainerManagerExecutorType}
+var ContainerReadLogsContainerManagerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerReadLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerCloseLogsContainerManagerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerCloseLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
 
 var MiddleOutNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.MiddleoutExecutionType, ExecutorType: commonexecutors.NoExecutorType}
 var GenerateTrv2ReqsNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenerateTrv2RequestsCmdType, ExecutorType: commonexecutors.NoExecutorType}
@@ -50,17 +51,19 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs
 		PrepareFilterContainersNoExecutor)
 
 	mainConfigs = append(mainConfigs,
-		ContainerReadLogsContainerExecutor)
+		ContainerReadLogsContainerManagerExecutor)
 
 	for range totalFilters {
 		mainConfigs = append(mainConfigs,
-			ContainerStartContainerExecutor,
 			ExecuteFilterFilterExecutor,
 		)
 	}
-
 	mainConfigs = append(mainConfigs,
-		ContainerCloseLogsContainerExecutor.WithRequired(true))
+		ContainerCloseLogsContainerManagerExecutor)
+
+	// Done sending requests to the container manager
+	mainConfigs = append(mainConfigs,
+		ContainerManagerStopContainerManagerExecutor.WithRequired(true))
 
 	// Middleout
 	mainConfigs = append(mainConfigs, MiddleOutNoExecutor)
@@ -87,7 +90,8 @@ func GeneratePreConfigs(ctx context.Context) *commonconfigs.Configs {
 	mainConfigs = append(mainConfigs,
 		TranslateV1toV2RequestNoExecutor,
 		CtrStartAsyncCtrExecutor,
-		GcloudAuthCtrExecutor)
+		GcloudAuthCtrExecutor,
+		ContainerManagerStartContainerManagerExecutor)
 
 	// Cleanup configs
 	cleanupConfigs = append(cleanupConfigs,

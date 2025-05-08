@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/containers"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -32,10 +33,7 @@ type ContainerExecutor struct {
 	Ctr              *crostoolrunner.CrosToolRunner
 	WaitGroups       []*sync.WaitGroup
 	LogChannels      []chan<- bool
-	ContainerChannel chan struct {
-		string
-		interfaces.ContainerInterface
-	}
+	ContainerChannel chan *commontypes.ContainerLogInfo
 	// KnownNetworks maps the network name to its ID.
 	KnownNetworks map[string]string
 	isClosed      bool
@@ -43,10 +41,7 @@ type ContainerExecutor struct {
 
 func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor {
 	absExec := interfaces.NewAbstractExecutor(ContainerExecutorType)
-	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}, ContainerChannel: make(chan struct {
-		string
-		interfaces.ContainerInterface
-	}), isClosed: false, KnownNetworks: map[string]string{}}
+	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}, ContainerChannel: make(chan *commontypes.ContainerLogInfo), isClosed: false, KnownNetworks: map[string]string{}}
 }
 
 func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
@@ -68,7 +63,7 @@ func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface in
 	case *commoncommands.ContainerCloseLogsCmd:
 		return ex.CloseLogs()
 	case *commoncommands.ContainerReadLogsCmd:
-		return ex.ReadLogs(ctx)
+		return ex.ReadLogs(ctx, cmd)
 
 	default:
 		return fmt.Errorf(
@@ -113,19 +108,26 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 	}
 	cmd.ContainerInstance = containerInstance
 	cmd.Endpoint = endpoint
+	logsLoc, err := containerInstance.GetLogsLocation()
+	if err != nil {
+		return errors.Annotate(err, "Failed to get container logs:").Err()
+	}
 
 	go func() {
 		// Send container for logs to be read.
-		ex.ContainerChannel <- struct {
-			string
-			interfaces.ContainerInterface
-		}{cmd.ContainerRequest.DynamicIdentifier, containerInstance}
+		ex.ContainerChannel <- &commontypes.ContainerLogInfo{
+			Name:        cmd.ContainerRequest.DynamicIdentifier,
+			LogLocation: logsLoc,
+		}
 	}()
 
 	return err
 }
 
-func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
+func (ex *ContainerExecutor) ReadLogs(ctx context.Context, cmd *commoncommands.ContainerReadLogsCmd) error {
+	if cmd.ContainerLogsChannel != nil {
+		ex.ContainerChannel = cmd.ContainerLogsChannel
+	}
 	stepStarted := make(chan struct{})
 	go func() {
 		var err error
@@ -138,7 +140,7 @@ func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
 		}()
 
 		for recv := range ex.ContainerChannel {
-			ex.streamLogAsync(ctx, step, recv.string, recv.ContainerInterface)
+			ex.streamLogAsync(ctx, step, recv.Name, recv.LogLocation)
 		}
 	}()
 
@@ -203,11 +205,7 @@ func (ex *ContainerExecutor) Start(
 }
 
 // streamLog kicks off streaming the containers log and stores its channel and waitgroup.
-func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Step, identifier string, containerInstance interfaces.ContainerInterface) (wg *sync.WaitGroup) {
-	logsLoc, err := containerInstance.GetLogsLocation()
-	if err != nil {
-		logging.Infof(ctx, "error during getting container log location: %s", err)
-	}
+func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Step, identifier string, logsLoc string) (wg *sync.WaitGroup) {
 	containerLog := step.Log(fmt.Sprintf("%s Log", identifier))
 
 	taskDone, wg, err := common.StreamLogAsync(ctx, logsLoc, containerLog)

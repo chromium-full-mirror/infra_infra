@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/protobuf/proto"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -106,8 +105,6 @@ func (cmd *ContainerStartCmd) ExtractDependencies(ctx context.Context,
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
-	case *ctpv2_data.FilterStateKeeper:
-		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
@@ -130,8 +127,6 @@ func (cmd *ContainerStartCmd) UpdateStateKeeper(
 		err = cmd.updateHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.updateHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
-	case *ctpv2_data.FilterStateKeeper:
-		err = cmd.updateFilterStateKeeper(ctx, sk)
 	}
 
 	if err != nil {
@@ -167,59 +162,6 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 	return nil
 }
 
-func (cmd *ContainerStartCmd) extractDepsFromFilterStateKeeper(
-	ctx context.Context,
-	sk *ctpv2_data.FilterStateKeeper) error {
-
-	if sk.ContainerInfoQueue.Len() < 1 {
-		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
-	}
-
-	if len(sk.TestPlanStates) == 0 {
-		if sk.InitialInternalTestPlan != nil {
-			// Set the first state from initial test plan
-			sk.TestPlanStates = append(sk.TestPlanStates, sk.InitialInternalTestPlan)
-			// Set the cmd input test plan
-			cmd.Req = proto.Clone(sk.InitialInternalTestPlan).(*testapi.InternalTestplan)
-		} else {
-			return fmt.Errorf("cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
-		}
-	} else {
-		// Get the last test plan state and set it as input test plan for current filter
-		cmd.Req = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*testapi.InternalTestplan)
-	}
-	if sk.BQClient != nil {
-		cmd.BQClient = sk.BQClient
-	}
-	cmd.BuildState = sk.BuildState
-
-	// This cmd will always update the first value in queue.
-	// It's expected that other execution cmd will deque the value later on.
-	contInfo := (sk.ContainerInfoQueue.Front().Value).(*ctpv2_data.ContainerInfo)
-	cmd.containerInfo = contInfo
-	cmd.ContainerRequest = contInfo.Request
-	imagePath, err := contInfo.GetImagePath()
-	if err != nil {
-		return errors.Annotate(err, "cmd %q missing dependency: ContainerImage", cmd.GetCommandType()).Err()
-	}
-	cmd.ContainerImage = imagePath
-	// Check map to see if the container is started already by another thread
-	contInfoFromMap, err := sk.ContainerInfoMap.Get(imagePath)
-	if err != nil {
-		logging.Infof(ctx,
-			"Container NOT found in the map with key %s. Error: %s", imagePath, err)
-		cmd.SkipStartingContainer = false
-	} else if contInfoFromMap != nil {
-		logging.Infof(ctx, "Container found in the map with key %s %s %s", imagePath, contInfoFromMap, contInfoFromMap.ServiceEndpoint)
-		cmd.SkipStartingContainer = true
-		cmd.containerInfo = contInfoFromMap
-		cmd.Endpoint = contInfoFromMap.ServiceEndpoint
-		contInfo.ServiceEndpoint = contInfoFromMap.ServiceEndpoint
-	}
-
-	return nil
-}
-
 func (cmd *ContainerStartCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
@@ -233,24 +175,6 @@ func (cmd *ContainerStartCmd) updateHwTestStateKeeper(
 
 	if cmd.ContainerInstance != nil && cmd.ContainerRequest.DynamicIdentifier != "" {
 		sk.ContainerInstances[cmd.ContainerRequest.ContainerImageKey] = cmd.ContainerInstance
-	}
-
-	return nil
-}
-
-func (cmd *ContainerStartCmd) updateFilterStateKeeper(
-	ctx context.Context,
-	sk *ctpv2_data.FilterStateKeeper) error {
-
-	if cmd.Endpoint != nil {
-		cmd.containerInfo.ServiceEndpoint = cmd.Endpoint
-		imagePath, err := cmd.containerInfo.GetImagePath()
-		if err != nil {
-			logging.Infof(ctx, "error while getting image path: %s", err)
-		} else if imagePath != "" {
-			sk.ContainerInfoMap.Set(imagePath, cmd.containerInfo)
-			logging.Infof(ctx, "Set in the map with key: %s", imagePath)
-		}
 	}
 
 	return nil

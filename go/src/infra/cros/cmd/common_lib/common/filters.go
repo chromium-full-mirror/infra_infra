@@ -244,6 +244,7 @@ func binaryName(name string, build int) string {
 // CreateContainerRequest creates container request from provided ctp filter.
 func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRequest {
 	defaultBinaryArgs := binaryArgsLookup[requestedFilter.GetContainerInfo().GetContainer().GetName()]
+	imagePath, _ := CreateImagePath(requestedFilter.GetContainerInfo().GetContainer())
 
 	return &api.ContainerRequest{
 		DynamicIdentifier: requestedFilter.GetContainerInfo().GetContainer().GetName(),
@@ -264,8 +265,9 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerReques
 			},
 		},
 		// TODO (azrahman): figure this out (not being used right now).
-		ContainerImageKey: requestedFilter.GetContainerInfo().GetContainer().GetName(),
-		Network:           "host",
+		ContainerImageKey:  requestedFilter.GetContainerInfo().GetContainer().GetName(),
+		ContainerImagePath: imagePath,
+		Network:            "host",
 	}
 }
 

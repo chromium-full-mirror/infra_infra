@@ -33,6 +33,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
 	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/outputprops"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/suitelimits"
@@ -133,13 +134,14 @@ func executeRequests(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	sk := &data.PrePostFilterStateKeeper{
-		DockerKeyFileLocation: dockerKeyFile,
-		Ctr:                   ctr,
-		CtpV1Requests:         input.GetRequests(),
-		CtpV2Request:          input.GetCtpv2Request(),
-		BQClient:              BQClient,
-		BuildState:            buildState,
-		IsPartnerRun:          isPartnerRun,
+		DockerKeyFileLocation:   dockerKeyFile,
+		Ctr:                     ctr,
+		CtpV1Requests:           input.GetRequests(),
+		CtpV2Request:            input.GetCtpv2Request(),
+		BQClient:                BQClient,
+		BuildState:              buildState,
+		IsPartnerRun:            isPartnerRun,
+		ContainerRequestChannel: make(chan commontypes.ContainerManagementRequest),
 	}
 
 	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)
@@ -183,7 +185,7 @@ func executeRequests(
 		workUnitsOnly = sk.AlStateInfo.WorkUnitsOnly
 	}
 
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, top, isPartnerRun, generateInvocation, workUnitsOnly)
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, top, isPartnerRun, generateInvocation, workUnitsOnly, sk.ContainerRequestChannel)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -206,7 +208,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, top *androidapi.WorkUnitNode, isPartnerRun, generateInvocation, workUnitsOnly bool) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, top *androidapi.WorkUnitNode, isPartnerRun, generateInvocation, workUnitsOnly bool, containerRequestChannel chan commontypes.ContainerManagementRequest) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -216,7 +218,6 @@ func executeCtpv2Reqs(ctx context.Context,
 	resultsChan := make(chan map[string][]*data.TestResults)
 	suiteExecutionSummaryChan := make(chan map[string]string, len(keyRequestMap))
 	wg := &sync.WaitGroup{}
-	contInfoMap := data.NewContainerInfoMap()
 	suiteCounter := map[string]int{}
 
 	// Begin the metrics logging collection system for SuiteLimits.
@@ -234,7 +235,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, top, isPartnerRun, generateInvocation, workUnitsOnly, suiteExecutionSummaryChan)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, top, isPartnerRun, generateInvocation, workUnitsOnly, suiteExecutionSummaryChan, containerRequestChannel)
 	}
 	go func() {
 		wg.Wait()
@@ -277,7 +278,6 @@ func executeFiltersInLuciBuild(
 	buildState *build.State,
 	wg *sync.WaitGroup,
 	ctr *crostoolrunner.CrosToolRunner,
-	contInfoMap *data.ContainerInfoMap,
 	results chan<- map[string][]*data.TestResults,
 	suiteDisplayName string,
 	BQClient *bigquery.Client,
@@ -287,7 +287,8 @@ func executeFiltersInLuciBuild(
 	isPartnerRun,
 	generateInvocation,
 	workUnitsOnly bool,
-	suiteExecutionSummary chan<- map[string]string) {
+	suiteExecutionSummary chan<- map[string]string,
+	containerRequestChannel chan commontypes.ContainerManagementRequest) {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -350,23 +351,24 @@ func executeFiltersInLuciBuild(
 	}
 
 	sk := &data.FilterStateKeeper{
-		CtpReq:             req,
-		Ctr:                ctr,
-		ContainerInfoQueue: list.New(),
-		BuildState:         buildState,
-		Scheduler:          req.GetSchedulerInfo().GetScheduler(),
-		ContainerInfoMap:   contInfoMap,
-		BQClient:           BQClient,
-		Config:             config,
-		RequestKey:         reqKey,
-		DockerKeyFile:      dockerKeyFile,
-		CTPversion:         ctpVersion,
-		Environment:        common.GetCTPEnvironment(buildState.Build().GetBuilder()).String(),
-		AlStateInfo:        alStateInfo,
-		IsAlRun:            req.IsAlRun,
-		IsPartnerRun:       isPartnerRun,
-		SuiteTestResults:   map[string]*data.TestResults{},
-		ExecutionAIContext: fmt.Sprintf("%s \n Suite request: %s", common.CTPContext, req),
+		CtpReq:                  req,
+		Ctr:                     ctr,
+		ContainerInfoQueue:      list.New(),
+		BuildState:              buildState,
+		Scheduler:               req.GetSchedulerInfo().GetScheduler(),
+		BQClient:                BQClient,
+		Config:                  config,
+		RequestKey:              reqKey,
+		DockerKeyFile:           dockerKeyFile,
+		CTPversion:              ctpVersion,
+		Environment:             common.GetCTPEnvironment(buildState.Build().GetBuilder()).String(),
+		AlStateInfo:             alStateInfo,
+		IsAlRun:                 req.IsAlRun,
+		IsPartnerRun:            isPartnerRun,
+		SuiteTestResults:        map[string]*data.TestResults{},
+		ExecutionAIContext:      fmt.Sprintf("%s \n Suite request: %s", common.CTPContext, req),
+		ContainerRequestChannel: containerRequestChannel,
+		ContainerLogsChannel:    make(chan *commontypes.ContainerLogInfo),
 	}
 
 	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)

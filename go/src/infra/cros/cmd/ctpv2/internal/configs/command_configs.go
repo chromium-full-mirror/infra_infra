@@ -114,6 +114,20 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commoncommands.NewContainerCloseLogsCmd(exec)
 
+	case commoncommands.ContainerManagerStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commoncommands.NewContainerManagerStartCmd(exec)
+
+	case commoncommands.ContainerManagerStopCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commoncommands.NewContainerManagerStopCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("command type %s not supported in command configs", cmdType)
 	}

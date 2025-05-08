@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
@@ -25,8 +26,10 @@ type FilterExecutionCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	InputTestPlan *testapi.InternalTestplan
-	ContainerInfo *data.ContainerInfo
+	InputTestPlan           *testapi.InternalTestplan
+	ContainerInfo           *data.ContainerInfo
+	ContainerRequestChannel chan commontypes.ContainerManagementRequest
+	ContainerLogsChannel    chan *commontypes.ContainerLogInfo
 
 	// Updates
 	OutputTestPlan *testapi.InternalTestplan
@@ -87,9 +90,6 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.ContainerInfo = sk.ContainerInfoQueue.Remove(sk.ContainerInfoQueue.Front()).(*data.ContainerInfo)
-	if cmd.ContainerInfo.ServiceEndpoint == nil {
-		return fmt.Errorf("cmd %q missing dependency: ServiceEndpoint", cmd.GetCommandType())
-	}
 
 	if len(sk.TestPlanStates) == 0 {
 		if sk.InitialInternalTestPlan != nil {
@@ -109,6 +109,9 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 		cmd.BQClient = sk.BQClient
 	}
 	cmd.BuildState = sk.BuildState
+
+	cmd.ContainerRequestChannel = sk.ContainerRequestChannel
+	cmd.ContainerLogsChannel = sk.ContainerLogsChannel
 	// TODO (azrahman): remove these custom test plans call once ttcp filter stablized.
 	// Only to be used to test ttcp filter through led.
 	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {

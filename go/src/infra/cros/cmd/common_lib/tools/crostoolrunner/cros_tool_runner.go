@@ -343,6 +343,23 @@ func (ctr *CrosToolRunner) GetNetwork(
 	return resp, nil
 }
 
+func (ctr *CrosToolRunner) GetOrCreateNetwork(ctx context.Context, networkName string) (*testapi.Network, error) {
+	// Try getting the network.
+	getNetworkResp, err := ctr.GetNetwork(ctx, networkName)
+	if err != nil {
+		logging.Infof(ctx, "could not find network, creating network instead: %s", err.Error())
+	} else {
+		return getNetworkResp.GetNetwork(), nil
+	}
+
+	// Create network.
+	createNetworkResp, err := ctr.CreateNetwork(ctx, networkName)
+	if err != nil {
+		return nil, err
+	}
+	return createNetworkResp.GetNetwork(), nil
+}
+
 // GetContainer gets the container with provided name.
 func (ctr *CrosToolRunner) GetContainer(
 	ctx context.Context,

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,16 @@ import (
 	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
-// ContainerReadLogsCmd represents container close logs command.
-type ContainerReadLogsCmd struct {
+// ContainerManagerStopCmd represents gcloud auth cmd.
+type ContainerManagerStopCmd struct {
 	*interfaces.SingleCmdByExecutor
 
-	ContainerLogsChannel chan *commontypes.ContainerLogInfo
+	// Deps
+	RequestChannel chan commontypes.ContainerManagementRequest
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
-func (cmd *ContainerReadLogsCmd) ExtractDependencies(ctx context.Context,
+func (cmd *ContainerManagerStopCmd) ExtractDependencies(ctx context.Context,
 	ski interfaces.StateKeeperInterface) error {
 	var err error
 	switch sk := ski.(type) {
@@ -40,18 +41,18 @@ func (cmd *ContainerReadLogsCmd) ExtractDependencies(ctx context.Context,
 	return nil
 }
 
-func (cmd *ContainerReadLogsCmd) extractDepsFromFilterStateKeeper(
+func (cmd *ContainerManagerStopCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
 	sk *ctpv2_data.FilterStateKeeper) error {
 
-	cmd.ContainerLogsChannel = sk.ContainerLogsChannel
+	cmd.RequestChannel = sk.ContainerRequestChannel
 
 	return nil
 }
 
-func NewContainerReadLogsCmd(executor interfaces.ExecutorInterface) *ContainerReadLogsCmd {
-	singleCmdByExec := interfaces.NewSingleCmdByExecutor(ContainerReadLogsCmdType, executor)
-	cmd := &ContainerReadLogsCmd{SingleCmdByExecutor: singleCmdByExec}
+func NewContainerManagerStopCmd(executor interfaces.ExecutorInterface) *ContainerManagerStopCmd {
+	singleCmdByExec := interfaces.NewSingleCmdByExecutor(ContainerManagerStopCmdType, executor)
+	cmd := &ContainerManagerStopCmd{SingleCmdByExecutor: singleCmdByExec}
 	cmd.ConcreteCmd = cmd
 	return cmd
 }

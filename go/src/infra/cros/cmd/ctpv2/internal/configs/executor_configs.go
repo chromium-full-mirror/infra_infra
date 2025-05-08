@@ -55,6 +55,12 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = commonexecutors.NewContainerExecutor(cfg.Ctr)
 
+	case commonexecutors.ContainerManagerExecutorType:
+		if cfg.Ctr == nil {
+			return nil, fmt.Errorf("CrosToolRunner is nil!")
+		}
+		exec = commonexecutors.NewContainerManagerExecutor(cfg.Ctr)
+
 	default:
 		return nil, fmt.Errorf("executor type %s not supported in executor configs", execType)
 	}

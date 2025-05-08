@@ -183,6 +183,7 @@ func StreamLogAsync(ctx context.Context, rootDir string, writer io.Writer) (chan
 		wg.Done()
 		return nil, &wg, err
 	}
+	logging.Infof(ctx, "Found file '%s' at '%s'", fileName, rootDir)
 
 	// Open the file for reading
 	fi, err := os.OpenFile(filePath, os.O_RDONLY, os.ModeNamedPipe)

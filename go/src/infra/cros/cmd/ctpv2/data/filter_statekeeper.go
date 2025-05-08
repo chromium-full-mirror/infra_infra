@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/luci/luciexe/build"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
@@ -47,11 +48,12 @@ type FilterStateKeeper struct {
 	BuildState *build.State
 
 	// Container info queue
-	ContainerInfoQueue *list.List
+	ContainerInfoQueue      *list.List
+	ContainerRequestChannel chan commontypes.ContainerManagementRequest
+	ContainerLogsChannel    chan *commontypes.ContainerLogInfo
 
 	// Dictionaries
 	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
-	ContainerInfoMap     *ContainerInfoMap
 
 	// Tools and their related dependencies
 	Ctr *crostoolrunner.CrosToolRunner

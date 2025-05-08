@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/luciexe/build"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
@@ -28,6 +29,7 @@ type PrePostFilterStateKeeper struct {
 	ExecuteResponses        *steps.ExecuteResponses
 	DddTrackerMap           map[string]bool // v1 request key 3d bool map
 	IsPartnerRun            bool
+	ContainerRequestChannel chan commontypes.ContainerManagementRequest
 
 	// Al run related
 	AlStateInfo *AlStateInfo

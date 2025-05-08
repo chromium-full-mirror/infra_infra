@@ -6,7 +6,6 @@ package data
 
 import (
 	"fmt"
-	"sync"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -44,29 +43,4 @@ func (contInfo *ContainerInfo) GetEndpointString() (string, error) {
 		return "", errors.Reason("cannot get endpoint string for nil service endpoint.").Err()
 	}
 	return fmt.Sprintf("%s:%d", contInfo.ServiceEndpoint.GetAddress(), contInfo.ServiceEndpoint.GetPort()), nil
-}
-
-type ContainerInfoMap struct {
-	syncMap sync.Map
-}
-
-func NewContainerInfoMap() *ContainerInfoMap {
-	return &ContainerInfoMap{syncMap: sync.Map{}}
-}
-
-func (c *ContainerInfoMap) Set(key string, contInfo *ContainerInfo) {
-	c.syncMap.Store(key, contInfo)
-}
-
-func (c *ContainerInfoMap) Get(key string) (*ContainerInfo, error) {
-	value, found := c.syncMap.Load(key)
-	if found {
-		// Convert interface to struct using type assertion
-		contInfo, ok := value.(*ContainerInfo)
-		if !ok {
-			return nil, fmt.Errorf("conversion to container info failed for key %s", key)
-		}
-		return contInfo, nil
-	}
-	return nil, fmt.Errorf("key %s not found in sync map", key)
 }
