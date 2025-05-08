@@ -24,14 +24,14 @@ import (
 // Trace is an entry of trace format.
 // https://code.google.com/p/trace-viewer/
 type Trace struct {
-	Name      string                 `json:"name"`
-	Category  string                 `json:"cat"`
-	EventType string                 `json:"ph"`
-	Timestamp int                    `json:"ts"`  // microsecond
-	Duration  int                    `json:"dur"` // microsecond
-	ProcessID int                    `json:"pid"`
-	ThreadID  int                    `json:"tid"`
-	Args      map[string]interface{} `json:"args"`
+	Name      string         `json:"name"`
+	Category  string         `json:"cat"`
+	EventType string         `json:"ph"`
+	Timestamp int            `json:"ts"`  // microsecond
+	Duration  int            `json:"dur"` // microsecond
+	ProcessID int            `json:"pid"`
+	ThreadID  int            `json:"tid"`
+	Args      map[string]any `json:"args"`
 }
 
 type traceByStart []Trace
@@ -49,7 +49,7 @@ func toTrace(step Step, pid int, tid int) Trace {
 		Duration:  int(step.Duration().Nanoseconds() / 1000),
 		ProcessID: pid,
 		ThreadID:  tid,
-		Args:      make(map[string]interface{}),
+		Args:      make(map[string]any),
 	}
 }
 

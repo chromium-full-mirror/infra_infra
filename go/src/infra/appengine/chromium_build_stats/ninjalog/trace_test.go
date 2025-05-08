@@ -87,7 +87,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (187 - 76) * 1000,
 			ProcessID: 1,
 			ThreadID:  1,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "gen/angle/commit_id.py",
@@ -97,7 +97,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (286 - 78) * 1000,
 			ProcessID: 1,
 			ThreadID:  2,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "gen/angle/copy_compiler_dll.bat",
@@ -107,7 +107,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (287 - 79) * 1000,
 			ProcessID: 1,
 			ThreadID:  3,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "gen/autofill_regex_constants.cc",
@@ -117,7 +117,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (284 - 80) * 1000,
 			ProcessID: 1,
 			ThreadID:  4,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "PepperFlash/manifest.json",
@@ -127,7 +127,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (287 - 141) * 1000,
 			ProcessID: 1,
 			ThreadID:  5,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "PepperFlash/libpepflashplayer.so",
@@ -137,7 +137,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (288 - 142) * 1000,
 			ProcessID: 1,
 			ThreadID:  6,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "obj/third_party/pdfium/core/src/fpdfdoc/fpdfdoc.doc_formfield.o",
@@ -147,7 +147,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (21304 - 187) * 1000,
 			ProcessID: 1,
 			ThreadID:  1,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 		{
 			Name:      "obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp",
@@ -157,7 +157,7 @@ func TestTrace(t *testing.T) {
 			Duration:  (290 - 287) * 1000,
 			ProcessID: 1,
 			ThreadID:  2,
-			Args:      map[string]interface{}{},
+			Args:      map[string]any{},
 		},
 	}
 

@@ -51,7 +51,7 @@ func avroCodec() (*goavro.Codec, error) {
 var timeNow = time.Now
 
 // toAVRO returns ninja log passed to AVRO codec.
-func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
+func toAVRO(info *NinjaLog) (map[string]any, error) {
 	weightedTime := WeightedTime(info.Steps)
 	steps := Dedup(info.Steps)
 	buildID := info.Metadata.BuildID
@@ -76,7 +76,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		os = "MAC"
 	}
 
-	buildConfigs := make([]map[string]interface{}, 0, len(info.Metadata.BuildConfigs))
+	buildConfigs := make([]map[string]any, 0, len(info.Metadata.BuildConfigs))
 	// Old data do not have ExplicitBuildConfigKeys in the metadata.
 	// In that case, it is better to not set `explicit=false`, which might be wrong.
 	hasExplicitKeys := len(info.Metadata.ExplicitBuildConfigKeys) > 0
@@ -87,13 +87,13 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	for k, v := range info.Metadata.BuildConfigs {
 		if hasExplicitKeys {
 			_, explicit := explicitKeys[k]
-			buildConfigs = append(buildConfigs, map[string]interface{}{
+			buildConfigs = append(buildConfigs, map[string]any{
 				"key":      k,
 				"value":    v,
 				"explicit": goavro.Union("boolean", explicit),
 			})
 		} else {
-			buildConfigs = append(buildConfigs, map[string]interface{}{
+			buildConfigs = append(buildConfigs, map[string]any{
 				"key":      k,
 				"value":    v,
 				"explicit": nil,
@@ -106,12 +106,12 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		return buildConfigs[i]["key"].(string) < buildConfigs[j]["key"].(string)
 	})
 
-	logEntries := make([]map[string]interface{}, 0, len(steps))
+	logEntries := make([]map[string]any, 0, len(steps))
 
 	for _, s := range steps {
 		outputs := append(s.Outs, s.Out)
 		sort.Strings(outputs)
-		logEntries = append(logEntries, map[string]interface{}{
+		logEntries = append(logEntries, map[string]any{
 			"outputs":               outputs,
 			"start_duration_sec":    s.Start.Seconds(),
 			"end_duration_sec":      s.End.Seconds(),
@@ -119,7 +119,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		})
 	}
 
-	av := map[string]interface{}{
+	av := map[string]any{
 		"user":               info.Metadata.User,
 		"targets":            info.Metadata.getTargets(),
 		"build_id":           buildID,
@@ -168,7 +168,7 @@ func writeAvro(nlog *NinjaLog, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	return ocfw.Append([]interface{}{avro})
+	return ocfw.Append([]any{avro})
 }
 
 // WriteNinjaLogToGCS upload ninja log to GCS in avro format.
