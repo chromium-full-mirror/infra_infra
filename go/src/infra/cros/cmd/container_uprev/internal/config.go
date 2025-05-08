@@ -460,6 +460,16 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 		},
+		{
+			Name: "lsnexus",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/lsnexus/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 	}
 
 	return CleanConfigs(configs)
