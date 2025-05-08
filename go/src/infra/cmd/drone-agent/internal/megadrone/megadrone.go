@@ -40,7 +40,7 @@ type Agent struct {
 
 // A logger represents the logging interface used by the package.
 type logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }
 
 // Run runs the agent until it is canceled via the context.
@@ -101,7 +101,7 @@ func (a *Agent) droneStarter() bot.DroneStarter {
 	}
 }
 
-func (a *Agent) log(format string, args ...interface{}) {
+func (a *Agent) log(format string, args ...any) {
 	if v := a.logger; v != nil {
 		v.Printf(format, args...)
 	} else {
