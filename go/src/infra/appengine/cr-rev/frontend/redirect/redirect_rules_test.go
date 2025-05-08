@@ -200,12 +200,23 @@ func TestRedirects(t *testing.T) {
 			t.Run("existing commits", func(t *ftt.Test) {
 				url, _, err := r.FindRedirectURL(ctx, "/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562"))
+				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562"))
+			})
+
+			t.Run("existing commits with 3 dots", func(t *ftt.Test) {
+				url, _, err := r.FindRedirectURL(ctx, "/0000000000000000000000000000000000291560...0000000000000000000000000000000000291562")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562"))
+			})
+
+			t.Run("existing commits with 1 dot", func(t *ftt.Test) {
+				_, _, err := r.FindRedirectURL(ctx, "/0000000000000000000000000000000000291560.0000000000000000000000000000000000291562")
+				assert.Loosely(t, err, should.Equal(ErrNoMatch))
 			})
 
 			t.Run("commit missing", func(t *ftt.Test) {
 				_, _, err := r.FindRedirectURL(ctx, "/0000000000000000000000000000000000291560..0000000000000000000000000000000000291561")
-				assert.Loosely(t, err, should.Equal(ErrNoMatch))
+				assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 			})
 		})
 
@@ -338,7 +349,81 @@ func TestRedirects(t *testing.T) {
 			url, _, err := r.FindRedirectURL(
 				ctx, "/000000..000001")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/000000..000001"))
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/000000..000001"))
+		})
+	})
+
+	ftt.Run("mixed diff redirect", t, func(t *ftt.Test) {
+		ctx := redirectTestSetup()
+		commits := []*models.Commit{
+			{
+				ID:             "chromium-chromium/src-0000000000000000000000000000000000291560",
+				CommitHash:     "0000000000000000000000000000000000291560",
+				Host:           "chromium",
+				Repository:     "chromium/src",
+				PositionNumber: 291560,
+				PositionRef:    "refs/heads/master",
+			},
+		}
+		datastore.Put(ctx, commits)
+
+		t.Run("short hash and full hash", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(
+				ctx, "/000000..0000000000000000000000000000000000291560")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/000000..0000000000000000000000000000000000291560"))
+		})
+
+		t.Run("full hash and short hash", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(
+				ctx, "/0000000000000000000000000000000000291560..000000")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..000000"))
+		})
+
+		t.Run("position and full hash", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(
+				ctx, "/291560..0000000000000000000000000000000000291560")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..0000000000000000000000000000000000291560"))
+		})
+
+		t.Run("full hash and position", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(
+				ctx, "/0000000000000000000000000000000000291560..291560")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..0000000000000000000000000000000000291560"))
+		})
+
+		t.Run("position and short hash", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(ctx, "/291560..000000")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..000000"))
+		})
+
+		t.Run("short hash and position", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(ctx, "/000000..291560")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/000000..0000000000000000000000000000000000291560"))
+		})
+
+		t.Run("tag and position", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(ctx, "/138.0.7166.1..291560")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/138.0.7166.1..0000000000000000000000000000000000291560"))
+		})
+
+		t.Run("position and branch", func(t *ftt.Test) {
+			url, _, err := r.FindRedirectURL(ctx, "/291560..main")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..main"))
+		})
+
+		// Not supported (although gitiles accepts it)
+		t.Run("position and refspec with slash", func(t *ftt.Test) {
+			_, _, err := r.FindRedirectURL(
+				ctx, "/291560..refs/tags/138.0.7166.1")
+			assert.Loosely(t, err, should.Equal(ErrNoMatch))
 		})
 	})
 

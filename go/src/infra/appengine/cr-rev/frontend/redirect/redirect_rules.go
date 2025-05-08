@@ -13,21 +13,23 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"go.chromium.org/infra/appengine/cr-rev/common"
 	"go.chromium.org/infra/appengine/cr-rev/models"
 	"go.chromium.org/infra/appengine/cr-rev/utils"
 )
 
 var rietveldRedirectRegex = regexp.MustCompile(`^/(\d{9,39})(?:/(.*))?$`)
 var numberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(?:/(.*))?$`)
-var diffLogNumberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(\.{2,3})(\d{1,8})$`)
 var fullCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(?:/(.*))?$`)
 var shortCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{6,39})(?:/(.*))?$`)
-var diffFullHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(\.{2,3})([[:xdigit:]]{40})`)
-var diffShortHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{6,39})(\.{2,3})([[:xdigit:]]{6,40})`)
+
+var fullHashRegex = regexp.MustCompile(`^[[:xdigit:]]{40}$`)
+var shortHashRegex = regexp.MustCompile(`^[[:xdigit:]]{6,39}$`)
+var tagNameRegex = regexp.MustCompile(`^[[:xdigit:]]{2,3}\.0\.[[:xdigit:]]{4,5}\.[[:xdigit:]]{1,3}$`)
+var branchNameRegex = regexp.MustCompile(`^[[:alpha:]][[:alnum:]]+$`)
 
 // List of valid positions refs for numberRedirectRule
 var chromiumPositionRefs = []string{
@@ -103,47 +105,6 @@ func findCommitFromNumber(ctx context.Context, number int) (*models.Commit, erro
 	return commit, nil
 }
 
-// diffLogNumberRedirectRule redirects from two commit numbers to the diff between
-// the commits in gitiles.
-type diffLogNumberRedirectRule struct {
-	gitRedirect GitRedirect
-}
-
-func (r *diffLogNumberRedirectRule) getRedirect(ctx context.Context, url string) (string,
-	*models.Commit, error) {
-	result := diffLogNumberRedirectRegex.FindStringSubmatch(url)
-	if len(result) == 0 {
-		return "", nil, ErrNoMatch
-	}
-	number, err := strconv.Atoi(result[1])
-	if err != nil {
-		return "", nil, err
-	}
-	number2, err := strconv.Atoi(result[3])
-	if err != nil {
-		return "", nil, err
-	}
-
-	commit, err := findCommitFromNumber(ctx, number)
-	if err != nil {
-		return "", nil, err
-	}
-
-	commit2, err := findCommitFromNumber(ctx, number2)
-	if err != nil {
-		return "", nil, err
-	}
-	if !commit.SameRepoAs(*commit2) {
-		return "", nil, ErrNoMatch
-	}
-
-	url, err = r.gitRedirect.Log(*commit, *commit2)
-	if err != nil {
-		return "", nil, err
-	}
-	return url, commit, nil
-}
-
 // fullCommitHashRule finds a commit across all indexed repositories and, if
 // found, returns URL to the commit. If there are multiple matches (for mirrors
 // and forks), it uses repo priority to determine where user should be
@@ -214,84 +175,6 @@ func (r *shortCommitHashRule) getRedirect(ctx context.Context, url string) (stri
 	return url, &commit, nil
 }
 
-// diffFullHashRule finds two commits across all indexed repositories and, if
-// found, returns URL to the commit. If there are multiple matches (for mirrors
-// and forks), it uses repo priority to determine where user should be
-// redirected.
-type diffFullHashRule struct {
-	gitRedirect GitRedirect
-}
-
-func (r *diffFullHashRule) getRedirect(ctx context.Context, url string) (string,
-	*models.Commit, error) {
-	result := diffFullHashRegex.FindStringSubmatch(url)
-	if len(result) == 0 {
-		return "", nil, ErrNoMatch
-	}
-	commits, err := models.FindCommitsByHash(ctx, result[1])
-	if err != nil {
-		return "", nil, err
-	}
-
-	commit := utils.FindBestCommit(ctx, commits)
-	if commit == nil {
-		return "", nil, ErrNoMatch
-	}
-
-	gitCommit := common.GitCommit{
-		Repository: common.GitRepository{
-			Host: commit.Host,
-			Name: commit.Repository,
-		},
-		Hash: result[3],
-	}
-	commit2 := &models.Commit{
-		ID: gitCommit.ID(),
-	}
-	err = datastore.Get(ctx, commit2)
-	if err != nil {
-		if err == datastore.ErrNoSuchEntity {
-			return "", nil, ErrNoMatch
-		}
-		return "", nil, err
-	}
-
-	url, err = r.gitRedirect.Diff(*commit, *commit2)
-	if err != nil {
-		return "", nil, err
-	}
-	return url, commit, nil
-}
-
-// diffShortCommitHashRule always redirects to chromium/src in hope that
-// commits exist.
-type diffShortHashRule struct {
-	gitRedirect GitRedirect
-}
-
-func (r *diffShortHashRule) getRedirect(ctx context.Context, url string) (string,
-	*models.Commit, error) {
-	result := diffShortHashRegex.FindStringSubmatch(url)
-	if len(result) < 4 {
-		return "", nil, ErrNoMatch
-	}
-	commit1 := models.Commit{
-		Host:       "chromium",
-		Repository: "chromium/src",
-		CommitHash: result[1],
-	}
-	commit2 := models.Commit{
-		Host:       "chromium",
-		Repository: "chromium/src",
-		CommitHash: result[3],
-	}
-	url, err := r.gitRedirect.Diff(commit1, commit2)
-	if err != nil {
-		return "", nil, err
-	}
-	return url, &commit1, nil
-}
-
 type rietveldRule struct {
 }
 
@@ -303,6 +186,75 @@ func (r *rietveldRule) getRedirect(ctx context.Context, url string) (string,
 	}
 	url = fmt.Sprintf("https://codereview.chromium.org/%s", result[1])
 	return url, nil, nil
+}
+
+func findCommit(ctx context.Context, ref string) (*models.Commit, error) {
+	if fullHashRegex.MatchString(ref) {
+		commits, err := models.FindCommitsByHash(ctx, ref)
+		if err == nil && len(commits) != 0 {
+			commit := utils.FindBestCommit(ctx, commits)
+			if commit != nil {
+				return commit, nil
+			}
+		}
+		// Returns NoMatch, if the full hash is not found.
+		return nil, ErrNoMatch
+	}
+
+	number, err := strconv.Atoi(ref)
+	if err == nil {
+		commit, _ := findCommitFromNumber(ctx, number)
+		if commit != nil {
+			return commit, nil
+		}
+	}
+
+	if shortHashRegex.MatchString(ref) || tagNameRegex.MatchString(ref) ||
+		branchNameRegex.MatchString(ref) {
+		commit := &models.Commit{
+			Host:       "chromium",
+			Repository: "chromium/src",
+			CommitHash: ref,
+		}
+		return commit, nil
+	}
+
+	return nil, ErrNoMatch
+}
+
+// diffRule finds two commits and returns URL showing the change logs.
+// If a full hash or number is given, it tries to find the commita cross all
+// indexed repositories. If there are multiple matches (for mirrors and forks),
+// it uses repo priority to determine where user should be redirected.
+type diffRule struct {
+	gitRedirect GitRedirect
+}
+
+func (r *diffRule) getRedirect(ctx context.Context, url string) (string,
+	*models.Commit, error) {
+	if !strings.HasPrefix(url, "/") {
+		return "", nil, ErrNoMatch
+	}
+
+	refs := regexp.MustCompile(`\.{2,3}`).Split(strings.TrimPrefix(url, "/"), 3)
+	if len(refs) != 2 {
+		return "", nil, ErrNoMatch
+	}
+
+	commit1, err1 := findCommit(ctx, refs[0])
+	commit2, err2 := findCommit(ctx, refs[1])
+	if err1 != nil {
+		return "", nil, ErrNoMatch
+	}
+	if err2 != nil {
+		return "", nil, ErrNoMatch
+	}
+
+	url, err := r.gitRedirect.Log(*commit1, *commit2)
+	if err != nil {
+		return "", nil, err
+	}
+	return url, commit1, nil
 }
 
 // Rules holds all available redirect rules. The order of rules
@@ -319,9 +271,6 @@ func NewRules(redirect GitRedirect) *Rules {
 			&numberRedirectRule{
 				gitRedirect: redirect,
 			},
-			&diffLogNumberRedirectRule{
-				gitRedirect: redirect,
-			},
 			&fullCommitHashRule{
 				gitRedirect: redirect,
 			},
@@ -329,10 +278,7 @@ func NewRules(redirect GitRedirect) *Rules {
 			&shortCommitHashRule{
 				gitRedirect: redirect,
 			},
-			&diffFullHashRule{
-				gitRedirect: redirect,
-			},
-			&diffShortHashRule{
+			&diffRule{
 				gitRedirect: redirect,
 			},
 		},
