@@ -47,7 +47,7 @@ func NewEndpointsClient(client *http.Client, url string) MonorailClient {
 	return &epClient{HTTP: client, url: strings.TrimSuffix(url, "/")}
 }
 
-func (c *epClient) call(ctx context.Context, method, urlSuffix string, request, response interface{}) error {
+func (c *epClient) call(ctx context.Context, method, urlSuffix string, request, response any) error {
 	client := c.HTTP
 	if client == nil {
 		client = http.DefaultClient
