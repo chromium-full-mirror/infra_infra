@@ -60,7 +60,7 @@ func Use(ctx context.Context, c *Config) context.Context {
 
 // UnaryConfig is a gRPC interceptor for adding LUCI config to the
 // request context.
-func UnaryConfig(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+func UnaryConfig(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 	// TODO(ayatane): Move this to the middleware package, if that package still exists.
 	msg, err := cachedCfg.Get(ctx, nil)
 	if err != nil {

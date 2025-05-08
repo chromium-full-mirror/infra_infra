@@ -25,20 +25,20 @@ type loggerImpl struct {
 	t     *testing.T
 }
 
-func (gl loggerImpl) Debugf(format string, args ...interface{}) {
+func (gl loggerImpl) Debugf(format string, args ...any) {
 	gl.LogCall(logging.Debug, 1, format, args)
 }
-func (gl loggerImpl) Infof(format string, args ...interface{}) {
+func (gl loggerImpl) Infof(format string, args ...any) {
 	gl.LogCall(logging.Info, 1, format, args)
 }
-func (gl loggerImpl) Warningf(format string, args ...interface{}) {
+func (gl loggerImpl) Warningf(format string, args ...any) {
 	gl.LogCall(logging.Warning, 1, format, args)
 }
-func (gl loggerImpl) Errorf(format string, args ...interface{}) {
+func (gl loggerImpl) Errorf(format string, args ...any) {
 	gl.LogCall(logging.Error, 1, format, args)
 }
 
-func (gl loggerImpl) LogCall(l logging.Level, calldepth int, format string, args []interface{}) {
+func (gl loggerImpl) LogCall(l logging.Level, calldepth int, format string, args []any) {
 	if l >= gl.level {
 		gl.t.Logf(format, args...)
 	}
