@@ -295,7 +295,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 
 	ftt.Run("TestParseLabelValuesToArray", t, func(t *ftt.Test) {
 		t.Run("get label names values from []interface{} - string castable", func(t *ftt.Test) {
-			var labelVals []interface{}
+			var labelVals []any
 			labelVals = append(labelVals, "label-1", "label-2")
 
 			got, err := ParseLabelValuesToArray(labelVals)
@@ -305,7 +305,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 		})
 
 		t.Run("get label names values from []interface{} - string not castable", func(t *ftt.Test) {
-			var labelVals []interface{}
+			var labelVals []any
 			labelVals = append(labelVals, []string{"label-1"}, []string{"label-2"})
 
 			got, err := ParseLabelValuesToArray(labelVals)
@@ -328,7 +328,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 		})
 
 		t.Run("get label names values from []interface{} - boolean castable", func(t *ftt.Test) {
-			var labelVals interface{} = true
+			var labelVals any = true
 
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.BeNil)
@@ -337,7 +337,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 		})
 
 		t.Run("get label names values from []interface{} - float64 castable", func(t *ftt.Test) {
-			var labelVals interface{} = 1238764.987
+			var labelVals any = 1238764.987
 
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.BeNil)

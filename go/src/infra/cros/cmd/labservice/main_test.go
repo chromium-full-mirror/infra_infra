@@ -24,7 +24,7 @@ type testServerStream struct {
 }
 
 // SendMsg overrides behavior of sending a message to store it in a slice.
-func (s *testServerStream) SendMsg(m interface{}) error {
+func (s *testServerStream) SendMsg(m any) error {
 	s.msgs = append(s.msgs, m.(string))
 	return nil
 }
@@ -66,7 +66,7 @@ func TestStreamNamespaceInterceptor(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// This simply sends the *outgoing* context (what we forward to
 			// UFS) to the stream.
-			namespaceContextStreamHandler := func(srv interface{}, stream grpc.ServerStream) error {
+			namespaceContextStreamHandler := func(srv any, stream grpc.ServerStream) error {
 				md, ok := metadata.FromOutgoingContext(stream.Context())
 				if !ok {
 					return errors.New("no metadata")

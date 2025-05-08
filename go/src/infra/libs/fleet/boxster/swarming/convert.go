@@ -140,7 +140,7 @@ func GetProtoExistence(jsonGetPath string, pm proto.Message) (bool, error) {
 }
 
 // parseProtoIntoJson parses a proto message into a JSON interface.
-func parseProtoIntoJson(pm proto.Message) (interface{}, error) {
+func parseProtoIntoJson(pm proto.Message) (any, error) {
 	if reflect.ValueOf(pm).IsNil() {
 		return nil, errors.New("proto message cannot be empty")
 	}
@@ -150,7 +150,7 @@ func parseProtoIntoJson(pm proto.Message) (interface{}, error) {
 		return nil, err
 	}
 
-	pmJson := interface{}(nil)
+	pmJson := any(nil)
 	err = json.Unmarshal([]byte(js), &pmJson)
 	if err != nil {
 		return nil, err
@@ -163,10 +163,10 @@ func parseProtoIntoJson(pm proto.Message) (interface{}, error) {
 // It takes an interface of label values parsed from a json object and returns a
 // an array of the values casted to string. The interfaces supported are
 // primitive types and iterable interfaces.
-func ParseLabelValuesToArray(labelVals interface{}) ([]string, error) {
+func ParseLabelValuesToArray(labelVals any) ([]string, error) {
 	var rsp []string
 	switch x := labelVals.(type) {
-	case []interface{}:
+	case []any:
 		for _, i := range x {
 			i, ok := i.(string)
 			if !ok {
@@ -230,7 +230,7 @@ func generateHwidSourcePaths(dutAttr *api.DutAttribute) []string {
 }
 
 // isNil takes an unknown interface and determines the nil-ness of it.
-func isNil(i interface{}) bool {
+func isNil(i any) bool {
 	if i == nil {
 		return true
 	}

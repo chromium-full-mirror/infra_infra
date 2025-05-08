@@ -16,11 +16,11 @@ import (
 // TODO(ayatane): log to cloud or something
 
 // Infof logs information a developer might find useful for debugging.
-func Infof(ctx context.Context, format string, args ...interface{}) {
+func Infof(ctx context.Context, format string, args ...any) {
 	logging.Get(ctx).LogCall(logging.Info, 1, format, args)
 }
 
 // Errorf logs fatal errors when handling a request.
-func Errorf(ctx context.Context, format string, args ...interface{}) {
+func Errorf(ctx context.Context, format string, args ...any) {
 	logging.Get(ctx).LogCall(logging.Error, 1, format, args)
 }

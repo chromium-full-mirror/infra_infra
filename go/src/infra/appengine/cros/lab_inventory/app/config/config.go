@@ -57,7 +57,7 @@ func Get(c context.Context) *Config {
 }
 
 // Interceptor is to be used to append config to context in grpc handlers.
-func Interceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func Interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	ctx, err := appendConfigToContext(ctx)
 	if err != nil {
 		return nil, err

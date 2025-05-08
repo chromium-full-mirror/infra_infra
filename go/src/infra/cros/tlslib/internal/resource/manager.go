@@ -54,7 +54,7 @@ func (m *Manager) Remove(name string) (Resource, error) {
 // and resources may be added and removed after calling close. The caller
 // should ensure no more requests can happen before Close is called.
 func (m *Manager) Close() {
-	m.resources.Range(func(key, value interface{}) bool {
+	m.resources.Range(func(key, value any) bool {
 		if err := value.(Resource).Close(); err != nil {
 			log.Printf("Resource manager: close %q error: %s", key.(string), err)
 		}

@@ -87,7 +87,7 @@ func newGRPCServer(c *serverConfig) *grpc.Server {
 // This is the only way to modify the context passed to method handlers.
 type interceptor struct{}
 
-func (interceptor) unary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (interface{}, error) {
+func (interceptor) unary(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (any, error) {
 	ctx, err := withUFSContext(ctx)
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func (s *serverStream) Context() context.Context {
 
 // streamNamespaceInterceptor adds the os namespace as *outgoing* context for
 // all GRPC stream requests.
-func streamNamespaceInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+func streamNamespaceInterceptor(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	ctx, err := withUFSContext(ss.Context())
 	if err != nil {
 		return err

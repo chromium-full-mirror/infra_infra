@@ -154,7 +154,7 @@ func TestFakeOmahaIntegration(t *testing.T) {
 					}
 				}
 				// We think the test is good as long as receiving a valid xml response.
-				if err := xml.Unmarshal(stdout.Bytes(), new(interface{})); err != nil {
+				if err := xml.Unmarshal(stdout.Bytes(), new(any)); err != nil {
 					t.Errorf("TestFakeOmahaIntegration: failed to unmarshal response: %s. Want a valid xml, got %q", err, stdout.String())
 				} else {
 					t.Logf("receive output: %s", stdout.String())
