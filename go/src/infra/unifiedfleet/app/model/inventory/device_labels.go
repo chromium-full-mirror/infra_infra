@@ -197,7 +197,7 @@ func BatchUpdateDeviceLabels(ctx context.Context, labelsList []*ufspb.DeviceLabe
 //
 // Does a query over labels entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListDeviceLabels(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.DeviceLabels, nextPageToken string, err error) {
+func ListDeviceLabels(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.DeviceLabels, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, DeviceLabelsKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

@@ -155,7 +155,7 @@ func DeleteSchedulingUnit(ctx context.Context, name string) error {
 //
 // Does a query over SchedulingUnit entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListSchedulingUnits(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.SchedulingUnit, nextPageToken string, err error) {
+func ListSchedulingUnits(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.SchedulingUnit, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, SchedulingUnitKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

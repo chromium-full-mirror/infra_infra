@@ -163,7 +163,7 @@ func BatchUpdateDeviceConfigs(ctx context.Context, configs []*deviceconfig.Confi
 //
 // Does a query over device config entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*deviceconfig.Config, nextPageToken string, err error) {
+func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*deviceconfig.Config, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, DeviceConfigKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

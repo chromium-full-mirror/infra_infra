@@ -113,7 +113,7 @@ func ServerMain(cfgLoader *config.Loader) func(*server.Server) error {
 }
 
 // namespaceInterceptor interceptor to set namespace for the datastore
-func namespaceInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+func namespaceInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "Retrieving metadata failed.")
@@ -156,7 +156,7 @@ func namespaceInterceptor(ctx context.Context, req interface{}, info *grpc.Unary
 }
 
 // versionInterceptor interceptor to handle client version check per RPC call
-func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+func versionInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "Retrieving metadata failed.")

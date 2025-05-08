@@ -88,7 +88,7 @@ func UpdateStateRecord(ctx context.Context, stateRecord *ufspb.StateRecord) (*uf
 }
 
 // ListStateRecords lists all the states
-func ListStateRecords(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}) (res []*ufspb.StateRecord, nextPageToken string, err error) {
+func ListStateRecords(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any) (res []*ufspb.StateRecord, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, RecordKind, pageSize, pageToken, filterMap, false)
 	if err != nil {
 		return nil, "", err

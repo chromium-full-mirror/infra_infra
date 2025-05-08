@@ -42,7 +42,7 @@ func BatchGetMachineLSEPrototypes(ctx context.Context, ids []string) ([]*ufspb.M
 
 // ListMachineLSEPrototypes lists the machinelseprototypes
 func ListMachineLSEPrototypes(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.MachineLSEPrototype, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, configuration.GetMachineLSEPrototypeIndexedFieldName)

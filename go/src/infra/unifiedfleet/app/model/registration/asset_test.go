@@ -306,7 +306,7 @@ func TestListAssetsACL(t *testing.T) {
 		})
 		t.Run("List assets - filter on realm", func(t *ftt.Test) {
 			// User bat cannot filter on realm
-			resp, nextPageToken, err := ListAssetsACL(ctxBat, 3, "", map[string][]interface{}{"realm": {"test"}}, false)
+			resp, nextPageToken, err := ListAssetsACL(ctxBat, 3, "", map[string][]any{"realm": {"test"}}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
@@ -354,13 +354,13 @@ func TestListAssetsACL(t *testing.T) {
 		})
 		t.Run("List assets - happy path, two realms, zone filter", func(t *ftt.Test) {
 			// User spider has permissions for both ATL and ACS. But filters for chromeos4 so sees only those assets
-			resp, nextPageToken, err := ListAssetsACL(ctxSpider, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
+			resp, nextPageToken, err := ListAssetsACL(ctxSpider, 3, "", map[string][]any{"zone": {"ZONE_CHROMEOS4"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(assets[:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
-			resp, nextPageToken, err = ListAssetsACL(ctxSpider, 100, nextPageToken, map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
+			resp, nextPageToken, err = ListAssetsACL(ctxSpider, 100, nextPageToken, map[string][]any{"zone": {"ZONE_CHROMEOS4"}}, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(assets[3:10]))
@@ -368,7 +368,7 @@ func TestListAssetsACL(t *testing.T) {
 		})
 		t.Run("List assets - happy path, one realms, wrong zone filter", func(t *ftt.Test) {
 			// User bat has permissions for ATL. Attempts to filter on zone chromeos5
-			resp, nextPageToken, err := ListAssetsACL(ctxBat, 100, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
+			resp, nextPageToken, err := ListAssetsACL(ctxBat, 100, "", map[string][]any{"zone": {"ZONE_CHROMEOS5"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)

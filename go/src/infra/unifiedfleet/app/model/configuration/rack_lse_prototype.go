@@ -129,7 +129,7 @@ func BatchGetRackLSEPrototypes(ctx context.Context, ids []string) ([]*ufspb.Rack
 //
 // Does a query over RackLSEPrototype entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListRackLSEPrototypes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.RackLSEPrototype, nextPageToken string, err error) {
+func ListRackLSEPrototypes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.RackLSEPrototype, nextPageToken string, err error) {
 	// Passing -1 for query limit fetches all the entities from the datastore
 	q, err := ufsds.ListQuery(ctx, RackLSEPrototypeKind, -1, pageToken, filterMap, keysOnly)
 	if err != nil {

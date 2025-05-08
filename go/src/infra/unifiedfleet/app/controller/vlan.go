@@ -167,7 +167,7 @@ func BatchGetVlans(ctx context.Context, ids []string) ([]*ufspb.Vlan, error) {
 
 // ListVlans lists the vlans
 func ListVlans(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.Vlan, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, configuration.GetVlanIndexedFieldName)
@@ -182,7 +182,7 @@ func ListVlans(ctx context.Context, pageSize int32, pageToken, filter string, ke
 
 // ListIPs lists the ips
 func ListIPs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.IP, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	if filter != "" {
 		var err error
 		filterMap, err = getFilterMap(filter, configuration.GetIPIndexedFieldName)

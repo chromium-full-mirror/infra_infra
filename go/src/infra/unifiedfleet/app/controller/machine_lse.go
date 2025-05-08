@@ -559,7 +559,7 @@ func BatchGetMachineLSEs(ctx context.Context, ids []string) ([]*ufspb.MachineLSE
 
 // ListMachineLSEs lists the machinelses
 func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]*ufspb.MachineLSE, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetMachineLSEIndexedFieldName)

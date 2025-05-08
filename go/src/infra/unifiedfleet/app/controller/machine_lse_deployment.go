@@ -33,7 +33,7 @@ func BatchGetMachineLSEDeployments(ctx context.Context, ids []string) ([]*ufspb.
 
 // ListMachineLSEDeployments returns a batch of deployment records by filters
 func ListMachineLSEDeployments(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.MachineLSEDeployment, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetDeploymentIndexedFieldName)

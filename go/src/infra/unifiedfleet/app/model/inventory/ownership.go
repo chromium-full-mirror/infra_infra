@@ -99,7 +99,7 @@ func GetOwnershipData(ctx context.Context, name string) (*OwnershipDataEntity, e
 // ListOwnerships lists the owmerships
 // Does a query over Ownership entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListOwnerships(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
+func ListOwnerships(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []OwnershipDataEntity, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, OwnershipDataKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

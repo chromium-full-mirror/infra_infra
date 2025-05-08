@@ -154,7 +154,7 @@ func BatchGetKVM(ctx context.Context, ids []string) ([]*ufspb.KVM, error) {
 //
 // Does a query over KVM entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListKVMs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.KVM, nextPageToken string, err error) {
+func ListKVMs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.KVM, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, KVMKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

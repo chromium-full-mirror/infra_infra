@@ -142,7 +142,7 @@ func DeleteSchedulingUnit(ctx context.Context, id string) error {
 
 // ListSchedulingUnits lists the SchedulingUnits in datastore.
 func ListSchedulingUnits(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.SchedulingUnit, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetSchedulingUnitIndexedFieldName)

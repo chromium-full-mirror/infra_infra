@@ -316,7 +316,7 @@ func TestListRacksACL(t *testing.T) {
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List racks - filter on realm rejected", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"realm": nil}, false)
+			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]any{"realm": nil}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
@@ -350,13 +350,13 @@ func TestListRacksACL(t *testing.T) {
 			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
 		t.Run("List racks - happy path with all perms and filters returns filtered results", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
+			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]any{"zone": {"ZONE_CHROMEOS4"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(racks[:4]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List racks - happy path with all perms and filters with no matches returns no results", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"zone": {"fake"}}, false)
+			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]any{"zone": {"fake"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)

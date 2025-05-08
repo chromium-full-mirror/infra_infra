@@ -300,7 +300,7 @@ func BatchGetDracs(ctx context.Context, ids []string) ([]*ufspb.Drac, error) {
 
 // ListDracs lists the dracs
 func ListDracs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.Drac, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetDracIndexedFieldName)

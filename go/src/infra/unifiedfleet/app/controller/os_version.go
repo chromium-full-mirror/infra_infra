@@ -17,7 +17,7 @@ import (
 
 // ListOSes lists the chrome os_version
 func ListOSes(ctx context.Context, pageSize int32, pageToken string, filter string, keysOnly bool) ([]*ufspb.OSVersion, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, configuration.GetOSVersionIndexedFieldName)

@@ -136,7 +136,7 @@ func GetAsset(ctx context.Context, name string) (*ufspb.Asset, error) {
 
 // ListAssets lists the assets
 func ListAssets(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.Asset, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetAssetIndexedFieldName)

@@ -113,7 +113,7 @@ func DeleteDeviceLabels(ctx context.Context, id string) error {
 // ListDeviceLabels lists the device labels
 // TODO(echoyang@): Add realm permission checks for reading device labels
 func ListDeviceLabels(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.DeviceLabels, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetDeviceLabelsIndexedFieldName)

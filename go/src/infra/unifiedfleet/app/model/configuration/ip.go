@@ -195,7 +195,7 @@ func QueryIPByPropertyName(ctx context.Context, propertyMap map[string]string) (
 //
 // Does a query over ip entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListIPs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.IP, nextPageToken string, err error) {
+func ListIPs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.IP, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, IPKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

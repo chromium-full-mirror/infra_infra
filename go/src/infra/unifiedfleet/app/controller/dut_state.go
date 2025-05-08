@@ -45,7 +45,7 @@ func ListDutStates(ctx context.Context, pageSize int32, pageToken, filter string
 	return listDutStatesWithExperimentalACLs(ctx, pageSize, pageToken, nil, keysOnly)
 }
 
-func listDutStatesWithExperimentalACLs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
+func listDutStatesWithExperimentalACLs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
 	if pageToken != "" {
 		// See registration/machine.go.
 		// ListMachinesACL runs a different API to compared to ListMachines

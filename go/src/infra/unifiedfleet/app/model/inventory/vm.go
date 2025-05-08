@@ -281,7 +281,7 @@ func redactVMOwnership(ctx context.Context, vm *ufspb.VM) {
 //
 // Does a query over vm entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListVMs(ctx context.Context, pageSize int32, requiredSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool, validFunc func(*ufspb.VM) bool) (res []*ufspb.VM, nextPageToken string, err error) {
+func ListVMs(ctx context.Context, pageSize int32, requiredSize int32, pageToken string, filterMap map[string][]any, keysOnly bool, validFunc func(*ufspb.VM) bool) (res []*ufspb.VM, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, VMKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

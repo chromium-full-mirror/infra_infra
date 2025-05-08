@@ -150,7 +150,7 @@ func QuerySwitchByPropertyName(ctx context.Context, propertyName, id string, key
 //
 // Does a query over switch entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListSwitches(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Switch, nextPageToken string, err error) {
+func ListSwitches(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Switch, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, SwitchKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

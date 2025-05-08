@@ -74,7 +74,7 @@ func queryAllOS(ctx context.Context) ([]ufsds.FleetEntity, error) {
 }
 
 // ListOSes lists the chrome os_versions
-func ListOSes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.OSVersion, nextPageToken string, err error) {
+func ListOSes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.OSVersion, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, OSVersionKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

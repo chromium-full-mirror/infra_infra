@@ -683,7 +683,7 @@ func BatchGetMachines(ctx context.Context, ids []string) ([]*ufspb.Machine, erro
 
 // ListMachines lists the machines
 func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]*ufspb.Machine, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetMachineIndexedFieldName)
@@ -739,7 +739,7 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 
 // listMachinesWithExperimentalACL uses config values to determine whether we
 // `ListMachines` or `ListMachinesACL` should be used
-func listMachinesWithExperimentalACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
+func listMachinesWithExperimentalACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
 	if pageToken != "" {
 		// See registration/machine.go.
 		// ListMachinesACL runs a different API to compared to ListMachines
@@ -1436,7 +1436,7 @@ func validateUniqueSerial(ctx context.Context, serialNumber string) error {
 		return nil
 	}
 	if serialNumber != "" {
-		res, _, err := registration.ListMachines(ctx, 1, "", map[string][]interface{}{
+		res, _, err := registration.ListMachines(ctx, 1, "", map[string][]any{
 			"serial_number": {serialNumber},
 		}, true)
 		if err != nil {

@@ -226,7 +226,7 @@ func TestListDutStatesACL(t *testing.T) {
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List DutStates - filter on realm rejected", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"realm": nil}, false)
+			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]any{"realm": nil}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
@@ -260,7 +260,7 @@ func TestListDutStatesACL(t *testing.T) {
 			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
 		t.Run("List DutStates - happy path with all perms and filters with no matches returns no results", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"hostname": {"fake"}}, false)
+			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]any{"hostname": {"fake"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)

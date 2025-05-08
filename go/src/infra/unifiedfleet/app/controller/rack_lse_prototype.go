@@ -42,7 +42,7 @@ func BatchGetRackLSEPrototypes(ctx context.Context, ids []string) ([]*ufspb.Rack
 
 // ListRackLSEPrototypes lists the racklseprototypes
 func ListRackLSEPrototypes(ctx context.Context, pageSize int32, pageToken string, filter string, keysOnly bool) ([]*ufspb.RackLSEPrototype, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, configuration.GetRackLSEPrototypeIndexedFieldName)

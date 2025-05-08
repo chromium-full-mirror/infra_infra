@@ -115,7 +115,7 @@ func DeleteCachingService(ctx context.Context, id string) error {
 
 // ListCachingServices lists the CachingServices in datastore.
 func ListCachingServices(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.CachingService, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, caching.GetCachingServiceIndexedFieldName)

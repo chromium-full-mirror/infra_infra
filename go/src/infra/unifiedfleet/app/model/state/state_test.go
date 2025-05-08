@@ -37,7 +37,7 @@ func TestListState(t *testing.T) {
 			_, err := BatchUpdateStates(ctx, states)
 			assert.Loosely(t, err, should.BeNil)
 
-			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]interface{}{
+			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]any{
 				"resource_type": {"vms"},
 			})
 			assert.Loosely(t, err, should.BeNil)
@@ -50,7 +50,7 @@ func TestListState(t *testing.T) {
 			_, err := BatchUpdateStates(ctx, states)
 			assert.Loosely(t, err, should.BeNil)
 
-			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]interface{}{
+			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]any{
 				"resource_type": {"vms"},
 				"state":         {"STATE_SERVING"},
 			})

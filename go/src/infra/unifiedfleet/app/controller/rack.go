@@ -296,7 +296,7 @@ func BatchGetRacks(ctx context.Context, ids []string) ([]*ufspb.Rack, error) {
 
 // ListRacks lists the racks
 func ListRacks(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly, full bool) ([]*ufspb.Rack, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetRackIndexedFieldName)
@@ -319,7 +319,7 @@ func ListRacks(ctx context.Context, pageSize int32, pageToken, filter string, ke
 	return racks, nextPageToken, err
 }
 
-func listRacksWithExperimentalACLs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
+func listRacksWithExperimentalACLs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
 	if pageToken != "" {
 		// See registration/machine.go.
 		// ListMachinesACL runs a different API to compared to ListMachines

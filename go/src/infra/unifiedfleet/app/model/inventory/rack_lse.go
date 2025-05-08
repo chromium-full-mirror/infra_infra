@@ -129,7 +129,7 @@ func GetRackLSE(ctx context.Context, id string) (*ufspb.RackLSE, error) {
 //
 // Does a query over RackLSE entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListRackLSEs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.RackLSE, nextPageToken string, err error) {
+func ListRackLSEs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.RackLSE, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, RackLSEKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

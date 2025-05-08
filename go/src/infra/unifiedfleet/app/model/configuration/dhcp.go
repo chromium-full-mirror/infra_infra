@@ -127,7 +127,7 @@ func QueryDHCPConfigByPropertyName(ctx context.Context, propertyName, id string)
 //
 // Does a query over dhcp config entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListDHCPConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.DHCPConfig, nextPageToken string, err error) {
+func ListDHCPConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.DHCPConfig, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, DHCPKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

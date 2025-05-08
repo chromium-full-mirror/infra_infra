@@ -354,7 +354,7 @@ func deleteStaleConfigs(ctx context.Context, botPrefixesMap map[string]*ufspb.Ow
 
 // ListOwnershipConfigs lists the ownerships based on the specified parameters.
 func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*api.OwnershipByHost, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetOwnershipIndexedFieldName)
@@ -406,7 +406,7 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 // listOwnershipEntities lists the ownership datastore entities,
 // based on the specified parameters.
 func listOwnershipEntities(ctx context.Context, pageSize int32, pageToken,
-	filter string, keysOnly bool, filterMap map[string][]interface{}) ([]inventory.OwnershipDataEntity, string, error) {
+	filter string, keysOnly bool, filterMap map[string][]any) ([]inventory.OwnershipDataEntity, string, error) {
 
 	res, pageToken, err := inventory.ListOwnerships(ctx, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {

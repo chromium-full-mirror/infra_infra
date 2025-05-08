@@ -126,9 +126,9 @@ func TestListDeviceLabels(t *testing.T) {
 	ftt.Run("ListDeviceLabels with Filters", t, func(t *ftt.Test) {
 		_, err := BatchUpdateDeviceLabels(ctx, deviceLabels)
 		assert.Loosely(t, err, should.BeNil)
-		filterMap := make(map[string][]interface{})
+		filterMap := make(map[string][]any)
 		t.Run("List deviceLabels - Filter by state", func(t *ftt.Test) {
-			filterMap["resource_type"] = []interface{}{ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT.String()}
+			filterMap["resource_type"] = []any{ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT.String()}
 			resp, nextPageToken, err := ListDeviceLabels(ctx, 2, "", filterMap, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)

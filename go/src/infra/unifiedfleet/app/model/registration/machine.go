@@ -299,7 +299,7 @@ func batchGetMachinesACL(ctx context.Context, ids []string) ([]*ufspb.Machine, e
 // ListMachines lists the machines
 // Does a query over Machine entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
+func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, MachineKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -311,7 +311,7 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterM
 //
 // Does a query over Machine entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
+func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
 	err = validateListMachineFilters(filterMap)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "ListMachinesACL --- cannot validate query").Err()
@@ -549,7 +549,7 @@ func GetMachineIndexedFieldName(input string) (string, error) {
 }
 
 // validateListAssetFilters validates that the given filter map is valid
-func validateListMachineFilters(filterMap map[string][]interface{}) error {
+func validateListMachineFilters(filterMap map[string][]any) error {
 	for field := range filterMap {
 		if field == "realm" {
 			return errors.Reason("cannot filter on %s", field).Err()

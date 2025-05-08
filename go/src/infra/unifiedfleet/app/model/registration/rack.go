@@ -102,7 +102,7 @@ func newRackRealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntit
 // If keysOnly is true, then only key field is populated in returned racks.
 // Note that this is not ACLed and should not be used to return results
 // directly to users without ACLs being checked somewhere upstream.
-func QueryRackByPropertyName(ctx context.Context, propertyName string, id interface{}, keysOnly bool) ([]*ufspb.Rack, error) {
+func QueryRackByPropertyName(ctx context.Context, propertyName string, id any, keysOnly bool) ([]*ufspb.Rack, error) {
 	q := datastore.NewQuery(RackKind).KeysOnly(keysOnly).FirestoreMode(true)
 	var entities []*RackEntity
 	if err := datastore.GetAll(ctx, q.Eq(propertyName, id), &entities); err != nil {
@@ -242,7 +242,7 @@ func batchGetRacksACL(ctx context.Context, ids []string) ([]*ufspb.Rack, error) 
 // ListRacks lists the racks
 // Does a query over Rack entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListRacks(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
+func ListRacks(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, RackKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -283,7 +283,7 @@ func ListRacks(ctx context.Context, pageSize int32, pageToken string, filterMap 
 // ListRacksACL lists the racks in realms user can access.
 // Does a query over Rack entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListRacksACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
+func ListRacksACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
 	err = validateListRackFilters(filterMap)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "ListRacksACL --- cannot validate query").Err()
@@ -425,7 +425,7 @@ func GetRackIndexedFieldName(input string) (string, error) {
 	return field, nil
 }
 
-func validateListRackFilters(filterMap map[string][]interface{}) error {
+func validateListRackFilters(filterMap map[string][]any) error {
 	for field := range filterMap {
 		if field == "realm" {
 			return errors.Reason("cannot filter on %s", field).Err()

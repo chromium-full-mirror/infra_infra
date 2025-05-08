@@ -135,7 +135,7 @@ func DeleteCachingService(ctx context.Context, name string) error {
 //
 // Does a query over CachingService entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListCachingServices(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.CachingService, nextPageToken string, err error) {
+func ListCachingServices(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.CachingService, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, CachingServiceKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

@@ -257,7 +257,7 @@ func GetACL(ctx context.Context, pm proto.Message, nf NewRealmEntityFunc, needed
 }
 
 // ListQuery constructs a query to list entities with pagination
-func ListQuery(ctx context.Context, entityKind string, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (q *datastore.Query, err error) {
+func ListQuery(ctx context.Context, entityKind string, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (q *datastore.Query, err error) {
 	var cursor datastore.Cursor
 	if pageToken != "" {
 		cursor, err = datastore.DecodeCursor(ctx, pageToken)

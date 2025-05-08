@@ -83,7 +83,7 @@ func GetBotMaintenanceConfig(ctx context.Context, id string) (*BotMaintenanceCon
 // ListBotMaintenanceConfigs lists the maintenance configs
 // Does a query over BotMaintenanceConfig entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListBotMaintenanceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []BotMaintenanceConfigEntity, nextPageToken string, err error) {
+func ListBotMaintenanceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []BotMaintenanceConfigEntity, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, BotMaintenanceConfigKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

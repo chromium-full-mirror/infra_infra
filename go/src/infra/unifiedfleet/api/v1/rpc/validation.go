@@ -1466,7 +1466,7 @@ func ValidateMachineDBSource(machinedb *MachineDBSource) error {
 // ValidateResourceKey validates a key of a resource
 //
 // TODO(xixuan): add validation for all imported data
-func ValidateResourceKey(resources interface{}, k string) error {
+func ValidateResourceKey(resources any, k string) error {
 	vs := ParseResources(resources, k)
 	for _, v := range vs {
 		if !IDRegex.MatchString(v) {
@@ -1488,7 +1488,7 @@ func ValidateFilter(filter string) error {
 }
 
 // ParseResources parse a list of resources and returns a string slice by key
-func ParseResources(args interface{}, k string) []string {
+func ParseResources(args any, k string) []string {
 	names := make([]string, 0)
 	v := reflect.ValueOf(args)
 	switch v.Kind() {

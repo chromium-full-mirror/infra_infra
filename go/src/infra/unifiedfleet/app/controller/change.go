@@ -1059,7 +1059,7 @@ func (hc *HistoryClient) logDefaultWifiChanges(oldData, newData *ufspb.DefaultWi
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
-func logCommon(resourceName, label string, oldValue interface{}, newValue interface{}) []*ufspb.ChangeEvent {
+func logCommon(resourceName, label string, oldValue any, newValue any) []*ufspb.ChangeEvent {
 	oldValueStr := fmt.Sprintf("%v", oldValue)
 	newValueStr := fmt.Sprintf("%v", newValue)
 	if oldValueStr == newValueStr {

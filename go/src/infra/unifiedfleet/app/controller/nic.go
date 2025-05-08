@@ -258,7 +258,7 @@ func BatchGetNics(ctx context.Context, ids []string) ([]*ufspb.Nic, error) {
 
 // ListNics lists the nics
 func ListNics(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.Nic, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetNicIndexedFieldName)

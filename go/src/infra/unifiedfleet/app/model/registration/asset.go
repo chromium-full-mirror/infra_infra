@@ -196,7 +196,7 @@ func UpdateAsset(ctx context.Context, asset *ufspb.Asset) (*ufspb.Asset, error) 
 // ListAssets lists the assets
 // Does a query over asset entities. Returns pageSize number of entities and a
 // non-nil cursor if there are more results. pageSize must be positive
-func ListAssets(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
+func ListAssets(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, AssetKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -238,7 +238,7 @@ func ListAssets(ctx context.Context, pageSize int32, pageToken string, filterMap
 // ListAssetsACL lists the assets that are visible to the user.
 // Does a query over asset entities. Returns pageSize number of entities and a
 // non-nil cursor if there are more results. pageSize must be positive.
-func ListAssetsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
+func ListAssetsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
 	err = validateListAssetFilters(filterMap)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "ListAssetsACL --- cannot validate query").Err()
@@ -369,7 +369,7 @@ func GetAssetIndexedFieldName(input string) (string, error) {
 }
 
 // validateListAssetFilters validates that the given filter map is valid
-func validateListAssetFilters(filterMap map[string][]interface{}) error {
+func validateListAssetFilters(filterMap map[string][]any) error {
 	for field := range filterMap {
 		switch field {
 		case "zone":

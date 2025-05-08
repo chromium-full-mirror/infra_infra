@@ -150,7 +150,7 @@ func BatchGetRPMs(ctx context.Context, ids []string) ([]*ufspb.RPM, error) {
 
 // ListRPMs lists the rpms
 func ListRPMs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.RPM, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetRPMIndexedFieldName)

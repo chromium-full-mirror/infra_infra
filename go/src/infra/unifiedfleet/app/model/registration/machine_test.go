@@ -517,7 +517,7 @@ func TestListMachinesACL(t *testing.T) {
 		})
 		t.Run("List machines - reject realm filter", func(t *ftt.Test) {
 			// Can't filter on realm
-			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 100, "", map[string][]interface{}{"realm": {"woah..."}}, false)
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 100, "", map[string][]any{"realm": {"woah..."}}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
@@ -558,18 +558,18 @@ func TestListMachinesACL(t *testing.T) {
 		})
 		t.Run("List machines - happy path, two realms, filter", func(t *ftt.Test) {
 			// test pagination
-			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]any{"zone": {"ZONE_CHROMEOS5"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(machines[0:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
-			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
+			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, map[string][]any{"zone": {"ZONE_CHROMEOS5"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(machines[3:10]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List machines - happy path, filter out all machines", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS3"}}, false)
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]any{"zone": {"ZONE_CHROMEOS3"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)

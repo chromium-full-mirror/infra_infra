@@ -186,7 +186,7 @@ func QueryDutStateByPropertyNames(ctx context.Context, propertyMap map[string]st
 //
 // Does a query over DutState entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListDutStates(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
+func ListDutStates(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, DutStateKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -224,7 +224,7 @@ func ListDutStates(ctx context.Context, pageSize int32, pageToken string, filter
 	return
 }
 
-func ListDutStatesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
+func ListDutStatesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
 	err = validateDutStateFilters(filterMap)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "ListDutStatesACL --- cannot validate query").Err()
@@ -281,7 +281,7 @@ func ListDutStatesACL(ctx context.Context, pageSize int32, pageToken string, fil
 	return
 }
 
-func validateDutStateFilters(filterMap map[string][]interface{}) error {
+func validateDutStateFilters(filterMap map[string][]any) error {
 	for field := range filterMap {
 		if field == "realm" {
 			return errors.Reason("cannot filter on %s", field).Err()

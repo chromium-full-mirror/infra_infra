@@ -240,7 +240,7 @@ func BatchGetKVMs(ctx context.Context, ids []string) ([]*ufspb.KVM, error) {
 
 // ListKVMs lists the kvms
 func ListKVMs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.KVM, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, registration.GetKVMIndexedFieldName)

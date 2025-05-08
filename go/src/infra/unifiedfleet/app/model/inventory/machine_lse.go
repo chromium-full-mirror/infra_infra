@@ -219,8 +219,8 @@ func QueryMachineLSEByPropertyNames(ctx context.Context, propertyMap map[string]
 
 // RangedQueryMachineLSEByPropertyName queries MachineLSE entity in the datastore. The query run here is given by
 // `SELECT * FROM MachineLSE WHERE propertyName >= gtVal AND propertyName <= ltVal`
-func RangedQueryMachineLSEByPropertyName(ctx context.Context, propertyName string, gtVal, ltVal interface{}, keysOnly bool) ([]*ufspb.MachineLSE, error) {
-	return RangedQueryMachineLSEByPropertyNames(ctx, map[string][]interface{}{propertyName: {gtVal, ltVal}}, keysOnly)
+func RangedQueryMachineLSEByPropertyName(ctx context.Context, propertyName string, gtVal, ltVal any, keysOnly bool) ([]*ufspb.MachineLSE, error) {
+	return RangedQueryMachineLSEByPropertyNames(ctx, map[string][]any{propertyName: {gtVal, ltVal}}, keysOnly)
 }
 
 // RangedQueryMachineLSEByPropertyNames queries MachineLSE Entity in the datastore
@@ -231,11 +231,11 @@ func RangedQueryMachineLSEByPropertyName(ctx context.Context, propertyName strin
 // The query run here is given by:
 // `SELECT * FROM MachineLSE WHERE (propertyKey >= propertyVal[0] AND propertyKey <= propertyVal[1]) AND (pr...)`
 
-func RangedQueryMachineLSEByPropertyNames(ctx context.Context, propertyMap map[string][]interface{}, keysOnly bool) ([]*ufspb.MachineLSE, error) {
+func RangedQueryMachineLSEByPropertyNames(ctx context.Context, propertyMap map[string][]any, keysOnly bool) ([]*ufspb.MachineLSE, error) {
 	q := datastore.NewQuery(MachineLSEKind).KeysOnly(keysOnly).FirestoreMode(true)
 	var entities []*MachineLSEEntity
 	for propertyName, val := range propertyMap {
-		var gt, lt interface{}
+		var gt, lt any
 		if len(val) == 0 || len(val) > 2 {
 			return nil, status.Errorf(codes.Internal, "Cannot determine range for %s [%v]", propertyName, val)
 		}
@@ -362,7 +362,7 @@ func BatchGetMachineLSEs(ctx context.Context, ids []string) ([]*ufspb.MachineLSE
 // ListMachineLSEs lists the machine lses
 // Does a query over MachineLSE entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, MachineLSEKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -373,7 +373,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken string, filt
 // ListMachineLSEsACL lists the machine lses that user has access to
 // Does a query over MachineLSE entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListMachineLSEsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+func ListMachineLSEsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
 	err = validateListMachineLSEFilters(filterMap)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "ListMachineLSEsACL -- cannot validate query").Err()
@@ -481,7 +481,7 @@ func runListQueries(ctx context.Context, queries []*datastore.Query, pageSize in
 }
 
 // ListFreeMachineLSEs lists the machine lses with vm capacity
-func ListFreeMachineLSEs(ctx context.Context, requiredSize int32, filterMap map[string][]interface{}, capacityMap map[string]int) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+func ListFreeMachineLSEs(ctx context.Context, requiredSize int32, filterMap map[string][]any, capacityMap map[string]int) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, MachineLSEKind, -1, "", filterMap, false)
 	if err != nil {
 		return nil, "", err
@@ -727,7 +727,7 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 }
 
 // validateListMachineLSEFilters validates that the given filter map is valid
-func validateListMachineLSEFilters(filterMap map[string][]interface{}) error {
+func validateListMachineLSEFilters(filterMap map[string][]any) error {
 	for field := range filterMap {
 		switch field {
 		case "zone":

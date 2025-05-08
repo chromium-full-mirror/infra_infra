@@ -129,7 +129,7 @@ func BatchGetMachineLSEPrototypes(ctx context.Context, ids []string) ([]*ufspb.M
 //
 // Does a query over MachineLSEPrototype entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListMachineLSEPrototypes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.MachineLSEPrototype, nextPageToken string, err error) {
+func ListMachineLSEPrototypes(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.MachineLSEPrototype, nextPageToken string, err error) {
 	// Passing -1 for query limit fetches all the entities from the datastore
 	q, err := ufsds.ListQuery(ctx, MachineLSEPrototypeKind, -1, pageToken, filterMap, keysOnly)
 	if err != nil {

@@ -114,7 +114,7 @@ func isAllowlistedRPC(ctx context.Context, info *grpc.UnaryServerInfo) bool {
 // the os-partner namespace. Relies on having a namespace set and should only
 // be called after another interceptor that calls `SetupDatastoreNamespace` or
 // an equivalent.
-func PartnerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+func PartnerInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 	// ignore this check for google emails, needed as some @google.com accounts
 	// could be in the CRIA groups used to determine partners.
 	if isGoogler(ctx) {

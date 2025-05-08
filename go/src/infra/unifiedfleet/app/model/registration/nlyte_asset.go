@@ -168,7 +168,7 @@ func BatchUpdateNlyteAssets(ctx context.Context, assets []*ufspb.Asset) ([]*ufsp
 // ListNlyteAssets lists the nlyte assets
 // Does a query over asset entities. Returns pageSize number of entities and a
 // non-nil cursor if there are more results. pageSize must be positive
-func ListNlyteAssets(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
+func ListNlyteAssets(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]any, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, NlyteAssetKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

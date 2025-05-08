@@ -117,7 +117,7 @@ func BatchGetChromePlatforms(ctx context.Context, ids []string) ([]*ufspb.Chrome
 
 // ListChromePlatforms lists the chromeplatforms
 func ListChromePlatforms(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.ChromePlatform, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, configuration.GetChromePlatformIndexedFieldName)

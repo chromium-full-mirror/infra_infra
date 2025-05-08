@@ -355,7 +355,7 @@ func TestListMachineLSEsACL(t *testing.T) {
 		})
 
 		t.Run("List machineLSEs ACLed - Filter on realm", func(t *ftt.Test) {
-			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 4, "", map[string][]interface{}{"realm": {"test"}}, false)
+			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 4, "", map[string][]any{"realm": {"test"}}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err, should.ErrLike("Cannot filter on realm"))
 			assert.Loosely(t, resp, should.BeNil)

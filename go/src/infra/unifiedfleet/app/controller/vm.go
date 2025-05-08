@@ -383,7 +383,7 @@ func DeleteVM(ctx context.Context, id string) error {
 
 // ListVMs lists the vms
 func ListVMs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.VM, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetVMIndexedFieldName)

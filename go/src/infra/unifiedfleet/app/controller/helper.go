@@ -362,8 +362,8 @@ func deleteByPage(ctx context.Context, toDelete []string, pageSize int, deletFun
 }
 
 // TODO(eshwarn) : Use pattern matching instead of strings.split and add unit test
-func getFilterMap(filter string, f getFieldFunc) (map[string][]interface{}, error) {
-	filterMap := make(map[string][]interface{})
+func getFilterMap(filter string, f getFieldFunc) (map[string][]any, error) {
+	filterMap := make(map[string][]any)
 	filter = strings.TrimSpace(filter)
 	conditions := strings.Split(filter, "&")
 	if len(conditions) == 0 {
@@ -383,7 +383,7 @@ func getFilterMap(filter string, f getFieldFunc) (map[string][]interface{}, erro
 		if len(s) == 0 {
 			return nil, status.Errorf(codes.InvalidArgument, "Invalid filter value format %s- Filter Egs: \"machine=cx-1,cx-2\"", keyValue[1])
 		}
-		values := make([]interface{}, len(s))
+		values := make([]any, len(s))
 		for i, v := range s {
 			values[i] = strings.TrimSpace(v)
 		}
@@ -603,10 +603,10 @@ func validateReservedIPs(ctx context.Context, vlan *ufspb.Vlan) error {
 // convertFilter: a function that converts a shivas-formatted value to a DataStore value.
 // filterNames: the filter names used by shivas for this field.
 func resetFilter(
-	filterMap map[string][]interface{},
+	filterMap map[string][]any,
 	getIndexedFieldName getFieldFunc,
 	convertFilter convertFilterFunc,
-	filterNames ...string) map[string][]interface{} {
+	filterNames ...string) map[string][]any {
 	for _, k := range filterNames {
 		filterMapKey, _ := getIndexedFieldName(k)
 		if v, ok := filterMap[filterMapKey]; ok {
@@ -619,7 +619,7 @@ func resetFilter(
 	return filterMap
 }
 
-func resetStateFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetStateFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -627,7 +627,7 @@ func resetStateFilter(filterMap map[string][]interface{}, getIndexedFieldName ge
 		util.StateFilterName)
 }
 
-func resetOSFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetOSFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -635,7 +635,7 @@ func resetOSFilter(filterMap map[string][]interface{}, getIndexedFieldName getFi
 		util.OSFilterName)
 }
 
-func resetZoneFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetZoneFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -644,7 +644,7 @@ func resetZoneFilter(filterMap map[string][]interface{}, getIndexedFieldName get
 		util.ZonesFilterName)
 }
 
-func resetAssetTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetAssetTypeFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -652,7 +652,7 @@ func resetAssetTypeFilter(filterMap map[string][]interface{}, getIndexedFieldNam
 		util.AssetTypeFilterName)
 }
 
-func resetSchedulingUnitTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetSchedulingUnitTypeFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -660,7 +660,7 @@ func resetSchedulingUnitTypeFilter(filterMap map[string][]interface{}, getIndexe
 		util.TypeFilterName)
 }
 
-func resetDeviceTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetDeviceTypeFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -668,7 +668,7 @@ func resetDeviceTypeFilter(filterMap map[string][]interface{}, getIndexedFieldNa
 		util.DeviceTypeFilterName)
 }
 
-func resetLogicalZoneFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetLogicalZoneFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -676,7 +676,7 @@ func resetLogicalZoneFilter(filterMap map[string][]interface{}, getIndexedFieldN
 		util.LogicalZoneFilterName)
 }
 
-func resetResourceTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+func resetResourceTypeFilter(filterMap map[string][]any, getIndexedFieldName getFieldFunc) map[string][]any {
 	return resetFilter(
 		filterMap,
 		getIndexedFieldName,
@@ -684,7 +684,7 @@ func resetResourceTypeFilter(filterMap map[string][]interface{}, getIndexedField
 		util.ResourceTypeFilterName)
 }
 
-func parseIntTypeFilter(filterMap map[string][]interface{}, filterNames ...string) (map[string][]interface{}, error) {
+func parseIntTypeFilter(filterMap map[string][]any, filterNames ...string) (map[string][]any, error) {
 	for _, filterName := range filterNames {
 		if v, ok := filterMap[filterName]; ok {
 			for i, vz := range v {

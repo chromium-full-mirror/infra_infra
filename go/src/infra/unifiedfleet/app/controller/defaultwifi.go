@@ -46,7 +46,7 @@ func GetDefaultWifi(ctx context.Context, name string) (*ufspb.DefaultWifi, error
 
 func ListDefaultWifis(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) (res []*ufspb.DefaultWifi, nextPageToken string, err error) {
 	// DefaultWifi has no filters.
-	filterMap := map[string][]interface{}{}
+	filterMap := map[string][]any{}
 	q, err := ufsds.ListQuery(ctx, registration.DefaultWifiKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err

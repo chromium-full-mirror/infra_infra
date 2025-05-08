@@ -3340,7 +3340,7 @@ func TestListMachineLSEs(t *testing.T) {
 				}
 				inventory.CreateMachineLSE(ctx, machineLSE1)
 			}
-			fields := make([]interface{}, 1)
+			fields := make([]any, 1)
 			fields[0] = "apple"
 			resp, nextPageToken, err := ListMachineLSEs(ctx, 4, "", "man=apple & free=true", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)

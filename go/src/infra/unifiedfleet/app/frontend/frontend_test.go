@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
-var nilHandler = func(ctx context.Context, req interface{}) (interface{}, error) {
+var nilHandler = func(ctx context.Context, req any) (any, error) {
 	return nil, nil
 }
 

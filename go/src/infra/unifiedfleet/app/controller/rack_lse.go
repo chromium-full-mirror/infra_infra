@@ -46,7 +46,7 @@ func GetRackLSE(ctx context.Context, id string) (*ufspb.RackLSE, error) {
 
 // ListRackLSEs lists the racklses
 func ListRackLSEs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*ufspb.RackLSE, string, error) {
-	var filterMap map[string][]interface{}
+	var filterMap map[string][]any
 	var err error
 	if filter != "" {
 		filterMap, err = getFilterMap(filter, inventory.GetRackLSEIndexedFieldName)
