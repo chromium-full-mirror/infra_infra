@@ -272,7 +272,7 @@ func (c Green) String() string {
 }
 
 // Greenf returns a Green formatted string.
-func Greenf(format string, a ...interface{}) string {
+func Greenf(format string, a ...any) string {
 	return colType(Green(fmt.Sprintf(format, a...)))
 }
 
@@ -282,7 +282,7 @@ func (c Blue) String() string {
 }
 
 // Bluef returns a Blue formatted string.
-func Bluef(format string, a ...interface{}) string {
+func Bluef(format string, a ...any) string {
 	return colType(Blue(fmt.Sprintf(format, a...)))
 }
 
@@ -292,7 +292,7 @@ func (c Red) String() string {
 }
 
 // Redf returns a Red formatted string.
-func Redf(format string, a ...interface{}) string {
+func Redf(format string, a ...any) string {
 	return colType(Red(fmt.Sprintf(format, a...)))
 }
 
@@ -302,7 +302,7 @@ func (c Yellow) String() string {
 }
 
 // Yellowf returns a Yellow formatted string.
-func Yellowf(format string, a ...interface{}) string {
+func Yellowf(format string, a ...any) string {
 	return colType(Yellow(fmt.Sprintf(format, a...)))
 }
 
@@ -312,7 +312,7 @@ func (c Magenta) String() string {
 }
 
 // Magentaf returns a Magenta formatted string.
-func Magentaf(format string, a ...interface{}) string {
+func Magentaf(format string, a ...any) string {
 	return colType(Magenta(fmt.Sprintf(format, a...)))
 }
 
@@ -322,7 +322,7 @@ func (c White) String() string {
 }
 
 // Whitef returns a White formatted string.
-func Whitef(format string, a ...interface{}) string {
+func Whitef(format string, a ...any) string {
 	return colType(White(fmt.Sprintf(format, a...)))
 }
 
@@ -332,7 +332,7 @@ func (c Black) String() string {
 }
 
 // Blackf returns a Black formatted string.
-func Blackf(format string, a ...interface{}) string {
+func Blackf(format string, a ...any) string {
 	return colType(Black(fmt.Sprintf(format, a...)))
 }
 
@@ -342,7 +342,7 @@ func (c Cyan) String() string {
 }
 
 // Cyanf returns a Cyan formatted string.
-func Cyanf(format string, a ...interface{}) string {
+func Cyanf(format string, a ...any) string {
 	return colType(Cyan(fmt.Sprintf(format, a...)))
 }
 
@@ -354,7 +354,7 @@ func (c BGreen) String() string {
 }
 
 // BGreenf returns a BGreen formatted string.
-func BGreenf(format string, a ...interface{}) string {
+func BGreenf(format string, a ...any) string {
 	return colType(BGreen(fmt.Sprintf(format, a...)))
 }
 
@@ -364,7 +364,7 @@ func (c BBlue) String() string {
 }
 
 // BBluef returns a BBlue formatted string.
-func BBluef(format string, a ...interface{}) string {
+func BBluef(format string, a ...any) string {
 	return colType(BBlue(fmt.Sprintf(format, a...)))
 }
 
@@ -374,7 +374,7 @@ func (c BRed) String() string {
 }
 
 // BRedf returns a BRed formatted string.
-func BRedf(format string, a ...interface{}) string {
+func BRedf(format string, a ...any) string {
 	return colType(BRed(fmt.Sprintf(format, a...)))
 }
 
@@ -384,7 +384,7 @@ func (c BYellow) String() string {
 }
 
 // BYellowf returns a BYellow formatted string.
-func BYellowf(format string, a ...interface{}) string {
+func BYellowf(format string, a ...any) string {
 	return colType(BYellow(fmt.Sprintf(format, a...)))
 }
 
@@ -394,7 +394,7 @@ func (c BMagenta) String() string {
 }
 
 // BMagentaf returns a BMagenta formatted string.
-func BMagentaf(format string, a ...interface{}) string {
+func BMagentaf(format string, a ...any) string {
 	return colType(BMagenta(fmt.Sprintf(format, a...)))
 }
 
@@ -404,7 +404,7 @@ func (c BWhite) String() string {
 }
 
 // BWhitef returns a BWhite formatted string.
-func BWhitef(format string, a ...interface{}) string {
+func BWhitef(format string, a ...any) string {
 	return colType(BWhite(fmt.Sprintf(format, a...)))
 }
 
@@ -414,7 +414,7 @@ func (c BBlack) String() string {
 }
 
 // BBlackf returns a BBlack formatted string.
-func BBlackf(format string, a ...interface{}) string {
+func BBlackf(format string, a ...any) string {
 	return colType(BBlack(fmt.Sprintf(format, a...)))
 }
 
@@ -424,7 +424,7 @@ func (c BCyan) String() string {
 }
 
 // BCyanf returns a BCyan formatted string.
-func BCyanf(format string, a ...interface{}) string {
+func BCyanf(format string, a ...any) string {
 	return colType(BCyan(fmt.Sprintf(format, a...)))
 }
 

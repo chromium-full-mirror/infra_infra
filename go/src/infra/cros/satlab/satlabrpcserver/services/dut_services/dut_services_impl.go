@@ -36,9 +36,9 @@ type ListFirmwareCommandResponse struct {
 }
 
 type ListFirmwareResult struct {
-	Host        *Host                  `json:"host"`
-	Ec          map[string]interface{} `json:"ec"`
-	SignatureId string                 `json:"signature_id"`
+	Host        *Host          `json:"host"`
+	Ec          map[string]any `json:"ec"`
+	SignatureId string         `json:"signature_id"`
 }
 
 type Host struct {

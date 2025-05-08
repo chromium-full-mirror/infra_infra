@@ -428,7 +428,7 @@ type BuildIterator struct {
 	// Response is the raw response for the current page.
 	// It must be cast to the RPC response type.
 	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	Response any
 
 	// InternalFetch is for use by the Google Cloud Libraries only.
 	// It is not part of the stable interface of this package.
@@ -460,7 +460,7 @@ func (it *BuildIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *BuildIterator) takeBuf() interface{} {
+func (it *BuildIterator) takeBuf() any {
 	b := it.items
 	it.items = nil
 	return b
@@ -475,7 +475,7 @@ type BuildTargetIterator struct {
 	// Response is the raw response for the current page.
 	// It must be cast to the RPC response type.
 	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	Response any
 
 	// InternalFetch is for use by the Google Cloud Libraries only.
 	// It is not part of the stable interface of this package.
@@ -507,7 +507,7 @@ func (it *BuildTargetIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *BuildTargetIterator) takeBuf() interface{} {
+func (it *BuildTargetIterator) takeBuf() any {
 	b := it.items
 	it.items = nil
 	return b
@@ -522,7 +522,7 @@ type ModelIterator struct {
 	// Response is the raw response for the current page.
 	// It must be cast to the RPC response type.
 	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	Response any
 
 	// InternalFetch is for use by the Google Cloud Libraries only.
 	// It is not part of the stable interface of this package.
@@ -554,7 +554,7 @@ func (it *ModelIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *ModelIterator) takeBuf() interface{} {
+func (it *ModelIterator) takeBuf() any {
 	b := it.items
 	it.items = nil
 	return b

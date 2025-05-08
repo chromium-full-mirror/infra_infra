@@ -5,4 +5,4 @@ package platform
 
 // IPlatform provides the different functions in different platforms.
 // e.g. reboot
-type IPlatform interface{}
+type IPlatform any

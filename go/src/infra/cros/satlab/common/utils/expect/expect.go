@@ -52,7 +52,7 @@ func NewStatus(code codes.Code, msg string) *Status {
 }
 
 // NewStatusf returns a Status with the provided code and a formatted message.
-func NewStatusf(code codes.Code, format string, a ...interface{}) *Status {
+func NewStatusf(code codes.Code, format string, a ...any) *Status {
 	return NewStatus(code, fmt.Sprint(fmt.Sprintf(format, a...)))
 }
 

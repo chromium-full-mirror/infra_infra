@@ -157,7 +157,7 @@ func extractServiceAccountNameFromKeyFile(path string) (string, error) {
 		return "", fmt.Errorf("failed to read key file: %w", err)
 	}
 
-	var keyData map[string]interface{}
+	var keyData map[string]any
 	err = json.Unmarshal(data, &keyData)
 	if err != nil {
 		return "", fmt.Errorf("failed to unmarshal key file: %w", err)

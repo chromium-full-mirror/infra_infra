@@ -46,7 +46,7 @@ func (m *MockISwarmingService) CountTasks(ctx context.Context, in *apipb.TasksCo
 }
 
 // CountTasks indicates an expected call of CountTasks.
-func (mr *MockISwarmingServiceMockRecorder) CountTasks(ctx, in interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) CountTasks(ctx, in any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountTasks", reflect.TypeOf((*MockISwarmingService)(nil).CountTasks), ctx, in)
 }
@@ -61,7 +61,7 @@ func (m *MockISwarmingService) GetBot(ctx context.Context, hostname string) (*ap
 }
 
 // GetBot indicates an expected call of GetBot.
-func (mr *MockISwarmingServiceMockRecorder) GetBot(ctx, hostname interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) GetBot(ctx, hostname any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBot", reflect.TypeOf((*MockISwarmingService)(nil).GetBot), ctx, hostname)
 }
@@ -76,7 +76,7 @@ func (m *MockISwarmingService) ListBotEvents(ctx context.Context, hostname, curs
 }
 
 // ListBotEvents indicates an expected call of ListBotEvents.
-func (mr *MockISwarmingServiceMockRecorder) ListBotEvents(ctx, hostname, cursor, pageSize interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) ListBotEvents(ctx, hostname, cursor, pageSize any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBotEvents", reflect.TypeOf((*MockISwarmingService)(nil).ListBotEvents), ctx, hostname, cursor, pageSize)
 }
@@ -91,7 +91,7 @@ func (m *MockISwarmingService) ListBotTasks(ctx context.Context, hostname, curso
 }
 
 // ListBotTasks indicates an expected call of ListBotTasks.
-func (mr *MockISwarmingServiceMockRecorder) ListBotTasks(ctx, hostname, cursor, pageSize interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) ListBotTasks(ctx, hostname, cursor, pageSize any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBotTasks", reflect.TypeOf((*MockISwarmingService)(nil).ListBotTasks), ctx, hostname, cursor, pageSize)
 }
@@ -106,7 +106,7 @@ func (m *MockISwarmingService) ListTasks(ctx context.Context, in *apipb.TasksWit
 }
 
 // ListTasks indicates an expected call of ListTasks.
-func (mr *MockISwarmingServiceMockRecorder) ListTasks(ctx, in interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) ListTasks(ctx, in any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasks", reflect.TypeOf((*MockISwarmingService)(nil).ListTasks), ctx, in)
 }
@@ -121,7 +121,7 @@ func (m *MockISwarmingService) ListBots(ctx context.Context, in *apipb.BotsReque
 }
 
 // ListBots indicates an expected call of ListBots.
-func (mr *MockISwarmingServiceMockRecorder) ListBots(ctx, in interface{}) *gomock.Call {
+func (mr *MockISwarmingServiceMockRecorder) ListBots(ctx, in any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBots", reflect.TypeOf((*MockISwarmingService)(nil).ListBots), ctx, in)
 }
@@ -166,7 +166,7 @@ func (m *MockTasksClient) EXPECT() *MockTasksClientMockRecorder {
 // ListTasks mocks base method.
 func (m *MockTasksClient) ListTasks(ctx context.Context, in *apipb.TasksWithPerfRequest, opts ...grpc.CallOption) (*apipb.TaskListResponse, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
+	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
@@ -177,16 +177,16 @@ func (m *MockTasksClient) ListTasks(ctx context.Context, in *apipb.TasksWithPerf
 }
 
 // ListTasks indicates an expected call of ListTasks.
-func (mr *MockTasksClientMockRecorder) ListTasks(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+func (mr *MockTasksClientMockRecorder) ListTasks(ctx, in any, opts ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
+	varargs := append([]any{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTasks", reflect.TypeOf((*MockTasksClient)(nil).ListTasks), varargs...)
 }
 
 // CountTasks mocks base method.
 func (m *MockTasksClient) CountTasks(ctx context.Context, in *apipb.TasksCountRequest, opts ...grpc.CallOption) (*apipb.TasksCount, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
+	varargs := []any{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
@@ -197,8 +197,8 @@ func (m *MockTasksClient) CountTasks(ctx context.Context, in *apipb.TasksCountRe
 }
 
 // CountTasks indicates an expected call of CountTasks.
-func (mr *MockTasksClientMockRecorder) CountTasks(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+func (mr *MockTasksClientMockRecorder) CountTasks(ctx, in any, opts ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
+	varargs := append([]any{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountTasks", reflect.TypeOf((*MockTasksClient)(nil).CountTasks), varargs...)
 }
