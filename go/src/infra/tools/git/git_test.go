@@ -722,7 +722,7 @@ func (it *countingRetryIterator) Next(context.Context, error) time.Duration {
 	return 0
 }
 
-func atomicWriteJSON(obj interface{}, path string) (err error) {
+func atomicWriteJSON(obj any, path string) (err error) {
 	fd, err := ioutil.TempFile(filepath.Dir(path), filepath.Base(path))
 	if err != nil {
 		return errors.Annotate(err, "failed to create output tempfile").Err()

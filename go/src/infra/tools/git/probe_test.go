@@ -243,7 +243,7 @@ func TestSystemProbe(t *testing.T) {
 	})
 }
 
-func shouldBeSameFileAs(actual interface{}, expected ...interface{}) string {
+func shouldBeSameFileAs(actual any, expected ...any) string {
 	aPath, ok := actual.(string)
 	if !ok {
 		return "actual must be a path string"
