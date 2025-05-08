@@ -945,7 +945,7 @@ func (fws *FirmwareService) DownloadAndProcess(ctx context.Context, gsPath strin
 		}
 
 		// Use mktemp to safely create a unique temp directory in /var/tmp so that it survives reboots.
-		archiveDir, err := connection.RunCmd(ctx, "mktemp", []string{"-d", "--tmpdir=/var/tmp", fmt.Sprintf("'cros-fw-provision.XXXXXXXXX.%s'", archiveSubfolder)})
+		archiveDir, err := connection.RunCmd(ctx, "mktemp", []string{"-d", "--tmpdir=/var/tmp", fmt.Sprintf("'cros-fw-provision.%s.XXXXXXXXX'", archiveSubfolder)})
 		if err != nil {
 			return errors.Wrap(err, "remote mktemp failed")
 		}

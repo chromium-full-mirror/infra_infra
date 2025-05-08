@@ -332,7 +332,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 		stagingURL := "'http://1.2.3.4:5678/stage/?archive_url=gs%3A%2Fchromeos-image-archive%2Fboard-firmware-branch%2FR123-12345.0.0%2Fboard&files=firmware_from_source.tar.bz2'"
 		mkdirCall := dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 			Command: "mktemp",
-			Args:    []string{"-d", "--tmpdir=/var/tmp", "'cros-fw-provision.XXXXXXXXX.board'"},
+			Args:    []string{"-d", "--tmpdir=/var/tmp", "'cros-fw-provision.board.XXXXXXXXX'"},
 		}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("/var/tmp/some TempDir\n")}), nil)
 
 		if testCase.ecRo {
