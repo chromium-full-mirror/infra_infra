@@ -623,9 +623,13 @@ func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress stri
 	}
 	logger.Printf("GetConnection Attempting to Dial!")
 	ssh, err := connectWithTimeout(addr, dutssh.GetSSHConfig(), 5*time.Second)
-	logger.Printf("GetConnection FINISHED Dial! %s\n", err)
+	if err != nil {
+		logger.Printf("GetConnection FAILED Dial! %s\n", err)
+		return nil, err
+	}
 
-	return &dutssh.SSHClient{Client: ssh}, err
+	logger.Printf("GetConnection FINISHED Dial! %s\n", err)
+	return &dutssh.SSHClient{Client: ssh}, nil
 }
 
 // runCmd run remote command returning return value, stdout, stderr, and error if any
