@@ -1,9 +1,9 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2025 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package release provides commands for managing chameleond releases for btpeers.
-package release
+// Package preverification provides commands for managing chameleond pre-verification for btpeers.
+package preverification
 
 import (
 	"errors"
@@ -12,17 +12,19 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/spf13/cobra"
 
-	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond/release/config"
 	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/common"
 	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 	release "go.chromium.org/infra/cros/cmd/btpeer_manager/release/chameleond"
 )
 
 func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Command {
-	managerConfig := &release.ManagerConfig{}
+	managerConfig := &release.ManagerConfig{
+		StorageBucketName: release.ChromeOSConnectivityTestArtifactsStorageBucket,
+	}
+
 	cmd := &cobra.Command{
-		Use:   "release",
-		Short: "Commands related to managing chameleond releases for btpeers",
+		Use:   "pre-verification",
+		Short: "Commands related to pre-verification of chameleond for btpeers",
 		Args:  cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := initDirContext(); err != nil {
@@ -55,11 +57,12 @@ func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Co
 	}
 
 	cmd.PersistentFlags().StringVar(
-		&managerConfig.StorageBucketName,
-		"bucket",
-		release.ChromeOSConnectivityTestArtifactsStorageBucket,
-		"GCS storage bucket to use (both prod and test use the same bucket)",
+		&managerConfig.GCSCredentialsFilePath,
+		"gcloud_cred_file",
+		"",
+		"The gcloud credential file to use with the GCS API (uses gcloud CLI application-default credentials when unset)",
 	)
+
 	cmd.PersistentFlags().BoolVarP(
 		&managerConfig.UseProdConfig,
 		"prod",
@@ -67,16 +70,11 @@ func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Co
 		false,
 		"Uses the production config when present, or the test config when not present",
 	)
-	cmd.PersistentFlags().StringVar(
-		&managerConfig.GCSCredentialsFilePath,
-		"gcloud_cred_file",
-		"",
-		"The gcloud credential file to use with the GCS API (uses gcloud CLI application-default credentials when unset)",
-	)
+
 	cmd.AddCommand(
-		downloadCmd(dirContext),
-		config.RootCmd(dirContext),
-		uploadCmd(),
+		startCmd(dirContext),
+		cancelCmd(),
+		releaseCmd(),
 	)
 
 	return cmd

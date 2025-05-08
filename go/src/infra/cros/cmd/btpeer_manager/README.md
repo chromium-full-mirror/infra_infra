@@ -111,18 +111,80 @@ Usage:
   btpeer_manager chameleond [command]
 
 Available Commands:
-  make        Builds chameleond in your chroot and prepares bundle for btpeer distribution
-  release     Commands related to managing chameleond releases for btpeers
+  make             Builds chameleond in your chroot and prepares bundle for btpeer distribution
+  pre-verification Commands related to pre-verification of chameleond for btpeers
+  release          Commands related to managing chameleond releases for btpeers
 
 Flags:
   -h, --help   help for chameleond
 
 Global Flags:
-      --chromiumos_src_dir string   Path to local chromiumos source directory (default "/usr/local/google/home/jaredbennett/chromiumos")
+      --chromiumos_src_dir string   Path to local chromiumos source directory (default "/usr/local/google/home/astrouski/chromiumos")
       --working_dir string          Path to base working directory create build directory (defaults to btpeer_manager source dir)
 
 Use "btpeer_manager chameleond [command] --help" for more information about a command.
 ```
+
+### btpeer_manager chameleond pre-verification
+
+Commands in this section helps to automate a process of pre-verification of a chameleond package.
+```text
+$ btpeer_manager chameleond pre-verification --help
+Commands related to pre-verification of chameleond for btpeers
+
+Usage:
+  btpeer_manager chameleond pre-verification [command]
+
+Available Commands:
+  cancel      Cancel pre-verification process and revert all changes in config
+  release     Release next bundle to all btpeers
+  start       Start pre-verification process
+
+Flags:
+      --al                        Uses AL config when present, or CrOS config when not present
+      --gcloud_cred_file string   The gcloud credential file to use with the GCS API (uses gcloud CLI application-default credentials when unset)
+  -h, --help                      help for pre-verification
+  -p, --prod                      Uses the production config when present, or the test config when not present
+
+Global Flags:
+      --chromiumos_src_dir string   Path to local chromiumos source directory (default "/usr/local/google/home/astrouski/chromiumos")
+      --working_dir string          Path to base working directory create build directory (defaults to btpeer_manager source dir)
+
+Use "btpeer_manager chameleond pre-verification [command] --help" for more information about a command.
+```
+
+### btpeer_manager chameleond pre-verification start <min_cros_version>
+
+```text
+$ btpeer_manager chameleond pre-verification start 123456.1.0
+```
+
+This command would start a process of pre-verification:
+- Run make command
+- Upload generated bundle to GS bucket
+- Update config with nextChameleondCommit and nextDutReleaseVersions and add info about new bundle in bundles list
+
+### btpeer_manager chameleond pre-verification cancel
+```text
+$ btpeer_manager chameleond pre-verification cancel
+```
+
+This command would revert all changes added during `start` command:
+- Remove commit from nextChameleondCommit
+- Remove all versions from nextDutReleaseVersions
+- Remove bundle from bundles list
+
+### btpeer_manager chameleond pre-verification release
+```text
+$ btpeer_manager chameleond pre-verification release
+```
+
+This command would make a bundle from pre-verification as a main bundle in config:
+- Remove commit from nextChameleondCommit
+- Remove all versions from nextDutReleaseVersions
+- Update version for bundle from pre-verification start step to match the one that passed in it
+
+> **WARNING:** This is critical to verify that pre-verification bundle pass all tests in wificell_bt_preverification pool before releasing it to all DUT's.
 
 ### btpeer_manager chameleond make
 

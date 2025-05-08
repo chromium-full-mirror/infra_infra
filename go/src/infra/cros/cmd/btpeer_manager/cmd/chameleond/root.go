@@ -7,6 +7,8 @@ package chameleond
 import (
 	"github.com/spf13/cobra"
 
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond/make"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond/preverification"
 	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond/release"
 	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 )
@@ -18,8 +20,9 @@ func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Co
 		Args:  cobra.NoArgs,
 	}
 	cmd.AddCommand(
-		makeCmd(dirContext),
+		make.MakeCmd(dirContext),
 		release.RootCmd(dirContext, initDirContext),
+		preverification.RootCmd(dirContext, initDirContext),
 	)
 
 	return cmd
