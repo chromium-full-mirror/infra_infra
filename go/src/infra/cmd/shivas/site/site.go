@@ -147,9 +147,13 @@ type EnvFlags struct {
 
 // Register sets up the -dev argument.
 func (f *EnvFlags) Register(fl *flag.FlagSet) {
-	fl.BoolVar(&f.local, "local", false, "Run locally.")
-	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment.")
+	fl.BoolVar(&f.local, "local", false, "Run locally (or use env var SHIVAS_ENV=LOCAL)")
+	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment (or use env var SHIVAS_ENV=DEV)")
 	fl.StringVar(&f.namespace, "namespace", "", fmt.Sprintf("namespace where data resides. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
+
+	shivasEnv := strings.ToLower(os.Getenv("SHIVAS_ENV"))
+	f.local = shivasEnv == "local"
+	f.dev = shivasEnv == "dev"
 }
 
 // Function validate checks the flags for correctness.
