@@ -234,7 +234,7 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 
 // For testability.
 type bqInserter interface {
-	Put(ctx context.Context, src interface{}) error
+	Put(ctx context.Context, src any) error
 }
 
 func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter bqInserter, rows []*tableRow) error {

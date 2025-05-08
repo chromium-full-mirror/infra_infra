@@ -122,7 +122,7 @@ type Alert struct {
 	Type AlertType `json:"type"`
 	// Extension may take on different concrete types depending on the
 	// code that generates the Alert.
-	Extension interface{} `json:"extension"`
+	Extension any `json:"extension"`
 }
 
 // Alerts is a slice of alerts, sorted by Key by default

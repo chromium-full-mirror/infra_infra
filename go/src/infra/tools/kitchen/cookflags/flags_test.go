@@ -20,8 +20,8 @@ import (
 var flagTestCases = []struct {
 	flags       []string
 	cf          CookFlags
-	errParse    interface{}
-	errValidate interface{}
+	errParse    any
+	errValidate any
 }{
 	{
 		flags:       []string{},

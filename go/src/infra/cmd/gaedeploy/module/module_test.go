@@ -114,7 +114,7 @@ func TestModule(t *testing.T) {
 					"BOOL_VAR": true,
 				},
 			}
-			v := map[string]interface{}{
+			v := map[string]any{
 				"str_key1": "blah ${STR_VAR}",
 				"str_key2": "blah ${INT_VAR}",
 				"str_key3": "blah ${BOOL_VAR}",
@@ -130,7 +130,7 @@ func TestModule(t *testing.T) {
 				"UNUSED_TOO":  "!!!",
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Match(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]any{
 				"str_key1": "blah blah-1",
 				"str_key2": "blah 42",
 				"str_key3": "blah true",
@@ -148,7 +148,7 @@ func TestModule(t *testing.T) {
 		})
 
 		t.Run("Substitutes without declaration", func(t *ftt.Test) {
-			v := map[string]interface{}{
+			v := map[string]any{
 				"key1": "blah ${VAR1}",
 				"key2": "${VAR2}",
 				"key3": "zzz ${UNDEFINED}",
@@ -158,7 +158,7 @@ func TestModule(t *testing.T) {
 				"VAR2": "42",
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Match(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]any{
 				"key1": "blah zzz",
 				"key2": "42",               // undeclared variables are assumed to be strings
 				"key3": "zzz ${UNDEFINED}", // totally ignores undefined variables
@@ -171,33 +171,33 @@ func TestModule(t *testing.T) {
 		})
 
 		t.Run("Recurses", func(t *ftt.Test) {
-			v := map[string]interface{}{
+			v := map[string]any{
 				"top": "${VAR}",
-				"dict": map[interface{}]interface{}{
-					"deeper": map[interface{}]interface{}{
+				"dict": map[any]any{
+					"deeper": map[any]any{
 						"key": "${VAR}",
 					},
 					123: "huh",
 				},
-				"list": []interface{}{
+				"list": []any{
 					"${VAR}",
-					[]interface{}{"${VAR}"},
+					[]any{"${VAR}"},
 				},
 				"null": nil,
 			}
 			out, _, err := renderVars(v, "app-id", nil, map[string]string{"VAR": "zzz"})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Match(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]any{
 				"top": "zzz",
-				"dict": map[interface{}]interface{}{
-					"deeper": map[interface{}]interface{}{
+				"dict": map[any]any{
+					"deeper": map[any]any{
 						"key": "zzz",
 					},
 					123: "huh",
 				},
-				"list": []interface{}{
+				"list": []any{
 					"zzz",
-					[]interface{}{"zzz"},
+					[]any{"zzz"},
 				},
 				"null": nil,
 			}))
@@ -209,7 +209,7 @@ func TestModule(t *testing.T) {
 					"VAR": "blah",
 				},
 			}
-			v := map[string]interface{}{
+			v := map[string]any{
 				"top": "${VAR} ${ANOTHER} ${THIRD}",
 			}
 			_, _, err := renderVars(v, "app-id", decl, nil)

@@ -78,7 +78,7 @@ func (tp *taskProcessor) process(ctx context.Context) {
 
 // scanner queries entire datastore Kind and mutates `doc` with results.
 func scanner(ctx context.Context, dsClient *datastore.Client, kind string,
-	doc interface{}, fields []string, cb func(key *datastore.Key)) {
+	doc any, fields []string, cb func(key *datastore.Key)) {
 	log.Printf("Scanning %s", kind)
 	defer log.Printf("Done scanning %s", kind)
 

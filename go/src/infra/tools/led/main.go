@@ -140,7 +140,7 @@ func (kitchenSupport) FromSwarmingV2(ctx context.Context, in *swarmingpb.NewTask
 
 	// kitchen builds are sorta inverted; the Build message is in the buildbucket
 	// module property, but it doesn't contain the properties in input.
-	bbModProps := kitchenArgs.Properties[bbModPropKey].(map[string]interface{})
+	bbModProps := kitchenArgs.Properties[bbModPropKey].(map[string]any)
 	delete(kitchenArgs.Properties, bbModPropKey)
 
 	blob, err := json.Marshal(bbModProps["build"])
@@ -160,7 +160,7 @@ func (kitchenSupport) FromSwarmingV2(ctx context.Context, in *swarmingpb.NewTask
 		return errors.Annotate(err, "populating properties").Err()
 	}
 
-	out.WriteProperties(map[string]interface{}{
+	out.WriteProperties(map[string]any{
 		"recipe": kitchenArgs.RecipeName,
 	})
 	return nil

@@ -20,20 +20,20 @@ type Build struct {
 
 // Change is an automatically generated type.
 type Change struct {
-	At         string          `json:"at"`
-	Branch     string          `json:"branch"`
-	Category   string          `json:"category"`
-	Comments   string          `json:"comments"`
-	Files      []Files         `json:"files"`
-	Number     int64           `json:"number"`
-	Project    string          `json:"project"`
-	Properties [][]interface{} `json:"properties"`
-	Repository string          `json:"repository"`
-	Rev        string          `json:"rev"`
-	Revision   string          `json:"revision"`
-	Revlink    string          `json:"revlink"`
-	When       EpochTime       `json:"when"`
-	Who        string          `json:"who"`
+	At         string    `json:"at"`
+	Branch     string    `json:"branch"`
+	Category   string    `json:"category"`
+	Comments   string    `json:"comments"`
+	Files      []Files   `json:"files"`
+	Number     int64     `json:"number"`
+	Project    string    `json:"project"`
+	Properties [][]any   `json:"properties"`
+	Repository string    `json:"repository"`
+	Rev        string    `json:"rev"`
+	Revision   string    `json:"revision"`
+	Revlink    string    `json:"revlink"`
+	When       EpochTime `json:"when"`
+	Who        string    `json:"who"`
 }
 
 var cpRE = regexp.MustCompile("(?m:^Cr-Commit-Position: (.*)@{#([0-9]+)})")
@@ -58,19 +58,19 @@ func (c *Change) CommitPosition() (string, int, error) {
 // Step is an automatically generated type.
 type Step struct {
 	Eta          EpochTime         `json:"eta"`
-	Expectations [][]interface{}   `json:"expectations"`
+	Expectations [][]any           `json:"expectations"`
 	Hidden       bool              `json:"hidden"`
 	IsFinished   bool              `json:"isFinished"`
 	IsStarted    bool              `json:"isStarted"`
-	Logs         [][]interface{}   `json:"logs"`
+	Logs         [][]any           `json:"logs"`
 	Links        map[string]string `json:"urls"`
 	Name         string            `json:"name"`
 	// Results is a homogenous array. Use runtime introspection to
 	// determine element types.
-	Results    []interface{} `json:"results"`
-	StepNumber float64       `json:"step_number"`
-	Text       []string      `json:"text"`
-	Times      []EpochTime   `json:"times"`
+	Results    []any       `json:"results"`
+	StepNumber float64     `json:"step_number"`
+	Text       []string    `json:"text"`
+	Times      []EpochTime `json:"times"`
 }
 
 const (
@@ -105,6 +105,6 @@ func (s *Step) Result() (float64, error) {
 
 // Files is an automatically generated type.
 type Files struct {
-	Name string                 `json:"name"`
-	URL  map[string]interface{} `json:"url"`
+	Name string         `json:"name"`
+	URL  map[string]any `json:"url"`
 }

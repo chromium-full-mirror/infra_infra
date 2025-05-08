@@ -44,7 +44,7 @@ type Entry struct {
 	TextPayload string
 
 	// JSONPayload is the log entry payload, represented as a JSONish structure.
-	JSONPayload interface{}
+	JSONPayload any
 
 	// ParsedBy is the parser that parsed this line, or nil if it fell through to
 	// the default parser.

@@ -23,7 +23,7 @@ type Module struct {
 	Name    string // e.g. "default"
 	Runtime string // e.g. "go113"
 
-	conf map[string]interface{} // deserialized YAML config
+	conf map[string]any // deserialized YAML config
 }
 
 // ReadYAML loads the module's YAML in memory.
@@ -37,7 +37,7 @@ func ReadYAML(path string) (*Module, error) {
 
 // parseYAML unmarshals YAML and returns *Module from it.
 func parseYAML(blob []byte) (*Module, error) {
-	m := &Module{conf: map[string]interface{}{}}
+	m := &Module{conf: map[string]any{}}
 	if err := yaml.Unmarshal(blob, &m.conf); err != nil {
 		return nil, errors.Annotate(err, "failed to unmarshal").Err()
 	}
@@ -146,18 +146,18 @@ func (m *Module) UsesAppEngineAPIs() bool {
 ////////////////////////////////////////////////////////////////////////////////
 
 // varsDecl is appID => var name => its value, as read from the YAML.
-type varsDecl map[string]map[string]interface{}
+type varsDecl map[string]map[string]any
 
 // varsProvider takes a variable name and returns its value (int or string).
-type varsProvider func(name string) (interface{}, error)
+type varsProvider func(name string) (any, error)
 
 // asStrMap converts d to `map[string]interface{}` if possible.
-func asStrMap(d interface{}) (map[string]interface{}, bool) {
-	m, ok := d.(map[interface{}]interface{})
+func asStrMap(d any) (map[string]any, bool) {
+	m, ok := d.(map[any]any)
 	if !ok {
 		return nil, false
 	}
-	typed := make(map[string]interface{}, len(m))
+	typed := make(map[string]any, len(m))
 	for k, v := range m {
 		k, ok := k.(string)
 		if !ok {
@@ -180,7 +180,7 @@ func asStrMap(d interface{}) (map[string]interface{}, bool) {
 //
 // Returns a partially modified copy of `m` and a set of var names that were
 // substituted.
-func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[string]string) (map[string]interface{}, stringset.Set, error) {
+func renderVars(m map[string]any, appID string, decl varsDecl, vals map[string]string) (map[string]any, stringset.Set, error) {
 	type varType int
 	const Undef varType = 0
 	const Int varType = 1
@@ -235,7 +235,7 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 
 	// Provider takes a variable name and returns its value (either string or
 	// int), or an error if such variable is not defined.
-	provider := func(key string) (interface{}, error) {
+	provider := func(key string) (any, error) {
 		typ := types[key]
 		if typ == Undef {
 			typ = Str // default for variables not mentioned in `decl`
@@ -283,7 +283,7 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 
 	// `visit` doesn't understand map[string]interface{} specifically, it
 	// wants interface{} keys. So traverse the top-layer explicitly.
-	out := make(map[string]interface{}, len(m))
+	out := make(map[string]any, len(m))
 	for k, v := range m {
 		var err error
 		if out[k], err = visit(v, provider); err != nil {
@@ -296,13 +296,13 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 // visit recursively visits `obj` substituting vars in it via `p`.
 //
 // Returns either `obj` itself or a partially modified copy.
-func visit(obj interface{}, p varsProvider) (out interface{}, err error) {
+func visit(obj any, p varsProvider) (out any, err error) {
 	switch o := obj.(type) {
 	case string:
 		out, err = renderString(o, p)
 
-	case map[interface{}]interface{}:
-		mut := make(map[interface{}]interface{}, len(o))
+	case map[any]any:
+		mut := make(map[any]any, len(o))
 		for k, v := range o {
 			if mut[k], err = visit(v, p); err != nil {
 				return
@@ -310,8 +310,8 @@ func visit(obj interface{}, p varsProvider) (out interface{}, err error) {
 		}
 		out = mut
 
-	case []interface{}:
-		mut := make([]interface{}, len(o))
+	case []any:
+		mut := make([]any, len(o))
 		for i, v := range o {
 			if mut[i], err = visit(v, p); err != nil {
 				return
@@ -328,7 +328,7 @@ func visit(obj interface{}, p varsProvider) (out interface{}, err error) {
 var varRe = regexp.MustCompile(`\$\{[\w]+\}`)
 
 // renderString renders variables in a string resolving them via `p`.
-func renderString(s string, p varsProvider) (out interface{}, err error) {
+func renderString(s string, p varsProvider) (out any, err error) {
 	// Detect direct hits like "${VAR}" to return the var values as is, to
 	// preserve its type. This is important for integer-valued fields like
 	// `max_concurrent_requests`.
@@ -343,7 +343,7 @@ func renderString(s string, p varsProvider) (out interface{}, err error) {
 		if err != nil {
 			return "" // don't care, already failing
 		}
-		var repl interface{}
+		var repl any
 		repl, err = p(strings.TrimSuffix(strings.TrimPrefix(match, "${"), "}"))
 		return fmt.Sprintf("%v", repl) // to convert potential int or bool to string
 	})

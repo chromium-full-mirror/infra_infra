@@ -156,7 +156,7 @@ func TestMetadata(t *testing.T) {
 		ts := testclock.TestRecentTimeUTC
 		md := Metadata{}
 
-		add := func(key string, age time.Duration, val interface{}) {
+		add := func(key string, age time.Duration, val any) {
 			blob, err := json.Marshal(val)
 			if err != nil {
 				panic(err)

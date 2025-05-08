@@ -100,7 +100,7 @@ func (s *setRun) Run(a subcommands.Application, args []string, env subcommands.E
 		in = f
 	}
 
-	doc := make(map[string]interface{})
+	doc := make(map[string]any)
 	if err := json.NewDecoder(in).Decode(&doc); err != nil {
 		cmdlib.PrintError(a, fmt.Errorf("could not decode input: %w", err))
 		return 1

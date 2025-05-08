@@ -82,7 +82,7 @@ func maybeRegistryError(resp *http.Response, body []byte) error {
 //
 // Returns errors on non-200 responses. They are actually annotated *Error
 // instances.
-func sendJSONRequest(ctx context.Context, req *http.Request, out interface{}) (resp *http.Response, body []byte, err error) {
+func sendJSONRequest(ctx context.Context, req *http.Request, out any) (resp *http.Response, body []byte, err error) {
 	req = req.WithContext(ctx)
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {

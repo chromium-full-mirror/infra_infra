@@ -204,22 +204,22 @@ func TestCook(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 				type recipeInput struct {
 					Args       []string
-					Properties map[string]interface{}
+					Properties map[string]any
 				}
 				var actualRecipeInput recipeInput
 				err = json.Unmarshal(recipeInputFile, &actualRecipeInput)
 				assert.Loosely(t, err, should.BeNil)
-				expectedInputProperties := map[string]interface{}{
+				expectedInputProperties := map[string]any{
 					"bot_id":      "bot",
 					"path_config": "generic",
-					"$recipe_engine/path": map[string]interface{}{
+					"$recipe_engine/path": map[string]any{
 						"cache_dir": cacheDirPath,
 						"temp_dir":  filepath.Join(kitchenTempDir, "rt"),
 					},
-					"$recipe_engine/buildbucket": map[string]interface{}{
-						"build": map[string]interface{}{
-							"infra": map[string]interface{}{
-								"resultdb": map[string]interface{}{
+					"$recipe_engine/buildbucket": map[string]any{
+						"build": map[string]any{
+							"infra": map[string]any{
+								"resultdb": map[string]any{
 									"hostname":   "test.results.cr.dev",
 									"invocation": "invocations/build:1",
 								},

@@ -258,13 +258,13 @@ func (c *cookRun) pathModuleProperties() (map[string]string, error) {
 // properties consumed specifically by kitchen.
 //
 // May mutate some other properties too.
-func (c *cookRun) prepareProperties(env environ.Env) (map[string]interface{}, *kitchenProperties, error) {
+func (c *cookRun) prepareProperties(env environ.Env) (map[string]any, *kitchenProperties, error) {
 	props, err := parseProperties(c.Properties, c.PropertiesFile)
 	if err != nil {
 		return nil, nil, errors.Annotate(err, "could not parse properties").Err()
 	}
 	if props == nil {
-		props = map[string]interface{}{}
+		props = map[string]any{}
 	}
 
 	// Reject reserved properties.
@@ -564,7 +564,7 @@ func (c *cookRun) updateEnv(env environ.Env) error {
 }
 
 // reportProperties serializes to JSON and logs given properties.
-func (c *cookRun) reportProperties(ctx context.Context, realm string, props interface{}) error {
+func (c *cookRun) reportProperties(ctx context.Context, realm string, props any) error {
 	propsJSON, err := json.MarshalIndent(props, "", "  ")
 	if err != nil {
 		return errors.Annotate(err, "could not marshal properties to JSON").Err()
@@ -972,7 +972,7 @@ func (c *cookRun) syncResultDBInfo(ctx context.Context) context.Context {
 	if bbProp, ok := c.engine.properties["$recipe_engine/buildbucket"]; ok {
 		// The "build" value of the property above was parsed from json encoded text.
 		// Marshal it to a byte array and then populate a proto from it with jsonpb.
-		if buildMap, ok := bbProp.(map[string]interface{})["build"]; ok {
+		if buildMap, ok := bbProp.(map[string]any)["build"]; ok {
 			buildJSON, err := json.Marshal(buildMap)
 			if err != nil {
 				panic("Impossible marshaling error")
@@ -1007,14 +1007,14 @@ func (c *cookRun) syncResultDBInfo(ctx context.Context) context.Context {
 				if err := json.Unmarshal(buf.Bytes(), &buildMap); err != nil {
 					panic("Failed to unmarshal json")
 				}
-				c.engine.properties["$recipe_engine/buildbucket"].(map[string]interface{})["build"] = buildMap
+				c.engine.properties["$recipe_engine/buildbucket"].(map[string]any)["build"] = buildMap
 			}
 		}
 	}
 	return ctx
 }
 
-func parseProperties(properties map[string]interface{}, propertiesFile string) (result map[string]interface{}, err error) {
+func parseProperties(properties map[string]any, propertiesFile string) (result map[string]any, err error) {
 	if len(properties) > 0 {
 		return properties, nil
 	}

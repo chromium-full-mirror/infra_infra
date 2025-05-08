@@ -264,7 +264,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	visited := 0 // number of packages actually visited
 	copied := 0  // number of files copied
 
-	reportErr := func(format string, args ...interface{}) {
+	reportErr := func(format string, args ...any) {
 		logging.Errorf(ctx, format, args...)
 		errs++
 	}
@@ -503,7 +503,7 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 			packages.NeedModule |
 			packages.NeedEmbedFiles,
 		Context: ctx,
-		Logf:    func(format string, args ...interface{}) { logging.Debugf(ctx, format, args...) },
+		Logf:    func(format string, args ...any) { logging.Debugf(ctx, format, args...) },
 		Dir:     bc.Dir,
 		Env:     append(os.Environ(), "GOOS="+bc.GOOS, "GOARCH="+bc.GOARCH),
 	}, ".")

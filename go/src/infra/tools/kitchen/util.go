@@ -20,7 +20,7 @@ import (
 	grpcLogging "go.chromium.org/luci/grpc/logging"
 )
 
-func encodeJSONToPath(path string, obj interface{}) (err error) {
+func encodeJSONToPath(path string, obj any) (err error) {
 	fd, err := os.Create(path)
 	if err != nil {
 		return errors.Annotate(err, "failed to create output file").Err()
@@ -113,10 +113,10 @@ func withNonCancel(ctx context.Context) context.Context {
 	}
 }
 
-func (c *nonCancelContext) Deadline() (time.Time, bool)       { return time.Time{}, false }
-func (c *nonCancelContext) Done() <-chan struct{}             { return c.doneC }
-func (c *nonCancelContext) Err() error                        { return nil }
-func (c *nonCancelContext) Value(key interface{}) interface{} { return c.base.Value(key) }
+func (c *nonCancelContext) Deadline() (time.Time, bool) { return time.Time{}, false }
+func (c *nonCancelContext) Done() <-chan struct{}       { return c.doneC }
+func (c *nonCancelContext) Err() error                  { return nil }
+func (c *nonCancelContext) Value(key any) any           { return c.base.Value(key) }
 
 // callbackReadCloser invokes a callback method when closed.
 type callbackReadCloser struct {

@@ -10,7 +10,7 @@ import (
 )
 
 // PropertyFlag is parsed JSON supplied to -property flag.
-type PropertyFlag map[string]interface{}
+type PropertyFlag map[string]any
 
 var _ flag.Value = (*PropertyFlag)(nil)
 

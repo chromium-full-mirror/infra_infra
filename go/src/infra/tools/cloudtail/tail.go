@@ -443,7 +443,7 @@ func signalOnChanges(ctx context.Context, path string, interval time.Duration) (
 		defer watcher.Close()
 
 		lastLogMsg := ""
-		spamLog := func(f string, args ...interface{}) {
+		spamLog := func(f string, args ...any) {
 			msg := fmt.Sprintf(f, args...)
 			if lastLogMsg != msg {
 				logging.Debugf(ctx, msg)

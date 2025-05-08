@@ -203,7 +203,7 @@ type fakeInserter struct {
 	failingInsertIDs []string
 }
 
-func (i *fakeInserter) Put(_ context.Context, src interface{}) error {
+func (i *fakeInserter) Put(_ context.Context, src any) error {
 	rows := src.([]*tableRow)
 	i.mu.Lock()
 	i.calls = append(i.calls, rows)

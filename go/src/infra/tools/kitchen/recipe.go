@@ -20,10 +20,10 @@ type recipeEngine struct {
 	// interpreter if necessary.
 	cmdPrefix []string
 
-	recipeName           string                 // name of the recipe
-	properties           map[string]interface{} // input properties
-	workDir              string                 // a directory where to run the recipe
-	outputResultJSONFile string                 // path to the result file
+	recipeName           string         // name of the recipe
+	properties           map[string]any // input properties
+	workDir              string         // a directory where to run the recipe
+	outputResultJSONFile string         // path to the result file
 }
 
 // commandRun prepares a command that runs a recipe.

@@ -327,13 +327,13 @@ func (c *commandBase) tokenSource(ctx context.Context) (oauth2.TokenSource, erro
 // writeJSONOutput writes the result to -json-output file (if was given).
 //
 // Handles -render-to-stdout as well.
-func (c *commandBase) writeJSONOutput(r interface{}) error {
+func (c *commandBase) writeJSONOutput(r any) error {
 	// Need to round-trip though JSON to "activate" all `json:...` annotations.
 	b, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		return errors.Annotate(err, "failed to marshal to JSON: %v", r).Err()
 	}
-	var asMap interface{}
+	var asMap any
 	if err := json.Unmarshal(b, &asMap); err != nil {
 		return errors.Annotate(err, "generated bad JSON output").Err()
 	}

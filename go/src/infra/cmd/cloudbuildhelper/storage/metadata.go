@@ -202,7 +202,7 @@ func (m *Metadata) ToPretty(now time.Time, limit int) string {
 
 // prettifyJSON attempts to reformat 'v' as multi-line JSON object.
 func prettifyJSON(v string) string {
-	var obj map[string]interface{}
+	var obj map[string]any
 	if err := json.Unmarshal([]byte(v), &obj); err != nil {
 		return v // give up
 	}

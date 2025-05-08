@@ -7,6 +7,4 @@ package migrator
 // Repo represents a checked-out git repo on disk.
 //
 // It contains configs of one or more LUCI projects.
-type Repo interface {
-	// Empty for now.
-}
+type Repo any
