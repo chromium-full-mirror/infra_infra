@@ -315,7 +315,7 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 			return fmt.Errorf("rebootDut: unable to get connection, %w", err)
 		}
 		s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
-		s.connection = &dutssh.SSHClient{Client: conn}
+		s.connection = conn
 		return nil
 
 	case <-ctx.Done():
@@ -502,14 +502,12 @@ func (s *DutServiceServer) ForceReconnect(ctx context.Context, req *api.ForceRec
 // reconnect starts a new ssh client connection
 func (s *DutServiceServer) reconnect(ctx context.Context) error {
 	s.logger.Printf("attempting to reconnect to DUT.")
-	var conn *ssh.Client
-	var err error
-	conn, err = GetConnection(ctx, s.dutName, s.wiringAddress, s.logger)
+	conn, err := GetConnection(ctx, s.dutName, s.wiringAddress, s.logger)
 	if err != nil {
 		s.logger.Printf("Failed to reconnect to DUT.")
 		return err
 	}
-	s.connection = &dutssh.SSHClient{Client: conn}
+	s.connection = conn
 	return nil
 }
 
@@ -564,13 +562,13 @@ func readFetchCrashesProto(stdout io.Reader, buffer bytes.Buffer) (*api.FetchCra
 }
 
 // GetConnectionWithRetry calls GetConnect with retries.
-func GetConnectionWithRetry(ctx context.Context, dutIdentifier string, wiringAddress string, req *api.RestartRequest, logger *log.Logger) (*ssh.Client, error) {
+func GetConnectionWithRetry(ctx context.Context, dutIdentifier string, wiringAddress string, req *api.RestartRequest, logger *log.Logger) (dutssh.ClientInterface, error) {
 	logger.Printf("GetConnectionWithRetry Start")
 
 	retryCount := 5
 	retryInterval := time.Duration(10 * time.Second)
 	var err error
-	var client *ssh.Client
+	var client dutssh.ClientInterface
 	if req.Retry != nil {
 		retryCount = int(req.Retry.Times)
 		retryInterval = time.Duration(req.Retry.IntervalMs) * time.Millisecond
@@ -595,11 +593,15 @@ func GetConnectionWithRetry(ctx context.Context, dutIdentifier string, wiringAdd
 
 // GetConnection connects to a dut server. If wiringAddress is provided,
 // it resolves the dut name to ip address; otherwise, uses dutIdentifier as is.
-func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress string, logger *log.Logger) (*ssh.Client, error) {
+func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress string, logger *log.Logger) (dutssh.ClientInterface, error) {
 	logger.Printf("GetConnection Start!")
 	if env.IsCloudBot() {
 		logger.Printf("CloudBot detected. Will connecting to dut through proxy.")
-		return dutssh.CloudbotsDutProxyClient(ctx, dutIdentifier)
+		if client, err := dutssh.CloudbotsDutProxyClient(ctx, dutIdentifier); err == nil {
+			return &dutssh.SSHClient{Client: client}, nil
+		} else {
+			return nil, err
+		}
 	}
 	var addr string
 	logger.Printf("GetConnection wiringAddress: %s", wiringAddress)
@@ -623,7 +625,7 @@ func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress stri
 	ssh, err := connectWithTimeout(addr, dutssh.GetSSHConfig(), 5*time.Second)
 	logger.Printf("GetConnection FINISHED Dial! %s\n", err)
 
-	return ssh, err
+	return &dutssh.SSHClient{Client: ssh}, err
 }
 
 // runCmd run remote command returning return value, stdout, stderr, and error if any
