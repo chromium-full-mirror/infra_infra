@@ -8,13 +8,13 @@ import (
 // Logger represents a simple interface for logging data.
 type Logger interface {
 	// Debugf log message at Debugf level.
-	Debugf(format string, args ...interface{})
+	Debugf(format string, args ...any)
 	// Infof is like Debug, but logs at Infof level.
-	Infof(format string, args ...interface{})
+	Infof(format string, args ...any)
 	// Warningf is like Debug, but logs at Warningf level.
-	Warningf(format string, args ...interface{})
+	Warningf(format string, args ...any)
 	// Errorf is like Debug, but logs at Errorf level.
-	Errorf(format string, args ...interface{})
+	Errorf(format string, args ...any)
 }
 
 // LogIndenter represents a simple interface to provide option to set indent logs.

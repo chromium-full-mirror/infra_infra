@@ -130,7 +130,7 @@ func addressParser(address string) (string, int, error) {
 
 // callXMLRpc calls xmlrpc service with provided method and arguments.
 func callXMLRpc(ctx context.Context, client *xmlrpc.XMLRpc, timeout time.Duration, method string, args []*xmlrpclib.Value) (*xmlrpclib.Value, error) {
-	var iArgs []interface{}
+	var iArgs []any
 	for _, ra := range args {
 		iArgs = append(iArgs, ra)
 	}

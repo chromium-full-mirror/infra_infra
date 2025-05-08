@@ -64,11 +64,11 @@ const (
 // Servod defines the interface to communicate with servod daemon.
 type Servod interface {
 	// Call calls servod method with params.
-	Call(ctx context.Context, method string, timeout time.Duration, args ...interface{}) (*xmlrpc.Value, error)
+	Call(ctx context.Context, method string, timeout time.Duration, args ...any) (*xmlrpc.Value, error)
 	// Get read value by requested command.
 	Get(ctx context.Context, cmd string) (*xmlrpc.Value, error)
 	// Set sets value to provided command.
-	Set(ctx context.Context, cmd string, val interface{}) error
+	Set(ctx context.Context, cmd string, val any) error
 	// Has verifies that command is known.
 	// Error is returned if the control is not listed in the doc.
 	Has(ctx context.Context, command string) error

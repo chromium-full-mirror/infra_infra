@@ -35,7 +35,7 @@ func (ei *ExecInfo) NewServod() components.Servod {
 }
 
 // Call calls servod method with params.
-func (s *iServod) Call(ctx context.Context, method string, timeout time.Duration, args ...interface{}) (*xmlrpc.Value, error) {
+func (s *iServod) Call(ctx context.Context, method string, timeout time.Duration, args ...any) (*xmlrpc.Value, error) {
 	log.Debugf(ctx, "Servod call %q with %v: starting...", method, args)
 	res := s.a.CallServod(ctx, &tlw.CallServodRequest{
 		Resource: s.dut.Name,
@@ -65,7 +65,7 @@ func (s *iServod) Get(ctx context.Context, command string) (*xmlrpc.Value, error
 }
 
 // Set sets value to provided command.
-func (s *iServod) Set(ctx context.Context, command string, val interface{}) error {
+func (s *iServod) Set(ctx context.Context, command string, val any) error {
 	if command == "" {
 		return errors.Reason("set: command is empty").Err()
 	}

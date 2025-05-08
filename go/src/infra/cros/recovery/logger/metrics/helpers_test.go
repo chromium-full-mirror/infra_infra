@@ -31,21 +31,21 @@ func newFakeLogger() logger.Logger {
 }
 
 // Debugf intercepts a debug-level message.
-func (l *fakeLogger) Debugf(format string, args ...interface{}) {
+func (l *fakeLogger) Debugf(format string, args ...any) {
 	l.messages["debug"] = append(l.messages["debug"], fmt.Sprintf(format, args...))
 }
 
 // Infof intercepts an info-level message.
-func (l *fakeLogger) Infof(format string, args ...interface{}) {
+func (l *fakeLogger) Infof(format string, args ...any) {
 	l.messages["info"] = append(l.messages["info"], fmt.Sprintf(format, args...))
 }
 
 // Warningf intercepts a warning-level message.
-func (l *fakeLogger) Warningf(format string, args ...interface{}) {
+func (l *fakeLogger) Warningf(format string, args ...any) {
 	l.messages["warning"] = append(l.messages["warning"], fmt.Sprintf(format, args...))
 }
 
 // Errorf intercepts an error-level message.
-func (l *fakeLogger) Errorf(format string, args ...interface{}) {
+func (l *fakeLogger) Errorf(format string, args ...any) {
 	l.messages["error"] = append(l.messages["error"], fmt.Sprintf(format, args...))
 }

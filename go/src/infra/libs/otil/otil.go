@@ -41,7 +41,7 @@ const tname = "go.chromium.org/infra/libs/otil"
 var ValuesKey = attribute.Key("org.chromium.code.values")
 
 // AddValues adds a "values" attribute to a span.
-func AddValues(span trace.Span, v ...interface{}) {
+func AddValues(span trace.Span, v ...any) {
 	if !span.SpanContext().IsSampled() {
 		return
 	}

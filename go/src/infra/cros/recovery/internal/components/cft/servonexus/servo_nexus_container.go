@@ -103,7 +103,7 @@ func StopServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Du
 }
 
 // CallServod calls servod methods with args.
-func CallServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Dut, method string, args ...interface{}) (*xmlrpc.Value, error) {
+func CallServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Dut, method string, args ...any) (*xmlrpc.Value, error) {
 	if client == nil {
 		return nil, errors.Reason("servo-nexus call servod: client is not provided").Err()
 	}

@@ -112,7 +112,7 @@ var cachedTracker fleet.TrackerServer
 var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)
 
 // versionInterceptor interceptor to handle client version check per RPC call
-func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func versionInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	logging.Debugf(ctx, "version check based on metadata %#v", md)
 	if !ok {

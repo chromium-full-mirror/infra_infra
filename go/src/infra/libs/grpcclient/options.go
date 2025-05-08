@@ -27,7 +27,7 @@ type Options struct {
 	// TODO: Retry policies, throttling, custom auth settings etc.
 }
 
-func (c *Options) timeoutInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+func (c *Options) timeoutInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Duration(c.DefaultTimeoutMs)*time.Millisecond)
 	defer cancel()
 	return invoker(ctx, method, req, reply, cc, opts...)

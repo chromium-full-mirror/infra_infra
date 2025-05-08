@@ -276,7 +276,7 @@ func clearTPM(c *ssh.Client) error {
 func wait(ctx context.Context, c *ssh.Client) error {
 	// Wait so following commands don't run before an actual reboot has kicked off
 	// by waiting for the client connection to shutdown or a timeout.
-	wait := make(chan interface{})
+	wait := make(chan any)
 	go func() {
 		_ = c.Wait()
 		close(wait)

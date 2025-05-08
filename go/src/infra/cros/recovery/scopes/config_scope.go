@@ -15,7 +15,7 @@ func WithConfigScope(ctx context.Context) context.Context {
 	if getConfigMap(ctx) != nil {
 		return ctx
 	}
-	newMap := map[string]interface{}{}
+	newMap := map[string]any{}
 	return context.WithValue(ctx, ctxConfigurationScopeKey, newMap)
 }
 

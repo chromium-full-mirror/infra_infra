@@ -39,28 +39,28 @@ func Get(ctx context.Context) logger.Logger {
 }
 
 // Debugf log message at Debugf level.
-func Debugf(ctx context.Context, format string, args ...interface{}) {
+func Debugf(ctx context.Context, format string, args ...any) {
 	if l := Get(ctx); l != nil {
 		l.Debugf(format, args...)
 	}
 }
 
 // Infof is like Debug, but logs at Infof level.
-func Infof(ctx context.Context, format string, args ...interface{}) {
+func Infof(ctx context.Context, format string, args ...any) {
 	if l := Get(ctx); l != nil {
 		l.Infof(format, args...)
 	}
 }
 
 // Warningf is like Debug, but logs at Warningf level.
-func Warningf(ctx context.Context, format string, args ...interface{}) {
+func Warningf(ctx context.Context, format string, args ...any) {
 	if l := Get(ctx); l != nil {
 		l.Warningf(format, args...)
 	}
 }
 
 // Errorf is like Debug, but logs at Errorf level.
-func Errorf(ctx context.Context, format string, args ...interface{}) {
+func Errorf(ctx context.Context, format string, args ...any) {
 	if l := Get(ctx); l != nil {
 		l.Errorf(format, args...)
 	}

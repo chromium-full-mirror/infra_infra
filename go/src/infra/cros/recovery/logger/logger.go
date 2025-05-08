@@ -18,27 +18,27 @@ func NewLogger() Logger {
 type logger struct{}
 
 // Debugf log message at Debug level.
-func (l *logger) Debugf(format string, args ...interface{}) {
+func (l *logger) Debugf(format string, args ...any) {
 	l.print(format, args...)
 }
 
 // Infof is like Debug, but logs at Info level.
-func (l *logger) Infof(format string, args ...interface{}) {
+func (l *logger) Infof(format string, args ...any) {
 	l.print(format, args...)
 }
 
 // Warningf is like Debug, but logs at Warning level.
-func (l *logger) Warningf(format string, args ...interface{}) {
+func (l *logger) Warningf(format string, args ...any) {
 	l.print(format, args...)
 }
 
 // Errorf is like Debug, but logs at Error level.
-func (l *logger) Errorf(format string, args ...interface{}) {
+func (l *logger) Errorf(format string, args ...any) {
 	l.print(format, args...)
 }
 
 // print currently implements logging for all log levels. Filtering
 // on log levels has not yet been implemented (b/222863687).
-func (l *logger) print(format string, args ...interface{}) {
+func (l *logger) print(format string, args ...any) {
 	log.Printf(format, args...)
 }

@@ -24,7 +24,7 @@ import (
 // servodStateRecord holds state of servod before apply preparation of programmer.
 type servodStateRecord struct {
 	cmd string
-	val interface{}
+	val any
 }
 
 type v3Programmer struct {

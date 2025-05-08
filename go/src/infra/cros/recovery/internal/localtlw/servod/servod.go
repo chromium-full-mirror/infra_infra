@@ -92,7 +92,7 @@ func stopServod(ctx context.Context, servodHost string, servoPort int32, provide
 
 // Call calls xmlrpc service with provided method and arguments.
 func Call(ctx context.Context, c *xmlrpc.XMLRpc, timeout time.Duration, method string, args []*xmlrpc_value.Value) (r *xmlrpc_value.Value, rErr error) {
-	var iArgs []interface{}
+	var iArgs []any
 	for _, ra := range args {
 		iArgs = append(iArgs, ra)
 	}

@@ -152,6 +152,6 @@ func (t *Tunnel) Close() {
 	t.logf("Tunnel stopped")
 }
 
-func (t *Tunnel) logf(msg string, args ...interface{}) {
+func (t *Tunnel) logf(msg string, args ...any) {
 	log.Printf("sshtunnel (remote addr %s): %s", t.client.RemoteAddr(), fmt.Sprintf(msg, args...))
 }

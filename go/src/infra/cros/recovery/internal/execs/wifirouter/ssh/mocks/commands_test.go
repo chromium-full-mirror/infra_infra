@@ -90,7 +90,7 @@ func TestWgetURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			mockRunner := NewMockRunner(ctrl)
-			var runCmdArgs []interface{}
+			var runCmdArgs []any
 			runCmdArgs = append(runCmdArgs, testURL)
 			for _, arg := range tt.additionalWgetArgs {
 				runCmdArgs = append(runCmdArgs, arg)

@@ -15,7 +15,7 @@ import (
 // cryptoHomeStatus holds info about the tpm(Trusted Platform Module specification)
 // portion of the "cryptohome --action=status"
 type cryptoHomeStatus struct {
-	Tpm map[string]interface{}
+	Tpm map[string]any
 }
 
 // ReadCryptoHomeStatusInfo read and parse TPM status information

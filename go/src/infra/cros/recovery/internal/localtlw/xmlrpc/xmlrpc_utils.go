@@ -13,7 +13,7 @@ import (
 )
 
 // PackArgsToXMLRPCValues packs values to XMLRPC structs.
-func PackArgsToXMLRPCValues(values ...interface{}) []*xmlrpc.Value {
+func PackArgsToXMLRPCValues(values ...any) []*xmlrpc.Value {
 	var r []*xmlrpc.Value
 	for _, val := range values {
 		if val == nil {
