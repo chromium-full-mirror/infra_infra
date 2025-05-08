@@ -173,7 +173,7 @@ func GetCurrentShiftHandler(ctx *router.Context) {
 		}
 		return
 	}
-	shift := make(map[string]interface{})
+	shift := make(map[string]any)
 	shift["updated_unix_timestamp"] = time.Now().Unix()
 	shift["emails"] = emails
 	data, err := json.Marshal(shift)
