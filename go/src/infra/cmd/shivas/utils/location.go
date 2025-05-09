@@ -12,7 +12,6 @@ import (
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/util"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var numRegex = regexp.MustCompile(`[0-9]+`)
@@ -87,7 +86,7 @@ func GetLocation(input string) (*ufspb.Location, error) {
 		labStr := exp.FindString(input)
 		if labStr != "" && util.IsUFSZone(labStr) {
 			labStr = strings.ToLower(labStr)
-			loc.Zone = ufsUtil.ToUFSZone(labStr)
+			loc.Zone = util.ToUFSZone(labStr)
 			break
 		}
 	}
