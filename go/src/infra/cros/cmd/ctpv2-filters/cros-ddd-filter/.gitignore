@@ -3,3 +3,6 @@
 /local/
 /docs/protos/*
 /docs/datasets/*
+/ddd-venv/*
+cros-ddd-filter
+protos_doc_gen_bin

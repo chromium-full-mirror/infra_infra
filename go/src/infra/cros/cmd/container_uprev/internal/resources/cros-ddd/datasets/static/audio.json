@@ -18,7 +18,8 @@
                         "name": "HWID:audio_codec_field:distinct_values"
                     }
                 ]
-            }
+            },
+            "reportCategory": "soc:audioCodec:speakerAmp"
         },
         "Audio_Board": {
             "name": "Audio_Board",
@@ -26,13 +27,14 @@
             "combinatorial": {
                 "subcategories": [
                     {
-                        "name": "HWID:board:distinct_values"
+                        "name": "dlm:build_targets"
                     },
                     {
                         "name": "Common:default_build_variant_or_kernelnext"
                     }
                 ]
-            }
+            },
+            "reportCategory": "boards"
         },
         "Audio_Model": {
             "name": "Audio_Model",
@@ -46,7 +48,165 @@
                         "name": "Common:default_build_variant_or_kernelnext"
                     }
                 ]
-            }
+            },
+            "reportCategory": "models"
+        }
+    },
+    "reportCategories": {
+        "soc:audioCodec:speakerAmp": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:soc"
+                    }
+                },
+                {
+                    "value": {
+                        "property": "audio_codec_field",
+                        "overrides": [
+                            {
+                                "match": ".*avl:1233.*",
+                                "replace": "ALC5662-CG"
+                            },
+                            {
+                                "match": ".*avl:128.*",
+                                "replace": "ALC5662"
+                            },
+                            {
+                                "match": ".*avl:360.*",
+                                "replace": "DA7219"
+                            },
+                            {
+                                "match": ".*avl:1152.*",
+                                "replace": "DA7219"
+                            },
+                            {
+                                "match": ".*avl:1913.*",
+                                "replace": "ALC5682I-VD"
+                            },
+                            {
+                                "match": ".*avl:4123.*",
+                                "replace": "ALC5682I-VS"
+                            },
+                            {
+                                "match": ".*avl:(1513|1441).*",
+                                "replace": "ALC5650"
+                            },
+                            {
+                                "match": ".*avl:3807.*",
+                                "replace": "CS42L42-CNZR"
+                            },
+                            {
+                                "match": ".*avl:3277.*",
+                                "replace": "ALC5682"
+                            },
+                            {
+                                "match": ".*avl:95.*",
+                                "replace": "NAU88L25"
+                            },
+                            {
+                                "match": ".*avl:2287.*",
+                                "replace": "ALC295"
+                            },
+                            {
+                                "match": ".*avl:6205.*",
+                                "replace": "ALC256"
+                            },
+                            {
+                                "match": ".*avl:6401.*",
+                                "replace": "ALC257"
+                            },
+                            {
+                                "match": ".*avl:6050.*",
+                                "replace": "ES8326B"
+                            },
+                            {
+                                "match": ".*avl:807.*",
+                                "replace": "ALC3204-CG"
+                            },
+                            {
+                                "match": ".*avl:6703.*",
+                                "replace": "ALC3204-CG"
+                            },
+                            {
+                                "match": ".*avl:(4259|4855|1810|1315|1851|499|2582|2392|1985|3916|3958|2335|6337|3652|3339).*",
+                                "replace": "-"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "value": {
+                        "property": "audio_codec_field",
+                        "overrides": [
+                            {
+                                "match": ".*avl:499.*",
+                                "replace": "MAX98357AEWL+T"
+                            },
+                            {
+                                "match": ".*avl:1985.*",
+                                "replace": "MAX98357A"
+                            },
+                            {
+                                "match": ".*avl:2582.*",
+                                "replace": "ALC1015"
+                            },
+                            {
+                                "match": ".*avl:4855.*",
+                                "replace": "ALC1019"
+                            },
+                            {
+                                "match": ".*avl:1810.*",
+                                "replace": "MAX98360AENL+TCPP"
+                            },
+                            {
+                                "match": ".*avl:1315.*",
+                                "replace": "MAX98373"
+                            },
+                            {
+                                "match": ".*avl:1851.*",
+                                "replace": "MAX98357"
+                            },
+                            {
+                                "match": ".*avl:3916.*",
+                                "replace": "MAX98390CEWX+T"
+                            },
+                            {
+                                "match": ".*avl:4259.*",
+                                "replace": "CS35L53-CWZR"
+                            },
+                            {
+                                "match": ".*avl:3958.*",
+                                "replace": "MAX98373EFF+T"
+                            },
+                            {
+                                "match": ".*avl:2392.*",
+                                "replace": "MAX98373EWA+TCPP"
+                            },
+                            {
+                                "match": ".*avl:2335.*",
+                                "replace": "MAX98927"
+                            },
+                            {
+                                "match": ".*avl:6337.*",
+                                "replace": "TAS2563RPPR"
+                            },
+                            {
+                                "match": ".*avl:3652.*",
+                                "replace": "ALC1019"
+                            },
+                            {
+                                "match": ".*avl:3339.*",
+                                "replace": "ALC1015Q-CG"
+                            },
+                            {
+                                "match": ".*avl:(1913|2287|4123|1513|3807|3277|6401|6205|360|95|1233|1441|807|6703).*",
+                                "replace": "-"
+                            }
+                        ]
+                    }
+                }
+            ]
         }
     }
 }
