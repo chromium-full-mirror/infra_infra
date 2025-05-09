@@ -11,7 +11,6 @@ import (
 	"google.golang.org/grpc/metadata"
 
 	ufsmodel "go.chromium.org/infra/unifiedfleet/api/v1/models"
-	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -26,7 +25,7 @@ const (
 )
 
 // Client is a client for UFS.
-type Client = ufsAPI.FleetClient
+type Client = ufspb.FleetClient
 
 func SetUfsNameSpace(ctx context.Context, nameSpace string) context.Context {
 	md := metadata.Pairs(ufsUtil.Namespace, nameSpace)
