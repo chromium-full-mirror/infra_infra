@@ -736,7 +736,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 	ftt.Run("UpdateMachineLSE for a DUT", t, func(t *ftt.Test) {
 		t.Run("Update non-existing machineLSE DUT", func(t *ftt.Test) {
 			dutMachinelse := mockDutMachineLSE("DUTMachineLSE-23")
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
@@ -754,7 +754,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-21")
 			dutMachinelse3.Machines = []string{"machine-21"}
 			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Peripherals = peripherals3
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -780,7 +780,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3.Machines = []string{"machine-22"}
 			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Peripherals = peripherals3
 			dutMachinelse3.ResourceState = ufspb.State_STATE_SERVING
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -836,7 +836,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse2 := mockDutMachineLSE("DUTMachineLSE-17")
 			dutMachinelse2.Machines = []string{"machine-17"}
 			dutMachinelse2.GetChromeosMachineLse().GetDeviceLse().GetDut().Peripherals = peripherals2
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(dutMachinelse2))
@@ -865,7 +865,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3.Machines = []string{"machine-22"}
 			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"pool1", "pool2", "pool_3", "pool-4", "pool.5"}
 			dutMachinelse3.ResourceState = ufspb.State_STATE_SERVING
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -876,7 +876,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3.Machines = []string{"machine-22"}
 			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"\"pool1", "pool2"}
 			dutMachinelse3.ResourceState = ufspb.State_STATE_SERVING
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid Pool Name"))
@@ -888,7 +888,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
 			dutMachinelse3.Machines = []string{"machine-22"}
 			dutMachinelse3.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -897,7 +897,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-21")
 			dutMachinelse3.Machines = []string{"machine-21"}
 			dutMachinelse3.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
-			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 		})
@@ -907,7 +907,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 		dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
 		dutMachinelse3.Machines = []string{"machine-22"}
 		dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = "hive-1"
-		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)
 		assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -917,7 +917,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 		dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
 		dutMachinelse3.Machines = []string{"machine-22"}
 		dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = "ate-host1"
-		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil, false)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)
 		assert.Loosely(t, resp, should.Match(dutMachinelse3))
@@ -946,7 +946,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 				ServoPort:     22,
 			}
 			labstationMachinelse2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos = []*chromeosLab.Servo{servo}
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Servos are not allowed to be updated"))
@@ -973,7 +973,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-11")
 			labstationMachinelse2.Machines = []string{"machine-4x"}
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
@@ -998,7 +998,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-12")
 			labstationMachinelse2.Machines = []string{"machine-12"}
 			labstationMachinelse2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"pool1", "pool2"}
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
@@ -1018,7 +1018,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-13")
 			labstationMachinelse2.Machines = []string{"machine-13"}
 			labstationMachinelse2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"-pool1", "pool2"}
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid Pool Name"))
@@ -1040,7 +1040,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-101")
 			labstationMachinelse2.Machines = []string{"machine-101"}
 			labstationMachinelse2.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_UNSPECIFIED
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
@@ -1059,7 +1059,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-102")
 			labstationMachinelse2.Machines = []string{"machine-102"}
 			labstationMachinelse2.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 		})
@@ -1103,7 +1103,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				Value: "new_os",
 			}
 			machineLSE1.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			m, err := UpdateMachineLSE(ctx, machineLSE1, nil)
+			m, err := UpdateMachineLSE(ctx, machineLSE1, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, m.GetChromeBrowserMachineLse().GetVms(), should.HaveLength(2))
 			// State remains unchanged as vm1 is not updated
@@ -1539,7 +1539,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 
 			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-11")
 			labstationMachinelse2.Machines = []string{"machine-4x"}
-			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
@@ -1580,7 +1580,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				Hostname: "machinelse-4",
 				Machines: []string{"machine-5"},
 			}
-			resp, err := UpdateMachineLSE(ctx, machineLSE, nil)
+			resp, err := UpdateMachineLSE(ctx, machineLSE, nil, false)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("there is another host machinelse-5 which is referring this machine machine-5"))
@@ -1612,7 +1612,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				Name: "lse-7",
 				Tags: []string{"tag-2"},
 			}
-			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"tags"}})
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"tags"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetTags(), should.Match([]string{"tag-1", "tag-2"}))
@@ -1649,7 +1649,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 					},
 				},
 			}
-			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"virtualDatacenter"}})
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"virtualDatacenter"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetVirtualDatacenter(), should.Equal("newvdc"))
@@ -1689,7 +1689,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 					},
 				},
 			}
-			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"osVersion", "osImage"}})
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"osVersion", "osImage"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetOsVersion().GetValue(), should.Equal("windows-98"))
@@ -1763,7 +1763,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				"assocHostname",
 				"assocHostPort",
 				"schedulable",
-			}})
+			}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetMachines(), should.Match([]string{"adm-1"}))
@@ -1843,7 +1843,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				"assocHostname",
 				"assocHostPort",
 				"schedulable",
-			}})
+			}}, false)
 			assert.NoErr(t, err)
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/adh-lse-2")
 			assert.NoErr(t, err)
@@ -3505,7 +3505,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			resp, err := UpdateMachineLSE(ctx, mlse, nil)
+			resp, err := UpdateMachineLSE(ctx, mlse, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
@@ -3529,7 +3529,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
-			_, err = UpdateMachineLSE(ctx, mlse, nil)
+			_, err = UpdateMachineLSE(ctx, mlse, nil, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
@@ -3560,7 +3560,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Machines = []string{"machine-7.1"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			resp, err := UpdateMachineLSE(ctx, mlse, nil)
+			resp, err := UpdateMachineLSE(ctx, mlse, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-7.1"}))
@@ -3592,7 +3592,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Machines = []string{"machine-8.1"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			_, err = UpdateMachineLSE(ctx, mlse, nil)
+			_, err = UpdateMachineLSE(ctx, mlse, nil, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
@@ -3630,7 +3630,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 					authtest.MockPermission("user:user@example.com", util.BrowserLabAdminRealm, util.InventoriesUpdate),
 				),
 			})
-			resp, err := UpdateMachineLSE(ctx, mlse, nil)
+			resp, err := UpdateMachineLSE(ctx, mlse, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-9.1"}))
@@ -3654,7 +3654,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"tags"}})
+			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"tags"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
@@ -3678,7 +3678,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
-			_, err = UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"tags"}})
+			_, err = UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"tags"}}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
@@ -3709,7 +3709,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Machines = []string{"machine-12.1"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}})
+			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-12.1"}))
@@ -3741,7 +3741,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 			mlse.Machines = []string{"machine-13.1"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
-			_, err = UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}})
+			_, err = UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}}, false)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
@@ -3779,7 +3779,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 					authtest.MockPermission("user:user@example.com", util.BrowserLabAdminRealm, util.InventoriesUpdate),
 				),
 			})
-			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}})
+			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-14.1"}))
@@ -4249,7 +4249,7 @@ func TestUpdateMachineLSEDevboard(t *testing.T) {
 	ftt.Run("UpdateMachineLSE for a Devboard", t, func(t *ftt.Test) {
 		t.Run("Update non-existing machineLSE Devboard", func(t *ftt.Test) {
 			devboardMachinelse := mockDevboardMachineLSE("fake-devboard-non-existing")
-			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, nil)
+			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, nil, false)
 
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
@@ -4259,12 +4259,12 @@ func TestUpdateMachineLSEDevboard(t *testing.T) {
 			devboardMachinelse := mockDevboardMachineLSE("fake-devboard")
 			devboardMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDevboard().Pools = []string{"new-pool"}
 
-			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard"}})
+			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetPools(), should.Contain("new-pool"))
 
-			resp, err = UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard-remove"}})
+			resp, err = UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard-remove"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetPools(), should.NotContain("new-pool"))

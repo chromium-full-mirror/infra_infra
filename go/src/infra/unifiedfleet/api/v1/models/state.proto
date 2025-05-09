@@ -67,4 +67,10 @@ message StateRecord {
   string description = 5;
   // Record the last update timestamp of this machine (In UTC timezone)
   google.protobuf.Timestamp update_time = 6;
+  // concurrent_requesters records concurrent requesters to change the state.
+  // UFS uses this to manage conflicts and determine the eventual state if needed.
+  // The key is the user id or service account, e.g. jdoe@google.com or
+  // my-service@service-account.com.
+  // The value is an optional state change reason (default is empty).
+  map<string, string> concurrent_requesters = 7;
 }
