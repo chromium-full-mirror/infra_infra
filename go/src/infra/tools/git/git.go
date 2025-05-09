@@ -342,7 +342,7 @@ func (gr *gitRunner) setupCommand(c context.Context) *exec.Cmd {
 		//   * again when the .bat invokes the underlying git.exe
 		args = make([]string, len(gr.Args))
 		for i := range gr.Args {
-			args[i] = strings.Replace(gr.Args[i], "^", "^^^^", -1)
+			args[i] = strings.ReplaceAll(gr.Args[i], "^", "^^^^")
 		}
 	}
 
