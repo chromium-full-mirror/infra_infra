@@ -17,7 +17,6 @@ import (
 
 	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
-	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -29,22 +28,22 @@ type mockDeleteClient struct {
 	deleteRackCalls       []*ufspb.DeleteRackRequest
 }
 
-func (c *mockDeleteClient) DeleteMachineLSE(ctx context.Context, req *ufsApi.DeleteMachineLSERequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteMachineLSE(ctx context.Context, req *ufspb.DeleteMachineLSERequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteMachineLSECalls = append(c.deleteMachineLSECalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) DeleteRack(ctx context.Context, req *ufsApi.DeleteRackRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteRack(ctx context.Context, req *ufspb.DeleteRackRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteRackCalls = append(c.deleteRackCalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) DeleteAsset(ctx context.Context, req *ufsApi.DeleteAssetRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteAsset(ctx context.Context, req *ufspb.DeleteAssetRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteAssetCalls = append(c.deleteAssetCalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufspb.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
 	c.getMachineLSECalls = append(c.getMachineLSECalls, req)
 	return &ufsModels.MachineLSE{
 		Name:     req.Name,
@@ -57,19 +56,19 @@ func Test_TriggerRun(t *testing.T) {
 	tests := []struct {
 		name                 string
 		cmd                  *DeleteDUT
-		wantGetCalls         []*ufsApi.GetMachineLSERequest
-		wantDeleteLSECalls   []*ufsApi.DeleteMachineLSERequest
-		wantDeleteAssetCalls []*ufsApi.DeleteAssetRequest
-		wantDeleteRackCalls  []*ufsApi.DeleteRackRequest
+		wantGetCalls         []*ufspb.GetMachineLSERequest
+		wantDeleteLSECalls   []*ufspb.DeleteMachineLSERequest
+		wantDeleteAssetCalls []*ufspb.DeleteAssetRequest
+		wantDeleteRackCalls  []*ufspb.DeleteRackRequest
 	}{
 		{
 			name: "delete calls ufs for duts passed in",
 			cmd:  &DeleteDUT{Names: []string{"dut1", "dut2"}},
-			wantGetCalls: []*ufsApi.GetMachineLSERequest{
+			wantGetCalls: []*ufspb.GetMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
 			},
-			wantDeleteLSECalls: []*ufsApi.DeleteMachineLSERequest{
+			wantDeleteLSECalls: []*ufspb.DeleteMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
 			},
@@ -77,19 +76,19 @@ func Test_TriggerRun(t *testing.T) {
 		{
 			name: "deletes called for duts, assets, and racks for -full",
 			cmd:  &DeleteDUT{Full: true, Names: []string{"dut1", "dut2"}},
-			wantGetCalls: []*ufsApi.GetMachineLSERequest{
+			wantGetCalls: []*ufspb.GetMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
 			},
-			wantDeleteLSECalls: []*ufsApi.DeleteMachineLSERequest{
+			wantDeleteLSECalls: []*ufspb.DeleteMachineLSERequest{
 				{Name: "machineLSEs/dut1"},
 				{Name: "machineLSEs/dut2"},
 			},
-			wantDeleteAssetCalls: []*ufsApi.DeleteAssetRequest{
+			wantDeleteAssetCalls: []*ufspb.DeleteAssetRequest{
 				{Name: "assets/asset-dut1"},
 				{Name: "assets/asset-dut2"},
 			},
-			wantDeleteRackCalls: []*ufsApi.DeleteRackRequest{
+			wantDeleteRackCalls: []*ufspb.DeleteRackRequest{
 				{Name: "racks/rack-dut1"},
 				{Name: "racks/rack-dut2"},
 			},
@@ -110,19 +109,19 @@ func Test_TriggerRun(t *testing.T) {
 				t.Errorf("TriggerRun() error = %v", err)
 			}
 
-			if diff := cmp.Diff(tt.wantGetCalls, ufs.getMachineLSECalls, cmpopts.IgnoreUnexported(ufsApi.GetMachineLSERequest{})); diff != "" {
+			if diff := cmp.Diff(tt.wantGetCalls, ufs.getMachineLSECalls, cmpopts.IgnoreUnexported(ufspb.GetMachineLSERequest{})); diff != "" {
 				t.Errorf("unexpected diff in get calls: %s", diff)
 			}
 
-			if diff := cmp.Diff(tt.wantDeleteLSECalls, ufs.deleteMachineLSECalls, cmpopts.IgnoreUnexported(ufsApi.DeleteMachineLSERequest{})); diff != "" {
+			if diff := cmp.Diff(tt.wantDeleteLSECalls, ufs.deleteMachineLSECalls, cmpopts.IgnoreUnexported(ufspb.DeleteMachineLSERequest{})); diff != "" {
 				t.Errorf("unexpected diff in delete calls: %s", diff)
 			}
 
-			if diff := cmp.Diff(tt.wantDeleteAssetCalls, ufs.deleteAssetCalls, cmpopts.IgnoreUnexported(ufsApi.DeleteAssetRequest{})); diff != "" {
+			if diff := cmp.Diff(tt.wantDeleteAssetCalls, ufs.deleteAssetCalls, cmpopts.IgnoreUnexported(ufspb.DeleteAssetRequest{})); diff != "" {
 				t.Errorf("unexpected diff in get calls: %s", diff)
 			}
 
-			if diff := cmp.Diff(tt.wantDeleteRackCalls, ufs.deleteRackCalls, cmpopts.IgnoreUnexported(ufsApi.DeleteRackRequest{})); diff != "" {
+			if diff := cmp.Diff(tt.wantDeleteRackCalls, ufs.deleteRackCalls, cmpopts.IgnoreUnexported(ufspb.DeleteRackRequest{})); diff != "" {
 				t.Errorf("unexpected diff in delete calls: %s", diff)
 			}
 		})

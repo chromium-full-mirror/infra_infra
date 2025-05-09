@@ -48,7 +48,6 @@ import (
 	mon "go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/monitor"
 	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsLabpb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -60,22 +59,22 @@ type mockDeleteClient struct {
 	deleteRackCalls       []*ufspb.DeleteRackRequest
 }
 
-func (c *mockDeleteClient) DeleteMachineLSE(ctx context.Context, req *ufsApi.DeleteMachineLSERequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteMachineLSE(ctx context.Context, req *ufspb.DeleteMachineLSERequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteMachineLSECalls = append(c.deleteMachineLSECalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) DeleteRack(ctx context.Context, req *ufsApi.DeleteRackRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteRack(ctx context.Context, req *ufspb.DeleteRackRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteRackCalls = append(c.deleteRackCalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) DeleteAsset(ctx context.Context, req *ufsApi.DeleteAssetRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *mockDeleteClient) DeleteAsset(ctx context.Context, req *ufspb.DeleteAssetRequest, ops ...grpc.CallOption) (*emptypb.Empty, error) {
 	c.deleteAssetCalls = append(c.deleteAssetCalls, req)
 	return &emptypb.Empty{}, nil
 }
 
-func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+func (c *mockDeleteClient) GetMachineLSE(ctx context.Context, req *ufspb.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
 	c.getMachineLSECalls = append(c.getMachineLSECalls, req)
 	return &ufsModels.MachineLSE{
 		Name:     req.Name,
