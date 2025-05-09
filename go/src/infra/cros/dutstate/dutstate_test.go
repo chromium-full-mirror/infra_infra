@@ -24,7 +24,6 @@ import (
 	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/util"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type FakeUFSClient struct {
@@ -63,13 +62,13 @@ func TestReadState(t *testing.T) {
 		assert.Loosely(t, r.Time, should.BeZero)
 
 		// explicitly set os context, should give the same results
-		osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
+		osCtx := ctxWithNamespace(util.OSNamespace)
 		r = Read(osCtx, c, "host1")
 		assert.Loosely(t, r.State, should.Equal(RepairFailed))
 		assert.Loosely(t, r.Time, should.NotEqual(0))
 
 		// explicitly set partner context, should fetch a different DUT
-		partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
+		partnerCtx := ctxWithNamespace(util.OSPartnerNamespace)
 		r = Read(partnerCtx, c, "host1")
 		assert.Loosely(t, r.State, should.Equal(NeedsDeploy))
 		assert.Loosely(t, r.Time, should.NotEqual(0))
@@ -108,7 +107,7 @@ func TestUpdateState(t *testing.T) {
 
 		// explicitly set os context and expect same result as default
 		t.Run("set repair_failed and expect REPAIR_FAILED in os namespace", func(t *ftt.Test) {
-			osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
+			osCtx := ctxWithNamespace(util.OSNamespace)
 			e := Update(osCtx, c, "host1", RepairFailed)
 			assert.Loosely(t, e, should.BeNil)
 			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
@@ -117,7 +116,7 @@ func TestUpdateState(t *testing.T) {
 
 		// update DUT in separate namespace, should touch a different machine
 		t.Run("set state in separate namespace", func(t *ftt.Test) {
-			partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
+			partnerCtx := ctxWithNamespace(util.OSPartnerNamespace)
 			e := Update(partnerCtx, c, "host1", ManualRepair)
 			assert.Loosely(t, e, should.BeNil)
 			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
@@ -386,6 +385,6 @@ func fetchNamespaceFromContext(ctx context.Context) (string, error) {
 
 func ctxWithNamespace(ns string) context.Context {
 	ctx := context.Background()
-	newMetadata := metadata.Pairs(ufsUtil.Namespace, ns)
+	newMetadata := metadata.Pairs(util.Namespace, ns)
 	return metadata.NewOutgoingContext(ctx, newMetadata)
 }

@@ -15,7 +15,6 @@ import (
 
 	cros_pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
-	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 
 	"go.chromium.org/infra/cros/internal/gerrit"
@@ -32,9 +31,9 @@ type CheckBuildersInput struct {
 	Changes               []*bbproto.GerritChange
 	ChangeRevs            *gerrit.ChangeRevData
 	RepoToBranchToSrcRoot map[string]map[string]string
-	BuildIrrelevanceCfg   *testplans_pb.BuildIrrelevanceCfg
-	SlimBuildCfg          *testplans_pb.SlimBuildCfg
-	TestReqsCfg           *testplans_pb.TargetTestRequirementsCfg
+	BuildIrrelevanceCfg   *testplans.BuildIrrelevanceCfg
+	SlimBuildCfg          *testplans.SlimBuildCfg
+	TestReqsCfg           *testplans.TargetTestRequirementsCfg
 	BuilderConfigs        *cros_pb.BuilderConfigs
 }
 
@@ -106,7 +105,7 @@ builderLoop:
 }
 
 // Slim builds are only allows in select repos.
-func allowSlimBuilds(affectedFiles []string, cfg *testplans_pb.SlimBuildCfg) bool {
+func allowSlimBuilds(affectedFiles []string, cfg *testplans.SlimBuildCfg) bool {
 	if len(affectedFiles) == 0 {
 		log.Print("Cannot schedule slim builds since no affected files were provided")
 		return false
@@ -141,7 +140,7 @@ func getSlimBuilder(b string, builderConfigs *cros_pb.BuilderConfigs) *cros_pb.B
 }
 
 // A CQ build target can be run as slim build if no HW or VM tests are configured for it.
-func eligibleForSlimBuild(b *cros_pb.BuilderConfig, testReqsCfg *testplans_pb.TargetTestRequirementsCfg) bool {
+func eligibleForSlimBuild(b *cros_pb.BuilderConfig, testReqsCfg *testplans.TargetTestRequirementsCfg) bool {
 	if b.GetId().GetType() != cros_pb.BuilderConfig_Id_CQ {
 		return false
 	}
@@ -164,7 +163,7 @@ func eligibleForGlobalIrrelevance(b *cros_pb.BuilderConfig) bool {
 	return true
 }
 
-func ignoreImageBuilders(affectedFiles []string, cfg *testplans_pb.BuildIrrelevanceCfg) bool {
+func ignoreImageBuilders(affectedFiles []string, cfg *testplans.BuildIrrelevanceCfg) bool {
 	// Filter out files that are irrelevant to Portage because of the config.
 	affectedFiles = filterByBuildIrrelevantPaths(affectedFiles, cfg)
 	if len(affectedFiles) == 0 {
@@ -324,7 +323,7 @@ changeLoop:
 	return allAffectedFiles, nil
 }
 
-func filterByBuildIrrelevantPaths(files []string, cfg *testplans_pb.BuildIrrelevanceCfg) []string {
+func filterByBuildIrrelevantPaths(files []string, cfg *testplans.BuildIrrelevanceCfg) []string {
 	pipFilteredFiles := make([]string, 0)
 affectedFile:
 	for _, f := range files {

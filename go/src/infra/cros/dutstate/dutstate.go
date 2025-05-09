@@ -21,7 +21,6 @@ import (
 	ufsProto "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/util"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // State is an enum for host state.
@@ -80,10 +79,10 @@ func (s State) String() string {
 //
 // If state not exist in the UFS the state will be default and time is 0.
 func Read(ctx context.Context, c UFSClient, host string) Info {
-	ctx = addNamespaceCtxIfNotPresent(ctx, ufsUtil.OSNamespace)
+	ctx = addNamespaceCtxIfNotPresent(ctx, util.OSNamespace)
 	log.Printf("dutstate: Try to read DUT/Labstation state for %s", host)
 	res, err := c.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
-		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, host),
+		Name: util.AddPrefix(util.MachineLSECollection, host),
 	})
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
@@ -111,13 +110,13 @@ func Read(ctx context.Context, c UFSClient, host string) Info {
 
 // Update push new DUT/Labstation state to UFS.
 func Update(ctx context.Context, c UFSClient, host string, state State) error {
-	ctx = addNamespaceCtxIfNotPresent(ctx, ufsUtil.OSNamespace)
+	ctx = addNamespaceCtxIfNotPresent(ctx, util.OSNamespace)
 	ufsState := ConvertToUFSState(state)
 
 	// Get the MachineLSE to determine if its a DUT or a Labstation.
 	log.Printf("dutstate: Try to get MachineLSE for %s", host)
 	res, err := c.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
-		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, host),
+		Name: util.AddPrefix(util.MachineLSECollection, host),
 	})
 	if err != nil {
 		return errors.Annotate(err, "Failed to get DUT/Labstation for %s", host).Err()
@@ -164,7 +163,7 @@ func addNamespaceCtxIfNotPresent(ctx context.Context, namespace string) context.
 		}
 	}
 
-	newMetadata := metadata.Pairs(ufsUtil.Namespace, namespace)
+	newMetadata := metadata.Pairs(util.Namespace, namespace)
 	return metadata.NewOutgoingContext(ctx, newMetadata)
 }
 
