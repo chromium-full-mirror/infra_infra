@@ -65,7 +65,7 @@ func PlatformForPEP425Tag(t *vpython.PEP425Tag) string {
 		if len(platSplit) == 1 {
 			return ""
 		}
-		suffixSplit := strings.SplitN(platSplit[1], "_", -1)
+		suffixSplit := strings.Split(platSplit[1], "_")
 		switch suffixSplit[len(suffixSplit)-1] {
 		case "intel", "x86_64", "fat64", "universal":
 			return "mac-amd64"

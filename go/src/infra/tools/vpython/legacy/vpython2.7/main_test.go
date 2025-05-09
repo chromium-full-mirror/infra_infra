@@ -161,7 +161,7 @@ func (tdc *testDelegateCommand) Wait(t testing.TB) error {
 
 func (tdc *testDelegateCommand) CheckOutput(t testing.TB) bool {
 	matches := bytes.Equal(
-		bytes.Replace(tdc.output.Bytes(), []byte("\r\n"), []byte("\n"), -1),
+		bytes.ReplaceAll(tdc.output.Bytes(), []byte("\r\n"), []byte("\n")),
 		tdc.tc.output)
 	if !matches {
 		t.Errorf("Outputs do not match. Expected:\n%s", tdc.tc.output)
