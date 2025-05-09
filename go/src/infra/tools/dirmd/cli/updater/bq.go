@@ -93,7 +93,7 @@ func GenerateDirBQRowSchema() (schema bigquery.Schema, err error) {
 // Added to make unit tests easier.
 type inserter interface {
 	// Put uploads one or more rows to the BigQuery service.
-	Put(ctx context.Context, src interface{}) error
+	Put(ctx context.Context, src any) error
 }
 
 // writeToBQ writes rows to BigQuery in batches.

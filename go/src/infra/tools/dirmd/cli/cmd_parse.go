@@ -112,7 +112,7 @@ func (r *parseRun) parseStdin() (*dirmdpb.Metadata, string) {
 }
 
 func (r *parseRun) printAsJson(mds []*dirmdpb.Metadata, errMsgs, files []string) int {
-	res := make(map[string]map[string]interface{})
+	res := make(map[string]map[string]any)
 	exitCode := 0
 	for i := range files {
 		md := mds[i]
@@ -122,15 +122,15 @@ func (r *parseRun) printAsJson(mds []*dirmdpb.Metadata, errMsgs, files []string)
 		case md == nil && errMsg == "":
 			panic(fmt.Sprintf("impossible: no result on %s", file))
 		case md == nil:
-			res[file] = map[string]interface{}{"error": errMsg}
+			res[file] = map[string]any{"error": errMsg}
 			exitCode = 1
 		default:
 			data, err := protojson.Marshal(md)
 			if err != nil {
-				res[file] = map[string]interface{}{"error": err.Error()}
+				res[file] = map[string]any{"error": err.Error()}
 				exitCode = 1
 			}
-			res[file] = map[string]interface{}{"json": json.RawMessage(data)}
+			res[file] = map[string]any{"json": json.RawMessage(data)}
 		}
 	}
 

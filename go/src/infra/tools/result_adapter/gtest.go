@@ -559,7 +559,7 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 		tr.Duration = msToDuration(result.ElapsedTimeMs)
 	}
 
-	summaryData := map[string]interface{}{}
+	summaryData := map[string]any{}
 
 	// snippet
 	if result.OutputSnippetBase64 != "" {

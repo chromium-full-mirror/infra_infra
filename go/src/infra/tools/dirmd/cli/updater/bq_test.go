@@ -27,7 +27,7 @@ type mockInserter struct {
 	mu               sync.Mutex
 }
 
-func (i *mockInserter) Put(ctx context.Context, src interface{}) error {
+func (i *mockInserter) Put(ctx context.Context, src any) error {
 	messages := src.([]*bq.Row)
 	i.mu.Lock()
 	i.insertedMessages = append(i.insertedMessages, messages...)
