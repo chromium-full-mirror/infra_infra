@@ -185,11 +185,11 @@ func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadat
 			"--ants-result-reporter:save-metric-file")
 
 		// Extract AnTS invocation id and WorkUnit ID from execution metadata.
-		if AnTsInvID, err := extractMetadataFlag(metadata, "ants_invocation_id"); err == nil { // nolint:stylecheck // ST1003
+		if AnTsInvID, err := extractMetadataFlag(metadata, "ants_invocation_id"); err == nil { // nolint:staticcheck // ST1003
 			cmd = append(cmd, "--invocation-data", fmt.Sprintf("invocation_id=%s", AnTsInvID))
 			logger.Printf("Got invocation id: %s", AnTsInvID)
 		}
-		if AnTsWorkUnitID, err := extractMetadataFlag(metadata, "ants_work_unit_id"); err == nil { // nolint:stylecheck // ST1003
+		if AnTsWorkUnitID, err := extractMetadataFlag(metadata, "ants_work_unit_id"); err == nil { // nolint:staticcheck // ST1003
 			cmd = append(cmd, "--invocation-data", fmt.Sprintf("work_unit_id=%s", AnTsWorkUnitID))
 			logger.Printf("Got work unit id: %s", AnTsWorkUnitID)
 		}

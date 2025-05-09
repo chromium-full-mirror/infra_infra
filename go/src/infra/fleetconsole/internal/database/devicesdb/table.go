@@ -10,8 +10,8 @@ import (
 
 var (
 	// Columns
-	IdColumn     = queryutils.NewColumn("id").Build()     //nolint:stylecheck
-	DutIdColumn  = queryutils.NewColumn("dut_id").Build() //nolint:stylecheck
+	IdColumn     = queryutils.NewColumn("id").Build()     //nolint:staticcheck
+	DutIdColumn  = queryutils.NewColumn("dut_id").Build() //nolint:staticcheck
 	HostColumn   = queryutils.NewColumn("host").Build()
 	PortColumn   = queryutils.NewColumn("port").Build()
 	TypeColumn   = queryutils.NewColumn("type").Build()

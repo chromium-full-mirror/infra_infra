@@ -323,7 +323,7 @@ func splitExtraArg(args []*api.Arg) (tastArgs, runtimeVars []*api.Arg, err error
 			return nil, nil, fmt.Errorf("invalid Tast flag: %s", a.GetFlag())
 		}
 		if _, ok := allowedTastFlag[a.GetFlag()]; !ok {
-			// nolint:stylecheck // ST1005 "Tast" is a proper noun and can be capitalized
+			// nolint:staticcheck // ST1005 "Tast" is a proper noun and can be capitalized
 			return nil, nil, fmt.Errorf("Tast flag %s is not allowed to be overridden", a.GetFlag())
 		}
 		tastArgs = append(tastArgs, a)
@@ -341,7 +341,7 @@ func mergeTastArgs(userArgs, customArgs []*api.Arg) (args []*api.Arg, err error)
 			flag = "-" + flag
 		}
 		if _, ok := allowedTastFlag[flag]; !ok {
-			// nolint:stylecheck // ST1005 "Tast" is a proper noun and can be capitalized
+			// nolint:staticcheck // ST1005 "Tast" is a proper noun and can be capitalized
 			return nil, fmt.Errorf("Tast flag %s is not allowed to be overridden", flag)
 		}
 		lookup[flag] = i

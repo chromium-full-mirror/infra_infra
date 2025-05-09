@@ -19,8 +19,8 @@ import (
 
 // DeviceDAO represents a device as saved in AlloyDB
 type DeviceDAO struct {
-	Id         string //nolint:stylecheck
-	DutId      string //nolint:stylecheck
+	Id         string //nolint:staticcheck
+	DutId      string //nolint:staticcheck
 	Address    *DeviceAddressDAO
 	Type       string
 	State      string
