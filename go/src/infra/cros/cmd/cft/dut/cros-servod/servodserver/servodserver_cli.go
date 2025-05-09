@@ -151,7 +151,8 @@ func (s *ServodService) startServoLabStation(a model.CliArgs) error {
 		return err
 	}
 	bOut, bErr, err = s.commandexecutor.Run(a.ServoHostPath, command, nil, false)
-	if err != nil {
+	// Already running is as good as success.
+	if err != nil && !strings.Contains(bErr.String(), "Job is already running") {
 		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
 	}
 	command = fmt.Sprintf("servodtool instance wait-for-active --timeout 120 -p %v", a.ServodPort)
