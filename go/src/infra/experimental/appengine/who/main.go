@@ -265,7 +265,7 @@ func detailHandler(ctx *router.Context) {
 			continue
 		}
 		day := updated.Truncate(24 * time.Hour)
-		if day == queryDay {
+		if day.Equal(queryDay) {
 			details.Day = day
 			details.Bugs = append(details.Bugs, bug)
 		}
@@ -290,7 +290,7 @@ func detailHandler(ctx *router.Context) {
 
 	for _, change := range *changeInfo {
 		day := change.Updated.Truncate(24 * time.Hour)
-		if day == queryDay {
+		if day.Equal(queryDay) {
 			details.Changes = append(details.Changes, change)
 			details.Day = day
 		}

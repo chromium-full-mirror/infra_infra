@@ -167,7 +167,7 @@ func (d *Dir) MatchOsInfo(path string, info os.FileInfo) bool {
 	// If we found the file and all these things match, the file isn't considered different
 	return (prev != nil &&
 		prev.Size == info.Size() &&
-		prev.ModTime == info.ModTime() &&
+		prev.ModTime.Equal(info.ModTime()) &&
 		prev.Mode == info.Mode())
 }
 

@@ -353,7 +353,7 @@ func TestCloseIncident(t *testing.T) {
 	if err := datastore.Get(ctx, newIncident); err != nil {
 		t.Errorf("expected no error. found: %v", err)
 	}
-	if newIncident.EndTime == (time.Time{}) {
+	if newIncident.EndTime.Equal((time.Time{})) {
 		t.Error("Incident was not fully closed, EndTime is not set")
 	}
 	if newIncident.Open {
