@@ -370,14 +370,14 @@ WHERE
 					if err == nil {
 						return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 					}
-					if err != storage.ErrObjectNotExist {
+					if !errors.Is(err, storage.ErrObjectNotExist) {
 						return "", fmt.Errorf("%s.Object(%s): %w", bucketName, verAttrs.Prefix+suffix, err)
 					}
 					fileAttrs, err = bucket.Object(verAttrs.Prefix + "firmware_from_source.tar.bz2").Attrs(ctx)
 					if err == nil {
 						return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 					}
-					if err != storage.ErrObjectNotExist {
+					if !errors.Is(err, storage.ErrObjectNotExist) {
 						return "", fmt.Errorf("%s.Object(%s): %w", bucketName, verAttrs.Prefix+"firmware_from_source.tar.bz2", err)
 					}
 				}
@@ -417,14 +417,14 @@ WHERE
 					if err == nil {
 						return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 					}
-					if err != storage.ErrObjectNotExist {
+					if !errors.Is(err, storage.ErrObjectNotExist) {
 						return "", fmt.Errorf("%s.Object(%s): %w", bucketName, verAttrs.Prefix+suffix, err)
 					}
 					fileAttrs, err = bucket.Object(verAttrs.Prefix + "firmware_from_source.tar.bz2").Attrs(ctx)
 					if err == nil {
 						return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 					}
-					if err != storage.ErrObjectNotExist {
+					if !errors.Is(err, storage.ErrObjectNotExist) {
 						return "", fmt.Errorf("%s.Object(%s): %w", bucketName, verAttrs.Prefix+"firmware_from_source.tar.bz2", err)
 					}
 				}
@@ -448,10 +448,10 @@ WHERE
 			if err == nil {
 				return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 			}
-			if err != storage.ErrObjectNotExist {
+			if !errors.Is(err, storage.ErrObjectNotExist) {
 				return "", fmt.Errorf("%s.Object(%s): %w", bucketName, latestPath+"firmware_from_source.tar.bz2", err)
 			}
-		} else if err != storage.ErrObjectNotExist {
+		} else if !errors.Is(err, storage.ErrObjectNotExist) {
 			return "", fmt.Errorf("%s.Object(%s): %w", bucketName, latestPath, err)
 		}
 

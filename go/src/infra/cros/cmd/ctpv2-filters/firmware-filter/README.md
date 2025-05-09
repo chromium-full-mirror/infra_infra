@@ -166,7 +166,11 @@ go test go.chromium.org/infra/cros/cmd/ctpv2-filters/firmware-filter/...
 
 1.  Get a request.json from a luci job such as
     https://logs.chromium.org/logs/chromeos/buildbucket/cr-buildbucket/8745841814552538721/+/u/ctpv2_sub-build__async_/u/step/39/log/1
-    and save it to ~/request.json
+    and save it to ~/request.json. From the command line use:
+
+    ```shell
+    curl -o ~/request.json -H "authorization: Bearer `luci-auth token`" '<url>'
+    ```
 2.  [Build and install](#firmware-filter-binary)
 3.  Run
 
