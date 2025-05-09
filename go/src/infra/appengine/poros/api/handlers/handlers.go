@@ -23,7 +23,7 @@ func NewHandlers(prod bool) *Handlers {
 	return &Handlers{prod: prod}
 }
 
-func respondWithJSON(ctx *router.Context, data interface{}) {
+func respondWithJSON(ctx *router.Context, data any) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		logging.Errorf(ctx.Request.Context(), "Marshalling JSON for response: %s", err)
