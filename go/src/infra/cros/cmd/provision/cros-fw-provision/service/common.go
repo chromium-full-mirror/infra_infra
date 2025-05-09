@@ -68,7 +68,7 @@ func Escape(s string) string {
 	if safeRE.MatchString(s) {
 		return s
 	}
-	return "'" + strings.Replace(s, "'", `'"'"'`, -1) + "'"
+	return "'" + strings.ReplaceAll(s, "'", `'"'"'`) + "'"
 }
 
 // RunDUTCommand runs a command on the DUT and returns stdout, stderr, and an error if it failed.
