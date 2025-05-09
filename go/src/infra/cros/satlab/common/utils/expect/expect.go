@@ -808,7 +808,7 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 					si := strconv.Itoa(i)
 					r := strings.NewReplacer(`\\`+si, `\`+si, `\`+si, `\\`+si)
 					st = r.Replace(st)
-					st = strings.Replace(st, `\\`+si, match[i], -1)
+					st = strings.ReplaceAll(st, `\\`+si, match[i])
 				}
 			}
 			// Don't send anything if string is empty.

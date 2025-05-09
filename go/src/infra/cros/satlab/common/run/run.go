@@ -377,7 +377,7 @@ func (c *Run) partnerCrosTestFinderFilter() *api.CTPFilter {
 		project = fmt.Sprintf("cros-registry/%s", site.GetGCSImageBucket())
 		tag = fmt.Sprintf("%s-release.R%s-%s", c.Board, c.Milestone, c.Build)
 		if c.Board == "" || c.Milestone == "" || c.Build == "" {
-			tag = strings.Replace(c.Image, "/", ".", -1)
+			tag = strings.ReplaceAll(c.Image, "/", ".")
 		}
 	}
 
