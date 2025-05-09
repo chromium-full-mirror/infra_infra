@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	ufsmodels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
@@ -74,15 +73,15 @@ func TestGetZones_deduction(t *testing.T) {
 				},
 			},
 		},
-		Machines: map[string]*ufsmodels.Machine{
+		Machines: map[string]*ufspb.Machine{
 			"machines/server-name": {
-				Location: &ufsmodels.Location{
-					Zone: ufsmodels.Zone_ZONE_CHROMEOS2,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS2,
 				},
 			},
 			"machines/another-server": {
-				Location: &ufsmodels.Location{
-					Zone: ufsmodels.Zone_ZONE_SFO36_OS,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_OS,
 				},
 			},
 		},
