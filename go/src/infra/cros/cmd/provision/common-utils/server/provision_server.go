@@ -127,7 +127,7 @@ func (ps *ProvisionServer) Install(ctx context.Context, req *api.InstallRequest)
 			fv = stringValue.GetValue()
 		}
 	} else {
-		fv = "No Metadata"
+		fv = ""
 	}
 
 	response.Status = installResp
