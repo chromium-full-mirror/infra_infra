@@ -60,7 +60,7 @@ func GetStringSlice(msg string) []string {
 	if msg == "" {
 		return nil
 	}
-	return strings.Split(strings.Replace(msg, " ", "", -1), ",")
+	return strings.Split(strings.ReplaceAll(msg, " ", ""), ",")
 }
 
 // GenerateAssetUpdate generates an AssetUpdate request for location, model and board updates
