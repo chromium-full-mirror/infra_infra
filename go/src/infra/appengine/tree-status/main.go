@@ -100,7 +100,7 @@ func indexPage(ctx *router.Context) {
 		isStaging = false
 	}
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"IsDevAppServer": info.IsDevAppServer(c),
 		"IsStaging":      isStaging,
 		"XsrfToken":      tok,
