@@ -63,10 +63,10 @@ func getDeviceConfigs(ctx context.Context, gc git.ClientInterface, joinedConfigP
 }
 
 func correctProjectName(n string) string {
-	return strings.Replace(n, "+", "plus", -1)
+	return strings.ReplaceAll(n, "+", "plus")
 }
 func correctConfigPath(p string) string {
-	return strings.Replace(p, "config.jsonproto", "joined.jsonproto", -1)
+	return strings.ReplaceAll(p, "config.jsonproto", "joined.jsonproto")
 }
 
 func validRepo(r *Repo) bool {
