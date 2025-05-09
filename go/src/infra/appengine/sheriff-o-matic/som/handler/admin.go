@@ -144,7 +144,7 @@ func initializeTrees(c context.Context, treeStr string) ([]*model.Tree, error) {
 
 		nameParts := strings.Split(it, ":")
 		name := nameParts[0]
-		displayName := strings.Replace(strings.Title(name), "_", " ", -1)
+		displayName := strings.ReplaceAll(strings.Title(name), "_", " ")
 		if len(nameParts) == 2 {
 			displayName = nameParts[1]
 		}

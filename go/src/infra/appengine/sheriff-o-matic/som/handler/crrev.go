@@ -85,7 +85,7 @@ func getRevRangeHandler(ctx *router.Context, crRev client.CrRev) {
 
 		// A repo name with "/" cannot be passed as a URL param. So all "/" were
 		// replaced with "." before this request was made.
-		repo = strings.Replace(repo, ".", "/", -1)
+		repo = strings.ReplaceAll(repo, ".", "/")
 		gitilesURL := fmt.Sprintf("https://%s.googlesource.com/%s/+log/%s^..%s?format=JSON",
 			host, repo, startRev, endRev)
 
