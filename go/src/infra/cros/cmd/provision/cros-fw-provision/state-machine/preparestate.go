@@ -37,13 +37,18 @@ func (s FirmwarePrepareState) Execute(ctx context.Context, log *log.Logger) (*ap
 	if err := s.service.WaitForReconnect(ctx); err != nil {
 		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION, err
 	}
-	_, out, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, 10*time.Second, "which", []string{"python3"}, nil)
-	if err != nil {
-		log.Printf("python3 not found:%s", err)
-		return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.Wrapf(err, out)
-	}
-	if err := s.service.ReadConfigYAML(ctx); err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+
+	// Android doesn't have python3, crosid, or config.yaml
+	// TODO: Rewrite the python3 parts in simple shell.
+	if !s.service.IsAndroid() {
+		_, out, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, 10*time.Second, "which", []string{"python3"}, nil)
+		if err != nil {
+			log.Printf("python3 not found:%s", err)
+			return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.Wrapf(err, out)
+		}
+		if err := s.service.ReadConfigYAML(ctx); err != nil {
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+		}
 	}
 	if mainRw := s.service.GetMainRwPath(); len(mainRw) > 0 {
 		if err := s.service.DownloadAndProcess(ctx, mainRw); err != nil {

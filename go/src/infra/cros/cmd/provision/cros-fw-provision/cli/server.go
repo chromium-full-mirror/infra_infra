@@ -48,8 +48,9 @@ type FWProvisionServer struct {
 
 	cacheServer url.URL
 
-	board string
-	model string
+	board     string
+	model     string
+	isAndroid bool
 }
 
 // NewFWProvisionServer returns a new FWProvisionServer, a closer function, and an error.
@@ -92,9 +93,6 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 		return &response, err
 	}
 
-	ps.board = req.Dut.GetChromeos().DutModel.BuildTarget
-	ps.model = req.Dut.GetChromeos().DutModel.ModelName
-
 	dutServAddr, err := cache.IPEndpointToHostPort(req.DutServer)
 	if err != nil {
 		response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
@@ -106,6 +104,25 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 		return &response, errors.Wrap(err, "connect to dut server")
 	}
 	ps.dutServer = dutServer
+
+	var dutModel *labapi.DutModel
+	var servoConfig *labapi.Servo
+	switch dutType := req.Dut.DutType.(type) {
+	case *labapi.Dut_Chromeos:
+		dutModel = dutType.Chromeos.DutModel
+		servoConfig = dutType.Chromeos.GetServo()
+		ps.isAndroid = false
+
+	case *labapi.Dut_Android_:
+		dutModel = dutType.Android.DutModel
+		servoConfig = dutType.Android.GetServo()
+		ps.isAndroid = true
+	default:
+		return nil, errors.New("StartUp: dut.chromeos or dut.android is required")
+	}
+
+	ps.board = dutModel.BuildTarget
+	ps.model = dutModel.ModelName
 
 	cacheServerAddr, err := cache.IPEndpointToHostPort(req.Dut.GetCacheServer().GetAddress())
 	if err != nil {
@@ -119,7 +136,7 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 		return &response, errors.New("ProvisionStartupRequest: cache_server_address must be visible from DUT, i.e. no localhost")
 	}
 
-	if req.ServoNexusAddr != nil && req.GetDut().GetChromeos().GetServo().GetPresent() {
+	if req.ServoNexusAddr != nil && servoConfig.GetPresent() {
 		servoServerAddr, err := cache.IPEndpointToHostPort(req.ServoNexusAddr)
 		if err != nil {
 			response.Status = api.ProvisionStartupResponse_STATUS_INVALID_REQUEST
@@ -131,7 +148,7 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 			return &response, errors.Wrap(err, "connect to Servo Nexus")
 		}
 		ps.servoClient = servoClient
-		ps.servoConfig = req.GetDut().GetChromeos().GetServo()
+		ps.servoConfig = servoConfig
 	}
 
 	response.Status = api.ProvisionStartupResponse_STATUS_SUCCESS
@@ -145,17 +162,30 @@ func (ps *FWProvisionServer) validateStartupRequest(req *api.ProvisionStartupReq
 	if req.Dut == nil {
 		return errors.New("ProvisionStartupRequest: dut is required")
 	}
-	if req.Dut.GetChromeos() == nil {
-		return errors.New("ProvisionStartupRequest: dut.chromeos is required")
-	}
-	if req.Dut.GetChromeos().DutModel == nil {
-		return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model is required")
-	}
-	if req.Dut.GetChromeos().DutModel.BuildTarget == "" {
-		return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model.build_target is required")
-	}
-	if req.Dut.GetChromeos().DutModel.ModelName == "" {
-		return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model.model_name is required")
+
+	switch dutType := req.Dut.DutType.(type) {
+	case *labapi.Dut_Chromeos:
+		if dutType.Chromeos.DutModel == nil {
+			return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model is required")
+		}
+		if dutType.Chromeos.DutModel.BuildTarget == "" {
+			return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model.build_target is required")
+		}
+		if dutType.Chromeos.DutModel.ModelName == "" {
+			return errors.New("ProvisionStartupRequest: dut.chromeos.dut_model.model_name is required")
+		}
+	case *labapi.Dut_Android_:
+		if dutType.Android.DutModel == nil {
+			return errors.New("ProvisionStartupRequest: dut.android.dut_model is required")
+		}
+		if dutType.Android.DutModel.BuildTarget == "" {
+			return errors.New("ProvisionStartupRequest: dut.android.dut_model.build_target is required")
+		}
+		if dutType.Android.DutModel.ModelName == "" {
+			return errors.New("ProvisionStartupRequest: dut.android.dut_model.model_name is required")
+		}
+	default:
+		return errors.New("ProvisionStartupRequest: dut.chromeos or dut.android is required")
 	}
 	if req.DutServer == nil {
 		return errors.New("ProvisionStartupRequest: dut_server is required")
@@ -204,7 +234,7 @@ func (ps *FWProvisionServer) doProvision(ctx context.Context, req *api.InstallRe
 	}()
 
 	fwService, status, err := firmwareservice.NewFirmwareService(ctx, ps.dutServer, ps.servoClient, ps.cacheServer,
-		ps.board, ps.model, false, req, ps.servoConfig)
+		ps.board, ps.model, false, req, ps.servoConfig, ps.isAndroid)
 	if err != nil {
 		ps.log.Printf("Failed to initialize Firmware Service: %v", err)
 		response.Status = status

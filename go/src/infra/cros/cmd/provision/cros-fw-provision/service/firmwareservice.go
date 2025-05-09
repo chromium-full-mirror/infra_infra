@@ -93,6 +93,12 @@ type FirmwareService struct {
 
 	// RestartRequired indicates that a firmware update was performed, but the DUT has not yet rebooted.
 	RestartRequired bool
+
+	// A tmp dir that will survive a reboot.
+	durableTmpDir string
+
+	// Flashing an Android device
+	isAndroid bool
 }
 
 type versionJSON struct {
@@ -102,7 +108,7 @@ type versionJSON struct {
 // NewFirmwareService initializes a FirmwareService.
 func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	servoClient api.ServodServiceClient, cacheServer url.URL, board, model string,
-	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo) (*FirmwareService, api.InstallResponse_Status, error) {
+	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo, isAndroid bool) (*FirmwareService, api.InstallResponse_Status, error) {
 	metadata := new(api.FirmwareProvisionInstallMetadata)
 	if req.GetMetadata().MessageIs(metadata) {
 		if err := req.GetMetadata().UnmarshalTo(metadata); err != nil {
@@ -113,6 +119,11 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	}
 	detailedRequest := metadata.FirmwareConfig
 	dutAdapter := common_utils.NewServiceAdapter(dutServer, false /*noReboot*/)
+
+	durableTmpDir := "/var/tmp"
+	if isAndroid {
+		durableTmpDir = "/data/local/tmp"
+	}
 
 	fws := FirmwareService{
 		connection:     dutAdapter,
@@ -125,6 +136,8 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 		useServo:       useServo,
 		imagesMetadata: make(map[string]ImageArchiveMetadata),
 		CacheServer:    cacheServer,
+		durableTmpDir:  durableTmpDir,
+		isAndroid:      isAndroid,
 	}
 
 	// Firmware may be updated in write-protected mode, where only 'rw' regions
@@ -152,6 +165,10 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	}
 
 	return &fws, api.InstallResponse_STATUS_SUCCESS, nil
+}
+
+func (fws *FirmwareService) IsAndroid() bool {
+	return fws.isAndroid
 }
 
 // Confirms that cros-servod connection is functional, and fills the following
@@ -226,6 +243,9 @@ func (fws *FirmwareService) PrintRequestInfo() {
 	informationString += strings.Join(images, " and ") + " firmware"
 
 	flashMode := "SSH"
+	if fws.isAndroid {
+		flashMode = "ADB"
+	}
 	informationString += " over " + flashMode + ". "
 
 	informationString += "Board: " + fws.board + ". "
@@ -944,8 +964,12 @@ func (fws *FirmwareService) DownloadAndProcess(ctx context.Context, gsPath strin
 			archiveSubfolder = splitGsPath[nameIdx]
 		}
 
-		// Use mktemp to safely create a unique temp directory in /var/tmp so that it survives reboots.
-		archiveDir, err := connection.RunCmd(ctx, "mktemp", []string{"-d", "--tmpdir=/var/tmp", fmt.Sprintf("'cros-fw-provision.%s.XXXXXXXXX'", archiveSubfolder)})
+		// Use mktemp to safely create a unique temp directory that survives reboots.
+		archiveDir, err := connection.RunCmd(ctx, "mktemp", []string{
+			"-d",
+			fmt.Sprintf("--tmpdir=%s", fws.durableTmpDir),
+			fmt.Sprintf("'cros-fw-provision.%s.XXXXXXXXX'", archiveSubfolder),
+		})
 		if err != nil {
 			return errors.Wrap(err, "remote mktemp failed")
 		}
