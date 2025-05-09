@@ -218,7 +218,7 @@ func (i *Interpreter) GetHash() (string, error) {
 }
 
 // getCached require cachedMu to be held
-func (i *Interpreter) getCached(prefix string, v interface{}) (found bool, err error) {
+func (i *Interpreter) getCached(prefix string, v any) (found bool, err error) {
 	if i.fileCacheDisabled {
 		return false, nil
 	}
@@ -244,7 +244,7 @@ func (i *Interpreter) getCached(prefix string, v interface{}) (found bool, err e
 }
 
 // setCached require cachedMu to be held
-func (i *Interpreter) setCached(prefix string, v interface{}) (err error) {
+func (i *Interpreter) setCached(prefix string, v any) (err error) {
 	if i.fileCacheDisabled {
 		return
 	}

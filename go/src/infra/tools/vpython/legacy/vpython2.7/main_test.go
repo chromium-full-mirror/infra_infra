@@ -367,7 +367,7 @@ func testMainRunDelegate(self, v string) int {
 	return mainImpl(c, argv, environ.System(), false)
 }
 
-func encodeEnvironmentParam(i interface{}) string {
+func encodeEnvironmentParam(i any) string {
 	d, err := json.Marshal(i)
 	if err != nil {
 		panic(err)
@@ -375,7 +375,7 @@ func encodeEnvironmentParam(i interface{}) string {
 	return base64.StdEncoding.EncodeToString(d)
 }
 
-func decodeEnvironmentParam(v string, i interface{}) error {
+func decodeEnvironmentParam(v string, i any) error {
 	d, err := base64.StdEncoding.DecodeString(v)
 	if err != nil {
 		return err
