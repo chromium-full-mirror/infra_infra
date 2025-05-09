@@ -13,10 +13,13 @@ import (
 	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/dutstate"
 	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
 	"go.chromium.org/infra/cros/recovery/internal/components/linux"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // auditStorageSMARTExec confirms that it is able to audit
@@ -54,8 +57,22 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 // auditStoragePartitionHashExec confirms that it is able to audit storage
 // by checksum on the partitions, and mark the DUT if it needs replacement.
 func auditStoragePartitionHashExec(ctx context.Context, info *execs.ExecInfo) error {
-	if err := storage.CheckPartitionHash(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut()); err != nil {
-		return errors.Annotate(err, "audit storage partition hash").Err()
+	am := info.GetActionArgs(ctx)
+	retryCount := am.AsInt(ctx, "retry_count", 1)
+	retryPartitionHashFunc := func() error {
+		issueReason := storage.CheckPartitionHash(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut())
+		if issueReason.NotEmpty() {
+			return errors.New("error during partition hash check")
+		}
+		return nil
+	}
+	if retryErr := retry.LimitCount(ctx, retryCount, 5*time.Second, retryPartitionHashFunc, "check partition hash"); retryErr != nil {
+		log.Debugf(ctx, "Partition hashes do not match. Detected issue with storage on the DUT")
+		info.GetChromeos().GetStorage().State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		info.GetDut().State = dutstate.NeedsReplacement
+		log.Debugf(ctx, "Setting the DUT state: %q", string(info.GetDut().State))
+		info.GetDut().DutStateReason = tlw.DutStateReasonInternalStoragePartitionHashesMismatch
+		return errors.Reason("audit storage partition hash: hardware state need replacement").Err()
 	}
 	return nil
 }

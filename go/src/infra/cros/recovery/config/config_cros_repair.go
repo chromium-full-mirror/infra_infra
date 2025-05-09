@@ -539,7 +539,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_audit_storage_partition_hash",
 			ExecTimeout: &durationpb.Duration{
-				Seconds: 600,
+				Seconds: 1200,
+			},
+			ExecExtraArgs: []string{
+				"retry_count:2",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,

@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -649,6 +650,15 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	return nil
 }
 
+func getPartitionHash(ctx context.Context, r components.Runner, partition string) (string, error) {
+	out, err := r(ctx, 3*time.Minute, fmt.Sprintf("/usr/bin/sha256sum %s", partition))
+	if err != nil {
+		return "", errors.Annotate(err, "get partition hash").Err()
+	}
+	hash, _, _ := strings.Cut(out, " ")
+	return hash, nil
+}
+
 // CheckPartitionHash checks the storage by copying the root partition
 // to an inactive partition with /bin/dd, calculating a sha256 checksum
 // on the partitions, and comparing the hashes. If the test fails,
@@ -656,35 +666,43 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 //
 // This is a helper function to encapsulate the logic and intended to be called
 // from the exec, as well as any other place where such a check is required.
-func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut) error {
+func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut) tlw.DutStateReason {
 	activeKernel, nextKernel, diskBlock, err := kernel.GetKernelData(ctx, r)
 	if err != nil {
-		return errors.Annotate(err, "audit storage partition hash").Err()
+		log.Warningf(ctx, "audit storage partition hash: %w", err)
+		return tlw.DutStateReasonEmpty
 	}
 	activePartition := fmt.Sprintf("%sp%d", diskBlock, activeKernel.RootPartition)
 	inactivePartition := fmt.Sprintf("%sp%d", diskBlock, nextKernel.RootPartition)
-	_, err = r(ctx, 2*time.Minute, fmt.Sprintf("/bin/dd if=%s of=%s bs=4M", activePartition, inactivePartition))
+	_, err = r(ctx, 3*time.Minute, fmt.Sprintf("/bin/dd if=%s of=%s bs=4M", activePartition, inactivePartition))
 	if err != nil {
-		return errors.Annotate(err, "audit storage partition hash").Err()
+		log.Warningf(ctx, "audit storage partition hash: %w", err)
+		return tlw.DutStateReasonEmpty
 	}
-	out, err := r(ctx, 2*time.Minute, fmt.Sprintf("/usr/bin/sha256sum %s", activePartition))
-	if err != nil {
-		return errors.Annotate(err, "audit storage partition hash").Err()
+	var activeHash, inactiveHash string
+	var activeErr, inactiveErr error
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		activeHash, activeErr = getPartitionHash(ctx, r, activePartition)
+	}()
+	go func() {
+		defer wg.Done()
+		inactiveHash, inactiveErr = getPartitionHash(ctx, r, inactivePartition)
+	}()
+	wg.Wait()
+	if activeErr != nil {
+		log.Warningf(ctx, "audit storage partition hash: %w", err)
+		return tlw.DutStateReasonEmpty
+	} else if inactiveErr != nil {
+		log.Warningf(ctx, "audit storage partition hash: %w", err)
+		return tlw.DutStateReasonEmpty
 	}
-	activeHash, _, _ := strings.Cut(out, " ")
-	out, err = r(ctx, 2*time.Minute, fmt.Sprintf("/usr/bin/sha256sum %s", inactivePartition))
-	if err != nil {
-		return errors.Annotate(err, "audit storage partition hash").Err()
-	}
-	inactiveHash, _, _ := strings.Cut(out, " ")
 	if activeHash != inactiveHash {
-		log.Debugf(ctx, "Partition hashes do not match. Detected issue with storage on the DUT")
-		storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-		log.Debugf(ctx, "Setting the DUT state: %q", string(dutstate.NeedsReplacement))
-		dut.State = dutstate.NeedsReplacement
-		dut.DutStateReason = tlw.DutStateReasonInternalStoragePartitionHashesMismatch
-		return errors.Reason("audit storage smart: hardware state need replacement").Err()
+		log.Debugf(ctx, "Partition hashes do not match.")
+		return tlw.DutStateReasonInternalStoragePartitionHashesMismatch
 	}
 	log.Debugf(ctx, "Partition hashes match. No action needed.")
-	return nil
+	return tlw.DutStateReasonEmpty
 }
