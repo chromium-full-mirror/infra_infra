@@ -135,7 +135,7 @@ func (s SSHStub) handleFakeSSHConn(c net.Conn) {
 	}
 }
 
-func (s SSHStub) logf(format string, args ...interface{}) {
+func (s SSHStub) logf(format string, args ...any) {
 	if s.Logger != nil {
 		s.Logger.Printf(format, args...)
 	}
@@ -147,5 +147,5 @@ type exitStatusMsg struct {
 
 // Logger is the interface used for a logging sink.
 type Logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }

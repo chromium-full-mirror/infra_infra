@@ -41,8 +41,8 @@ func testBuild(t *testing.T, name, buildTarget string) *bbpb.Build {
 	return &bbpb.Build{
 		Builder: &bbpb.BuilderID{Builder: name},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": buildTarget,
 				},
 			}),

@@ -443,7 +443,7 @@ func (b *localManifestBrancher) BranchLocalManifests(ctx context.Context, fsClie
 
 		// Process optimization updates (can't do inline because map is not
 		// thread-safe).
-		optUpdates.Range(func(key, value interface{}) bool {
+		optUpdates.Range(func(key, value any) bool {
 			bm.PathToPrevSHA[key.(string)] = value.(string)
 			return true
 		})

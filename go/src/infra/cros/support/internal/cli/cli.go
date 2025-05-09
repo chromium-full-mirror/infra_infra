@@ -44,7 +44,7 @@ func assertInited(afterInit bool) {
 }
 
 // Unmarshal input into the given type or die.
-func MustUnmarshalInput(v interface{}) {
+func MustUnmarshalInput(v any) {
 	assertInited(true)
 	var r io.ReadCloser
 	if inputPath == "" || inputPath == "-" {
@@ -65,7 +65,7 @@ func MustUnmarshalInput(v interface{}) {
 }
 
 // Marshal given data to output or die.
-func MustMarshalOutput(v interface{}) {
+func MustMarshalOutput(v any) {
 	assertInited(true)
 	var w io.WriteCloser
 	if outputPath == "" || outputPath == "-" {

@@ -123,7 +123,7 @@ type crashClient interface {
 // TODO(b/197010274): add function to strip CFI lines if file is too large
 
 // LogOut logs to stdout.
-func LogOut(format string, a ...interface{}) {
+func LogOut(format string, a ...any) {
 	if StdoutLog != nil {
 		StdoutLog.Printf(format, a...)
 	}
@@ -131,14 +131,14 @@ func LogOut(format string, a ...interface{}) {
 
 // LogOutNoFlags logs to stdout without any flags. Specifically this is used
 // when uploading symbols to eliminate flag doubling.
-func LogOutNoFlags(format string, a ...interface{}) {
+func LogOutNoFlags(format string, a ...any) {
 	if StdoutLogNoFlags != nil {
 		StdoutLogNoFlags.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func LogErr(crash *crashConnectionInfo, format string, a ...interface{}) {
+func LogErr(crash *crashConnectionInfo, format string, a ...any) {
 	if crash != nil {
 		format = cleanErrorMessage(format, crash.key)
 	}

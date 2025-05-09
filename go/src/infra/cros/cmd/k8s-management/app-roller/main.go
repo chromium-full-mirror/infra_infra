@@ -447,7 +447,7 @@ func splitYAMLDoc(content string) ([]string, error) {
 	dec := yaml.NewDecoder(bytes.NewReader([]byte(content)))
 	var docs []string
 	for {
-		var v interface{}
+		var v any
 		err := dec.Decode(&v)
 		if err == io.EOF {
 			break

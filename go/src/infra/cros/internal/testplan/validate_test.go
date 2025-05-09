@@ -33,7 +33,7 @@ import (
 	"go.chromium.org/infra/tools/dirmd/proto/chromeos"
 )
 
-func newStructOrFatal(t *testing.T, v map[string]interface{}) *structpb.Struct {
+func newStructOrFatal(t *testing.T, v map[string]any) *structpb.Struct {
 	s, err := structpb.NewStruct(v)
 	if err != nil {
 		t.Fatal(err)
@@ -86,9 +86,9 @@ func TestValidateMapping(t *testing.T) {
 		Id: 123,
 		Input: &bbpb.Build_Input{
 			Properties: newStructOrFatal(
-				t, map[string]interface{}{
-					"$chromeos/build_menu": map[string]interface{}{
-						"build_target": map[string]interface{}{
+				t, map[string]any{
+					"$chromeos/build_menu": map[string]any{
+						"build_target": map[string]any{
 							"name": "targetA",
 						},
 					},
@@ -97,7 +97,7 @@ func TestValidateMapping(t *testing.T) {
 		},
 		Output: &bbpb.Build_Output{
 			Properties: newStructOrFatal(
-				t, map[string]interface{}{
+				t, map[string]any{
 					"artifact_link": "gs://testbucket/artifacts",
 				},
 			),
@@ -597,9 +597,9 @@ func TestValidateMappingErrors(t *testing.T) {
 		Id: 123,
 		Input: &bbpb.Build_Input{
 			Properties: newStructOrFatal(
-				t, map[string]interface{}{
-					"$chromeos/build_menu": map[string]interface{}{
-						"build_target": map[string]interface{}{
+				t, map[string]any{
+					"$chromeos/build_menu": map[string]any{
+						"build_target": map[string]any{
 							"name": "targetA",
 						},
 					},
@@ -608,7 +608,7 @@ func TestValidateMappingErrors(t *testing.T) {
 		},
 		Output: &bbpb.Build_Output{
 			Properties: newStructOrFatal(
-				t, map[string]interface{}{
+				t, map[string]any{
 					"artifact_link": "gs://testbucket/artifacts",
 				},
 			),
@@ -1172,46 +1172,46 @@ func TestValidateMappingCTFErrors(t *testing.T) {
 		{
 			name: "artifact link missing",
 			inputProps: newStructOrFatal(
-				t, map[string]interface{}{
-					"$chromeos/build_menu": map[string]interface{}{
-						"build_target": map[string]interface{}{
+				t, map[string]any{
+					"$chromeos/build_menu": map[string]any{
+						"build_target": map[string]any{
 							"name": "targetA",
 						},
 					},
 				},
 			),
 			outputProps: newStructOrFatal(
-				t, map[string]interface{}{"otheroutputprop": 1},
+				t, map[string]any{"otheroutputprop": 1},
 			),
 			errorSubstring: "artifact_link output property not found on build 123",
 		},
 		{
 			name: "build target missing",
 			inputProps: newStructOrFatal(
-				t, map[string]interface{}{
-					"$chromeos/build_menu": map[string]interface{}{
+				t, map[string]any{
+					"$chromeos/build_menu": map[string]any{
 						"otherprop": 1,
 					},
 				},
 			),
 			outputProps: newStructOrFatal(
-				t, map[string]interface{}{"artifact_link": "gs://bucket/artifact"},
+				t, map[string]any{"artifact_link": "gs://bucket/artifact"},
 			),
 			errorSubstring: "$chromeos/build_menu.build_target.name input property not found on build 123",
 		},
 		{
 			name: "cros test finder missing from metadata",
 			inputProps: newStructOrFatal(
-				t, map[string]interface{}{
-					"$chromeos/build_menu": map[string]interface{}{
-						"build_target": map[string]interface{}{
+				t, map[string]any{
+					"$chromeos/build_menu": map[string]any{
+						"build_target": map[string]any{
 							"name": "targetA",
 						},
 					},
 				},
 			),
 			outputProps: newStructOrFatal(
-				t, map[string]interface{}{"artifact_link": "gs://testbucket/artifacts"},
+				t, map[string]any{"artifact_link": "gs://testbucket/artifacts"},
 			),
 			containerMetadata: &bapi.ContainerMetadata{
 				Containers: map[string]*bapi.ContainerImageMap{

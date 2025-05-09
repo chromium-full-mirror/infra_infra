@@ -170,8 +170,8 @@ func filterNoisyFields(obj *unstructured.Unstructured) {
 	if obj == nil {
 		return
 	}
-	obj.Object["metadata"].(map[string]interface{})["managedFields"] = nil
-	obj.Object["metadata"].(map[string]interface{})["resourceVersion"] = nil
+	obj.Object["metadata"].(map[string]any)["managedFields"] = nil
+	obj.Object["metadata"].(map[string]any)["resourceVersion"] = nil
 }
 
 // change is the structured data of resource change.

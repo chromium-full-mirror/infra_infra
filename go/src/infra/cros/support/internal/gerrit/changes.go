@@ -245,7 +245,7 @@ func MustFetchChanges(parentCtx context.Context, httpClient *http.Client, change
 	wg.Wait()
 
 	failed := false
-	hostErrors.Range(func(host, err interface{}) bool {
+	hostErrors.Range(func(host, err any) bool {
 		log.Printf("request to %s failed: %v", host, err)
 		failed = true
 		return true

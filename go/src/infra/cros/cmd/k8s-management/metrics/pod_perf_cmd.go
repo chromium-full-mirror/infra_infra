@@ -39,7 +39,7 @@ func (c *podPerfCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.application, "application", "", "pod application, e.g. skylab-drone-prod")
 }
 
-func (c *podPerfCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (c *podPerfCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	if err := c.startPodPerf(); err != nil {
 		log.Printf("Pod perf: %s", err)
 		return subcommands.ExitFailure

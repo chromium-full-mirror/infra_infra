@@ -53,14 +53,14 @@ type CheckoutOptions struct {
 }
 
 // LogOut logs to stdout.
-func (c *Client) LogOut(format string, a ...interface{}) {
+func (c *Client) LogOut(format string, a ...any) {
 	if c.StdoutLog != nil {
 		c.StdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (c *Client) LogErr(format string, a ...interface{}) {
+func (c *Client) LogErr(format string, a ...any) {
 	if c.StderrLog != nil {
 		c.StderrLog.Printf(format, a...)
 	}

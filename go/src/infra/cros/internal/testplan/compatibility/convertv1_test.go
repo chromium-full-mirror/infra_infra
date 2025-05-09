@@ -35,7 +35,7 @@ import (
 //
 // Any errors will be passed to t.Fatal. See structpb.NewValue for more info
 // on how Go interfaces are converted to structpb.Struct.
-func newStruct(t *testing.T, fields map[string]interface{}) *structpb.Struct {
+func newStruct(t *testing.T, fields map[string]any) *structpb.Struct {
 	s := &structpb.Struct{Fields: map[string]*structpb.Value{}}
 
 	for key, val := range fields {
@@ -524,19 +524,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderA",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardA",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -549,21 +549,21 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderB",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardB",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathB",
-					"files_by_artifact": map[string]interface{}{
-						"testartifact": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"testartifact": []any{"file1", "file2"},
 						// A test artifact is an empty list, this should be ignored.
-						"IMAGE_ZIP": []interface{}{},
+						"IMAGE_ZIP": []any{},
 						// A test artifact is not a list, this should also be ignored.
 						"TEST_UPDATE_PAYLOAD": 123,
 					},
@@ -578,19 +578,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderC",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardC",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathC",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -602,19 +602,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "non-critical-builder",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "non-critical-board",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspath",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -627,7 +627,7 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "pointless-build",
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
 				"pointless_build": true,
 			}),
 		},
@@ -638,17 +638,17 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "no-build-target-build",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
 				"other_input_prop": 12,
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathB",
-					"files_by_artifact": map[string]interface{}{
-						"testartifact": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"testartifact": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -660,19 +660,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderA-kernelnext",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardA-kernelnext",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA-kernelnext",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -685,19 +685,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-vmBuilderA",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "vmboardA",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -710,19 +710,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-vmBuilderA-arc-r",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "vmboardA-arc-r",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA-arc-r",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -735,19 +735,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderA-asan",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardA",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA-asan",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -760,19 +760,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builderA-vm-optimized",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "boardA",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspathA",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 			}),
@@ -785,19 +785,19 @@ func getSerializedBuilds(t *testing.T) []*testplans.ProtoBytes {
 			Builder: "cq-builder-bad-containers",
 		},
 		Input: &bbpb.Build_Input{
-			Properties: newStruct(t, map[string]interface{}{
-				"build_target": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"build_target": map[string]any{
 					"name": "board-bad-containers",
 				},
 			}),
 		},
 		Output: &bbpb.Build_Output{
-			Properties: newStruct(t, map[string]interface{}{
-				"artifacts": map[string]interface{}{
+			Properties: newStruct(t, map[string]any{
+				"artifacts": map[string]any{
 					"gs_bucket": "testgsbucket",
 					"gs_path":   "testgspath",
-					"files_by_artifact": map[string]interface{}{
-						"IMAGE_ZIP": []interface{}{"file1", "file2"},
+					"files_by_artifact": map[string]any{
+						"IMAGE_ZIP": []any{"file1", "file2"},
 					},
 				},
 				"container_building_failed": true,
@@ -911,8 +911,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},
@@ -1004,8 +1004,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA-kernelnext",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},
@@ -1035,8 +1035,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA-asan",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},
@@ -1068,8 +1068,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},
@@ -1105,8 +1105,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA-arc-r",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},
@@ -1165,8 +1165,8 @@ func TestToCTP1(t *testing.T) {
 					BuildPayload: &testplans.BuildPayload{
 						ArtifactsGsBucket: "testgsbucket",
 						ArtifactsGsPath:   "testgspathA",
-						FilesByArtifact: newStruct(t, map[string]interface{}{
-							"IMAGE_ZIP": []interface{}{"file1", "file2"},
+						FilesByArtifact: newStruct(t, map[string]any{
+							"IMAGE_ZIP": []any{"file1", "file2"},
 						}),
 					},
 				},

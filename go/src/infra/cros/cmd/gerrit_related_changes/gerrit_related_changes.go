@@ -184,14 +184,14 @@ func (r *relatedRun) Run(a subcommands.Application, args []string, env subcomman
 }
 
 // LogOut logs to stdout.
-func (r *relatedRun) LogOut(format string, a ...interface{}) {
+func (r *relatedRun) LogOut(format string, a ...any) {
 	if r.stdoutLog != nil {
 		r.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (r *relatedRun) LogErr(format string, a ...interface{}) {
+func (r *relatedRun) LogErr(format string, a ...any) {
 	if r.stderrLog != nil {
 		r.stderrLog.Printf(format, a...)
 	}

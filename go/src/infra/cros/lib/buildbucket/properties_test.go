@@ -121,8 +121,8 @@ const (
 // The most interesting logic to test is where it permits certain json.UnmarshalTypeErrors.
 func TestGetBuilderInputProps(t *testing.T) {
 	t.Parallel()
-	okInputProperties, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	okInputProperties, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": 101,
@@ -160,8 +160,8 @@ func TestGetBuilderInputProps(t *testing.T) {
 
 func TestSetProperty(t *testing.T) {
 	t.Parallel()
-	s, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	s, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": "101",
@@ -187,8 +187,8 @@ func TestSetProperty(t *testing.T) {
 
 func TestSetProperty_error(t *testing.T) {
 	t.Parallel()
-	s, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	s, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": "101",
@@ -267,8 +267,8 @@ func TestGetBuild(t *testing.T) {
 	bbid := "12345"
 	var okBuild bbpb.Build
 
-	outputProps, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	outputProps, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": 101,
@@ -325,8 +325,8 @@ func stripNewlines(s string) string {
 func TestGetBuilds(t *testing.T) {
 	t.Parallel()
 
-	outputProps, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	outputProps, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": 101,
@@ -379,8 +379,8 @@ func TestGetBuilds(t *testing.T) {
 func TestListBuilds(t *testing.T) {
 	t.Parallel()
 
-	outputProps, err := structpb.NewStruct(map[string]interface{}{
-		"$chromeos/my_module": map[string]interface{}{
+	outputProps, err := structpb.NewStruct(map[string]any{
+		"$chromeos/my_module": map[string]any{
 			"my_prop": 100,
 		},
 		"my_other_prop": 101,

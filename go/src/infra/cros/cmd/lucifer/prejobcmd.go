@@ -34,7 +34,7 @@ of running an Autotest job. It uses the same flags as lucifer test.
 `
 }
 
-func (p *prejobCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (p *prejobCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	ctx, res, err := commonSetup(ctx, p.commonOpts)
 	if err != nil {
 		log.Print(err)

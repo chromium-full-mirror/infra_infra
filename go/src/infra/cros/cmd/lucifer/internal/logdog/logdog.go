@@ -43,9 +43,9 @@ type Logger interface {
 	// subprocess.
 	RawWriter() io.Writer
 	// Basic log printing methods.
-	Print(v ...interface{})
-	Printf(format string, v ...interface{})
-	Println(v ...interface{})
+	Print(v ...any)
+	Printf(format string, v ...any)
+	Println(v ...any)
 	// LogDog specific methods.
 	Step(string) Step
 	LabeledLog(string, string)

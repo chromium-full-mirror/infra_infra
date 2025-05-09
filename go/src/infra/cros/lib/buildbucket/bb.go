@@ -35,14 +35,14 @@ func NewClient(cmdRunner cmd.CommandRunner, stdoutLog *log.Logger, stderrLog *lo
 }
 
 // LogOut logs to stdout.
-func (c *Client) LogOut(format string, a ...interface{}) {
+func (c *Client) LogOut(format string, a ...any) {
 	if c.stdoutLog != nil {
 		c.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (c *Client) LogErr(format string, a ...interface{}) {
+func (c *Client) LogErr(format string, a ...any) {
 	if c.stderrLog != nil {
 		c.stderrLog.Printf(format, a...)
 	}

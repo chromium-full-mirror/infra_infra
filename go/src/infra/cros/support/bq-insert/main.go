@@ -115,7 +115,7 @@ type Item struct {
 // bigquery.Value type.
 func (i Item) Save() (map[string]bigquery.Value, string, error) {
 	mymap := make(map[string]bigquery.Value)
-	var values map[string]interface{}
+	var values map[string]any
 	json.Unmarshal(i.message, &values)
 	for key, value := range values {
 		mymap[key] = value
@@ -135,7 +135,7 @@ func insertTableData(ctx context.Context, client *bigquery.Client, datasetId str
 	if table == nil {
 		log.Fatal("Error getting table")
 	}
-	var values map[string]interface{}
+	var values map[string]any
 	json.Unmarshal(message, &values)
 	if logDebugInfo {
 		for key, value := range values {

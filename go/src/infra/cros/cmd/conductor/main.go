@@ -172,14 +172,14 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 }
 
 // LogOut logs to stdout.
-func (t *collectRun) LogOut(format string, a ...interface{}) {
+func (t *collectRun) LogOut(format string, a ...any) {
 	if t.stdoutLog != nil {
 		t.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (t *collectRun) LogErr(format string, a ...interface{}) {
+func (t *collectRun) LogErr(format string, a ...any) {
 	if t.stderrLog != nil {
 		t.stderrLog.Printf(format, a...)
 	}

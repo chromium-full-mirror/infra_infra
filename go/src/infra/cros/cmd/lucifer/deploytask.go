@@ -53,7 +53,7 @@ func (c *deployTaskCmd) SetFlags(f *flag.FlagSet) {
 		"Host preparation actions to execute.")
 }
 
-func (c *deployTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...interface{}) subcommands.ExitStatus {
+func (c *deployTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...any) subcommands.ExitStatus {
 	if err := c.innerExecute(ctx, f, args...); err != nil {
 		fmt.Fprintf(os.Stderr, "lucifer: %s\n", err)
 		switch err := err.(type) {
@@ -66,7 +66,7 @@ func (c *deployTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...in
 	return subcommands.ExitSuccess
 }
 
-func (c *deployTaskCmd) innerExecute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) error {
+func (c *deployTaskCmd) innerExecute(ctx context.Context, f *flag.FlagSet, _ ...any) error {
 	if err := c.validateFlags(); err != nil {
 		return err
 	}

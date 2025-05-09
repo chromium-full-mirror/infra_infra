@@ -12,16 +12,16 @@ type printer struct {
 }
 
 // Print implements the Logger interface.
-func (p printer) Print(v ...interface{}) {
+func (p printer) Print(v ...any) {
 	p.logger.Print(v...)
 }
 
 // Printf implements the Logger interface.
-func (p printer) Printf(format string, v ...interface{}) {
+func (p printer) Printf(format string, v ...any) {
 	p.logger.Printf(format, v...)
 }
 
 // Println implements the Logger interface.
-func (p printer) Println(v ...interface{}) {
+func (p printer) Println(v ...any) {
 	p.logger.Println(v...)
 }

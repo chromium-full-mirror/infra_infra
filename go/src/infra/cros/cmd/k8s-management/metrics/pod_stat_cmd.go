@@ -34,7 +34,7 @@ func (c *podStatCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.namespace, "namespace", "skylab", "pod namespace")
 }
 
-func (c *podStatCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (c *podStatCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	if err := c.startPodStat(); err != nil {
 		log.Printf("Pod stat: %s", err)
 		return subcommands.ExitFailure

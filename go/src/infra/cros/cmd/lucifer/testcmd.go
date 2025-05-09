@@ -106,7 +106,7 @@ func (c *testCmd) SetFlags(f *flag.FlagSet) {
 		"Autotest test source build")
 }
 
-func (c *testCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (c *testCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	ctx, res, err := commonSetup(ctx, c.commonOpts)
 	if err != nil {
 		log.Print(err)

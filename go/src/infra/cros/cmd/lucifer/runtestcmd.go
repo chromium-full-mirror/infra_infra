@@ -34,7 +34,7 @@ the same flags as lucifer test.
 `
 }
 
-func (r *runTestCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (r *runTestCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	ctx, res, err := commonSetup(ctx, r.commonOpts)
 	if err != nil {
 		log.Print(err)

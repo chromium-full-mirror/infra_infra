@@ -37,7 +37,7 @@ func WithBQUploader(ctx context.Context, project, dataset, table, serviceAccount
 }
 
 // LogChange logs the change for BigQuery uploading.
-func LogChange(ctx context.Context, c interface{}) {
+func LogChange(ctx context.Context, c any) {
 	r, ok := ctx.Value(key{}).(*changeRecord)
 	if !ok {
 		return
@@ -52,11 +52,11 @@ type key struct{}
 type changeRecord struct {
 	// recordsMu protects 'records'.
 	recordsMu sync.Mutex
-	records   []interface{}
+	records   []any
 }
 
 // add adds a record for uploading.
-func (u *changeRecord) add(r interface{}) {
+func (u *changeRecord) add(r any) {
 	u.recordsMu.Lock()
 	defer u.recordsMu.Unlock()
 	u.records = append(u.records, r)

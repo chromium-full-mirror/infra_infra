@@ -44,14 +44,14 @@ type CollectState struct {
 }
 
 // LogOut logs to stdout.
-func (c *CollectState) LogOut(format string, a ...interface{}) {
+func (c *CollectState) LogOut(format string, a ...any) {
 	if c.stdoutLog != nil {
 		c.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func (c *CollectState) LogErr(format string, a ...interface{}) {
+func (c *CollectState) LogErr(format string, a ...any) {
 	if c.stderrLog != nil {
 		c.stderrLog.Printf(format, a...)
 	}

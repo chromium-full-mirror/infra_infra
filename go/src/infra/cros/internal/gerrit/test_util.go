@@ -16,7 +16,7 @@ type DownloadFileRequestMatcher struct {
 	req *gitilespb.DownloadFileRequest
 }
 
-func (m DownloadFileRequestMatcher) Matches(x interface{}) bool {
+func (m DownloadFileRequestMatcher) Matches(x any) bool {
 	req, ok := x.(*gitilespb.DownloadFileRequest)
 	if !ok {
 		return false
@@ -39,7 +39,7 @@ type RefsRequestMatcher struct {
 	req *gitilespb.RefsRequest
 }
 
-func (m RefsRequestMatcher) Matches(x interface{}) bool {
+func (m RefsRequestMatcher) Matches(x any) bool {
 	req, ok := x.(*gitilespb.RefsRequest)
 	if !ok {
 		return false
@@ -61,7 +61,7 @@ type ListFilesRequestMatcher struct {
 	req *gitilespb.ListFilesRequest
 }
 
-func (m ListFilesRequestMatcher) Matches(x interface{}) bool {
+func (m ListFilesRequestMatcher) Matches(x any) bool {
 	req, ok := x.(*gitilespb.ListFilesRequest)
 	if !ok {
 		return false

@@ -53,7 +53,7 @@ func (c *auditTaskCmd) SetFlags(f *flag.FlagSet) {
 	f.Var(flagx.CommaList(&c.actions), "actions", "Host actions to execute.")
 }
 
-func (c *auditTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...interface{}) subcommands.ExitStatus {
+func (c *auditTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...any) subcommands.ExitStatus {
 	if err := c.innerExecute(ctx, f, args...); err != nil {
 		fmt.Fprintf(os.Stderr, "lucifer: %s\n", err)
 		switch err := err.(type) {
@@ -66,7 +66,7 @@ func (c *auditTaskCmd) Execute(ctx context.Context, f *flag.FlagSet, args ...int
 	return subcommands.ExitSuccess
 }
 
-func (c *auditTaskCmd) innerExecute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) error {
+func (c *auditTaskCmd) innerExecute(ctx context.Context, f *flag.FlagSet, _ ...any) error {
 	if err := c.validateFlags(); err != nil {
 		return err
 	}

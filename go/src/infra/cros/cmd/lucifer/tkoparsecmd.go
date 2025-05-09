@@ -34,7 +34,7 @@ running an Autotest job. It uses the same flags as lucifer test.
 `
 }
 
-func (t *tkoParseCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (t *tkoParseCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	ctx, res, err := commonSetup(ctx, t.commonOpts)
 	if err != nil {
 		log.Print(err)

@@ -191,7 +191,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			},
 		}})
 
-	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	outputProperties, err := structpb.NewStruct(map[string]any{})
 	assert.NilError(t, err)
 	err = bb.SetProperty(outputProperties,
 		"retry_summary.STAGE_ARTIFACTS",
@@ -213,7 +213,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild, "12345"))
 
-	startedOutputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	startedOutputProperties, err := structpb.NewStruct(map[string]any{})
 	assert.NilError(t, err)
 	err = bb.SetProperty(startedOutputProperties,
 		"retry_summary.STAGE_ARTIFACTS",
@@ -287,10 +287,10 @@ func TestCollectState_BuildMatches_BeforeCheckpoint(t *testing.T) {
 	}
 	assert.Assert(t, collectState.canRetry(noRetrySummary, "12345"))
 
-	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	outputProperties, err := structpb.NewStruct(map[string]any{})
 	assert.NilError(t, err)
 	err = bb.SetProperty(outputProperties,
-		"retry_summary", map[string]interface{}{})
+		"retry_summary", map[string]any{})
 	assert.NilError(t, err)
 	hasSummary := &bbpb.Build{
 		Id:     12345,
@@ -307,7 +307,7 @@ func TestCollectState_BuildMatches_BeforeCheckpoint(t *testing.T) {
 	}
 	assert.Assert(t, collectState.canRetry(hasSummary, "12345"))
 
-	startedOutputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	startedOutputProperties, err := structpb.NewStruct(map[string]any{})
 	assert.NilError(t, err)
 	err = bb.SetProperty(startedOutputProperties,
 		"retry_summary.STAGE_ARTIFACTS",
@@ -450,7 +450,7 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 			},
 		}})
 
-	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	outputProperties, err := structpb.NewStruct(map[string]any{})
 	assert.NilError(t, err)
 	err = bb.SetProperty(outputProperties,
 		"retry_summary.STAGE_ARTIFACTS",

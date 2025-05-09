@@ -24,14 +24,14 @@ var (
 )
 
 // LogOut logs to stdout.
-func LogOut(format string, a ...interface{}) {
+func LogOut(format string, a ...any) {
 	if StdoutLog != nil {
 		StdoutLog.Printf(format, a...)
 	}
 }
 
 // LogErr logs to stderr.
-func LogErr(format string, a ...interface{}) {
+func LogErr(format string, a ...any) {
 	if StderrLog != nil {
 		StderrLog.Printf(format, a...)
 	}

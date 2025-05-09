@@ -125,9 +125,9 @@ func ReadStructFromFile(path string) (*structpb.Struct, error) {
 }
 
 // SetProperty sets the specified property in the property struct.
-func SetProperty(s *structpb.Struct, key string, value interface{}) error {
+func SetProperty(s *structpb.Struct, key string, value any) error {
 	// Inner function for recursing over each component of the key ('.' separated).
-	setPropertyInner := func(s *structpb.Struct, toProcess []string, value interface{}) error {
+	setPropertyInner := func(s *structpb.Struct, toProcess []string, value any) error {
 		processed := []string{}
 		fields := s.Fields
 		for k, v := range fields {
@@ -157,7 +157,7 @@ func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 		for len(toProcess) > 1 {
 			var nextComponent string
 			nextComponent, toProcess = toProcess[0], toProcess[1:]
-			emptyStruct, err := structpb.NewStruct(map[string]interface{}{})
+			emptyStruct, err := structpb.NewStruct(map[string]any{})
 			if err != nil {
 				return err
 			}
@@ -178,7 +178,7 @@ func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 		if s.IsNil() {
 			value = nil
 		} else {
-			slice := make([]interface{}, s.Len())
+			slice := make([]any, s.Len())
 			for i := range s.Len() {
 				slice[i] = s.Index(i).Interface()
 			}
@@ -190,7 +190,7 @@ func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 }
 
 // GetProp gets a property.
-func GetProp(props map[string]interface{}, prop string) (interface{}, bool) {
+func GetProp(props map[string]any, prop string) (any, bool) {
 	toks := strings.Split(prop, ".")
 	for i, tok := range toks {
 		val, ok := props[tok]
@@ -200,7 +200,7 @@ func GetProp(props map[string]interface{}, prop string) (interface{}, bool) {
 		if i == len(toks)-1 {
 			return val, true
 		}
-		subprops, ok := val.(map[string]interface{})
+		subprops, ok := val.(map[string]any)
 		if !ok {
 			return nil, false
 		}
@@ -211,7 +211,7 @@ func GetProp(props map[string]interface{}, prop string) (interface{}, bool) {
 
 // HasProp checks if the given key value pair is in the dict.
 // prop may be a nested field (. delmited).
-func HasProp(props map[string]interface{}, prop string, value interface{}) bool {
+func HasProp(props map[string]any, prop string, value any) bool {
 	val, ok := GetProp(props, prop)
 	if !ok {
 		return false
