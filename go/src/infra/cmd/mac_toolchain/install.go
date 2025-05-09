@@ -552,7 +552,7 @@ type SDKRuntime struct {
 
 // get the runtime build string from the latest iOS runtime given an iOS version
 func getLatestRuntimeBuild(ctx context.Context, runtimeDMGPackagePath, iosVersion, xcodeVersion string) (string, error) {
-	fullIOSVersion := "ios-" + strings.Replace(iosVersion, ".", "-", -1)
+	fullIOSVersion := "ios-" + strings.ReplaceAll(iosVersion, ".", "-")
 	resolveRuntimeDMGRefArgs := ResolveRuntimeDMGRefArgs{
 		runtimeVersion:     fullIOSVersion,
 		xcodeVersion:       xcodeVersion,
@@ -728,7 +728,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 				return err
 			}
 			if shouldInstallRuntime {
-				runtimeVersion := "ios-" + strings.Replace(cfBundleVersion, ".", "-", -1)
+				runtimeVersion := "ios-" + strings.ReplaceAll(cfBundleVersion, ".", "-")
 				// creating a temp dir to install ios runtime dmg. Will be removed later
 				runtimeDMGPath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
 				if tmpDirErr != nil {
