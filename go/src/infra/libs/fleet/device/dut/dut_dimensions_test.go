@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"go.chromium.org/infra/cros/dutstate"
@@ -178,24 +177,24 @@ var devUFSState = lab.DutState{
 	},
 }
 
-var deviceConfig = &device.Config{
-	Id: &device.ConfigId{
-		PlatformId: &device.PlatformId{
+var deviceConfig = &deviceconfig.Config{
+	Id: &deviceconfig.ConfigId{
+		PlatformId: &deviceconfig.PlatformId{
 			Value: "coral",
 		},
-		ModelId: &device.ModelId{
+		ModelId: &deviceconfig.ModelId{
 			Value: "test_model",
 		},
-		VariantId: &device.VariantId{
+		VariantId: &deviceconfig.VariantId{
 			Value: "test_variant",
 		},
 	},
-	Power:   device.Config_POWER_SUPPLY_AC_ONLY,
-	Storage: device.Config_STORAGE_SSD,
-	VideoAccelerationSupports: []device.Config_VideoAcceleration{
-		device.Config_VIDEO_ACCELERATION_ENC_H264,
+	Power:   deviceconfig.Config_POWER_SUPPLY_AC_ONLY,
+	Storage: deviceconfig.Config_STORAGE_SSD,
+	VideoAccelerationSupports: []deviceconfig.Config_VideoAcceleration{
+		deviceconfig.Config_VIDEO_ACCELERATION_ENC_H264,
 	},
-	Cpu: device.Config_ARM64,
+	Cpu: deviceconfig.Config_ARM64,
 }
 
 var osDeviceData = ufspb.ChromeOSDeviceData{
