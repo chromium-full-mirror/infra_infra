@@ -136,7 +136,7 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 	}
 	defer os.Remove(featureFileName)
 
-	predictionsFileName, err := filepath.Abs(strings.Replace(featureFileName, ".csv", "_predict.csv", -1))
+	predictionsFileName, err := filepath.Abs(strings.ReplaceAll(featureFileName, ".csv", "_predict.csv"))
 	if err != nil {
 		return nil, err
 	}

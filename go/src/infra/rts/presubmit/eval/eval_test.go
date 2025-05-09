@@ -59,7 +59,7 @@ func TestBucketSlice(t *testing.T) {
 
 			assert10 := func(expected string) {
 				expected = strings.TrimPrefix(expected, "\n")
-				expected = strings.Replace(expected, "\t", "", -1)
+				expected = strings.ReplaceAll(expected, "\t", "")
 
 				var buf bytes.Buffer
 				for _, v := range b {

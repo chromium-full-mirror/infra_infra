@@ -24,7 +24,7 @@ func TestPrintLostRejection(t *testing.T) {
 		buf := &bytes.Buffer{}
 		p := rejectionPrinter{printer: newPrinter(buf)}
 		assert.Loosely(t, p.rejection(rej, rts.Affectedness{Distance: 5}), should.BeNil)
-		expectedText = strings.Replace(expectedText, "\t", "  ", -1)
+		expectedText = strings.ReplaceAll(expectedText, "\t", "  ")
 		assert.Loosely(t, buf.String(), should.Equal(expectedText))
 	}
 
