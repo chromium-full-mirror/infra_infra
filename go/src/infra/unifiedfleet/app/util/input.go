@@ -335,8 +335,8 @@ func GetRackHostname(rackName string) string {
 
 // FormatResourceName formats the resource name
 func FormatResourceName(old string) string {
-	str := strings.Replace(old, " ", "_", -1)
-	return strings.Replace(str, ",", "_", -1)
+	str := strings.ReplaceAll(old, " ", "_")
+	return strings.ReplaceAll(str, ",", "_")
 }
 
 // StrToUFSState refers a map between a string to a UFS defined state map.

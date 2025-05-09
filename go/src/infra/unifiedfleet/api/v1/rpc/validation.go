@@ -1479,7 +1479,7 @@ func ValidateResourceKey(resources any, k string) error {
 // ValidateFilter validates if the filter format is correct
 func ValidateFilter(filter string) error {
 	if filter != "" {
-		filter = strings.Replace(filter, " ", "", -1)
+		filter = strings.ReplaceAll(filter, " ", "")
 		if !FilterRegex.MatchString(filter) {
 			return status.Errorf(codes.InvalidArgument, InvalidFilterFormat)
 		}
