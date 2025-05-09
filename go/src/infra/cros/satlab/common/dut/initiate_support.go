@@ -5,6 +5,7 @@
 package dut
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,16 +14,56 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"text/template"
+
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/satlab/common/dns"
 	"go.chromium.org/infra/cros/satlab/common/paths"
 	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 const gcloudSDKVersion = "507.0.0"
+
+const satlabConfigTemplate = `Host {{.SatlabID}}
+  HostName 127.0.0.1
+  user moblab
+  Port 2222
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  IdentityFile %d/.ssh/testing_rsa
+  ForwardAgent no
+  ProxyCommand gcloud compute ssh {{.SatlabID}} --zone {{.Zone}} --project {{.ProjectID}} -- -W %h:%p
+`
+
+const sshConfigTemplate = `
+Host {{.Name}}
+  HostName {{.Name}}
+  User root
+  ProxyJump {{.Info.SatlabID}}
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  IdentityFile %d/.ssh/testing_rsa
+`
+
+const adbConfigTemplate = `
+Host {{.Name}}
+  HostName 127.0.0.1
+  user moblab
+  Port 2222
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  IdentityFile %d/.ssh/testing_rsa
+  ProxyCommand gcloud compute ssh {{.Info.SatlabID}} --zone {{.Info.Zone}} --project {{.Info.ProjectID}} -- -W %h:%p
+  LocalForward 5555 {{.Name}}:5555
+  RequestTTY no
+`
 
 type InitiateSupportRun struct {
 	ProjectID string
@@ -31,9 +72,15 @@ type InitiateSupportRun struct {
 	Timeout   string
 	Port      int
 
-	satlabID           string
-	serviceAccountName string
-	containerName      string
+	SatlabID           string
+	ServiceAccountName string
+	ContainerName      string
+}
+
+type DUTInfo struct {
+	IP   string
+	Name string
+	Info InitiateSupportRun
 }
 
 // TriggerRun triggers the Run with the given information
@@ -59,6 +106,10 @@ func (c *InitiateSupportRun) TriggerRun(
 		return err
 	}
 
+	if err := c.generateAndUpload(ctx, executor); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -75,17 +126,17 @@ func (c *InitiateSupportRun) validateArgs() error {
 func (c *InitiateSupportRun) populateRunParameters(ctx context.Context, executor executor.IExecCommander) error {
 	var err error
 
-	c.satlabID, err = getSatlabDockerHostName(ctx, executor)
+	c.SatlabID, err = getSatlabDockerHostName(ctx, executor)
 	if err != nil {
 		return errors.New("Failed to get Satlab Docker hostname")
 	}
 
-	c.serviceAccountName, err = extractServiceAccountNameFromKeyFile(paths.PubSubKey)
+	c.ServiceAccountName, err = extractServiceAccountNameFromKeyFile(paths.PubSubKey)
 	if err != nil {
 		return errors.New("Failed to extract service account name")
 	}
 
-	c.containerName = "support"
+	c.ContainerName = "support"
 
 	return nil
 }
@@ -172,9 +223,8 @@ func extractServiceAccountNameFromKeyFile(path string) (string, error) {
 	if len(parts) < 2 {
 		return "", fmt.Errorf("invalid client_email format")
 	}
-	serviceAccountName := parts[0]
 
-	return serviceAccountName, nil
+	return parts[0], nil
 }
 
 func (c *InitiateSupportRun) startDockerContainerForCloudSDK() []string {
@@ -183,7 +233,7 @@ func (c *InitiateSupportRun) startDockerContainerForCloudSDK() []string {
 		"run",
 		"-dit",
 		"--name",
-		c.containerName,
+		c.ContainerName,
 		"--net",
 		"host",
 		"--rm",
@@ -197,7 +247,7 @@ func (c *InitiateSupportRun) authenticateToGCPWithServiceAccount() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"auth",
 		"activate-service-account",
@@ -209,7 +259,7 @@ func (c *InitiateSupportRun) setProject() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"config",
 		"set",
@@ -222,7 +272,7 @@ func (c *InitiateSupportRun) setZone() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"config",
 		"set",
@@ -235,12 +285,12 @@ func (c *InitiateSupportRun) createComputeInstance() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"instances",
 		"create",
-		c.satlabID,
+		c.SatlabID,
 		"--network",
 		c.Network,
 		"--max-run-duration",
@@ -254,7 +304,7 @@ func (c *InitiateSupportRun) killDockerContainerForCloudSDK() []string {
 	return []string{
 		paths.DockerPath,
 		"kill",
-		c.containerName,
+		c.ContainerName,
 	}
 }
 
@@ -262,12 +312,12 @@ func (c *InitiateSupportRun) deleteComputeInstance() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"instances",
 		"delete",
-		c.satlabID,
+		c.SatlabID,
 		"--delete-disks",
 		"all",
 		"--quiet",
@@ -278,11 +328,11 @@ func (c *InitiateSupportRun) startPortForwarding() []string {
 	return []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"ssh",
-		fmt.Sprintf("%s@%s", c.serviceAccountName, c.satlabID),
+		fmt.Sprintf("%s@%s", c.ServiceAccountName, c.SatlabID),
 		"--",
 		"-NR",
 		fmt.Sprintf("2222:localhost:%d", c.Port),
@@ -300,4 +350,145 @@ func execute(
 	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
+}
+
+func (c *InitiateSupportRun) generateAndUpload(ctx context.Context, executor executor.IExecCommander) error {
+	content, err := dns.ReadContents(ctx, executor)
+	if err != nil {
+		return errors.Annotate(err, "read DNS entries").Err()
+	}
+
+	duts := c.parseAndGroupDUTs(content)
+
+	config, err := c.generateConfig(duts, checkDutSshConnectivity)
+	if err != nil {
+		return errors.Annotate(err, "generate remote support config").Err()
+	}
+	fmt.Println("Generated remote support config.")
+
+	if err := c.uploadConfigToBucket(config, ctx, executor); err != nil {
+		return errors.Annotate(err, "upload remote support config to bucket").Err()
+	}
+	fmt.Println("Uploaded remote support config to bucket.")
+
+	return nil
+}
+
+func (c *InitiateSupportRun) parseAndGroupDUTs(dnsOutput string) []DUTInfo {
+	var duts []DUTInfo
+	lines := strings.Split(dnsOutput, "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		parts := strings.Fields(line)
+
+		if len(parts) != 2 {
+			fmt.Printf("Skipping malformed line: '%s'\n", line)
+			continue
+		}
+
+		dut := DUTInfo{
+			IP:   parts[0],
+			Name: parts[1],
+			Info: *c,
+		}
+		duts = append(duts, dut)
+	}
+
+	return duts
+}
+
+func (c *InitiateSupportRun) generateConfig(duts []DUTInfo, checkDutSshConnectivity func(DUTInfo) bool) (string, error) {
+	var sb strings.Builder
+
+	config, err := executeTemplate("satlabConfig", satlabConfigTemplate, c)
+	if err != nil {
+		return "", errors.Annotate(err, "error generating Satlab config").Err()
+	}
+	sb.WriteString(config)
+
+	for _, dut := range duts {
+		if checkDutSshConnectivity(dut) {
+			config, err := executeTemplate("sshConfig", sshConfigTemplate, dut)
+			if err != nil {
+				fmt.Println("Error generating DUT SSH config:", err)
+			} else {
+				sb.WriteString(config)
+			}
+		} else {
+			config, err := executeTemplate("adbConfig", adbConfigTemplate, dut)
+			if err != nil {
+				fmt.Println("Error generating DUT ADB config:", err)
+			} else {
+				sb.WriteString(config)
+			}
+		}
+	}
+	return sb.String(), nil
+}
+
+func executeTemplate(templateName, templateContent string, data interface{}) (string, error) {
+	tmpl, err := template.New(templateName).Parse(templateContent)
+	if err != nil {
+		return "", fmt.Errorf("error parsing template '%s': %w", templateName, err)
+	}
+
+	var outputBuffer bytes.Buffer
+
+	if err := tmpl.Execute(&outputBuffer, data); err != nil {
+		return "", fmt.Errorf("error executing template '%s': %w", templateName, err)
+	}
+
+	return outputBuffer.String(), nil
+}
+
+func checkDutSshConnectivity(c DUTInfo) bool {
+	args := []string{
+		"ssh",
+		"-o UserKnownHostsFile=/dev/null",
+		"-o StrictHostKeyChecking no",
+		"-o IdentityFile=/home/moblab/.ssh/testing_rsa",
+		fmt.Sprintf("root@%s", c.Name),
+		"echo ok",
+	}
+
+	cmd := exec.Command(args[0], args[1:]...)
+
+	var stdoutBuf bytes.Buffer
+
+	cmd.Stdout = &stdoutBuf
+
+	if err := cmd.Run(); err != nil {
+		return false
+	}
+
+	if stdoutBuf.String() == "ok\n" {
+		return true
+	}
+
+	return false
+}
+
+func (c *InitiateSupportRun) uploadConfigToBucket(config string, ctx context.Context, executor executor.IExecCommander) error {
+	bucket := site.GetGCSPartnerBucket()
+
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+	if err != nil {
+		return errors.Annotate(err, "create storage client").Err()
+	}
+
+	filePath := fmt.Sprintf("support/%s-config", c.SatlabID)
+	writer := client.Bucket(bucket).Object(fmt.Sprintf(filePath)).NewWriter(ctx)
+
+	defer writer.Close()
+
+	if _, err := writer.Write([]byte(config)); err != nil {
+		return errors.Annotate(err, "write config to bucket").Err()
+	}
+
+	return nil
 }

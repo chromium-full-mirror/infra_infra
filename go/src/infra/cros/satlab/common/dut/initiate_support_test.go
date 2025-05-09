@@ -133,7 +133,7 @@ func TestExtractServiceAccountNameFromKeyFile(t *testing.T) {
 
 func TestStartDockerContainerForCloudSDK(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
+		ContainerName: "support-container",
 	}
 
 	expected := []string{
@@ -141,7 +141,7 @@ func TestStartDockerContainerForCloudSDK(t *testing.T) {
 		"run",
 		"-dit",
 		"--name",
-		c.containerName,
+		c.ContainerName,
 		"--net",
 		"host",
 		"--rm",
@@ -177,13 +177,13 @@ func TestDockerCloudSDKImageName(t *testing.T) {
 
 func TestAuthenticateToGCPWithServiceAccount(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
+		ContainerName: "support-container",
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"auth",
 		"activate-service-account",
@@ -196,14 +196,14 @@ func TestAuthenticateToGCPWithServiceAccount(t *testing.T) {
 
 func TestSetProject(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
+		ContainerName: "support-container",
 		ProjectID:     "test-project",
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"config",
 		"set",
@@ -217,14 +217,14 @@ func TestSetProject(t *testing.T) {
 
 func TestSetZone(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
+		ContainerName: "support-container",
 		Zone:          "test-zone",
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"config",
 		"set",
@@ -238,8 +238,8 @@ func TestSetZone(t *testing.T) {
 
 func TestCreateComputeInstance(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
-		satlabID:      "satlab-instance-123",
+		ContainerName: "support-container",
+		SatlabID:      "satlab-instance-123",
 		Network:       "satlab-network",
 		Timeout:       "1h",
 	}
@@ -247,12 +247,12 @@ func TestCreateComputeInstance(t *testing.T) {
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"instances",
 		"create",
-		c.satlabID,
+		c.SatlabID,
 		"--network",
 		c.Network,
 		"--max-run-duration",
@@ -267,13 +267,13 @@ func TestCreateComputeInstance(t *testing.T) {
 
 func TestKillDockerContainerForCloudSDK(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
+		ContainerName: "support-container",
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"kill",
-		c.containerName,
+		c.ContainerName,
 	}
 
 	actual := c.killDockerContainerForCloudSDK()
@@ -282,19 +282,19 @@ func TestKillDockerContainerForCloudSDK(t *testing.T) {
 
 func TestDeleteComputeInstance(t *testing.T) {
 	c := &InitiateSupportRun{
-		containerName: "support-container",
-		satlabID:      "satlab-instance-123",
+		ContainerName: "support-container",
+		SatlabID:      "satlab-instance-123",
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"instances",
 		"delete",
-		c.satlabID,
+		c.SatlabID,
 		"--delete-disks",
 		"all",
 		"--quiet",
@@ -306,20 +306,20 @@ func TestDeleteComputeInstance(t *testing.T) {
 
 func TestStartPortForwarding(t *testing.T) {
 	c := &InitiateSupportRun{
-		serviceAccountName: "test-account",
-		satlabID:           "satlab-id-123",
-		containerName:      "support-container",
+		ServiceAccountName: "test-account",
+		SatlabID:           "satlab-id-123",
+		ContainerName:      "support-container",
 		Port:               8080,
 	}
 
 	expected := []string{
 		paths.DockerPath,
 		"exec",
-		c.containerName,
+		c.ContainerName,
 		"gcloud",
 		"compute",
 		"ssh",
-		fmt.Sprintf("%s@%s", c.serviceAccountName, c.satlabID),
+		fmt.Sprintf("%s@%s", c.ServiceAccountName, c.SatlabID),
 		"--",
 		"-NR",
 		fmt.Sprintf("2222:localhost:%d", c.Port),
@@ -328,4 +328,291 @@ func TestStartPortForwarding(t *testing.T) {
 
 	actual := c.startPortForwarding()
 	assert.Equal(t, expected, actual)
+}
+
+func TestParseAndGroupDUTs(t *testing.T) {
+	baseInfo := InitiateSupportRun{
+		ProjectID: "test-proj",
+		Zone:      "test-zone",
+		SatlabID:  "test-satlab",
+		Port:      22,
+	}
+
+	testCases := []struct {
+		name       string
+		dnsOutput  string
+		expected   []DUTInfo
+		expectLogs bool // Flag to indicate if we expect "Skipping malformed line" logs
+	}{
+		{
+			name:      "Empty input",
+			dnsOutput: "",
+			expected:  nil,
+		},
+		{
+			name:      "Single valid line",
+			dnsOutput: "192.168.1.100 dut-1",
+			expected: []DUTInfo{
+				{IP: "192.168.1.100", Name: "dut-1", Info: baseInfo},
+			},
+		},
+		{
+			name: "Multiple valid lines",
+			dnsOutput: `
+192.168.1.100 dut-1
+192.168.1.101 dut-2
+10.0.0.5      dut-3
+			`,
+			expected: []DUTInfo{
+				{IP: "192.168.1.100", Name: "dut-1", Info: baseInfo},
+				{IP: "192.168.1.101", Name: "dut-2", Info: baseInfo},
+				{IP: "10.0.0.5", Name: "dut-3", Info: baseInfo},
+			},
+		},
+		{
+			name:      "Line with extra whitespace",
+			dnsOutput: "  192.168.1.102   dut-4  ",
+			expected: []DUTInfo{
+				{IP: "192.168.1.102", Name: "dut-4", Info: baseInfo},
+			},
+		},
+		{
+			name:       "Line with only IP",
+			dnsOutput:  "192.168.1.103",
+			expected:   nil,
+			expectLogs: true,
+		},
+		{
+			name:       "Line with only Name",
+			dnsOutput:  "dut-5",
+			expected:   nil,
+			expectLogs: true,
+		},
+		{
+			name:       "Line with more than two fields",
+			dnsOutput:  "192.168.1.104 dut-6 extra-field",
+			expected:   nil,
+			expectLogs: true,
+		},
+		{
+			name: "Mixed valid and invalid lines",
+			dnsOutput: `
+192.168.1.105 dut-7
+malformed_line
+192.168.1.106 dut-8 extra
+192.168.1.107 dut-9
+			`,
+			expected: []DUTInfo{
+				{IP: "192.168.1.105", Name: "dut-7", Info: baseInfo},
+				{IP: "192.168.1.107", Name: "dut-9", Info: baseInfo},
+			},
+			expectLogs: true,
+		},
+		{
+			name: "Input with empty lines",
+			dnsOutput: `
+192.168.1.108 dut-10
+192.168.1.109 dut-11
+
+			`,
+			expected: []DUTInfo{
+				{IP: "192.168.1.108", Name: "dut-10", Info: baseInfo},
+				{IP: "192.168.1.109", Name: "dut-11", Info: baseInfo},
+			},
+		},
+		{
+			name:      "Input with trailing newline",
+			dnsOutput: "192.168.1.110 dut-12\n",
+			expected: []DUTInfo{
+				{IP: "192.168.1.110", Name: "dut-12", Info: baseInfo},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := baseInfo.parseAndGroupDUTs(tc.dnsOutput)
+			assert.Equal(t, tc.expected, got)
+		})
+	}
+}
+
+func TestExecuteTemplate(t *testing.T) {
+	type testData struct {
+		Name  string
+		Value int
+		Items []string
+	}
+
+	testCases := []struct {
+		name            string
+		templateName    string
+		templateContent string
+		data            interface{}
+		expectedOutput  string
+		expectedError   string // Substring of the expected error message
+	}{
+		{
+			name:            "Simple template with map data",
+			templateName:    "simpleMap",
+			templateContent: "Hello, {{.Place}}!",
+			data:            map[string]string{"Place": "World"},
+			expectedOutput:  "Hello, World!",
+			expectedError:   "",
+		},
+		{
+			name:            "Template with struct data",
+			templateName:    "structData",
+			templateContent: "Name: {{.Name}}, Value: {{.Value}}, Items: {{range .Items}}{{.}} {{end}}",
+			data:            testData{Name: "Test", Value: 123, Items: []string{"a", "b"}},
+			expectedOutput:  "Name: Test, Value: 123, Items: a b ",
+			expectedError:   "",
+		},
+		{
+			name:            "Template with nil data",
+			templateName:    "nilData",
+			templateContent: "Data is {{.}}",
+			data:            nil,
+			expectedOutput:  "Data is <no value>",
+			expectedError:   "",
+		},
+		{
+			name:            "Empty template content",
+			templateName:    "emptyContent",
+			templateContent: "",
+			data:            testData{Name: "Test"},
+			expectedOutput:  "",
+			expectedError:   "",
+		},
+		{
+			name:            "Invalid template syntax",
+			templateName:    "invalidSyntax",
+			templateContent: "Hello, {{.Place",
+			data:            map[string]string{"Place": "World"},
+			expectedOutput:  "",
+			expectedError:   "error parsing template 'invalidSyntax'",
+		},
+		{
+			name:            "Template execution error - missing field",
+			templateName:    "missingField",
+			templateContent: "Value: {{.Missing}}",
+			data:            testData{Name: "Test"},
+			expectedOutput:  "",
+			expectedError:   "error executing template 'missingField'",
+		},
+		{
+			name:            "Template with special characters",
+			templateName:    "specialChars",
+			templateContent: "Special: \"{{.Text}}\"",
+			data:            map[string]string{"Text": "Line1\nLine2\tTab"},
+			expectedOutput:  "Special: \"Line1\nLine2\tTab\"",
+			expectedError:   "",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			output, err := executeTemplate(tc.templateName, tc.templateContent, tc.data)
+
+			if tc.expectedError != "" {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tc.expectedError)
+				assert.Empty(t, output, "Output should be empty on error")
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expectedOutput, output)
+			}
+		})
+	}
+}
+
+func TestGenerateConfig(t *testing.T) {
+	baseInfo := InitiateSupportRun{
+		ProjectID: "test-proj",
+		Zone:      "test-zone",
+		SatlabID:  "test-satlab",
+		Port:      22,
+	}
+
+	generateExpectedSatlabConfig := func(info InitiateSupportRun) string {
+		cfg, _ := executeTemplate("satlabConfig", satlabConfigTemplate, &info)
+		return cfg
+	}
+
+	generateExpectedSSHConfig := func(dut DUTInfo) string {
+		cfg, _ := executeTemplate("sshConfig", sshConfigTemplate, dut)
+		return cfg
+	}
+
+	generateExpectedADBConfig := func(dut DUTInfo) string {
+		cfg, _ := executeTemplate("adbConfig", adbConfigTemplate, dut)
+		return cfg
+	}
+
+	testCases := []struct {
+		name            string
+		duts            []DUTInfo
+		sshConnectivity map[string]bool
+		expectedConfig  string
+		expectError     bool
+	}{
+		{
+			name:            "No DUTs",
+			duts:            []DUTInfo{},
+			sshConnectivity: map[string]bool{},
+			expectedConfig:  generateExpectedSatlabConfig(baseInfo),
+			expectError:     false,
+		},
+		{
+			name: "One DUT with SSH",
+			duts: []DUTInfo{
+				{Name: "dut-ssh-1", IP: "192.168.1.1", Info: baseInfo},
+			},
+			sshConnectivity: map[string]bool{"dut-ssh-1": true},
+			expectedConfig: generateExpectedSatlabConfig(baseInfo) +
+				generateExpectedSSHConfig(DUTInfo{Name: "dut-ssh-1", IP: "192.168.1.1", Info: baseInfo}),
+			expectError: false,
+		},
+		{
+			name: "One DUT with ADB",
+			duts: []DUTInfo{
+				{Name: "dut-adb-1", IP: "192.168.1.2", Info: baseInfo},
+			},
+			sshConnectivity: map[string]bool{"dut-adb-1": false},
+			expectedConfig: generateExpectedSatlabConfig(baseInfo) +
+				generateExpectedADBConfig(DUTInfo{Name: "dut-adb-1", IP: "192.168.1.2", Info: baseInfo}),
+			expectError: false,
+		},
+		{
+			name: "Multiple DUTs mixed connectivity",
+			duts: []DUTInfo{
+				{Name: "dut-ssh-2", IP: "192.168.1.3", Info: baseInfo},
+				{Name: "dut-adb-2", IP: "192.168.1.4", Info: baseInfo},
+				{Name: "dut-ssh-3", IP: "192.168.1.5", Info: baseInfo},
+			},
+			sshConnectivity: map[string]bool{
+				"dut-ssh-2": true,
+				"dut-adb-2": false,
+				"dut-ssh-3": true,
+			},
+			expectedConfig: generateExpectedSatlabConfig(baseInfo) +
+				generateExpectedSSHConfig(DUTInfo{Name: "dut-ssh-2", IP: "192.168.1.3", Info: baseInfo}) +
+				generateExpectedADBConfig(DUTInfo{Name: "dut-adb-2", IP: "192.168.1.4", Info: baseInfo}) +
+				generateExpectedSSHConfig(DUTInfo{Name: "dut-ssh-3", IP: "192.168.1.5", Info: baseInfo}),
+			expectError: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockCheckFunc := func(dut DUTInfo) bool {
+				return tc.sshConnectivity[dut.Name]
+			}
+
+			actualConfig, err := baseInfo.generateConfig(tc.duts, mockCheckFunc)
+
+			assert.NoError(t, err)
+			assert.Equal(t, tc.expectedConfig, actualConfig)
+		})
+	}
 }
