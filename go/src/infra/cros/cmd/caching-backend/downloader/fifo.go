@@ -16,7 +16,7 @@ import (
 )
 
 func createFifoForSource(dir string, s *sourceFile) (string, error) {
-	fifoPath := filepath.Join(dir, strings.Replace(s.name, "/", "_", -1)+"-fifo")
+	fifoPath := filepath.Join(dir, strings.ReplaceAll(s.name, "/", "_")+"-fifo")
 	err := unix.Mkfifo(fifoPath, 0666)
 	if err != nil {
 		return "", fmt.Errorf("create fifo for %q: %w", s.name, err)

@@ -262,7 +262,7 @@ func (p *v3Programmer) ecUpdateRequiresApshutdown(ctx context.Context) bool {
 // E.g. 0x18 to set force boot in DEV-mode and allow to boot from USB-drive in DEV-mode.
 func gbbToInt(hex string) (int, error) {
 	hex = strings.ToLower(hex)
-	hexCut := strings.Replace(hex, "0x", "", -1)
+	hexCut := strings.ReplaceAll(hex, "0x", "")
 	if v, err := strconv.ParseInt(hexCut, 16, 64); err != nil {
 		return 0, errors.Annotate(err, "gbb to int").Err()
 	} else {

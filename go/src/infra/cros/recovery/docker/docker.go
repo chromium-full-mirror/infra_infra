@@ -451,14 +451,14 @@ func StartCommandString(containerName string, req *ContainerArgs) string {
 func escapeSpecialChars(cmd []string) []string {
 	var escapedCmd []string
 	for _, command := range cmd {
-		escapedCmd = append(escapedCmd, strings.Replace(
-			strings.Replace(
-				strings.Replace(
-					strings.Replace(
-						command, "\\", "\\\\", -1),
-					"$", "\\$", -1),
-				"\"", "\\\"", -1),
-			"`", "\\`", -1))
+		escapedCmd = append(escapedCmd, strings.ReplaceAll(
+			strings.ReplaceAll(
+				strings.ReplaceAll(
+					strings.ReplaceAll(
+						command, "\\", "\\\\"),
+					"$", "\\$"),
+				"\"", "\\\""),
+			"`", "\\`"))
 	}
 	return escapedCmd
 }
