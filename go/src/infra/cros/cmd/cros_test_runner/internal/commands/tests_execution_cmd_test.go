@@ -8,7 +8,6 @@ import (
 	"context"
 	"testing"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -76,11 +75,11 @@ func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
-				TestSuites: []*api.TestSuite{
-					&testapi.TestSuite{},
+				TestSuites: []*testapi.TestSuite{
+					{},
 				},
 			},
-			PrimaryDevice: &api.CrosTestRequest_Device{
+			PrimaryDevice: &testapi.CrosTestRequest_Device{
 				Dut: &labapi.Dut{},
 			},
 			DutServerAddress: &labapi.IpEndpoint{},

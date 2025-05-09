@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/logging"
@@ -92,7 +91,7 @@ func (ex *GenericServiceExecutor) GenericServiceHandler(
 // ConnectToService connects to the GenericServiceService attached to the server address.
 func (ex *GenericServiceExecutor) ConnectToService(
 	ctx context.Context,
-	endpoint *labapi.IpEndpoint) (api.GenericServiceClient, error) {
+	endpoint *labapi.IpEndpoint) (testapi.GenericServiceClient, error) {
 	var err error
 	step, ctx := build.StartStep(ctx, "Establish Connection")
 	defer func() { step.End(err) }()
@@ -111,7 +110,7 @@ func (ex *GenericServiceExecutor) ConnectToService(
 	logging.Infof(ctx, "Connected with generic service.")
 
 	// Create new client.
-	genericServiceClient := api.NewGenericServiceClient(conn)
+	genericServiceClient := testapi.NewGenericServiceClient(conn)
 	if genericServiceClient == nil {
 		err = fmt.Errorf("ProvisionServiceClient is nil")
 		return nil, err
@@ -123,8 +122,8 @@ func (ex *GenericServiceExecutor) ConnectToService(
 // Start invokces the Start endpoint of the GenericServiceClient
 func (ex *GenericServiceExecutor) Start(
 	ctx context.Context,
-	client api.GenericServiceClient,
-	req *api.GenericStartRequest,
+	client testapi.GenericServiceClient,
+	req *testapi.GenericStartRequest,
 ) (resp *testapi.GenericStartResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Start")
 	defer func() { step.End(err) }()
@@ -151,8 +150,8 @@ func (ex *GenericServiceExecutor) Start(
 // Run invokces the Run endpoint of the GenericServiceClient
 func (ex *GenericServiceExecutor) Run(
 	ctx context.Context,
-	client api.GenericServiceClient,
-	req *api.GenericRunRequest,
+	client testapi.GenericServiceClient,
+	req *testapi.GenericRunRequest,
 ) (resp *testapi.GenericRunResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Run")
 	defer func() { step.End(err) }()
@@ -179,8 +178,8 @@ func (ex *GenericServiceExecutor) Run(
 // Stop invokces the Stop endpoint of the GenericServiceClient
 func (ex *GenericServiceExecutor) Stop(
 	ctx context.Context,
-	client api.GenericServiceClient,
-	req *api.GenericStopRequest,
+	client testapi.GenericServiceClient,
+	req *testapi.GenericStopRequest,
 ) (resp *testapi.GenericStopResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Stop")
 	defer func() { step.End(err) }()

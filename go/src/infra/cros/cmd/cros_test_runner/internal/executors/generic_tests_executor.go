@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -96,7 +95,7 @@ func (ex *GenericTestsExecutor) genericTestsHandler(
 // ConnectToService connects to the ExecutionServiceClient attached to the server address.
 func (ex *GenericTestsExecutor) ConnectToService(
 	ctx context.Context,
-	endpoint *labapi.IpEndpoint) (api.ExecutionServiceClient, error) {
+	endpoint *labapi.IpEndpoint) (testapi.ExecutionServiceClient, error) {
 	var err error
 	step, ctx := build.StartStep(ctx, "Establish Connection")
 	defer func() { step.End(err) }()
@@ -115,7 +114,7 @@ func (ex *GenericTestsExecutor) ConnectToService(
 	logging.Infof(ctx, "Connected with test execution service.")
 
 	// Create new client.
-	client := api.NewExecutionServiceClient(conn)
+	client := testapi.NewExecutionServiceClient(conn)
 	if client == nil {
 		err = fmt.Errorf("ExecutionServiceClient is nil")
 		return nil, err
@@ -127,8 +126,8 @@ func (ex *GenericTestsExecutor) ConnectToService(
 // RunTests invokces the RunTests endpoint of the ExecutionServiceClient
 func (ex *GenericTestsExecutor) RunTests(
 	ctx context.Context,
-	client api.ExecutionServiceClient,
-	req *api.CrosTestRequest,
+	client testapi.ExecutionServiceClient,
+	req *testapi.CrosTestRequest,
 ) (resp *testapi.CrosTestResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Run Tests")
 	defer func() { step.End(err) }()

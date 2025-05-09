@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -100,8 +99,8 @@ func (ex *CrosDutVmExecutor) dutStartCommandExecution(
 	step, ctx := build.StartStep(ctx, "Dut service start")
 	defer func() { step.End(err) }()
 
-	template := &api.Template{
-		Container: &api.Template_CrosDut{
+	template := &testapi.Template{
+		Container: &testapi.Template_CrosDut{
 			CrosDut: &testapi.CrosDutTemplate{
 				CacheServer: cmd.CacheServerAddress,
 				DutAddress:  cmd.DutSshAddress,

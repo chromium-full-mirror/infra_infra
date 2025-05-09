@@ -11,9 +11,7 @@ import (
 	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	testapipb "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -43,7 +41,7 @@ type RdbPublishUploadCmd struct {
 	TestResultForRdb *artifactpb.TestResult
 	// Or all these are required.
 	GcsURL        string
-	TestResponses *testapipb.CrosTestResponse
+	TestResponses *testapi.CrosTestResponse
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -109,7 +107,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		sk.BaseVariant = constructBaseVariantFromStateKeeper(ctx, sk)
 	}
 
-	cmd.PostProcessResponses = &testapipb.RunActivitiesResponse{}
+	cmd.PostProcessResponses = &testapi.RunActivitiesResponse{}
 	sk.Injectables.LoadInjectables()
 	if err = common.Inject(cmd.PostProcessResponses, "", sk.Injectables, common.NewTaskIdentifier(common.PostProcess).GetRPCResponse("runActivities")); err != nil {
 		logging.Infof(ctx, "Failed to inject into PostProcessResponses, %s", err)
@@ -381,7 +379,7 @@ func populateDutInfo(
 	executionInfo *artifactpb.ExecutionInfo,
 	sk *data.HwTestStateKeeper,
 	dut *labapi.Dut,
-	provisionState *testapipb.ProvisionState) {
+	provisionState *testapi.ProvisionState) {
 	dutInfo := &artifactpb.DutInfo{}
 	executionInfo.DutInfo = dutInfo
 
@@ -498,7 +496,7 @@ func populateExecutionInfo(
 	botDims []*buildbucketpb.StringPair,
 	build *buildbucketpb.Build,
 	dut *labapi.Dut,
-	provisionState *testapipb.ProvisionState) {
+	provisionState *testapi.ProvisionState) {
 	// Build info
 	populateBuildInfo(ctx, executionInfo, sk, botDims, build, dut)
 
@@ -654,7 +652,7 @@ func populateTestRunsInfo(
 func populateTestRun(
 	ctx context.Context,
 	testRun *artifactpb.TestRun,
-	testCaseResult *testapipb.TestCaseResult,
+	testCaseResult *testapi.TestCaseResult,
 	sk *data.HwTestStateKeeper,
 	build *buildbucketpb.Build,
 ) {
@@ -671,7 +669,7 @@ func populateTestRun(
 func populateTestCaseInfo(
 	ctx context.Context,
 	testRun *artifactpb.TestRun,
-	testCaseResult *testapipb.TestCaseResult,
+	testCaseResult *testapi.TestCaseResult,
 	sk *data.HwTestStateKeeper,
 	build *buildbucketpb.Build,
 ) {
@@ -724,7 +722,7 @@ func populateTestCaseInfo(
 // populateTestCaseInfo populates time info per test run.
 func populateTimeInfo(
 	testRun *artifactpb.TestRun,
-	testCaseResult *testapipb.TestCaseResult,
+	testCaseResult *testapi.TestCaseResult,
 	build *buildbucketpb.Build,
 ) {
 	testRun.TimeInfo = &artifactpb.TimingInfo{
@@ -735,7 +733,7 @@ func populateTimeInfo(
 }
 
 // populateExecutionMetadata populates execution metadata per test run.
-func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skylab_test_runner.CFTTestRequest, dynamicRequest *api.CrosTestRunnerDynamicRequest) {
+func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skylab_test_runner.CFTTestRequest, dynamicRequest *testapi.CrosTestRunnerDynamicRequest) {
 	if dynamicRequest != nil {
 		populateExecutionMetadataForTestSuites(testRun, dynamicRequest.GetParams().GetTestSuites())
 	}
@@ -744,7 +742,7 @@ func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skyl
 	}
 }
 
-func populateExecutionMetadataForTestSuites(testRun *artifactpb.TestRun, testSuites []*testapipb.TestSuite) {
+func populateExecutionMetadataForTestSuites(testRun *artifactpb.TestRun, testSuites []*testapi.TestSuite) {
 	// Returns early if no test suite is provided.
 	if len(testSuites) == 0 {
 		return

@@ -13,10 +13,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	_go "go.chromium.org/chromiumos/config/go"
 	configpb "go.chromium.org/chromiumos/config/go"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
@@ -108,10 +106,10 @@ func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 	ftt.Run("With CFT Test Request", t, func(t *ftt.Test) {
 		request := &skylab_test_runner.CFTTestRequest{
 			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-				ProvisionState: &api.ProvisionState{
-					SystemImage: &api.ProvisionState_SystemImage{
-						SystemImagePath: &_go.StoragePath{
-							HostType: _go.StoragePath_GS,
+				ProvisionState: &testapi.ProvisionState{
+					SystemImage: &testapi.ProvisionState_SystemImage{
+						SystemImagePath: &configpb.StoragePath{
+							HostType: configpb.StoragePath_GS,
 							Path:     "gs://some-bucket/builder/build-12345",
 						},
 					},
@@ -140,8 +138,8 @@ func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 			})
 		})
 		t.Run("Local testing", func(t *ftt.Test) {
-			request.PrimaryDut.ProvisionState.SystemImage.SystemImagePath = &_go.StoragePath{
-				HostType: _go.StoragePath_LOCAL,
+			request.PrimaryDut.ProvisionState.SystemImage.SystemImagePath = &configpb.StoragePath{
+				HostType: configpb.StoragePath_LOCAL,
 				Path:     "/builds/build-12345",
 			}
 			sources, err := commands.SourcesFromCFTTestRequest(request)
@@ -149,7 +147,7 @@ func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 			assert.Loosely(t, sources, should.BeNil)
 		})
 		t.Run("Lacros testing", func(t *ftt.Test) {
-			request.PrimaryDut.ProvisionState.Packages = []*api.ProvisionState_Package{
+			request.PrimaryDut.ProvisionState.Packages = []*testapi.ProvisionState_Package{
 				{
 					PortagePackage: &buildapi.Portage_Package{},
 				},
@@ -253,8 +251,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Dut: primaryDUT,
 						ProvisionState: &testapi.ProvisionState{
 							SystemImage: &testapi.ProvisionState_SystemImage{
-								SystemImagePath: &_go.StoragePath{
-									HostType: _go.StoragePath_GS,
+								SystemImagePath: &configpb.StoragePath{
+									HostType: configpb.StoragePath_GS,
 									Path:     "gs://some-bucket/builder/build-12345",
 								},
 							},
@@ -434,10 +432,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					DutModel: &labapi.DutModel{
 						BuildTarget: primaryDUT.GetChromeos().GetDutModel().GetBuildTarget(),
 					},
-					ProvisionState: &api.ProvisionState{
-						SystemImage: &api.ProvisionState_SystemImage{
-							SystemImagePath: &_go.StoragePath{
-								HostType: _go.StoragePath_GS,
+					ProvisionState: &testapi.ProvisionState{
+						SystemImage: &testapi.ProvisionState_SystemImage{
+							SystemImagePath: &configpb.StoragePath{
+								HostType: configpb.StoragePath_GS,
 								Path:     "gs://some-bucket/builder/build-12345",
 							},
 						},
@@ -558,8 +556,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Dut: primaryDUT,
 						ProvisionState: &testapi.ProvisionState{
 							SystemImage: &testapi.ProvisionState_SystemImage{
-								SystemImagePath: &_go.StoragePath{
-									HostType: _go.StoragePath_GS,
+								SystemImagePath: &configpb.StoragePath{
+									HostType: configpb.StoragePath_GS,
 									Path:     "gs://some-bucket/builder/build-12345",
 								},
 							},
@@ -659,10 +657,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					DutModel: &labapi.DutModel{
 						BuildTarget: primaryDUT.GetChromeos().GetDutModel().GetBuildTarget(),
 					},
-					ProvisionState: &api.ProvisionState{
-						SystemImage: &api.ProvisionState_SystemImage{
-							SystemImagePath: &_go.StoragePath{
-								HostType: _go.StoragePath_GS,
+					ProvisionState: &testapi.ProvisionState{
+						SystemImage: &testapi.ProvisionState_SystemImage{
+							SystemImagePath: &configpb.StoragePath{
+								HostType: configpb.StoragePath_GS,
 								Path:     "gs://some-bucket/builder/build-12345",
 							},
 						},
@@ -802,8 +800,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Dut: primaryDUT,
 						ProvisionState: &testapi.ProvisionState{
 							SystemImage: &testapi.ProvisionState_SystemImage{
-								SystemImagePath: &_go.StoragePath{
-									HostType: _go.StoragePath_GS,
+								SystemImagePath: &configpb.StoragePath{
+									HostType: configpb.StoragePath_GS,
 									Path:     "gs://some-bucket/builder/build-12345",
 								},
 							},
@@ -871,8 +869,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							Dut: secondaryDUT,
 							ProvisionState: &testapi.ProvisionState{
 								SystemImage: &testapi.ProvisionState_SystemImage{
-									SystemImagePath: &_go.StoragePath{
-										HostType: _go.StoragePath_GS,
+									SystemImagePath: &configpb.StoragePath{
+										HostType: configpb.StoragePath_GS,
 										Path:     "gs://some-bucket/builder/build-6789",
 									},
 								},
@@ -1004,10 +1002,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		buildState, ctx, err := build.Start(ctx, buildPb)
 		defer func() { buildState.End(err) }()
 
-		secondaryDutPrivisionState := &api.ProvisionState{
-			SystemImage: &api.ProvisionState_SystemImage{
-				SystemImagePath: &_go.StoragePath{
-					HostType: _go.StoragePath_GS,
+		secondaryDutPrivisionState := &testapi.ProvisionState{
+			SystemImage: &testapi.ProvisionState_SystemImage{
+				SystemImagePath: &configpb.StoragePath{
+					HostType: configpb.StoragePath_GS,
 					Path:     "gs://some-bucket/builder/build-6789",
 				},
 			},
@@ -1026,10 +1024,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					DutModel: &labapi.DutModel{
 						BuildTarget: primaryDUT.GetChromeos().GetDutModel().GetBuildTarget(),
 					},
-					ProvisionState: &api.ProvisionState{
-						SystemImage: &api.ProvisionState_SystemImage{
-							SystemImagePath: &_go.StoragePath{
-								HostType: _go.StoragePath_GS,
+					ProvisionState: &testapi.ProvisionState{
+						SystemImage: &testapi.ProvisionState_SystemImage{
+							SystemImagePath: &configpb.StoragePath{
+								HostType: configpb.StoragePath_GS,
 								Path:     "gs://some-bucket/builder/build-12345",
 							},
 						},
@@ -1126,8 +1124,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					DutInfo: &artifactpb.DutInfo{
 						ProvisionState: &testapi.ProvisionState{
 							SystemImage: &testapi.ProvisionState_SystemImage{
-								SystemImagePath: &_go.StoragePath{
-									HostType: _go.StoragePath_GS,
+								SystemImagePath: &configpb.StoragePath{
+									HostType: configpb.StoragePath_GS,
 									Path:     "gs://some-bucket/builder/build-12345",
 								},
 							},
@@ -1207,10 +1205,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 					DutModel: &labapi.DutModel{},
-					ProvisionState: &api.ProvisionState{
-						SystemImage: &api.ProvisionState_SystemImage{
-							SystemImagePath: &_go.StoragePath{
-								HostType: _go.StoragePath_GS,
+					ProvisionState: &testapi.ProvisionState{
+						SystemImage: &testapi.ProvisionState_SystemImage{
+							SystemImagePath: &configpb.StoragePath{
+								HostType: configpb.StoragePath_GS,
 								Path:     "gs://some-bucket/builder/build-12345",
 							},
 						},
@@ -1257,10 +1255,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			TesthausURL:         wantTesthausURL,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-					ProvisionState: &api.ProvisionState{
-						SystemImage: &api.ProvisionState_SystemImage{
-							SystemImagePath: &_go.StoragePath{
-								HostType: _go.StoragePath_GS,
+					ProvisionState: &testapi.ProvisionState{
+						SystemImage: &testapi.ProvisionState_SystemImage{
+							SystemImagePath: &configpb.StoragePath{
+								HostType: configpb.StoragePath_GS,
 								Path:     "gs://some-bucket/builder/build-12345",
 							},
 						},
@@ -1299,7 +1297,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			BaseVariant:         wantBaseVariant,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-					ProvisionState: &api.ProvisionState{},
+					ProvisionState: &testapi.ProvisionState{},
 				},
 			},
 		}

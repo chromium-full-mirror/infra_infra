@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -88,8 +87,8 @@ func (ex *AndroidDutExecutor) Start(
 	dutTemplate := &testapi.CrosDutTemplate{
 		CacheServer: cacheServerAddress,
 		DutAddress:  androidDutSshAddress}
-	template := &api.Template{
-		Container: &api.Template_CrosDut{
+	template := &testapi.Template{
+		Container: &testapi.Template_CrosDut{
 			CrosDut: dutTemplate,
 		},
 	}
@@ -116,7 +115,7 @@ func (ex *AndroidDutExecutor) Start(
 	}
 
 	// Create new client.
-	dutClient := api.NewDutServiceClient(conn)
+	dutClient := testapi.NewDutServiceClient(conn)
 	if dutClient == nil {
 		return fmt.Errorf("AndroidDutServiceClient is nil")
 	}

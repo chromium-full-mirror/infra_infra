@@ -12,7 +12,6 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -279,7 +278,7 @@ func parseDut(dut *labapi.Dut) (*testapi.CrosTestRequest_Device, *skylab_test_ru
 	if dut.CacheServer == nil {
 		dut.CacheServer = &labapi.CacheServer{}
 	}
-	device = &api.CrosTestRequest_Device{
+	device = &testapi.CrosTestRequest_Device{
 		Dut:       dut,
 		DutServer: ssh,
 	}

@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -142,7 +141,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 	cmd.ProvisionResp = resp
 	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
 
-	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+	if resp.GetStatus() != testapi.InstallResponse_STATUS_SUCCESS {
 		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
 		common.GlobalNonInfraError = err
 	}
@@ -160,7 +159,7 @@ func (ex *CrosProvisionExecutor) Start(
 	}
 
 	provisionTemplate := &testapi.CrosProvisionTemplate{InputRequest: provisionInputReq}
-	template := &api.Template{Container: &api.Template_CrosProvision{CrosProvision: provisionTemplate}}
+	template := &testapi.Template{Container: &testapi.Template_CrosProvision{CrosProvision: provisionTemplate}}
 
 	// Process container.
 	serverAddress, err := ex.Container.ProcessContainer(ctx, template)
@@ -182,7 +181,7 @@ func (ex *CrosProvisionExecutor) Start(
 	logging.Infof(ctx, "Connected with provision service.")
 
 	// Create new client.
-	provisionClient := api.NewGenericProvisionServiceClient(conn)
+	provisionClient := testapi.NewGenericProvisionServiceClient(conn)
 	if provisionClient == nil {
 		return fmt.Errorf("ProvisionServiceClient is nil")
 	}

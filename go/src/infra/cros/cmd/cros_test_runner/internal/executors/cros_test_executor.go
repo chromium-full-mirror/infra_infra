@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -130,7 +129,7 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 
 // Start starts the cros-test server.
 func (ex *CrosTestExecutor) Start(ctx context.Context) error {
-	template := &api.Template{Container: &api.Template_CrosTest{
+	template := &testapi.Template{Container: &testapi.Template_CrosTest{
 		CrosTest: &testapi.CrosTestTemplate{},
 	},
 	}
@@ -156,7 +155,7 @@ func (ex *CrosTestExecutor) Start(ctx context.Context) error {
 	logging.Infof(ctx, "Connected with cros-test service.")
 
 	// Create new client.
-	testClient := api.NewExecutionServiceClient(conn)
+	testClient := testapi.NewExecutionServiceClient(conn)
 	if testClient == nil {
 		return fmt.Errorf("testServiceClient is nil")
 	}

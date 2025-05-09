@@ -13,7 +13,6 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -105,8 +104,8 @@ func (ex *CrosPublishExecutor) gcsPublishStartCommandExecution(
 		PublishSrcDir: cmd.GcsPublishSrcDir}
 	publishClient, err := ex.Start(
 		ctx,
-		&api.Template{
-			Container: &api.Template_CrosPublish{
+		&testapi.Template{
+			Container: &testapi.Template_CrosPublish{
 				CrosPublish: gcsPublishTemplate,
 			},
 		},
@@ -188,8 +187,8 @@ func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(
 		PublishSrcDir: cmd.RdbPublishSrcDir}
 	publishClient, err := ex.Start(
 		ctx,
-		&api.Template{
-			Container: &api.Template_CrosPublish{
+		&testapi.Template{
+			Container: &testapi.Template_CrosPublish{
 				CrosPublish: rdbPublishTemplate,
 			},
 		},
@@ -267,8 +266,8 @@ func (ex *CrosPublishExecutor) tkoPublishStartCommandExecution(
 		PublishSrcDir: cmd.TkoPublishSrcDir}
 	publishClient, err := ex.Start(
 		ctx,
-		&api.Template{
-			Container: &api.Template_CrosPublish{
+		&testapi.Template{
+			Container: &testapi.Template_CrosPublish{
 				CrosPublish: tkoPublishTemplate,
 			},
 		},
@@ -338,9 +337,9 @@ func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
 	}
 	publishClient, err := ex.Start(
 		ctx,
-		&api.Template{
-			Container: &api.Template_Generic{
-				Generic: &api.GenericTemplate{
+		&testapi.Template{
+			Container: &testapi.Template_Generic{
+				Generic: &testapi.GenericTemplate{
 					BinaryName:        "cpcon-publish",
 					DockerArtifactDir: "/tmp/cpcon-publish",
 					BinaryArgs:        []string{"server", "--port", "0"},
@@ -413,7 +412,7 @@ func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
 // Start starts the cros-publish server.
 func (ex *CrosPublishExecutor) Start(
 	ctx context.Context,
-	template *api.Template) (testapi.GenericPublishServiceClient, error) {
+	template *testapi.Template) (testapi.GenericPublishServiceClient, error) {
 	if template == nil {
 		return nil, fmt.Errorf("Cannot start publish service with empty template.")
 	}
@@ -439,7 +438,7 @@ func (ex *CrosPublishExecutor) Start(
 	logging.Infof(ctx, "Connected with service.")
 
 	// Create new client.
-	publishClient := api.NewGenericPublishServiceClient(conn)
+	publishClient := testapi.NewGenericPublishServiceClient(conn)
 	if publishClient == nil {
 		return nil, fmt.Errorf("GenericPublishServiceClient is nil")
 	}
@@ -483,8 +482,8 @@ func (ex *CrosPublishExecutor) Publish(
 func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(
 	ctx context.Context,
 	publishType string,
-	request *api.PublishRequest,
-	client api.GenericPublishServiceClient,
+	request *testapi.PublishRequest,
+	client testapi.GenericPublishServiceClient,
 	step *build.Step) error {
 	if request == nil {
 		return fmt.Errorf("Cannot publish result for %s with empty publish request.", publishType)

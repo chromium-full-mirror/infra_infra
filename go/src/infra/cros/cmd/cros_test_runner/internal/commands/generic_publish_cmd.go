@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -24,7 +23,7 @@ type GenericPublishCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	PublishRequest *api.PublishTask
+	PublishRequest *testapi.PublishTask
 	Identifier     string
 
 	// Updates
@@ -57,7 +56,7 @@ func (cmd *GenericPublishCmd) instantiateWithHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) (err error) {
 
 	if err := commoncommands.InstantiatePopFromQueue(sk.PublishQueue, func(element any) {
-		cmd.PublishRequest = element.(*api.PublishTask)
+		cmd.PublishRequest = element.(*testapi.PublishTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: PublishRequest, %w", cmd.GetCommandType(), err)
 	}

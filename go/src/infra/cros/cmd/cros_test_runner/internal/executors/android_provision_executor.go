@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -124,7 +123,7 @@ func (ex *AndroidProvisionExecutor) androidProvisionInstallCommandExecution(
 	step.AddTagValue("provision_status", resp.GetStatus().String())
 	common.WriteProtoToStepLog(ctx, step, resp, "android provision install response")
 
-	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+	if resp.GetStatus() != testapi.InstallResponse_STATUS_SUCCESS {
 		err = fmt.Errorf("Android provision failure: %s", resp.GetStatus().String())
 	}
 
@@ -134,7 +133,7 @@ func (ex *AndroidProvisionExecutor) androidProvisionInstallCommandExecution(
 // Start starts the android-provision server.
 func (ex *AndroidProvisionExecutor) Start(ctx context.Context) error {
 
-	template := &api.Template{Container: &api.Template_Generic{
+	template := &testapi.Template{Container: &testapi.Template_Generic{
 		Generic: &testapi.GenericTemplate{
 			DockerArtifactDir: "/tmp/provision",
 			BinaryName:        "android-provision",
@@ -168,7 +167,7 @@ func (ex *AndroidProvisionExecutor) Start(ctx context.Context) error {
 	logging.Infof(ctx, "Connected with android-provision service.")
 
 	// Create new client.
-	androidProvisionClient := api.NewGenericProvisionServiceClient(conn)
+	androidProvisionClient := testapi.NewGenericProvisionServiceClient(conn)
 	if androidProvisionClient == nil {
 		return fmt.Errorf("androidProvisionServiceClient is nil")
 	}

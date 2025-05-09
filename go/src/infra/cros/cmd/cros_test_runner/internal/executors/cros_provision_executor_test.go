@@ -14,7 +14,6 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
@@ -47,7 +46,7 @@ func TestProvisionServiceStart(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosProvisionExecutor(cont)
-		err := exec.Start(ctx, &api.CrosProvisionRequest{})
+		err := exec.Start(ctx, &testapi.CrosProvisionRequest{})
 		assert.Loosely(t, err, should.NotBeNil)
 	})
 
@@ -60,7 +59,7 @@ func TestProvisionServiceStart(t *testing.T) {
 		getMockedStartTemplatedContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosProvisionExecutor(cont)
-		err := exec.Start(ctx, &api.CrosProvisionRequest{})
+		err := exec.Start(ctx, &testapi.CrosProvisionRequest{})
 		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

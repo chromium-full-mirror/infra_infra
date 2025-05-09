@@ -16,7 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -86,9 +85,9 @@ func (ex *CrosVMProvisionExecutor) vmProvisionStartCommandExecution(
 // Start starts the vm-provision server.
 func (ex *CrosVMProvisionExecutor) Start(ctx context.Context) error {
 
-	crosvmTemplate := &api.CrosVMProvisionTemplate{}
-	template := &api.Template{
-		Container: &api.Template_CrosVmProvision{
+	crosvmTemplate := &testapi.CrosVMProvisionTemplate{}
+	template := &testapi.Template{
+		Container: &testapi.Template_CrosVmProvision{
 			CrosVmProvision: crosvmTemplate,
 		},
 	}
@@ -113,7 +112,7 @@ func (ex *CrosVMProvisionExecutor) Start(ctx context.Context) error {
 	logging.Infof(ctx, "Connected with vm-provision service.")
 
 	// Create new client.
-	vmProvisionClient := api.NewGenericProvisionServiceClient(conn)
+	vmProvisionClient := testapi.NewGenericProvisionServiceClient(conn)
 	if vmProvisionClient == nil {
 		return fmt.Errorf("crosVMProvisionServiceClient is nil")
 	}
@@ -134,8 +133,8 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 	//create request
 	img := fmt.Sprintf("projects/%v/global/images/%v", cmd.DutVmGceImage.GetProject(), cmd.DutVmGceImage.GetName())
 	d, _ := time.ParseDuration("24h")
-	leaseVMRequest := &api.LeaseVMRequest{
-		HostReqs: &api.VMRequirements{
+	leaseVMRequest := &testapi.LeaseVMRequest{
+		HostReqs: &testapi.VMRequirements{
 			GceImage:                 img,
 			GceProject:               common.GceProject,
 			GceNetwork:               common.GceNetwork,
@@ -179,7 +178,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 		return errors.Annotate(err, "VM Provision lease cmd err: ").Err()
 	}
 	common.WriteProtoToStepLog(ctx, step, resp, "vm provision lease response")
-	leaseVMResponse := &api.LeaseVMResponse{}
+	leaseVMResponse := &testapi.LeaseVMResponse{}
 	if err := resp.Metadata.UnmarshalTo(leaseVMResponse); err != nil {
 		logging.Infof(ctx, "Failed to unmarshal response:, %s", err)
 		return err
@@ -248,7 +247,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionReleaseCommandExecution(
 	}
 
 	//create request
-	releaseVMRequest := &api.ReleaseVMRequest{
+	releaseVMRequest := &testapi.ReleaseVMRequest{
 		LeaseId:    cmd.LeaseVMResponse.GetLeaseId(),
 		GceProject: common.GceProject,
 		GceRegion:  cmd.LeaseVMResponse.GetVm().GetGceRegion(),
@@ -331,7 +330,7 @@ func (ex *CrosVMProvisionExecutor) ReleaseDutVM(
 	return vmProvisionResp, nil
 }
 
-func (ex *CrosVMProvisionExecutor) validateLeaseVMResponse(leaseVMResponse *api.LeaseVMResponse) error {
+func (ex *CrosVMProvisionExecutor) validateLeaseVMResponse(leaseVMResponse *testapi.LeaseVMResponse) error {
 
 	if leaseVMResponse.GetVm() == nil {
 		return fmt.Errorf("Nil VM object in vm leaser response")

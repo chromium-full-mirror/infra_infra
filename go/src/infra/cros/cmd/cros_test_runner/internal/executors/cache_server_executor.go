@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -70,8 +69,8 @@ func (ex *CacheServerExecutor) Start(
 	ctx context.Context) error {
 
 	cacheServerTemplate := &testapi.CacheServerTemplate{}
-	template := &api.Template{
-		Container: &api.Template_CacheServer{
+	template := &testapi.Template{
+		Container: &testapi.Template_CacheServer{
 			CacheServer: cacheServerTemplate,
 		},
 	}
@@ -99,8 +98,8 @@ func (ex *CacheServerExecutor) vmCacheServerStartCommandExecution(
 		ApplicationDefaultCredentials: &testapi.CacheServerTemplate_ServiceAccountKeyfile{
 			ServiceAccountKeyfile: common.VMLabDockerKeyFileLocation,
 		}}
-	template := &api.Template{
-		Container: &api.Template_CacheServer{
+	template := &testapi.Template{
+		Container: &testapi.Template_CacheServer{
 			CacheServer: csTemplate,
 		},
 	}

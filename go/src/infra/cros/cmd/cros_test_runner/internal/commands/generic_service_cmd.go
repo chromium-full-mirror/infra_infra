@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -24,7 +23,7 @@ type GenericServiceCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	GenericRequest *api.GenericTask
+	GenericRequest *testapi.GenericTask
 	Identifier     string
 
 	// Updates
@@ -59,7 +58,7 @@ func (cmd *GenericServiceCmd) instantiateWithHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) (err error) {
 
 	if err := commoncommands.InstantiatePopFromQueue(sk.GenericQueue, func(element any) {
-		cmd.GenericRequest = element.(*api.GenericTask)
+		cmd.GenericRequest = element.(*testapi.GenericTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: GenericRequest, %w", cmd.GetCommandType(), err)
 	}

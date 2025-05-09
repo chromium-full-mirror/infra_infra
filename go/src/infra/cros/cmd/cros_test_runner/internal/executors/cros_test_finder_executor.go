@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -82,7 +81,7 @@ func (ex *CrosTestFinderExecutor) testFinderExecutionCommandExecution(
 	step, ctx := build.StartStep(ctx, "Test Finder execution")
 	defer func() { step.End(err) }()
 
-	testSuites := []*api.TestSuite{}
+	testSuites := []*testapi.TestSuite{}
 	var tags []string = nil
 	var tagsExclude []string = nil
 	if len(cmd.Tags) > 0 && cmd.Tags[0] != "" {
@@ -92,9 +91,9 @@ func (ex *CrosTestFinderExecutor) testFinderExecutionCommandExecution(
 		tagsExclude = cmd.TagsExclude
 	}
 	if tags != nil || tagsExclude != nil {
-		testSuites = append(testSuites, &api.TestSuite{
-			Spec: &api.TestSuite_TestCaseTagCriteria_{
-				TestCaseTagCriteria: &api.TestSuite_TestCaseTagCriteria{
+		testSuites = append(testSuites, &testapi.TestSuite{
+			Spec: &testapi.TestSuite_TestCaseTagCriteria_{
+				TestCaseTagCriteria: &testapi.TestSuite_TestCaseTagCriteria{
 					Tags:        tags,
 					TagExcludes: tagsExclude,
 				},
@@ -102,19 +101,19 @@ func (ex *CrosTestFinderExecutor) testFinderExecutionCommandExecution(
 		})
 	}
 
-	testCaseIds := []*api.TestCase_Id{}
+	testCaseIds := []*testapi.TestCase_Id{}
 	for _, testCaseId := range cmd.Tests {
 		if testCaseId != "" {
-			testCaseIds = append(testCaseIds, &api.TestCase_Id{
+			testCaseIds = append(testCaseIds, &testapi.TestCase_Id{
 				Value: testCaseId,
 			})
 		}
 	}
 
 	if len(testCaseIds) > 0 {
-		testSuites = append(testSuites, &api.TestSuite{
-			Spec: &api.TestSuite_TestCaseIds{
-				TestCaseIds: &api.TestCaseIdList{
+		testSuites = append(testSuites, &testapi.TestSuite{
+			Spec: &testapi.TestSuite_TestCaseIds{
+				TestCaseIds: &testapi.TestCaseIdList{
 					TestCaseIds: testCaseIds,
 				},
 			},
@@ -141,8 +140,8 @@ func (ex *CrosTestFinderExecutor) testFinderExecutionCommandExecution(
 
 // Start starts the cros-test-finder server.
 func (ex *CrosTestFinderExecutor) Start(ctx context.Context) error {
-	template := &api.Template{
-		Container: &api.Template_CrosTestFinder{
+	template := &testapi.Template{
+		Container: &testapi.Template_CrosTestFinder{
 			CrosTestFinder: &testapi.CrosTestFinderTemplate{},
 		},
 	}
@@ -168,7 +167,7 @@ func (ex *CrosTestFinderExecutor) Start(ctx context.Context) error {
 	logging.Infof(ctx, "Connected with cros-test-finder service.")
 
 	// Create new client.
-	testClient := api.NewTestFinderServiceClient(conn)
+	testClient := testapi.NewTestFinderServiceClient(conn)
 	if testClient == nil {
 		return fmt.Errorf("testFinderServiceClient is nil")
 	}

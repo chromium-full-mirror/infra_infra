@@ -10,7 +10,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -88,7 +87,7 @@ func (ex *GenericPublishExecutor) genericPublishHandler(
 // ConnectToService connects to the GenericPublishServiceClient attached to the server address.
 func (ex *GenericPublishExecutor) ConnectToService(
 	ctx context.Context,
-	endpoint *labapi.IpEndpoint) (api.GenericPublishServiceClient, error) {
+	endpoint *labapi.IpEndpoint) (testapi.GenericPublishServiceClient, error) {
 	var err error
 	step, ctx := build.StartStep(ctx, "Establish Connection")
 	defer func() { step.End(err) }()
@@ -107,7 +106,7 @@ func (ex *GenericPublishExecutor) ConnectToService(
 	logging.Infof(ctx, "Connected with publish service.")
 
 	// Create new client.
-	client := api.NewGenericPublishServiceClient(conn)
+	client := testapi.NewGenericPublishServiceClient(conn)
 	if client == nil {
 		err = fmt.Errorf("GenericPublishServiceClient is nil")
 		return nil, err
@@ -119,8 +118,8 @@ func (ex *GenericPublishExecutor) ConnectToService(
 // Publish invokces the Publish endpoint of the GenericPublishServiceClient
 func (ex *GenericPublishExecutor) Publish(
 	ctx context.Context,
-	client api.GenericPublishServiceClient,
-	req *api.PublishRequest,
+	client testapi.GenericPublishServiceClient,
+	req *testapi.PublishRequest,
 ) (resp *testapi.PublishResponse, err error) {
 	step, ctx := build.StartStep(ctx, "Publish")
 	defer func() { step.End(err) }()
