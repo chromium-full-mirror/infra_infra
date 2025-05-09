@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
 	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
@@ -29,6 +30,7 @@ func (cmd *ContainerReadLogsCmd) ExtractDependencies(ctx context.Context,
 	switch sk := ski.(type) {
 	case *ctpv2_data.FilterStateKeeper:
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
+	case *data.HwTestStateKeeper:
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
 	}
