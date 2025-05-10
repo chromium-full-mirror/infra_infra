@@ -254,6 +254,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 												},
 											},
 										},
+										Pools: []string{"pool1", "pool2"},
 									},
 								},
 							},
@@ -568,6 +569,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						Port:    55,
 					},
 				},
+				Pools: []string{"pool1", "pool2"},
 			},
 		},
 	}

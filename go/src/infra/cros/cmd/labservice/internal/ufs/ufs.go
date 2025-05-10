@@ -224,6 +224,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 		CacheServer: &labapi.CacheServer{
 			Address: cs,
 		},
+		Pools: d.GetPools(),
 	}, nil
 }
 
