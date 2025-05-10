@@ -1,0 +1,78 @@
+services:
+  datastore-emulator:
+    image: google/cloud-sdk:emulators
+    command: >
+      sh -c "gcloud emulators firestore start --database-mode=datastore-mode --host-port=0.0.0.0:8081 --project=test-project"
+    environment:
+      DATASTORE_PROJECT_ID: test-project
+    healthcheck:
+      test: ["CMD", "sh", "-c", "until nc -z localhost 8081; do sleep 1; done"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  ufs-service:
+    build:
+      context: ..
+      dockerfile: ./cmd/ufs-service/docker/Dockerfile
+    command: [
+      "--cloud-project", "test-project",
+      "-http-addr", ":8800", "-admin-addr",":8900",
+      "-token-cache-dir", "/app/.config/chrome_infra/auth"]
+    user: ${CURRENT_UID}
+    environment:
+      DATASTORE_EMULATOR_HOST: datastore-emulator:8081
+      DATASTORE_PROJECT_ID: test-project
+      GOOGLE_APPLICATION_CREDENTIALS: /app/.config/gcloud/application_default_credentials.json
+    depends_on:
+      - datastore-emulator
+    ports: ["8800", "8900"]
+    volumes:
+      - ~/.config/chrome_infra/auth:/app/.config/chrome_infra/auth
+      - ~/.config/gcloud/application_default_credentials.json:/app/.config/gcloud/application_default_credentials.json
+      - ../app/config/config.cfg:/app/config/config.cfg:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8800/"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  dumper:
+    build:
+      context: ..
+      dockerfile: ./cmd/dumper/docker/Dockerfile
+    command: [
+      "--cloud-project", "test-project",
+      "-http-addr", ":8800", "-admin-addr",":8900",
+      "-token-cache-dir", "/app/.config/chrome_infra/auth"]
+    user: ${CURRENT_UID}
+    environment:
+      DATASTORE_EMULATOR_HOST: datastore-emulator:8081
+      DATASTORE_PROJECT_ID: test-project
+    depends_on:
+      - datastore-emulator
+    ports: ["8800", "8900"]
+    volumes:
+      - ~/.config/chrome_infra/auth:/app/.config/chrome_infra/auth
+      - ../app/config/config.cfg:/app/config/config.cfg:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8800/"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  proxy_and_shivas:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.proxy+shivas
+    ports: ["8800"]
+    depends_on:
+      - ufs-service
+      - dumper
+    user: ${CURRENT_UID}
+    environment:
+      HOME: /app  # For shivas auth
+      SHIVAS_ENV: local
+    volumes:
+      - ~/.config/chrome_infra/auth:/app/.config/chrome_infra/auth
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro

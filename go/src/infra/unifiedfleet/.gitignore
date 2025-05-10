@@ -1,6 +1,7 @@
 ufs-service
 dumper
 coverage.out
+e2e/shivas
 !*/
 # ignore editor files
 .vscode
