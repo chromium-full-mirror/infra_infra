@@ -36,11 +36,11 @@ func ADBPath(ctx context.Context) string {
 // UseLocal decide if local ADB need to be used.
 func UseLocal(ctx context.Context) bool {
 	if localUseDecision == "" {
-		if ap := pathFromEnv(); ap != "" {
+		if envADBPath != "" {
 			localUseDecision = decisionYes
 		} else if ctr.IsUp(ctx) {
 			localUseDecision = decisionNo
-		} else if mh.IsMH() {
+		} else if mh.IsMH {
 			localUseDecision = decisionYes
 		}
 	}
@@ -61,15 +61,16 @@ func Port(ctx context.Context) int {
 	return 5555
 }
 
-func init() {
-	if mh.IsMH() {
-		adbPath = mh.ADBPath
-	}
-	if ap := pathFromEnv(); ap != "" {
-		adbPath = ap
-	}
-}
+// Cached path to ADB from ENV.
+var envADBPath = ""
 
-func pathFromEnv() string {
-	return strings.TrimSpace(os.Getenv("ADB_PATH"))
+func init() {
+	if p := strings.TrimSpace(os.Getenv("ADB_PATH")); p != "" {
+		// PARIS CLI param set data.
+		envADBPath = p
+	} else if p := strings.TrimSpace(os.Getenv("PARIS_ADB_PATH")); p != "" {
+		// Can be set in MH env.
+		envADBPath = p
+	}
+	adbPath = envADBPath
 }

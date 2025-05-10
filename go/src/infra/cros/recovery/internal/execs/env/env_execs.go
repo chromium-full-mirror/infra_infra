@@ -41,7 +41,7 @@ func isNotCrosPartnerNamespaceExec(ctx context.Context, info *execs.ExecInfo) er
 }
 
 func isMHBoxExec(ctx context.Context, info *execs.ExecInfo) error {
-	if mh.IsMH() {
+	if mh.IsMH {
 		log.Debugf(ctx, "That is MH box enviroment!")
 		return nil
 	}
@@ -49,7 +49,7 @@ func isMHBoxExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func isNotMHBoxExec(ctx context.Context, info *execs.ExecInfo) error {
-	if mh.IsMH() {
+	if mh.IsMH {
 		return errors.Reason("is not MH box: that is MH box").Err()
 	}
 	log.Debugf(ctx, "That is not MH box enviroment!")

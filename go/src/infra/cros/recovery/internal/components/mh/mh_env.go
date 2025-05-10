@@ -7,30 +7,16 @@ package mh
 
 import (
 	"os"
+	"strings"
 )
 
 var (
-	// Store cache of decision if that is MH or not.
-	isHHDecision = ""
-)
-
-const (
+	// Tells if that is MH or not.
+	IsMH = false
 	// Path to ADB in MH container.
-	ADBPath = "/usr/local/google/mobileharness/ate/adb"
-
-	// Decision answers.
-	decisionYes = "yes"
-	decisionNo  = "no"
+	adbPath = ""
 )
 
-// IsMH tells if execution is in MH container.
-func IsMH() bool {
-	if isHHDecision == "" {
-		if _, err := os.Stat(ADBPath); err == nil {
-			isHHDecision = decisionYes
-		} else {
-			isHHDecision = decisionNo
-		}
-	}
-	return isHHDecision == decisionYes
+func init() {
+	IsMH = strings.TrimSpace(os.Getenv("PARIS_ADB_PATH")) != ""
 }
