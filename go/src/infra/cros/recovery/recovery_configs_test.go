@@ -33,10 +33,16 @@ var configTreeChangesCases = []struct {
 		"cros_repair",
 	},
 	{
-		"MH AutoRepair",
+		"CROS Android AutoRepair",
+		tlw.DUTSetupType_CROS_ANDROID,
+		buildbucket.Recovery,
+		"cros_android_repair",
+	},
+	{
+		"CROS Deep AutoRepair",
 		tlw.DUTSetupType_CROS,
-		buildbucket.MHRecovery,
-		"mh_repair",
+		buildbucket.DeepRecovery,
+		"cros_deep_repair",
 	},
 	{
 		"CROS Deploy",
@@ -45,10 +51,10 @@ var configTreeChangesCases = []struct {
 		"cros_deploy",
 	},
 	{
-		"MH Deploy",
-		tlw.DUTSetupType_CROS,
-		buildbucket.MHDeploy,
-		"mh_deploy",
+		"CROS Android Deploy",
+		tlw.DUTSetupType_CROS_ANDROID,
+		buildbucket.Deploy,
+		"cros_android_deploy",
 	},
 	{
 		"CROS Audit RPM",
