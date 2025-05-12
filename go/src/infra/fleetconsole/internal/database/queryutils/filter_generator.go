@@ -192,7 +192,7 @@ func (q *QueryBuilder) handleSimpleComparison(restriction *aip160.Restriction, c
 
 	var argSQL string
 	switch restriction.Comparator {
-	case "=", "<", ">":
+	case "=", "<", ">", ">=", "<=":
 		argSQL, err = q.argValue(restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()

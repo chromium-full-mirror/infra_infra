@@ -17,6 +17,7 @@ func TestWhereClause(t *testing.T) {
 		table := NewTableBuilder("Devices").WithColumns(
 			NewColumn("dut_state").Build(),
 			NewColumn("dut_name").Build(),
+			NewColumn("test_date").Build(),
 			NewColumn("labels").WithColumnType(ColumnTypeJSONB).WithJSONFullPath(func(fields ...string) []string {
 				pathComponents := []string{"labels"}
 				pathComponents = append(pathComponents, fields...)
@@ -55,6 +56,38 @@ func TestWhereClause(t *testing.T) {
 					"available",
 				}))
 				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state <> $1)"))
+			})
+			t.Run("greater than operator", func(t *ftt.Test) {
+				q, err := NewQueryBuilder(table).WithWhereClause("test_date > 2020-01-01", nil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
+					"2020-01-01",
+				}))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (test_date > $1)"))
+			})
+			t.Run("lesser than operator", func(t *ftt.Test) {
+				q, err := NewQueryBuilder(table).WithWhereClause("test_date < 2020-01-01", nil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
+					"2020-01-01",
+				}))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (test_date < $1)"))
+			})
+			t.Run("greater or equal operator", func(t *ftt.Test) {
+				q, err := NewQueryBuilder(table).WithWhereClause("test_date >= 2020-01-01", nil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
+					"2020-01-01",
+				}))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (test_date >= $1)"))
+			})
+			t.Run("lesser or equal operator", func(t *ftt.Test) {
+				q, err := NewQueryBuilder(table).WithWhereClause("test_date <= 2020-01-01", nil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
+					"2020-01-01",
+				}))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (test_date <= $1)"))
 			})
 			t.Run("composite to LIKE", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state:(something)", nil)
