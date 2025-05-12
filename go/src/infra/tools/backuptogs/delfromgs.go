@@ -35,8 +35,9 @@ func delFromGS(ctx context.Context, bucket *storage.BucketHandle, prefix string,
 
 			for filename := range filenamesChan {
 				select {
+				// Stop doing work when the context is done.
 				case <-ctx.Done():
-					break
+					return // Exit the goroutine
 				default:
 				}
 				objName := prefix + filepath.ToSlash(filename)

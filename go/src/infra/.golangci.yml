@@ -98,9 +98,6 @@ linters:
         # https://staticcheck.dev/docs/checks#SA4010
         # The result of append will never be observed anywhere
         - "-SA4010"
-        # https://staticcheck.dev/docs/checks#SA4011
-        # Break statement with no effect. Did you mean to break out of an outer loop?
-        - "-SA4011"
         # https://staticcheck.dev/docs/checks#SA4017
         # Discarding the return values of a function without side effects, making the call pointless
         - "-SA4017"

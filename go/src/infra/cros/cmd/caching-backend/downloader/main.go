@@ -528,8 +528,9 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 	tarReader := tar.NewReader(r)
 	for {
 		select {
+		// If the context is cancelled, stop trying to read the tar.
 		case <-ctx.Done():
-			break
+			return nil, http.StatusInternalServerError, fmt.Errorf("context cancelled while reading tar: %w", ctx.Err())
 		default:
 		}
 
