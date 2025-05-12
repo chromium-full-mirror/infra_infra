@@ -35,9 +35,10 @@ const (
 	ancestorsPropName = "ancestor_buildbucket_ids"
 	luciInvPropName   = "luci_invocation_id"
 	defaultChunkSize  = 1000
-	internalAccountID = 1
+	internalAccountID = "1"
 	abiKey            = "abi"
 	logFileSuffix     = "log.txt"
+	accountIDPropName = "account_id"
 )
 
 var (
@@ -382,8 +383,16 @@ func (aps *AntsPublishService) testProperties(result *api.TestCaseResult) ([]*at
 		{Name: "sku", Value: sku},
 	}
 
+	// Get the account id from the metadata, if not set use the
+	// default internal account id
+	accountID := aps.metadata.GetAccountId()
+	if accountID == "" {
+		accountID = internalAccountID
+	}
+
 	props := []*atp.Property{
 		{Name: luciInvPropName, Value: aps.metadata.GetLuciInvocationId()},
+		{Name: accountIDPropName, Value: accountID},
 	}
 
 	for k, v := range dutInfo.GetTags() {

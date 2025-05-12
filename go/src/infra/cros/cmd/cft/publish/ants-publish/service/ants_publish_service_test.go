@@ -271,6 +271,7 @@ func TestTestProperties(t *testing.T) {
 		name                string
 		dut                 *labapi.Dut
 		invID               string
+		accountID           string
 		abiTag              *api.TestCase_Tag
 		wantProps           []*atp.Property
 		wantIdentifierProps []*atp.Property
@@ -290,6 +291,7 @@ func TestTestProperties(t *testing.T) {
 			},
 			wantProps: []*atp.Property{
 				{Name: luciInvPropName, Value: ""},
+				{Name: "account_id", Value: "1"},
 			},
 			wantIdentifierProps: trProps,
 		},
@@ -309,6 +311,7 @@ func TestTestProperties(t *testing.T) {
 			abiTag: &api.TestCase_Tag{Value: "abi:x86"},
 			wantProps: []*atp.Property{
 				{Name: luciInvPropName, Value: ""},
+				{Name: "account_id", Value: "1"},
 			},
 			wantIdentifierProps: trProps,
 		},
@@ -328,6 +331,7 @@ func TestTestProperties(t *testing.T) {
 			invID: "inv/12345678",
 			wantProps: []*atp.Property{
 				{Name: luciInvPropName, Value: "inv/12345678"},
+				{Name: "account_id", Value: "1"},
 			},
 			wantIdentifierProps: trProps,
 		},
@@ -345,6 +349,26 @@ func TestTestProperties(t *testing.T) {
 			},
 			wantProps: []*atp.Property{
 				{Name: luciInvPropName, Value: ""},
+				{Name: "account_id", Value: "1"},
+			},
+			wantIdentifierProps: trProps,
+		},
+		{
+			name: "PartnerDut",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Android_{
+					Android: &labapi.Dut_Android{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+					},
+				},
+			},
+			accountID: "5",
+			wantProps: []*atp.Property{
+				{Name: luciInvPropName, Value: ""},
+				{Name: "account_id", Value: "5"},
 			},
 			wantIdentifierProps: trProps,
 		},
@@ -363,6 +387,9 @@ func TestTestProperties(t *testing.T) {
 			}
 			if tc.invID != "" {
 				aps.metadata.LuciInvocationId = tc.invID
+			}
+			if tc.accountID != "" {
+				aps.metadata.AccountId = tc.accountID
 			}
 
 			skuProp := &atp.Property{Name: "sku", Value: ""}
@@ -413,6 +440,7 @@ func TestResultEntries(t *testing.T) {
 	luciInvID := "inv/12345678"
 	trProps := []*atp.Property{
 		{Name: luciInvPropName, Value: luciInvID},
+		{Name: "account_id", Value: "1"},
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
 		{Name: "sku", Value: "pujj_10G"},
@@ -694,7 +722,7 @@ func TestUploadResultPartners(t *testing.T) {
 	}{
 		{
 			name:      "partner",
-			accountID: "2",
+			accountID: "0",
 		},
 		{
 			name:      "internal",
