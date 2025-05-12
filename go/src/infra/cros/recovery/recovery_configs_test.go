@@ -29,6 +29,18 @@ var configTreeChangesCases = []struct {
 	{
 		"CROS AutoRepair",
 		tlw.DUTSetupType_CROS,
+		buildbucket.Verify,
+		"cros_verify",
+	},
+	{
+		"CROS Android AutoRepair",
+		tlw.DUTSetupType_CROS_ANDROID,
+		buildbucket.Verify,
+		"cros_android_verify",
+	},
+	{
+		"CROS AutoRepair",
+		tlw.DUTSetupType_CROS,
 		buildbucket.Recovery,
 		"cros_repair",
 	},

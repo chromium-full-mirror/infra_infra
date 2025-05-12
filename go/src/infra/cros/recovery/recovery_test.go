@@ -99,7 +99,7 @@ var dutPlansCases = []struct {
 		true,
 	},
 	{
-		"cros recovery",
+		"cros clank recovery",
 		tlw.DUTSetupType_CLANK_ONLY,
 		buildbucket.Recovery,
 		[]string{
@@ -116,7 +116,7 @@ var dutPlansCases = []struct {
 		true,
 	},
 	{
-		"cros recovery",
+		"cros android recovery",
 		tlw.DUTSetupType_CROS_ANDROID,
 		buildbucket.Recovery,
 		[]string{
@@ -130,6 +130,33 @@ var dutPlansCases = []struct {
 			config.PlanHMR,
 			config.PlanAMT,
 			config.PlanClosing},
+		true,
+	},
+	{
+		"cros verify",
+		tlw.DUTSetupType_CROS,
+		buildbucket.Verify,
+		[]string{
+			config.PlanCrOSBase,
+			config.PlanCrOS},
+		true,
+	},
+	{
+		"cros clank verify",
+		tlw.DUTSetupType_CLANK_ONLY,
+		buildbucket.Verify,
+		[]string{
+			config.PlanCrOSBase,
+			config.PlanCrOS},
+		true,
+	},
+	{
+		"cros android verify",
+		tlw.DUTSetupType_CROS_ANDROID,
+		buildbucket.Verify,
+		[]string{
+			config.PlanCrOSBase,
+			config.PlanCrOS},
 		true,
 	},
 	{

@@ -39,6 +39,20 @@ func CrosRepairConfig() *Configuration {
 		}}
 }
 
+// CrosVerifyConfig provides config for verify testbed in the lab.
+func CrosVerifyConfig() *Configuration {
+	plans := CrosRepairConfig().GetPlans()
+	// remove closing plan as it will be added by default.
+	delete(plans, PlanClosing)
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOSBase,
+			PlanCrOS,
+		},
+		Plans: plans,
+	}
+}
+
 // CrosRepairWithDeepRepairConfig provides config for combination of deep repair + normal repair.
 func CrosRepairWithDeepRepairConfig() *Configuration {
 	return &Configuration{
@@ -73,6 +87,50 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 		}}
 }
 
+// MHRepairConfig provides config for repair AndroidOS setup.
+func MHRepairConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOSBase,
+			PlanDolos,
+			PlanServo,
+			PlanBluetoothPeer,
+			PlanWifiRouter,
+			PlanCrOS,
+			PlanChameleon,
+			PlanHMR,
+			PlanAMT,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanServo:         setAllowFail(servoRepairPlan(), true),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeRepair), false),
+			PlanCrOS:          setAllowFail(mhRepairPlan(), false),
+			PlanChameleon:     setAllowFail(chameleonPlan(), true),
+			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
+			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
+			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
+			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanClosing:       setAllowFail(crosClosePlan(), true),
+		},
+	}
+}
+
+// MHVerifyConfig provides config for verify AndroidOS setup.
+func MHVerifyConfig() *Configuration {
+	plans := MHRepairConfig().GetPlans()
+	// remove closing plan as it will be added by default.
+	delete(plans, PlanClosing)
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOSBase,
+			PlanCrOS,
+		},
+		Plans: plans,
+	}
+}
+
 // MHRepairWithDeepRepairConfig provides config for combination of deep repair + normal repair.
 func MHRepairWithDeepRepairConfig() *Configuration {
 	return &Configuration{
@@ -105,36 +163,6 @@ func MHRepairWithDeepRepairConfig() *Configuration {
 			PlanAMT:            setAllowFail(amtRepairPlan(), true),
 			PlanClosing:        setAllowFail(crosClosePlan(), true),
 		}}
-}
-
-// MHRepairConfig provides config for repair AndroidOS setup in the MH.
-func MHRepairConfig() *Configuration {
-	return &Configuration{
-		PlanNames: []string{
-			PlanCrOSBase,
-			PlanDolos,
-			PlanServo,
-			PlanBluetoothPeer,
-			PlanWifiRouter,
-			PlanCrOS,
-			PlanChameleon,
-			PlanHMR,
-			PlanAMT,
-			PlanClosing,
-		},
-		Plans: map[string]*Plan{
-			PlanServo:         setAllowFail(servoRepairPlan(), true),
-			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeRepair), false),
-			PlanCrOS:          setAllowFail(mhRepairPlan(), false),
-			PlanChameleon:     setAllowFail(chameleonPlan(), true),
-			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
-			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
-			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
-			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
-			PlanAMT:           setAllowFail(amtRepairPlan(), true),
-			PlanClosing:       setAllowFail(crosClosePlan(), true),
-		},
-	}
 }
 
 // CrosDeployConfig provides config for deploy cros setup in the lab.

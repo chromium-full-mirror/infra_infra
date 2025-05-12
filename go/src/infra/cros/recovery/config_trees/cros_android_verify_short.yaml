@@ -1,0 +1,1471 @@
+plans:
+    - name: cros_base
+      criticalactions:
+        - name: 'Set state: repair_failed (''dut_set_state'')'
+        - name: Start ADB-base ('ctr_start_adb_container') (time:'2m0s')
+          conditions:
+            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+            - name: CrosToolRunner is up ('ctr_is_up')
+        - name: Start Servo-Nexus ('ctr_servo_nexus_start_container') (time:'4m0s')
+          conditions:
+            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+            - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
+            - name: CrosToolRunner is up ('ctr_is_up')
+    - name: cros
+      criticalactions:
+        - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+        - name: Set CacheService address ('cache_service_address_detection') (RUN_ONCE)
+          conditions:
+            - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
+        - name: Has repair-request for re-image USB-key ('dut_has_any_repair_requests')
+          recoveries:
+            - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+              dependencies:
+                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+        - name: Has repair-request for reflash-firmware ('dut_has_any_repair_requests')
+          recoveries:
+            - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: 'Android: Has repair-request for re-image by USB-key (''dut_has_any_repair_requests'')'
+          recoveries:
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Android:Device is pingable ('cros_ping') (ALWAYS_RUN) (time:'15s')
+          recoveries:
+            - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: is_servo_v4p1_by_serial_number
+              dependencies:
+                - name: Reset servo_v4.1 ethernet power ('servo_v4p1_network_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Place reboot request for labstation ('sample_fail')
+              conditions:
+                - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
+              dependencies:
+                - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
+        - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
+          recoveries:
+            - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Android is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+          recoveries:
+            - name: Reboot by ADB (Allow to fail) ('ctr_adb_command') (ALWAYS_RUN)
+              conditions:
+                - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+            - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: is_servo_v4p1_by_serial_number
+              dependencies:
+                - name: Reset servo_v4.1 ethernet power ('servo_v4p1_network_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: RPM config present ('device_has_rpm_info')
+                - name: rpm_action_enabled
+              dependencies:
+                - name: rpm_power_cycle
+                - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
+                - name: Try cold reset DUT by servo (Allow to fail) ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: is_servo_type_ccd
+                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+              dependencies:
+                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                  conditions:
+                    - name: is_servo_type_ccd
+                - name: Wait to be SSHable (short waiting) ('cros_access') (ALWAYS_RUN) (time:'30s')
+            - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
+                  conditions:
+                    - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Place reboot request for labstation ('sample_fail')
+              conditions:
+                - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
+              dependencies:
+                - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
+        - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+          recoveries:
+            - name: Reboot by ADB (Allow to fail) ('ctr_adb_command') (ALWAYS_RUN)
+              conditions:
+                - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+            - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
+                  conditions:
+                    - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Read bootId ('cros_read_bootid')
+          recoveries:
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+        - name: Device Uptime (Allow to fail) ('cros_uptime_print')
+        - name: 'Android: Has repair-request for re-provision (''dut_has_any_repair_requests'')'
+          recoveries:
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Provision to stable-version if required ('android_is_on_os_stable_version')
+          conditions:
+            - name: Is Android based? ('cros_is_android_based') (ALWAYS_RUN)
+            - name: Is in stable version required pools ('dut_is_in_pool') (RUN_ONCE)
+          recoveries:
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                  dependencies:
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
+        - name: Verify by host that DUT has default GBB flags ('cros_has_default_gbb_flags')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
+              conditions:
+                - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
+          recoveries:
+            - name: Reset GBB flags by host and reboot ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+              dependencies:
+                - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                  dependencies:
+                    - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                  dependencies:
+                    - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Set default GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+              dependencies:
+                - name: Set defautlt GBB flags by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Quick provision OS ('sample_pass')
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Internal storage is responsive ('cros_is_file_system_writable')
+                  dependencies:
+                    - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
+                    - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
+              conditions:
+                - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
+          recoveries:
+            - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+              dependencies:
+                - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+            - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Run for Android boards ('dut_check_board') (RUN_ONCE)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Quick provision OS ('sample_pass')
+              conditions:
+                - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Internal storage is responsive ('cros_is_file_system_writable')
+                  dependencies:
+                    - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
+                    - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Missing HWID ('sample_fail')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only in main lab ('sample_fail')
+              conditions:
+                - name: Run only on Satlab ('dut_regex_name_match')
+            - name: Is HWID empty ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
+          dependencies:
+            - name: 'Set state: needs_deploy (''dut_set_state'')'
+        - name: Match HWID (Allow to fail) ('cros_match_hwid_to_inventory')
+          conditions:
+            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
+          recoveries:
+            - name: Restore HWID from inventory (Allow to fail) ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+              dependencies:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
+                - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')
+                  dependencies:
+                    - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                      dependencies:
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                    - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                      dependencies:
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
+                - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+        - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
+        - name: All repair-requests resolved ('dut_has_no_repair_requests')
+        - name: Reset DUT-state reason ('dut_reset_state_reason')
+        - name: Servo is in WORKING state ('servo_match_state')
+          conditions:
+            - name: Pools require Servo in WORKING state ('dut_is_in_pool') (RUN_ONCE)
+        - name: 'Set state: ready (''dut_set_state'') (RUN_ONCE)'
+          dependencies:
+            - name: All repair-requests resolved ('dut_has_no_repair_requests')
+            - name: Reset DUT-state reason ('dut_reset_state_reason')

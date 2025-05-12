@@ -234,6 +234,13 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 	}
 	switch tn {
+	case buildbucket.Verify:
+		switch ds {
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
+			return config.CrosVerifyConfig(), nil
+		case tlw.DUTSetupType_CROS_ANDROID, tlw.DUTSetupType_CLANK_ONLY:
+			return config.MHVerifyConfig(), nil
+		}
 	case buildbucket.Recovery:
 		switch ds {
 		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
