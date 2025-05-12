@@ -87,7 +87,7 @@ func (s *pinpointServer) getRequestingUserEmail(ctx context.Context) (string, er
 		grpclog.Errorf("Failed decoding auth = '%v'; error = %s", auth, err)
 		return "", status.Errorf(codes.InvalidArgument, "malformed %s: %v", EndpointsHeader, err)
 	}
-	userInfo := make(map[string]interface{})
+	userInfo := make(map[string]any)
 	if json.Unmarshal(decoded, &userInfo) != nil {
 		return "", status.Errorf(codes.InvalidArgument, "malformed %s: %v", EndpointsHeader, err)
 	}

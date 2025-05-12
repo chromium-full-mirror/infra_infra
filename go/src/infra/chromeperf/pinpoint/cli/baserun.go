@@ -108,7 +108,7 @@ func (r *baseCommandRun) httpClient(ctx context.Context) (*http.Client, error) {
 	return httpClient, nil
 }
 
-func (r *baseCommandRun) writeJSON(out io.Writer, data interface{}) error {
+func (r *baseCommandRun) writeJSON(out io.Writer, data any) error {
 	enc := json.NewEncoder(out)
 	enc.SetIndent(r.jsonPrefix, r.jsonIndent)
 	if err := enc.Encode(data); err != nil {
@@ -186,7 +186,7 @@ func (f *clientFactory) init(ctx context.Context, opts auth.Options) {
 }
 
 func (f *clientFactory) grpc(endpoint string) (*grpc.ClientConn, error) {
-	conn, err, _ := f.grpcConns.Do(endpoint, func() (interface{}, error) {
+	conn, err, _ := f.grpcConns.Do(endpoint, func() (any, error) {
 		cred, err := f.idTokenAuth.PerRPCCredentials()
 		if err != nil {
 			return nil, errors.Annotate(err, "failed get per rpc credentials from luci auth").Err()

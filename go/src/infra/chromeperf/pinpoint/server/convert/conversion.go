@@ -225,22 +225,22 @@ func (t *microTime) UnmarshalJSON(b []byte) error {
 }
 
 type jsonJob struct {
-	Arguments           map[string]string       `json:"arguments"`
-	BatchId             string                  `json:"batch_id"`
-	BugID               int64                   `json:"bug_id"`
-	ComparisonMode      string                  `json:"comparison_mode,omitempty"`
-	ComparisonMagnitude float64                 `json:"comparison_magnitude,omitempty"`
-	Cfg                 string                  `json:"configuration,omitempty"`
-	Created             microTime               `json:"created,omitempty"`
-	Exception           *map[string]interface{} `json:"exception,omitempty"`
-	InitialAttemptCount string                  `json:"initial_attempt_count,omitempty"`
-	JobID               string                  `json:"job_id,omitempty"`
-	Metric              string                  `json:"metric,omitempty"`
-	Name                string                  `json:"name,omitempty"`
-	Project             *string                 `json:"project,omitempty"`
-	Quests              []string                `json:"quests,omitempty"`
-	ResultsURL          string                  `json:"results_url,omitempty"`
-	StartedTime         microTime               `json:"started_time,omitempty"`
+	Arguments           map[string]string `json:"arguments"`
+	BatchId             string            `json:"batch_id"`
+	BugID               int64             `json:"bug_id"`
+	ComparisonMode      string            `json:"comparison_mode,omitempty"`
+	ComparisonMagnitude float64           `json:"comparison_magnitude,omitempty"`
+	Cfg                 string            `json:"configuration,omitempty"`
+	Created             microTime         `json:"created,omitempty"`
+	Exception           *map[string]any   `json:"exception,omitempty"`
+	InitialAttemptCount string            `json:"initial_attempt_count,omitempty"`
+	JobID               string            `json:"job_id,omitempty"`
+	Metric              string            `json:"metric,omitempty"`
+	Name                string            `json:"name,omitempty"`
+	Project             *string           `json:"project,omitempty"`
+	Quests              []string          `json:"quests,omitempty"`
+	ResultsURL          string            `json:"results_url,omitempty"`
+	StartedTime         microTime         `json:"started_time,omitempty"`
 	State               []struct {
 		Attempts []struct {
 			Executions []struct {

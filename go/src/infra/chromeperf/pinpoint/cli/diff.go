@@ -117,7 +117,7 @@ func diffJob(job *pppb.Job) (map[string]customDiffReporter, error) {
 	}
 	comps := []struct {
 		label       string
-		left, right interface{}
+		left, right any
 	}{
 		{"Commit", e.GetBaseCommit(), e.GetExperimentCommit()},
 		{"Patch", e.GetBasePatch(), e.GetExperimentPatch()},
@@ -138,8 +138,8 @@ type executionSummary struct {
 func botsAndBuildsForAttempts(attempts []*pppb.Attempt) ([]string, []string) {
 	// TODO: Expand the diffs to include data from execution *tasks* as well.
 	ret := []executionSummary{}
-	bots := map[string]interface{}{}
-	builds := map[string]interface{}{}
+	bots := map[string]any{}
+	builds := map[string]any{}
 
 	for _, a := range attempts {
 		for _, e := range a.GetExecutions() {

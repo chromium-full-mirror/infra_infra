@@ -39,7 +39,7 @@ type Template struct {
 
 // Execute applies the data to the API response template and writes the result
 // to the provided Writer.
-func (t *Template) Execute(dst io.Writer, data interface{}) error {
+func (t *Template) Execute(dst io.Writer, data any) error {
 	return t.tmpls.ExecuteTemplate(dst, t.name, data)
 }
 

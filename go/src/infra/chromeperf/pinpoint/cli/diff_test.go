@@ -73,7 +73,7 @@ func TestDiffJob(t *testing.T) {
 	}
 }
 
-func newStruct(in map[string]interface{}) *structpb.Struct {
+func newStruct(in map[string]any) *structpb.Struct {
 	ret, err := structpb.NewStruct(in)
 	if err != nil {
 		panic(err)
@@ -124,7 +124,7 @@ func TestDiffBuilds(t *testing.T) {
 			},
 			&bbpb.Build{
 				Output: &bbpb.Build_Output{
-					Properties: newStruct(map[string]interface{}{
+					Properties: newStruct(map[string]any{
 						"swarm_hashes_refs/heads/main(at){#938071}_with_patch": "0c8b5db3bf591801b94f62aed9ea5f2e1e24b77b1533752fd360e9220fd8931d/487",
 					}),
 				},

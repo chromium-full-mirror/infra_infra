@@ -82,7 +82,7 @@ func (h legacyHandler) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
 
 type legacyResult struct {
 	tmpl Template
-	data interface{}
+	data any
 }
 
 // Handler returns a Handler which implements the entire REST API for Server.

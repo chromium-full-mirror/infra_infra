@@ -22,9 +22,9 @@ import (
 
 const testPriority = 42
 
-func shouldContainMap(actual interface{}, expected ...interface{}) string {
+func shouldContainMap(actual any, expected ...any) string {
 	v := actual.(url.Values)
-	e := expected[0].(map[string]interface{})
+	e := expected[0].(map[string]any)
 
 	// Go through the list of expected keys and values and compare.
 	for key, value := range e {
@@ -86,37 +86,37 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we have the user agent.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"user_agent": "pinpoint/unittest",
 				}))
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 
 				// Check that priority is unset
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"priority": "0"}))
 			})
 
@@ -137,7 +137,7 @@ func TestSimpleConversions(t *testing.T) {
 				v, err := JobToValues(telemetryJob, "user@example.com")
 				assert.Loosely(t, err, should.BeNil)
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"priority": fmt.Sprintf("%d", testPriority)}))
 			})
 
@@ -160,27 +160,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 
@@ -199,26 +199,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check the conversion of values to maps.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
 					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 			})
@@ -245,27 +245,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 
@@ -290,27 +290,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 
@@ -329,26 +329,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check the conversion of values to maps.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
 					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 			})
@@ -392,27 +392,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
@@ -439,27 +439,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
@@ -480,26 +480,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check the conversion of values to maps.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
 					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
@@ -529,27 +529,27 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
@@ -577,20 +577,20 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
@@ -598,7 +598,7 @@ func TestSimpleConversions(t *testing.T) {
 
 				// Check that we also get the bisection details correct.
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
@@ -620,26 +620,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check the conversion of values to maps.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
 					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
 				}))
 
 				// Check that we also get the bisection details correct.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de"}))
 			})
@@ -730,26 +730,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 
@@ -774,7 +774,7 @@ func TestSimpleConversions(t *testing.T) {
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"end_git_hash": "60061ec0de",
 				}))
 			})
@@ -797,26 +797,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 
@@ -842,26 +842,26 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1",
 					"extra_test_args":  `["--browser","some-browser"]`,
@@ -891,33 +891,33 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 					"batch_id":      "defined-job-id",
 				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
 					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1",
 					"extra_test_args":  `["--browser","some-browser"]`,
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"initial_attempt_count": "42",
 				}))
 			})
@@ -934,24 +934,24 @@ func TestSimpleConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 				}))
 
 				// Check the conversion of values to maps.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
 					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"configuration":   "some-config",
 					"comparison_mode": "try",
 				}))
 
-				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]any{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 			})
