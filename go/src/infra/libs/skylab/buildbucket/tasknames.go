@@ -23,6 +23,9 @@ const (
 	AuditStorage TaskName = "audit_storage"
 	// Audit is used to run audit task of USB drive.
 	AuditUSB TaskName = "audit_usb"
+	// Task used to run verify flow in the lab.
+	// The verify flow is more lighter that recovery/repair flows.
+	Verify TaskName = "verify"
 	// Task used to run auto recovery/repair flow in the lab.
 	Recovery TaskName = "recovery"
 	// Task used to run deep repair flow in the lab.
@@ -69,6 +72,8 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return AuditRPM, nil
 	case "repair", "recovery":
 		return Recovery, nil
+	case "verify", "check-only":
+		return Verify, nil
 	case "mhrepair", "mh_recovery", "mh-recovery", "mh-repair", "mh_repair":
 		return MHRecovery, nil
 	case "deep-repair", "deep_repair":

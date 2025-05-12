@@ -39,6 +39,9 @@ var TaskNameToBuilderPerVersionCases = []struct {
 	{"repair-latest", Recovery, CIPDLatest},
 	{"repair", MHRecovery, CIPDProd},
 	{"repair-latest", MHRecovery, CIPDLatest},
+	// Verify tasks only used in MH and not scheduled by BB.
+	{"custom", Verify, CIPDProd},
+	{"custom-latest", Verify, CIPDLatest},
 	{"repair", DeepRecovery, CIPDProd},
 	{"repair-latest", DeepRecovery, CIPDLatest},
 	{"deploy", Deploy, CIPDProd},
@@ -48,8 +51,7 @@ var TaskNameToBuilderPerVersionCases = []struct {
 	{"custom", Custom, CIPDProd},
 	{"custom-latest", Custom, CIPDLatest},
 	{"custom", InvalidTaskName, CIPDProd},
-	{"custom-latest", InvalidTaskName, CIPDLatest},
-}
+	{"custom-latest", InvalidTaskName, CIPDLatest}}
 
 func TestTaskNameToBuilderPerVersion(t *testing.T) {
 	for i, c := range TaskNameToBuilderPerVersionCases {
@@ -75,6 +77,7 @@ func TestNormalizeTaskName(t *testing.T) {
 		{"audit storage", []string{"verify-dut-storage", "storage", "audit-storage", "audit_storage"}, AuditStorage, false},
 		{"adit rpm", []string{"verify-rpm-config", "rpm config", "audit-rpm", "audit_rpm"}, AuditRPM, false},
 		{"repair", []string{"repair", "recovery"}, Recovery, false},
+		{"verify", []string{"verify", "check-only"}, Verify, false},
 		{"repair MH", []string{"mhrepair", "mh_recovery", "mh-recovery", "mh-repair", "mh_repair"}, MHRecovery, false},
 		{"deep repair", []string{"deep-repair", "deep_repair"}, DeepRecovery, false},
 		{"deploy", []string{"deploy"}, Deploy, false},
