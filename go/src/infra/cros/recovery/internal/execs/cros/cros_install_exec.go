@@ -7,6 +7,7 @@ package cros
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -307,8 +308,9 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		} else if crosInstall {
 			// The path is modified path which look like `chromeos-image-archive/nami-kernelnext-release/R137-16253.0.0`
 			// where `chromeos-image-archive` is defined by envoroment where it runs.
-			path := gsCrOSImageBucket + recoveryVersion.GetOsImagePath()
-			installCMD = fmt.Sprintf("cros-install %s %s", path[5:], cachingIPAddr)
+			bucket := strings.TrimPrefix(gsCrOSImageBucket, "gs://")
+			path := filepath.Join(bucket, recoveryVersion.GetOsImagePath())
+			installCMD = fmt.Sprintf("cros-install %s %s", path, cachingIPAddr)
 		}
 	}
 
