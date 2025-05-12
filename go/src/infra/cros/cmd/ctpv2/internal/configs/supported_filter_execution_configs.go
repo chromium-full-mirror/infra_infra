@@ -51,7 +51,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs
 		PrepareFilterContainersNoExecutor)
 
 	mainConfigs = append(mainConfigs,
-		ContainerReadLogsContainerManagerExecutor)
+		ContainerReadLogsContainerManagerExecutor.WithRequired(true))
 
 	for range totalFilters {
 		mainConfigs = append(mainConfigs,
@@ -59,7 +59,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs
 		)
 	}
 	mainConfigs = append(mainConfigs,
-		ContainerCloseLogsContainerManagerExecutor)
+		ContainerCloseLogsContainerManagerExecutor.WithRequired(true))
 
 	// Done sending requests to the container manager
 	mainConfigs = append(mainConfigs,

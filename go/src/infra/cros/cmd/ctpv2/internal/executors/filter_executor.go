@@ -156,7 +156,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if response == nil || response.Address == nil {
 		return nil, fmt.Errorf("error while getting filter endpoint, found nil")
 	}
-	defer func() {
+	go func() {
 		cmd.ContainerLogsChannel <- &commontypes.ContainerLogInfo{
 			Name:        cmd.ContainerInfo.Request.DynamicIdentifier,
 			LogLocation: response.LogLocation,

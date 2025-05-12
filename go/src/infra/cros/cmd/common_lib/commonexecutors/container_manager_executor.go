@@ -65,16 +65,19 @@ func (ex *ContainerManagerExecutor) ExecuteCommand(ctx context.Context, cmdInter
 // StopManager indicates to the request channel that a producer
 // is no longer using the container manager.
 func (ex *ContainerManagerExecutor) StopManager(ctx context.Context, cmd *commoncommands.ContainerManagerStopCmd) error {
+	responseChannel := make(chan *commontypes.ContainerManagementResponse)
 	cmd.RequestChannel <- commontypes.ContainerManagementRequest{
 		ContainerInstruction: commontypes.FinishedUsingManager,
+		ResponseChannel:      responseChannel,
 	}
+	<-responseChannel
 
 	return nil
 }
 
 // tryCloseManager decrements the running producer count
 // and if it reaches zero, performs the closing logic.
-func (ex *ContainerManagerExecutor) tryCloseManager(ctx context.Context, requestChannel chan commontypes.ContainerManagementRequest) {
+func (ex *ContainerManagerExecutor) tryCloseManager(ctx context.Context, request *commontypes.ContainerManagementRequest, requestChannel chan commontypes.ContainerManagementRequest) {
 	if ex.RunningProducersCount.Add(-1) == 0 {
 		logging.Infof(ctx, "Closing manager as there are no more running producers")
 		if requestChannel != nil {
@@ -84,6 +87,7 @@ func (ex *ContainerManagerExecutor) tryCloseManager(ctx context.Context, request
 	} else {
 		logging.Infof(ctx, "Could not close manager as there are still %d producers running", ex.RunningProducersCount.Load())
 	}
+	request.ResponseChannel <- nil
 }
 
 // StartManager starts the manager process.
@@ -151,7 +155,7 @@ func (ex *ContainerManagerExecutor) ProcessRequests(ctx context.Context, request
 				logging.Infof(ctx, "%s finished", hashKey)
 				ex.markContainerFinished(ctx, &request, hashKey)
 			case commontypes.FinishedUsingManager:
-				ex.tryCloseManager(ctx, forwardingChannel)
+				ex.tryCloseManager(ctx, &request, forwardingChannel)
 			}
 		}
 
