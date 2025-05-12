@@ -286,10 +286,13 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 func buildSchedulerInfo(v1 *test_platform.Request, bucket string) *testapi.SchedulerInfo {
 	dryRun := v1.GetParams().GetDryRunCtpv2()
 
+	// Fetch the list of pools that cannot run in Scheduke.
+	ctpv2WitFifo := common.GetCtpv2WithFifoList()
+
 	// If in the above list, set runWithoutScheduke to true
 	runWithoutScheduke := false
 	// If external(partner) bucket, don't run through scheduke
-	if strings.Contains(bucket, "external") {
+	if strings.Contains(bucket, "external") || slices.Contains(ctpv2WitFifo, getSchedulingPool(v1)) {
 		runWithoutScheduke = true
 	}
 
