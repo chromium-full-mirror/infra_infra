@@ -172,13 +172,13 @@ func scheduledQueries(files []string) ([]scheduledQuery, error) {
 		query := scheduledQuery{query: string(bytes)}
 
 		name := nameRegex.FindStringSubmatch(query.query)
-		if name == nil || len(name) < 2 {
+		if len(name) < 2 {
 			return nil, fmt.Errorf("%s has no name specified", file)
 		}
 		query.name = strings.Trim(name[1], " ")
 
 		schedule := scheduleRegex.FindStringSubmatch(query.query)
-		if schedule == nil || len(schedule) < 2 {
+		if len(schedule) < 2 {
 			return nil, fmt.Errorf("%s has no schedule specified", file)
 		}
 		query.schedule = strings.Trim(schedule[1], " ")
