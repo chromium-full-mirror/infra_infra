@@ -11,8 +11,22 @@ import (
 func deepRepairCrosPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Deep-repair ChromeOS DUT",
+			"Mark labstation as servod is in-use",
+			"Mark base on OS-restriction",
+			"Deep-repair ChromeOS-based DUT",
 			"Deep-repair Flex DUT",
+			"Deep-repair Android-based DUT",
+		},
+		Actions: crosRepairActions(),
+	}
+}
+
+func deepMHRepairCrosPlan() *Plan {
+	return &Plan{
+		CriticalActions: []string{
+			"Mark labstation as servod is in-use",
+			"Mark base on OS-restriction",
+			"Deep-repair Android-based DUT",
 		},
 		Actions: crosRepairActions(),
 	}

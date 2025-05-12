@@ -45,6 +45,12 @@ var configTreeChangesCases = []struct {
 		"cros_deep_repair",
 	},
 	{
+		"CROS Android Deep AutoRepair",
+		tlw.DUTSetupType_CROS_ANDROID,
+		buildbucket.DeepRecovery,
+		"cros_android_deep_repair",
+	},
+	{
 		"CROS Deploy",
 		tlw.DUTSetupType_CROS,
 		buildbucket.Deploy,

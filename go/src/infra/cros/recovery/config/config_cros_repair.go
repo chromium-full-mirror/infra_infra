@@ -5121,7 +5121,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "servo_v4p1_network_reset",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Deep-repair ChromeOS DUT": {
+		"Deep-repair ChromeOS-based DUT": {
 			Docs: []string{
 				"Force repair DUT with FW flash by servo and reimage from USB-drive in dev mode.",
 				"The action doesn't use recovery boot.",
@@ -5130,6 +5130,9 @@ func crosRepairActions() map[string]*Action {
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
 				"Is a Chromebook",
+				"Can become ChromeOS-based",
+				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Mark labstation as servod is in-use",
@@ -5143,12 +5146,34 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
+		"Deep-repair Android-based DUT": {
+			Docs: []string{
+				"Force repair DUT with FW flash by servo and reimage from USB-drive in dev mode.",
+				"The action uses recovery boot.",
+			},
+			Conditions: []string{
+				"Recovery version has OS image path",
+				"Is recovery-version has firmware image path",
+				"Is a Chromebook",
+				"Is Android based by ADB or provision-info",
+				"Is servod running",
+				"Is servo USB key detected",
+			},
+			Dependencies: []string{
+				"Update FW and install Android OS from servo USB-drive",
+			},
+			ExecName: "sample_pass",
+		},
 		"Deep-repair Flex DUT": {
 			Docs: []string{
 				"Force repair DUT with reimage from USB-drive.",
 			},
 			Conditions: []string{
 				"Is Flex device",
+				"Recovery version has OS image path",
+				"Can become ChromeOS-based",
+				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
