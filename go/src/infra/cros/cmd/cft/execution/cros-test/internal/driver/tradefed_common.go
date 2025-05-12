@@ -21,8 +21,6 @@ const (
 	retryFailedRuns      = true
 	resultsUpload        = true
 	defaultGlobalLogPath = "/tmp"
-	GitMainALDev         = "git_main-al-dev"
-	GitMain              = "git_main"
 	tfprefix             = "tradefed."
 )
 
