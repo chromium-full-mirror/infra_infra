@@ -8,23 +8,6 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// DeepRepairConfig creates configuration to perform deep repair.
-// Configuration is not critical and do not update the state of the DUT.
-func DeepRepairConfig() *Configuration {
-	return &Configuration{
-		PlanNames: []string{
-			PlanServo,
-			PlanCrOS,
-			PlanClosing,
-		},
-		Plans: map[string]*Plan{
-			PlanServo:   deepRepairServoPlan(),
-			PlanCrOS:    deepRepairCrosPlan(),
-			PlanClosing: setAllowFail(crosClosePlan(), true),
-		},
-	}
-}
-
 func deepRepairCrosPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{

@@ -39,7 +39,6 @@ func getApplication() *cli.Application {
 			tasks.Recovery,
 			tasks.CustomProvision,
 			tasks.DownloadToUsbDrive,
-			tasks.DeepRepair,
 			tasks.EthernetHook,
 			tasks.RecoveryHWID,
 			tasks.RepairCBI,
