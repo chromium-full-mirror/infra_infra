@@ -86,7 +86,7 @@ func (f *createAccessoryKeysRun) Run(_ subcommands.Application, _ []string, _ su
 		IsPreMp:   f.isPreMp,
 		Version:   f.keyVersion,
 	})
-	var request interface{}
+	var request any
 	if err := json.Unmarshal([]byte(CreateAccessoryKeysRequest), &request); err != nil {
 		f.LogErr(err.Error())
 		return CmdError

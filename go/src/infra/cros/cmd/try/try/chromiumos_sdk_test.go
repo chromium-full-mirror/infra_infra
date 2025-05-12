@@ -153,7 +153,7 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 		assert.Assert(t, exists)
 		reviewersSlice := reviewers.GetListValue().AsSlice()
 		assert.Assert(t, len(reviewersSlice) == 1)
-		reviewerMap, ok := reviewersSlice[0].(map[string]interface{})
+		reviewerMap, ok := reviewersSlice[0].(map[string]any)
 		assert.Assert(t, ok)
 		assert.Assert(t, tc.expectedReviewerEmail == reviewerMap["email"])
 	}

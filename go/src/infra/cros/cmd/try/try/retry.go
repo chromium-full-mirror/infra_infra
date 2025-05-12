@@ -229,7 +229,7 @@ func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps
 	}
 
 	childBuildInfo := map[string]buildInfo{}
-	for _, v := range childBuildBBIDs.([]interface{}) {
+	for _, v := range childBuildBBIDs.([]any) {
 		bbid := v.(string)
 
 		buildData, err := r.bbClient.GetBuild(ctx, bbid)
@@ -370,7 +370,7 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 		return CmdError
 	}
 
-	checkpointProps := map[string]interface{}{
+	checkpointProps := map[string]any{
 		"retry":               true,
 		"original_build_bbid": r.originalBBID,
 	}
@@ -399,8 +399,8 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 	if recipe == "orchestrator" && hasFailedChild(childInfo) {
 		execStep = pb.RetryStep_RUN_FAILED_CHILDREN
 	}
-	checkpointProps["exec_steps"] = map[string]interface{}{
-		"steps": []interface{}{int32(execStep.Number())},
+	checkpointProps["exec_steps"] = map[string]any{
+		"steps": []any{int32(execStep.Number())},
 	}
 	if err := bb.SetProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {
 		r.LogErr(err.Error())
@@ -421,8 +421,8 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 				r.LogErr(err.Error())
 				return CmdError
 			}
-			steps := map[string]interface{}{
-				"steps": []interface{}{int32(execStep.Number())},
+			steps := map[string]any{
+				"steps": []any{int32(execStep.Number())},
 			}
 			subproperty := fmt.Sprintf("$chromeos/checkpoint.builder_exec_steps.%s", builder)
 			if err := bb.SetProperty(propsStruct, subproperty, steps); err != nil {
@@ -473,11 +473,11 @@ func (r *retryRun) processPaygenRetry(ctx context.Context, buildData *bbpb.Build
 		}
 	}
 
-	checkpointProps := map[string]interface{}{
+	checkpointProps := map[string]any{
 		"retry":               true,
 		"original_build_bbid": r.originalBBID,
-		"exec_steps": map[string]interface{}{
-			"steps": []interface{}{int32(pb.RetryStep_PAYGEN.Number())},
+		"exec_steps": map[string]any{
+			"steps": []any{int32(pb.RetryStep_PAYGEN.Number())},
 		},
 	}
 	if err := bb.SetProperty(propsStruct, "$chromeos/checkpoint", checkpointProps); err != nil {

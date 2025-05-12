@@ -180,7 +180,7 @@ func (r *chromiumOSSDKRun) runBuilder(ctx context.Context) error {
 
 // createBranchPolicy creates a struct representing a BranchPolicy message with the given CQ policy and reviewer.
 // BranchPolicy, SendToCqPolicy, and Reviewer are all proto messages defined in infra/recipes/recipes/generator.proto.
-func createBranchPolicy(cqPolicy, reviewerEmail string) map[string]interface{} {
+func createBranchPolicy(cqPolicy, reviewerEmail string) map[string]any {
 	// Values pulled from the SendToCqPolicy enum in generator.proto.
 	var sendToCQPolicy = map[string]int{
 		"do-nothing": 1,
@@ -189,10 +189,10 @@ func createBranchPolicy(cqPolicy, reviewerEmail string) map[string]interface{} {
 		"abandon":    4,
 		"submit":     5,
 	}[cqPolicy]
-	reviewer := map[string]interface{}{"email": reviewerEmail}
-	return map[string]interface{}{
+	reviewer := map[string]any{"email": reviewerEmail}
+	return map[string]any{
 		"pattern":                ".*",
-		"reviewers":              []interface{}{reviewer},
+		"reviewers":              []any{reviewer},
 		"no_existing_cls_policy": sendToCQPolicy,
 		"existing_cls_policy":    sendToCQPolicy,
 	}

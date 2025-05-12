@@ -80,7 +80,7 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		},
 		AddLoem: f.addLoem,
 	})
-	var request interface{}
+	var request any
 	if err := json.Unmarshal([]byte(createPreMPKeysRequest), &request); err != nil {
 		f.LogErr(err.Error())
 		return CmdError

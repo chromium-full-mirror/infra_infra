@@ -16,7 +16,7 @@ import (
 )
 
 // interfaceSlicetoStr converts a slice of interface{}s to a slice of strings.
-func interfaceSliceToStr(s []interface{}) []string {
+func interfaceSliceToStr(s []any) []string {
 	ret := make([]string, len(s))
 	for i := range s {
 		ret[i] = s[i].(string)

@@ -186,14 +186,14 @@ func (t *tryRunBase) getUserEmail(ctx context.Context) (string, error) {
 }
 
 // LogOut logs to stdout.
-func (t *tryRunBase) LogOut(format string, a ...interface{}) {
+func (t *tryRunBase) LogOut(format string, a ...any) {
 	if t.stdoutLog != nil {
 		t.stdoutLog.Printf(format, a...)
 	}
 }
 
 // LogOutIfVerbose logs to stdout if `-verbose` is set.
-func (t *tryRunBase) LogOutIfVerbose(format string, a ...interface{}) {
+func (t *tryRunBase) LogOutIfVerbose(format string, a ...any) {
 	if !t.verbose {
 		return
 	}
@@ -203,7 +203,7 @@ func (t *tryRunBase) LogOutIfVerbose(format string, a ...interface{}) {
 }
 
 // LogErr logs to stderr.
-func (t *tryRunBase) LogErr(format string, a ...interface{}) {
+func (t *tryRunBase) LogErr(format string, a ...any) {
 	if t.stderrLog != nil {
 		t.stderrLog.Printf(format, a...)
 	}
