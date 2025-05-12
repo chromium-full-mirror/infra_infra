@@ -82,7 +82,7 @@ plans:
             - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -125,7 +125,7 @@ plans:
               dependencies:
                 - name: servo_labstation_disk_cleanup
                 - name: Remove logs older 5 days ('servo_servod_old_logs_cleanup')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -143,7 +143,7 @@ plans:
             - name: Set state:NOT_CONNECTED ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
             - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -235,7 +235,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -299,7 +299,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -543,7 +543,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -808,7 +808,7 @@ plans:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                           dependencies:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:
@@ -1041,7 +1041,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
@@ -1165,7 +1165,7 @@ plans:
                           dependencies:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
-                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:
@@ -1290,7 +1290,7 @@ plans:
                           dependencies:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
-                - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+                - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:

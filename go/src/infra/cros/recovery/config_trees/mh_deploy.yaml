@@ -134,10 +134,9 @@ plans:
               exec_args:
                 - sleep:1
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -198,10 +197,9 @@ plans:
                   docs:
                     - Clean up the old servod logs which older than 5 days.
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -247,10 +245,9 @@ plans:
               docs:
                 - Try to power-cycle the servo via smart usbhub to recover it.
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -325,10 +322,9 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -545,10 +541,9 @@ plans:
               exec_args:
                 - sleep:1
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -679,10 +674,9 @@ plans:
                   docs:
                     - Clean up the old servod logs which older than 5 days.
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -738,10 +732,9 @@ plans:
               docs:
                 - Try to power-cycle the servo via smart usbhub to recover it.
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -1017,10 +1010,9 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -1194,10 +1186,9 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -1908,10 +1899,9 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -2726,10 +2716,9 @@ plans:
                             - name: Stop UART capture (Allow to fail)
                               exec_name: servod_stop_uart_capture
                 - name: Create request to reboot labstation (ALWAYS_RUN)
-                  exec_name: sample_fail
+                  exec_name: sample_pass
                   docs:
                     - Try to create reboot flag file request.
-                    - The action always fails as Servo will be fixed after reboot.
                   conditions:
                     - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
@@ -3424,10 +3413,9 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
             - name: Create request to reboot labstation (ALWAYS_RUN)
-              exec_name: sample_fail
+              exec_name: sample_pass
               docs:
                 - Try to create reboot flag file request.
-                - The action always fails as Servo will be fixed after reboot.
               conditions:
                 - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
@@ -3801,10 +3789,9 @@ plans:
                   docs:
                     - Try to power-cycle the servo via smart usbhub to recover it.
                 - name: Create request to reboot labstation (ALWAYS_RUN)
-                  exec_name: sample_fail
+                  exec_name: sample_pass
                   docs:
                     - Try to create reboot flag file request.
-                    - The action always fails as Servo will be fixed after reboot.
                   conditions:
                     - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
@@ -4177,10 +4164,9 @@ plans:
                   docs:
                     - Try to power-cycle the servo via smart usbhub to recover it.
                 - name: Create request to reboot labstation (ALWAYS_RUN)
-                  exec_name: sample_fail
+                  exec_name: sample_pass
                   docs:
                     - Try to create reboot flag file request.
-                    - The action always fails as Servo will be fixed after reboot.
                   conditions:
                     - name: Only applies to labstation
                       exec_name: servo_host_is_labstation

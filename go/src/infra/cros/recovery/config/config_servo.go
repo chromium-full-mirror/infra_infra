@@ -1720,7 +1720,6 @@ func servoPlanActions() map[string]*Action {
 		"Create request to reboot labstation": {
 			Docs: []string{
 				"Try to create reboot flag file request.",
-				"The action always fails as Servo will be fixed after reboot.",
 			},
 			Conditions: []string{
 				"Only applies to labstation",
@@ -1728,7 +1727,7 @@ func servoPlanActions() map[string]*Action {
 			Dependencies: []string{
 				"cros_create_reboot_request",
 			},
-			ExecName:   "sample_fail",
+			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Reflash Cr50 fw and stop": {
