@@ -49,9 +49,7 @@ func TestAbortingSocket(t *testing.T) {
 	defer f()
 	ctx = s.AttachContext(ctx)
 	Abort(s.Path)
-	select {
-	case <-ctx.Done():
-	}
+	<-ctx.Done()
 	if ctx.Err() != context.Canceled {
 		t.Errorf("Not canceled after we sent abort")
 	}
@@ -76,9 +74,7 @@ func TestClosingSocket(t *testing.T) {
 	defer f()
 	ctx = s.AttachContext(ctx)
 	s.Close()
-	select {
-	case <-ctx.Done():
-	}
+	<-ctx.Done()
 	if ctx.Err() != context.Canceled {
 		t.Errorf("Not canceled after we closed socket")
 	}

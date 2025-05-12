@@ -410,13 +410,11 @@ func signalPeriodically(ctx context.Context, interval time.Duration) chan checkT
 	go func() {
 		defer close(out)
 		for {
-			select {
-			case res := <-clock.After(ctx, interval):
-				if res.Err != nil {
-					return // context closed
-				}
-				out <- normalCheck
+			res := <-clock.After(ctx, interval)
+			if res.Err != nil {
+				return // context closed
 			}
+			out <- normalCheck
 		}
 	}()
 	return out

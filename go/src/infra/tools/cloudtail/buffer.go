@@ -329,16 +329,14 @@ func (b *pushBufferImpl) pushWithRetries(ctx context.Context, entries []*Entry) 
 			return err
 		}
 		logging.WithError(err).Warningf(ctx, "failed to send %d entries, retrying in %s...", len(entries), delay)
-		select {
-		case res := <-clock.After(clock.Tag(ctx, "retry-timer"), delay):
-			if res.Err != nil {
-				return res.Err // the context was canceled
-			}
-			delay *= 2
-			// Safeguard against an overflow in unit tests.
-			if delay > 30*time.Minute {
-				delay = 30 * time.Minute
-			}
+		res := <-clock.After(clock.Tag(ctx, "retry-timer"), delay)
+		if res.Err != nil {
+			return res.Err // the context was canceled
+		}
+		delay *= 2
+		// Safeguard against an overflow in unit tests.
+		if delay > 30*time.Minute {
+			delay = 30 * time.Minute
 		}
 	}
 }

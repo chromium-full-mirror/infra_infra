@@ -77,9 +77,6 @@ linters:
         # https://staticcheck.dev/docs/checks#QF1012
         # Use fmt.Fprintf(x, ...) instead of x.Write(fmt.Sprintf(...))
         - "-QF1012"
-        # https://staticcheck.dev/docs/checks#S1000
-        # Use plain channel send or receive instead of single-case select
-        - "-S1000"
         # https://staticcheck.dev/docs/checks#S1009
         # Omit redundant nil check on slices, maps, and channels
         - "-S1009"
@@ -138,6 +135,10 @@ linters:
       - path: (.+)\.go$
         # Exclude specific error checking patterns
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+      - path: cmd/cros_test_platform/luciexe/execute/execute_test.go|cros/cmd/cft/dut/cros-dut/dutssh/unix_socket_bridge.go
+        # https://staticcheck.dev/docs/checks#S1000
+        # Use plain channel send or receive instead of single-case select
+        text: "^S1000: "
       - linters:
         - unused
         # Ignore `_kind` field in struct for datastore.
