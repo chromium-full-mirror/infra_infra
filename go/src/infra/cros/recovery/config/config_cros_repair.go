@@ -35,7 +35,6 @@ func mhRepairPlan() *Plan {
 			"Device Uptime",
 			"Android: Has repair-request for re-provision",
 			"Provision to stable-version if required",
-			"Reset provisioned info",
 			"Verify by host that DUT has default GBB flags",
 			"Verify that DUT is not in DEV mode",
 			"Missing HWID",
@@ -76,7 +75,7 @@ func crosRepairActions() map[string]*Action {
 				"Run DUT readiness checks for Chrome based DUTs.",
 			},
 			Conditions: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 			},
 			Dependencies: []string{
 				"Mark as ChromeOS based",
@@ -229,7 +228,7 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
-		"Is ChromeOS based?": {
+		"Run only on ChromeOS based DUT": {
 			Docs: []string{
 				"Check if device is marked as ChromeOS based",
 			},
@@ -463,7 +462,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Can become ChromeOS-based",
 				"Is Android based by ADB or provision-info",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
 				"Is servod running",
@@ -492,7 +491,7 @@ func crosRepairActions() map[string]*Action {
 				"Audit DUT internal storage.",
 			},
 			Conditions: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 			},
 			Dependencies: []string{
 				"Device is accessible (simple)",
@@ -554,7 +553,7 @@ func crosRepairActions() map[string]*Action {
 				"HWID change will be checked on re-run.",
 			},
 			Dependencies: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is HWID known",
 				"Device is accessible",
 				"Set HWID of the DUT from inventory",
@@ -815,7 +814,7 @@ func crosRepairActions() map[string]*Action {
 		"Check power sources": {
 			Docs: []string{"Check for the AC power, and battery charging capability."},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"cros_is_not_virtual_machine",
 			},
 			Dependencies: []string{
@@ -930,7 +929,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that TPM statuses is ok.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"cros_is_not_virtual_machine",
 				"cros_is_tpm_present",
 			},
@@ -996,7 +995,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231609148: Flex device don't have security chip and gsctool.
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 				"DUT has Cr50 phase label",
 				"Is gsctool present on the host",
@@ -1012,7 +1011,7 @@ func crosRepairActions() map[string]*Action {
 				"Ensure that firmware is in good state.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
@@ -1029,7 +1028,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks the CBI contents for corruption. go/cbi-auto-recovery-dd",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"CBI is present",
 				"UFS contains CBI contents",
 			},
@@ -1102,7 +1101,7 @@ func crosRepairActions() map[string]*Action {
 				"Store CBI contents in UFS",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"CBI is present",
 				"UFS does not contain CBI contents",
 			},
@@ -1163,7 +1162,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that keys: 'should_send_rlz_ping', 'gbind_attribute', 'ubind_attribute' are present in vpd RW_VPD partition.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
@@ -1180,7 +1179,7 @@ func crosRepairActions() map[string]*Action {
 				"Set VPD region as us.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_set_vpd_value",
 			ExecExtraArgs: []string{
@@ -1194,7 +1193,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that value for key 'stable_device_secret_DO_NOT_SHARE' present.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_check_vpd_value",
 			ExecExtraArgs: []string{
@@ -1217,7 +1216,7 @@ func crosRepairActions() map[string]*Action {
 				"Check whether the RW VPD keys can be listed without any errors.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_can_list_rw_vpd_keys",
 			RecoveryActions: []string{
@@ -1242,7 +1241,7 @@ func crosRepairActions() map[string]*Action {
 				"This action is not critical, and only logs any missing RW VPD keys.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName:               "cros_are_required_rw_vpd_keys_present",
 			AllowFailAfterRecovery: true,
@@ -1274,7 +1273,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Verify servo keyboard firmware": {
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 				"Is servod running",
 				"is_servo_keyboard_image_tool_present",
@@ -1441,7 +1440,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"servod_control_exist_for_mac_address",
 			},
 			ExecName:               "servo_audit_nic_mac_address",
@@ -1529,7 +1528,7 @@ func crosRepairActions() map[string]*Action {
 				"Check if the version of RO firmware on DUT matches the stable firmware version.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 				"Check stable firmware version exists",
 				"Is recovery-version has firmware image path",
@@ -1621,7 +1620,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231609148: Flex device don't have security chip and gsctool.
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"DUT has Cr50 phase label",
 			},
 			Dependencies: []string{
@@ -1646,7 +1645,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:234761994, Flex device does not have charge_full file)
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"cros_is_battery_expected",
 				"cros_is_not_virtual_machine",
 				"Battery is expected on device",
@@ -1716,7 +1715,7 @@ func crosRepairActions() map[string]*Action {
 				"Bluetooth tests can cause DUTS to get into a bad state, requiring a reboot to reset.",
 			},
 			Conditions: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 				"Has Bluetooth peers",
 			},
 			Dependencies: []string{
@@ -1751,7 +1750,7 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 1 hour.",
 			},
 			Conditions: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 			},
 			Dependencies: []string{
 				"Device is accessible (simple)",
@@ -2117,7 +2116,7 @@ func crosRepairActions() map[string]*Action {
 				"Firmware update on DUTs with incorrect tpm_fwver may fail due to firmware rollback protection.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -2138,7 +2137,7 @@ func crosRepairActions() map[string]*Action {
 				"Firmware update on DUTs with incorrect tpm_kernver may fail due to firmware rollback protection.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -2167,8 +2166,8 @@ func crosRepairActions() map[string]*Action {
 				"Check if the default boot drive is disk.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
-				"Is ChromeOS based?",
+				"Run only on ChromeOS hardware",
+				"Run only on ChromeOS based DUT",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -2186,7 +2185,7 @@ func crosRepairActions() map[string]*Action {
 				"Mostly devices in the lab required to be in Secure mode, not DEV mode.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Pools required to be in Secure mode",
 			},
 			ExecName: "cros_is_not_in_dev_mode",
@@ -2202,7 +2201,7 @@ func crosRepairActions() map[string]*Action {
 				"Check if the device booted with default GBB flags.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Pools required to be in Secure mode",
 			},
 			ExecName: "cros_has_default_gbb_flags",
@@ -2219,7 +2218,7 @@ func crosRepairActions() map[string]*Action {
 				fmt.Sprintf("Check if GBB 0x%x set to dev more.", gbb.DevUsbDefault),
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Setup has servo info",
 				"Pools required to manage FW on the device",
 			},
@@ -2240,7 +2239,7 @@ func crosRepairActions() map[string]*Action {
 				"This repair to set GBB to defaul and reboot.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Set defautlt GBB flags by servo",
@@ -2255,7 +2254,7 @@ func crosRepairActions() map[string]*Action {
 				fmt.Sprintf("Check if GBB 0x%x set to dev more.", gbb.DefaultFlags),
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Is servod running",
@@ -2280,7 +2279,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if device missing HWID because deployment was skipped.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Run only in main lab",
 				"Is HWID empty",
 			},
@@ -2296,7 +2295,7 @@ func crosRepairActions() map[string]*Action {
 				"Allowed to fail if HWID is not matched",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is HWID known",
 			},
 			ExecName: "cros_match_hwid_to_inventory",
@@ -2310,7 +2309,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if device missing serial number because deployment was skipped.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Run only in main lab",
 				"Is serial-number empty",
 			},
@@ -2324,7 +2323,7 @@ func crosRepairActions() map[string]*Action {
 				"Match serial number to value in inventory",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is serial-number known",
 			},
 			ExecName: "cros_match_serial_number_inventory",
@@ -2338,8 +2337,8 @@ func crosRepairActions() map[string]*Action {
 				"Restore serial number from inventory to the host",
 			},
 			Dependencies: []string{
-				"Is a Chromebook",
-				"Is ChromeOS based?",
+				"Run only on ChromeOS hardware",
+				"Run only on ChromeOS based DUT",
 			},
 			ExecName: "cros_restore_serial_number",
 		},
@@ -2408,7 +2407,7 @@ func crosRepairActions() map[string]*Action {
 				"Read storage type from DUT.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName:               "cros_update_storage_type_to_inventory",
 			RunControl:             RunControl_ALWAYS_RUN,
@@ -2449,7 +2448,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that internal storage is responsive",
 			},
 			Dependencies: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 				"Device is accessible",
 			},
 			ExecName: "cros_is_file_system_writable",
@@ -2612,7 +2611,7 @@ func crosRepairActions() map[string]*Action {
 				"Update the device_sku label from the device if not present in inventory data.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName:               "cros_update_device_sku",
 			AllowFailAfterRecovery: true,
@@ -2622,7 +2621,7 @@ func crosRepairActions() map[string]*Action {
 				"Update the dlm_sku_id label from the device if not present in inventory data.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName:               "cros_update_dlm_sku_id",
 			AllowFailAfterRecovery: true,
@@ -2807,7 +2806,7 @@ func crosRepairActions() map[string]*Action {
 				"This repair action is disable booting into dev-mode.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Disables booting into DEV-mode",
@@ -2824,7 +2823,7 @@ func crosRepairActions() map[string]*Action {
 				"This repair to set GBB to defaul and reboot.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -2868,7 +2867,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Is a Chromebook": {
+		"Run only on ChromeOS hardware": {
 			Docs: []string{
 				"Check that DUT is a Chromebook by checking for non-Chromebook boards",
 			},
@@ -2946,7 +2945,7 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 			},
 			Dependencies: []string{
@@ -3143,7 +3142,7 @@ func crosRepairActions() map[string]*Action {
 				"This action wraps the recovery action and waits for the device to come back online.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"DUT has CrOS EC",
 				"cros_is_battery_expected",
@@ -3192,7 +3191,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"DUT has CrOS EC",
@@ -3224,7 +3223,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Recovery version has OS image path",
 				"Is servod running",
 				"Is servo USB key detected",
@@ -3250,7 +3249,7 @@ func crosRepairActions() map[string]*Action {
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -3278,7 +3277,7 @@ func crosRepairActions() map[string]*Action {
 				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -3425,7 +3424,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Recovery version has OS image path",
 				"Is servod running",
 				"Is servo USB key detected",
@@ -3447,7 +3446,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 				"Recovery version has OS image path",
 			},
@@ -3738,7 +3737,7 @@ func crosRepairActions() map[string]*Action {
 				"Flex device are exampted from this check as they don't run cros firmware",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_fw_version",
@@ -3750,7 +3749,7 @@ func crosRepairActions() map[string]*Action {
 				"Satlab DUTs are exampted from this check given some early stage device don't have firmware branch GS bucket setup yet.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Run only in main lab",
 				"Has a stable-version service",
 			},
@@ -3812,7 +3811,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				//TODO(b:231627956): Flex board cannot run crossystem set_default_boot
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device booted from USB-drive",
 			},
 			ExecName: "sample_fail",
@@ -4020,7 +4019,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is recovery-version has firmware image path",
 				"Is servod running",
 			},
@@ -4133,7 +4132,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Is servo USB key detected",
 			},
@@ -4269,7 +4268,7 @@ func crosRepairActions() map[string]*Action {
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
-				"Is ChromeOS based?",
+				"Run only on ChromeOS based DUT",
 				// If rpm info is not provided then we just want to set a state and skip verification.
 				"RPM set state: MISSING_CONFIG",
 				"RPM config present",
@@ -4316,7 +4315,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that dsm_calib is present in RO_VPD, if required.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"RO_VPD dsm_calib is required",
 			},
 			ExecName: "cros_verify_ro_vpd_dsm_calib",
@@ -4343,7 +4342,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that sku_number is present in RO_VPD, if required.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"RO_VPD sku_number is required",
 			},
 			ExecName: "cros_verify_ro_vpd_sku_number",
@@ -4476,7 +4475,7 @@ func crosRepairActions() map[string]*Action {
 				"Identify the type of beamforming in for audio",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName:               "cros_update_audio_beamforming_type",
 			AllowFailAfterRecovery: true,
@@ -4515,7 +4514,7 @@ func crosRepairActions() map[string]*Action {
 				"Run rootdev to check rootfs",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Device is accessible",
@@ -4534,7 +4533,7 @@ func crosRepairActions() map[string]*Action {
 				"Set dev_boot_usb=1 to enable booting from USB drive in DEV mode.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_update_crossystem",
 			ExecExtraArgs: []string{
@@ -4953,7 +4952,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify crosid cli is responsive.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device is accessible",
 				"Is crosid present",
 			},
@@ -4975,7 +4974,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device is accessible",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Delete whitelabel_tag from vpd",
@@ -4990,7 +4989,7 @@ func crosRepairActions() map[string]*Action {
 				"Remove whitelabel_tagfrom vpd as it can cause issue related to crosid readability.",
 			},
 			Dependencies: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -5006,7 +5005,7 @@ func crosRepairActions() map[string]*Action {
 				"Logic establishe from b/277637455.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"is_servo_type_ccd",
 				"DUT is G3/S5 powerstate",
@@ -5026,7 +5025,7 @@ func crosRepairActions() map[string]*Action {
 				"This action will virtually disconnect servo from DUT and plug it back.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"is_servo_type_ccd",
 				"DUT is G3/S5 powerstate",
@@ -5127,15 +5126,14 @@ func crosRepairActions() map[string]*Action {
 				"The action doesn't use recovery boot.",
 			},
 			Conditions: []string{
+				"Run only on ChromeOS hardware",
+				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
-				"Is a Chromebook",
-				"Can become ChromeOS-based",
 				"Is servod running",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
-				"Mark labstation as servod is in-use",
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 120 seconds",
 				"Disable software write protection via servo",
@@ -5154,7 +5152,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is Android based by ADB or provision-info",
 				"Is servod running",
 				"Is servo USB key detected",
@@ -5232,7 +5230,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 				"Recovery version has OS image path",
 			},
@@ -5248,7 +5246,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
@@ -5282,7 +5280,7 @@ func crosRepairActions() map[string]*Action {
 				"Collect firmware target from DUT to inventory.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Device is accessible",
@@ -5407,7 +5405,7 @@ func crosRepairActions() map[string]*Action {
 				"Check FPMCU is working and can provide version info.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 				"Has valid Fingerprint board value",
 			},
@@ -5445,7 +5443,7 @@ func crosRepairActions() map[string]*Action {
 				"Validate if WP is enabled or not.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 			},
 			ExecName: "servo_check_servod_control",
@@ -5482,7 +5480,7 @@ func crosRepairActions() map[string]*Action {
 				"The logic is copy from cros-provision",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Can become ChromeOS-based",
 				"Is servo USB key detected",

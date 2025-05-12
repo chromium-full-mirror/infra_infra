@@ -1165,7 +1165,7 @@ plans:
           docs:
             - Verify if servo connected to the DUTand received required voltage from it.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1498,7 +1498,7 @@ plans:
           docs:
             - Check if servod detected debug header components as expected.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1601,7 +1601,7 @@ plans:
             - command:cold_reset
             - expected_string_value:off
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -1719,7 +1719,7 @@ plans:
             - Verify that warm_reset pin is detected by servod.
             - If pin is not present then issue can be related to incorrect connected servo or issue with connector.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -2036,7 +2036,7 @@ plans:
           docs:
             - Run basic cr50/ti50 detections checks.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -2764,7 +2764,7 @@ plans:
           docs:
             - Check if servod detected all required children components.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -3114,7 +3114,7 @@ plans:
           docs:
             - Make sure the servo has the required number of servo components.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -4069,7 +4069,7 @@ plans:
               docs:
                 - If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -4081,7 +4081,7 @@ plans:
                   docs:
                     - This devices should use testlab to open CCD and reset capabilities to factory settings.
                   dependencies:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4096,7 +4096,7 @@ plans:
               docs:
                 - Reset CCD to the factory settings.
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -4108,7 +4108,7 @@ plans:
                   docs:
                     - This devices should use testlab to open CCD and reset capabilities to factory settings.
                   dependencies:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4444,7 +4444,7 @@ plans:
           docs:
             - Verify that Cr50 console is responsive.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -4456,7 +4456,7 @@ plans:
               docs:
                 - This devices should use testlab to open CCD and reset capabilities to factory settings.
               dependencies:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -4635,7 +4635,7 @@ plans:
                   docs:
                     - If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)
                   conditions:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4647,7 +4647,7 @@ plans:
                       docs:
                         - This devices should use testlab to open CCD and reset capabilities to factory settings.
                       dependencies:
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -4662,7 +4662,7 @@ plans:
                   docs:
                     - Reset CCD to the factory settings.
                   conditions:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -4674,7 +4674,7 @@ plans:
                       docs:
                         - This devices should use testlab to open CCD and reset capabilities to factory settings.
                       dependencies:
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -5336,7 +5336,7 @@ plans:
             - Verify that testlab flag is enabled in GSC chip.
             - Expect that cr50/GSC will required to set cr50 testlab is enabled.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -5354,7 +5354,7 @@ plans:
               docs:
                 - This devices should use testlab to open CCD and reset capabilities to factory settings.
               dependencies:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -5453,7 +5453,7 @@ plans:
         - name: Verify EC
           exec_name: sample_pass
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -6801,7 +6801,7 @@ plans:
                         - restrictions:OSR_ANDROID_ONLY
                       docs:
                         - OS does not limited by ChromeOS only
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -6953,7 +6953,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7083,7 +7083,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7424,7 +7424,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7554,7 +7554,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7868,7 +7868,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -7998,7 +7998,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -8300,7 +8300,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -8577,7 +8577,7 @@ plans:
               docs:
                 - This action will virtually disconnect servo from DUT and plug it back.
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -8650,7 +8650,7 @@ plans:
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
                     - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -8990,7 +8990,7 @@ plans:
                         - restrictions:OSR_ANDROID_ONLY
                       docs:
                         - OS does not limited by ChromeOS only
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -9295,7 +9295,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -9492,7 +9492,7 @@ plans:
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
                     - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -9832,7 +9832,7 @@ plans:
                         - restrictions:OSR_ANDROID_ONLY
                       docs:
                         - OS does not limited by ChromeOS only
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -10079,7 +10079,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -10256,7 +10256,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -10511,7 +10511,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -10688,7 +10688,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -10920,16 +10920,12 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-        - name: Reset provisioned info (ALWAYS_RUN)
-          exec_name: cros_reset_provision_info
-          docs:
-            - Reset all provision info.
         - name: Verify by host that DUT has default GBB flags
           exec_name: cros_has_default_gbb_flags
           docs:
             - Check if the device booted with default GBB flags.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -10959,7 +10955,7 @@ plans:
               docs:
                 - This repair to set GBB to defaul and reboot.
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -11011,7 +11007,7 @@ plans:
               docs:
                 - This repair to set GBB to defaul and reboot.
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -11026,7 +11022,7 @@ plans:
                   docs:
                     - Check if GBB 0x80000000 set to dev more.
                   conditions:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -11082,7 +11078,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -11294,7 +11290,7 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
-                    - name: Is ChromeOS based? (ALWAYS_RUN)
+                    - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
@@ -11320,7 +11316,7 @@ plans:
             - Verify that devices is not in DEV mode.
             - Mostly devices in the lab required to be in Secure mode, not DEV mode.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -11350,7 +11346,7 @@ plans:
               docs:
                 - This repair action is disable booting into dev-mode.
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -11393,7 +11389,7 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven
@@ -11605,7 +11601,7 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
-                    - name: Is ChromeOS based? (ALWAYS_RUN)
+                    - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
@@ -11630,7 +11626,7 @@ plans:
           docs:
             - Verify if device missing HWID because deployment was skipped.
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -11670,7 +11666,7 @@ plans:
             - Match HWID to value in inventory
             - Allowed to fail if HWID is not matched
           conditions:
-            - name: Is a Chromebook (RUN_ONCE)
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
               exec_name: dut_check_board
               exec_args:
                 - string_values:aurora,reven
@@ -11689,7 +11685,7 @@ plans:
                 - Using recovery from the host as flashing firmware by servo is very slow.
                 - HWID change will be checked on re-run.
               dependencies:
-                - name: Is a Chromebook (RUN_ONCE)
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
                     - string_values:aurora,reven

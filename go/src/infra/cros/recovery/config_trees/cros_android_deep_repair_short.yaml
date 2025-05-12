@@ -96,7 +96,7 @@ plans:
             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
               dependencies:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
               dependencies:
@@ -115,7 +115,7 @@ plans:
           dependencies:
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -204,7 +204,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -255,7 +255,7 @@ plans:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                             - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -364,7 +364,7 @@ plans:
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                             - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -783,7 +783,7 @@ plans:
             - name: Servo used c2d2 ('servo_type_regex_match')
         - name: Verify servo connected to the DUT ('servo_low_ppdut5')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
             - name: DUT has CrOS EC ('servo_check_servod_control')
           dependencies:
@@ -893,7 +893,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Debug header servo present ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Servo uses debug header components ('servo_has_debug_header')
           dependencies:
             - name: Set state:DEBUG_HEADER_SERVO_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
@@ -930,7 +930,7 @@ plans:
                 - name: cros_create_reboot_request
         - name: Cold reset pin is detected ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
           dependencies:
             - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'15s')
@@ -968,7 +968,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Warm reset pin is detected (servo_micro) (Allow to fail) ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: is_servo_micro
             - name: Warm reset control known by servo ('servo_check_servod_control')
           dependencies:
@@ -1069,7 +1069,7 @@ plans:
                 - name: is_servo_type_ccd
         - name: Verify CCD GSC connection detected ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Servo main device is CCD ('servo_main_device_is_ccd')
               dependencies:
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
@@ -1309,7 +1309,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Servod detect all children components ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Set state:SERVOD_DUT_CONTROLLER_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
@@ -1428,7 +1428,7 @@ plans:
                 - name: cros_create_reboot_request
         - name: Servo topology ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Servo topology min one child ('servo_topology_update')
               dependencies:
@@ -1744,16 +1744,16 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                   dependencies:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                   dependencies:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           recoveries:
             - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
               dependencies:
@@ -1865,10 +1865,10 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Verify cr50 console ('servod_can_read_all')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
               dependencies:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Initialize DUT part for servo ('init_dut_for_servo') (time:'2m0s')
               dependencies:
@@ -1928,16 +1928,16 @@ plans:
                                 - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
                   conditions:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                       dependencies:
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
                   conditions:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                       dependencies:
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
               recoveries:
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
@@ -2159,11 +2159,11 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Cr50 testlab is enabled ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is not in cr50 pools ('dut_not_in_pool_regex') (RUN_ONCE)
             - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
               dependencies:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Set state:CCD_TESTLAB_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
@@ -2203,7 +2203,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Verify EC ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: DUT has CrOS EC ('servo_check_servod_control')
           dependencies:
             - name: Set state:EC_BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
@@ -2620,7 +2620,7 @@ plans:
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -2670,7 +2670,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -2702,7 +2702,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -2810,7 +2810,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -2842,7 +2842,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -2936,7 +2936,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -2968,7 +2968,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3060,7 +3060,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3141,7 +3141,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3162,7 +3162,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3271,7 +3271,7 @@ plans:
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3360,7 +3360,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3411,7 +3411,7 @@ plans:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3520,7 +3520,7 @@ plans:
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3587,7 +3587,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3633,7 +3633,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3707,7 +3707,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3753,7 +3753,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3820,17 +3820,16 @@ plans:
                 - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-        - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: Verify by host that DUT has default GBB flags ('cros_has_default_gbb_flags')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
               conditions:
                 - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
           recoveries:
             - name: Reset GBB flags by host and reboot ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
               dependencies:
                 - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
@@ -3843,11 +3842,11 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Set default GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
               dependencies:
                 - name: Set defautlt GBB flags by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                   conditions:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -3866,7 +3865,7 @@ plans:
                 - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -3922,21 +3921,21 @@ plans:
                 - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
-                    - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
+                    - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                 - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
               conditions:
                 - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
           recoveries:
             - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
               dependencies:
                 - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                 - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
@@ -3946,7 +3945,7 @@ plans:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -4002,14 +4001,14 @@ plans:
                 - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
-                    - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
+                    - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
                     - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                 - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Missing HWID ('sample_fail')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Run only in main lab ('sample_fail')
               conditions:
                 - name: Run only on Satlab ('dut_regex_name_match')
@@ -4020,12 +4019,12 @@ plans:
             - name: 'Set state: needs_deploy (''dut_set_state'')'
         - name: Match HWID (Allow to fail) ('cros_match_hwid_to_inventory')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
           recoveries:
             - name: Restore HWID from inventory (Allow to fail) ('cros_access') (ALWAYS_RUN) (time:'2m30s')
               dependencies:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
                 - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                 - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')

@@ -103,7 +103,7 @@ func deployActions() map[string]*Action {
 				"Verify that FW on the DUT has dev keys.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 			},
 			ExecName:    "cros_has_dev_signed_firmware",
@@ -123,7 +123,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is it first deployment task",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
@@ -173,7 +173,7 @@ func deployActions() map[string]*Action {
 				"which is critical to finding the firmware targets for flash.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is recovery-version has firmware image path",
 				"Device is accessible",
 			},
@@ -195,7 +195,7 @@ func deployActions() map[string]*Action {
 				"which is critical to finding the firmware targets for flash.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is recovery-version has firmware image path",
 				"Device is accessible",
 			},
@@ -309,7 +309,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo USB key detected",
 				"Recovery version has OS image path",
 			},

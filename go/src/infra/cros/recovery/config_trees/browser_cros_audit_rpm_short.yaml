@@ -369,7 +369,7 @@ plans:
             - name: Servo used c2d2 ('servo_type_regex_match')
         - name: Verify servo connected to the DUT ('servo_low_ppdut5')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
             - name: DUT has CrOS EC ('servo_check_servod_control')
           dependencies:
@@ -479,7 +479,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Debug header servo present ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Servo uses debug header components ('servo_has_debug_header')
           dependencies:
             - name: Set state:DEBUG_HEADER_SERVO_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
@@ -516,7 +516,7 @@ plans:
                 - name: cros_create_reboot_request
         - name: Cold reset pin is detected ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is servo_v4(p1) with type-a connector ('servo_check_servod_control')
           dependencies:
             - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'15s')
@@ -554,7 +554,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Warm reset pin is detected (servo_micro) (Allow to fail) ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: is_servo_micro
             - name: Warm reset control known by servo ('servo_check_servod_control')
           dependencies:
@@ -655,7 +655,7 @@ plans:
                 - name: is_servo_type_ccd
         - name: Verify CCD GSC connection detected ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Servo main device is CCD ('servo_main_device_is_ccd')
               dependencies:
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
@@ -895,7 +895,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Servod detect all children components ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Set state:SERVOD_DUT_CONTROLLER_MISSING ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
@@ -1014,7 +1014,7 @@ plans:
                 - name: cros_create_reboot_request
         - name: Servo topology ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Servo topology min one child ('servo_topology_update')
               dependencies:
@@ -1330,16 +1330,16 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                   dependencies:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                   dependencies:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           recoveries:
             - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
               dependencies:
@@ -1451,10 +1451,10 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Verify cr50 console ('servod_can_read_all')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
               dependencies:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Initialize DUT part for servo ('init_dut_for_servo') (time:'2m0s')
               dependencies:
@@ -1514,16 +1514,16 @@ plans:
                                 - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Open gsc testlab (Allow to fail) ('servo_set') (ALWAYS_RUN)
                   conditions:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                       dependencies:
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Reset CCD to factory settings (Allow to fail) ('servo_set') (ALWAYS_RUN)
                   conditions:
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
                       dependencies:
-                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
               recoveries:
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
@@ -1745,11 +1745,11 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Cr50 testlab is enabled ('servo_check_servod_control')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: Is not in cr50 pools ('dut_not_in_pool_regex') (RUN_ONCE)
             - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
               dependencies:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Set state:CCD_TESTLAB_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
@@ -1789,7 +1789,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
         - name: Verify EC ('sample_pass')
           conditions:
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
             - name: DUT has CrOS EC ('servo_check_servod_control')
           dependencies:
             - name: Set state:EC_BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
@@ -2058,7 +2058,7 @@ plans:
             - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
         - name: Verify RPM config ('sample_pass')
           conditions:
-            - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
+            - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
             - name: 'RPM set state: MISSING_CONFIG (''set_rpm_state'')'
             - name: RPM config present ('device_has_rpm_info')
           dependencies:

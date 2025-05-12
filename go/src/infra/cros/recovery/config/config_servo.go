@@ -355,7 +355,7 @@ func servoPlanActions() map[string]*Action {
 				"Make sure the servo has the required number of servo components.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Servo topology min one child",
@@ -591,7 +591,7 @@ func servoPlanActions() map[string]*Action {
 				"Run basic cr50/ti50 detections checks.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Servo main device is CCD",
 			},
 			Dependencies: []string{
@@ -708,7 +708,7 @@ func servoPlanActions() map[string]*Action {
 				"This devices should use testlab to open CCD and reset capabilities to factory settings.",
 			},
 			Dependencies: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			ExecName: "servo_ccd_expect_have_factory_reset",
 		},
@@ -717,7 +717,7 @@ func servoPlanActions() map[string]*Action {
 				"Verify that Cr50 console is responsive.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Expected CCD factory settings",
 			},
 			Dependencies: []string{
@@ -750,7 +750,7 @@ func servoPlanActions() map[string]*Action {
 				"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is not in cr50 pools",
 				"Expected CCD factory settings",
 			},
@@ -785,7 +785,7 @@ func servoPlanActions() map[string]*Action {
 				"If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Expected CCD factory settings",
 			},
 			ExecExtraArgs: []string{
@@ -801,7 +801,7 @@ func servoPlanActions() map[string]*Action {
 				"Reset CCD to the factory settings.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Expected CCD factory settings",
 			},
 			ExecExtraArgs: []string{
@@ -883,7 +883,7 @@ func servoPlanActions() map[string]*Action {
 				"Verify if servo connected to the DUTand received required voltage from it.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo_v4(p1) with type-a connector",
 				"DUT has CrOS EC",
 			},
@@ -984,7 +984,7 @@ func servoPlanActions() map[string]*Action {
 		},
 		"Verify EC": {
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"DUT has CrOS EC",
 			},
 			Dependencies: []string{
@@ -1220,7 +1220,7 @@ func servoPlanActions() map[string]*Action {
 				"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"is_servo_micro",
 				"Warm reset control known by servo",
 			},
@@ -1237,7 +1237,7 @@ func servoPlanActions() map[string]*Action {
 		},
 		"Cold reset pin is detected": {
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servo_v4(p1) with type-a connector",
 			},
 			Dependencies: []string{
@@ -1296,7 +1296,7 @@ func servoPlanActions() map[string]*Action {
 				"Check if servod detected debug header components as expected.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Servo uses debug header components",
 			},
 			Dependencies: []string{
@@ -1319,7 +1319,7 @@ func servoPlanActions() map[string]*Action {
 				"Check if servod detected all required children components.",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 			},
 			Dependencies: []string{
 				"Set state:SERVOD_DUT_CONTROLLER_MISSING",
@@ -1965,7 +1965,7 @@ func servoPlanActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 70},
 			RunControl:  RunControl_RUN_ONCE,
 		},
-		"Is a Chromebook": {
+		"Run only on ChromeOS hardware": {
 			Docs: []string{
 				"Verify that the device is a Chromebook by checking for non-Chromebook boards",
 			},

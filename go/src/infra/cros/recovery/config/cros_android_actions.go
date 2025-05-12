@@ -178,7 +178,7 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
 				"Is servo USB key detected",
@@ -213,7 +213,7 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
-				"Is a Chromebook",
+				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
 				"Run for Android boards",

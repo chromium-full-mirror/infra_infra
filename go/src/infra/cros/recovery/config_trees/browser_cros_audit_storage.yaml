@@ -83,7 +83,7 @@ plans:
           docs:
             - Audit DUT internal storage.
           conditions:
-            - name: Is ChromeOS based? (ALWAYS_RUN)
+            - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
               exec_name: cros_is_not_android_based
               docs:
                 - Check if device is marked as ChromeOS based
@@ -225,7 +225,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -444,7 +444,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -587,7 +587,7 @@ plans:
                       docs:
                         - This action will virtually disconnect servo from DUT and plug it back.
                       conditions:
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -671,7 +671,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -737,7 +737,7 @@ plans:
                         - Run specific install command to install ChromeOS.
                         - The logic is copy from cros-provision
                       conditions:
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -868,7 +868,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -1686,7 +1686,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -1910,7 +1910,7 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
-                        - name: Is ChromeOS based? (ALWAYS_RUN)
+                        - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
@@ -1937,7 +1937,7 @@ plans:
                     - Run specific install command to install ChromeOS.
                     - The logic is copy from cros-provision
                   conditions:
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2065,7 +2065,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2147,7 +2147,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -2298,7 +2298,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2401,7 +2401,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -2552,7 +2552,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
@@ -2721,7 +2721,7 @@ plans:
                                 - restrictions:OSR_ANDROID_ONLY
                               docs:
                                 - OS does not limited by ChromeOS only
-                        - name: Is a Chromebook (RUN_ONCE)
+                        - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
                             - string_values:aurora,reven
@@ -2881,7 +2881,7 @@ plans:
                             - restrictions:OSR_ANDROID_ONLY
                           docs:
                             - OS does not limited by ChromeOS only
-                    - name: Is a Chromebook (RUN_ONCE)
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
                         - string_values:aurora,reven
