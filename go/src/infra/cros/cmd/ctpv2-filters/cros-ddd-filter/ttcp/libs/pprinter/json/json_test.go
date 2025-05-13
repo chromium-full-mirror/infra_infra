@@ -70,7 +70,7 @@ func TestJson2strArrayTwo(t *testing.T) {
 
 func TestJsonWithFloat64(t *testing.T) {
 	str := "1"
-	var value interface{}
+	var value any
 	reader := strings.NewReader(str)
 	decoder := json.NewDecoder(reader)
 
@@ -96,7 +96,7 @@ func checkJsonDecodePrintInvariant(str string, t *testing.T) {
 // failed and debugging logging will be emitted
 func checkJsonDecodePrint(expected string, str string, t *testing.T) {
 
-	var value interface{}
+	var value any
 	reader := strings.NewReader(str)
 	decoder := json.NewDecoder(reader)
 	decoder.UseNumber()
@@ -113,22 +113,22 @@ func checkJsonDecodePrint(expected string, str string, t *testing.T) {
 func TestPrinterParserCompability(t *testing.T) {
 	// Checks that the output returned by the pretty print can be reparsed by
 	// the standard go json library
-	jsonValue := []interface{}{
+	jsonValue := []any{
 		json.Number("1"),
 		json.Number("2"),
-		map[string]interface{}{
-			"field1": []interface{}{
+		map[string]any{
+			"field1": []any{
 				"a",
 				"b",
 			},
-			"field2": []interface{}{
+			"field2": []any{
 				"c",
 				"d",
 			},
 		}}
 
 	prettyPrint := DispValue(jsonValue)
-	var value interface{}
+	var value any
 	reader := strings.NewReader(prettyPrint)
 	decoder := json.NewDecoder(reader)
 	decoder.UseNumber()

@@ -20,7 +20,7 @@ func (m *mockedTesting) Fail() {
 	m.TestFailed = true
 }
 
-func (m *mockedTesting) Errorf(format string, args ...interface{}) {
+func (m *mockedTesting) Errorf(format string, args ...any) {
 	m.t.Logf(format, args...)
 	m.Fail()
 }
@@ -29,7 +29,7 @@ func (m *mockedTesting) Cleanup(cleaner func()) {
 	m.Cleaner = cleaner
 }
 
-func (m *mockedTesting) Error(args ...interface{}) {
+func (m *mockedTesting) Error(args ...any) {
 	m.t.Log(args...)
 	m.Fail()
 }
@@ -43,13 +43,13 @@ func (m *mockedTesting) Failed() bool {
 	return m.TestFailed
 }
 
-func (m *mockedTesting) Fatal(args ...interface{}) {
+func (m *mockedTesting) Fatal(args ...any) {
 	m.t.Log(args...)
 	m.TestFailed = true
 	runtime.Goexit()
 }
 
-func (m *mockedTesting) Fatalf(format string, args ...interface{}) {
+func (m *mockedTesting) Fatalf(format string, args ...any) {
 	m.t.Logf(format, args...)
 	m.TestFailed = true
 	runtime.Goexit()
@@ -59,11 +59,11 @@ func (m *mockedTesting) Helper() {
 	m.t.Helper()
 }
 
-func (m *mockedTesting) Log(args ...interface{}) {
+func (m *mockedTesting) Log(args ...any) {
 	m.t.Log(args...)
 }
 
-func (m *mockedTesting) Logf(format string, args ...interface{}) {
+func (m *mockedTesting) Logf(format string, args ...any) {
 	m.t.Logf(format, args...)
 }
 
@@ -75,7 +75,7 @@ func (m *mockedTesting) Setenv(key, value string) {
 	m.t.Setenv(key, value)
 }
 
-func (m *mockedTesting) Skip(args ...interface{}) {
+func (m *mockedTesting) Skip(args ...any) {
 	m.t.Skip()
 }
 
@@ -84,7 +84,7 @@ func (m *mockedTesting) SkipNow() {
 	runtime.Goexit()
 }
 
-func (m *mockedTesting) Skipf(format string, args ...interface{}) {
+func (m *mockedTesting) Skipf(format string, args ...any) {
 	m.t.Logf(format, args...)
 	m.Skip()
 }

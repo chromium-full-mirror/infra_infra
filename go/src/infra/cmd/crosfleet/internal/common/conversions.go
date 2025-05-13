@@ -27,7 +27,7 @@ var JSONPBUnmarshaler = jsonpb.Unmarshaler{AllowUnknownFields: true}
 // added logic to handle the case where the map value is a proto message. This
 // is necessary because Buildbucket request interfaces are almost always
 // implemented as proto messages at some level.
-func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
+func MapToStruct(m map[string]any) (*structpb.Struct, error) {
 	s := &structpb.Struct{Fields: make(map[string]*structpb.Value, len(m))}
 	for key, val := range m {
 		if !utf8.ValidString(key) {
@@ -42,7 +42,7 @@ func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
 			if err != nil {
 				return nil, fmt.Errorf("error converting proto %v to *structpb.Value: %w", val, err)
 			}
-		case map[string]interface{}:
+		case map[string]any:
 			// Recursively call MapToStruct. The default case of
 			// calling structbuilder.NewValue() below also attempts to handle
 			// this case recursively, but would throw an error if the inner map

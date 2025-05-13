@@ -43,7 +43,7 @@ func New(host string, port int) *XMLRpc {
 // Call represents a XML-RPC call request.
 type Call struct {
 	method  string
-	args    []interface{}
+	args    []any
 	timeout time.Duration
 }
 
@@ -211,7 +211,7 @@ func float64ToXMLDouble(f float64) string {
 }
 
 // newValue creates an XML-RPC <value>.
-func newValue(in interface{}) (value, error) {
+func newValue(in any) (value, error) {
 	if reflect.TypeOf(in).Kind() == reflect.Slice || reflect.TypeOf(in).Kind() == reflect.Array {
 		v := reflect.ValueOf(in)
 		var a xmlArray
@@ -256,7 +256,7 @@ func newValue(in interface{}) (value, error) {
 }
 
 // newParams creates a list of XML-RPC <params>.
-func newParams(args []interface{}) ([]param, error) {
+func newParams(args []any) ([]param, error) {
 	var params []param
 	for _, arg := range args {
 		v, err := newValue(arg)
@@ -269,12 +269,12 @@ func newParams(args []interface{}) ([]param, error) {
 }
 
 // NewCall creates a XML-RPC call.
-func NewCall(method string, args ...interface{}) Call {
+func NewCall(method string, args ...any) Call {
 	return NewCallTimeout(method, maxRPCTimeout, args...)
 }
 
 // NewCallTimeout creates a XML-RPC call.
-func NewCallTimeout(method string, timeout time.Duration, args ...interface{}) Call {
+func NewCallTimeout(method string, timeout time.Duration, args ...any) Call {
 	return Call{
 		method:  method,
 		args:    args,
@@ -308,7 +308,7 @@ func getTimeout(ctx context.Context, cl Call) time.Duration {
 }
 
 // unpackValue unpacks a value struct into the given pointers.
-func unpackValue(val value, out interface{}) error {
+func unpackValue(val value, out any) error {
 	switch o := out.(type) {
 	case *string:
 		if val.Str == nil {
@@ -438,7 +438,7 @@ func unpackValue(val value, out interface{}) error {
 }
 
 // unpack extracts a response's arguments into a list of given pointers.
-func (r *methodResponse) unpack(out []interface{}) error {
+func (r *methodResponse) unpack(out []any) error {
 	if r.Params == nil {
 		if len(out) != 0 {
 			return errors.Reason("response contains no args; want %d", len(out)).Err()
@@ -495,7 +495,7 @@ func (r *methodResponse) checkFault() error {
 }
 
 // Run makes an XML-RPC call to the server.
-func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...interface{}) error {
+func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...any) error {
 	body, err := serializeMethodCall(cl)
 	if err != nil {
 		return err

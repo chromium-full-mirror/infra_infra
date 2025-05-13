@@ -59,12 +59,12 @@ func TestNilPNilP(t *testing.T) {
 }
 
 func TestNilPNil(t *testing.T) {
-	var a interface{}
+	var a any
 	Equivalent(t, a, nil)
 }
 
 func TestNilNilP(t *testing.T) {
-	var a interface{}
+	var a any
 	Equivalent(t, nil, a)
 }
 

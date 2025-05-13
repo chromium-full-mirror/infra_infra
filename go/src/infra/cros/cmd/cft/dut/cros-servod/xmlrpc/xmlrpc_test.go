@@ -286,7 +286,7 @@ func TestNewValue(t *testing.T) {
 }
 
 func TestNewParams(t *testing.T) {
-	actual, err := newParams([]interface{}{"rutabaga", true, -3.14})
+	actual, err := newParams([]any{"rutabaga", true, -3.14})
 
 	if err != nil {
 		t.Errorf("got unexpected error: %v", err)
@@ -337,17 +337,17 @@ func TestUnpack(t *testing.T) {
 	resp := methodResponse{Params: nil}
 	var out string
 	expErr := "response contains no args; want 1"
-	if err := resp.unpack([]interface{}{&out}); err == nil {
+	if err := resp.unpack([]any{&out}); err == nil {
 		t.Errorf("unpacking got no error")
 	} else if err.Error() != expErr {
 		t.Errorf("unpacking got %q; want %q", err.Error(), expErr)
 	}
-	if err := resp.unpack([]interface{}{}); err != nil {
+	if err := resp.unpack([]any{}); err != nil {
 		t.Errorf("unpacking got error %v", err)
 	}
 
 	arrIntIn := []int{1, 2}
-	params, err := newParams([]interface{}{"rutabaga", true, 1, -3.14, arrIntIn})
+	params, err := newParams([]any{"rutabaga", true, 1, -3.14, arrIntIn})
 	if err != nil {
 		t.Fatal("creating params: ", err)
 	}
@@ -357,7 +357,7 @@ func TestUnpack(t *testing.T) {
 	var intOut int
 	var floatOut float64
 	var arrIntOut []int
-	if err := resp.unpack([]interface{}{&stringOut, &boolOut, &intOut, &floatOut, &arrIntOut}); err != nil {
+	if err := resp.unpack([]any{&stringOut, &boolOut, &intOut, &floatOut, &arrIntOut}); err != nil {
 		t.Fatal("unpacking:", err)
 	}
 	if stringOut != "rutabaga" {
@@ -449,7 +449,7 @@ func TestXMLResponse(t *testing.T) {
 	var arrBoolOut []bool
 	var arrDoubleOut []float64
 	var arrStrOut []string
-	if err := res.unpack([]interface{}{&floatOut, &intOut, &stringOut, &boolOut,
+	if err := res.unpack([]any{&floatOut, &intOut, &stringOut, &boolOut,
 		&arrIntOut, &arrBoolOut, &arrDoubleOut, &arrStrOut}); err != nil {
 		t.Fatal("response unpack:", err)
 	}

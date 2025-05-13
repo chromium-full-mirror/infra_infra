@@ -98,14 +98,14 @@ func isVMImageAvailable(ctx context.Context, board string, version string, build
 		return false, err
 	}
 	// Unmarshal the JSON string into the map
-	var result map[string]interface{}
+	var result map[string]any
 	err = json.Unmarshal(buildReportJSON, &result)
 	if err != nil {
 		return false, err
 	}
 
 	// safely parse the nested structure
-	status, ok := result["status"].(map[string]interface{})
+	status, ok := result["status"].(map[string]any)
 	if !ok {
 		return false, fmt.Errorf("status key not found or is not in expected format")
 	}

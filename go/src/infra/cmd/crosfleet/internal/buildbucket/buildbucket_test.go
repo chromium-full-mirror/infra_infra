@@ -17,10 +17,10 @@ import (
 
 func TestAddServiceVersion(t *testing.T) {
 	t.Parallel()
-	startingProps := map[string]interface{}{"foo": "bar"}
-	wantProps := map[string]interface{}{
+	startingProps := map[string]any{"foo": "bar"}
+	wantProps := map[string]any{
 		"foo": "bar",
-		"$chromeos/service_version": map[string]interface{}{
+		"$chromeos/service_version": map[string]any{
 			// Convert to protoreflect.ProtoMessage for easier type comparison.
 			"version": (&test_platform.ServiceVersion{
 				CrosfleetTool: 4,

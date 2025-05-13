@@ -7,7 +7,7 @@ package utils
 import "go.chromium.org/luci/common/errors"
 
 // AnnotateEach annotates each error in a multierror.
-func AnnotateEach(imerr errors.MultiError, fmt string, args ...interface{}) errors.MultiError {
+func AnnotateEach(imerr errors.MultiError, fmt string, args ...any) errors.MultiError {
 	var merr errors.MultiError
 	for _, err := range imerr {
 		merr = append(merr, errors.Annotate(err, fmt, args...).Err())

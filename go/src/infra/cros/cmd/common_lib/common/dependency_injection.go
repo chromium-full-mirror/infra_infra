@@ -25,16 +25,16 @@ import (
 // InjectableStorage is an object that dictates how to interact with
 // the dictionary of injectable objects for dependency injection.
 type InjectableStorage struct {
-	injectables map[string]interface{}
+	injectables map[string]any
 
 	// Cached Injectables map
-	Injectables map[string]interface{}
+	Injectables map[string]any
 }
 
 func NewInjectableStorage() *InjectableStorage {
 	return &InjectableStorage{
-		injectables: map[string]interface{}{},
-		Injectables: map[string]interface{}{},
+		injectables: map[string]any{},
+		Injectables: map[string]any{},
 	}
 }
 
@@ -43,7 +43,7 @@ func NewInjectableStorage() *InjectableStorage {
 func (storage *InjectableStorage) LoadInjectables() error {
 	var allErrs error
 	var err error
-	storage.Injectables = map[string]interface{}{}
+	storage.Injectables = map[string]any{}
 
 	for key, val := range storage.injectables {
 		storage.Injectables[key], err = toInterface(val)
@@ -55,7 +55,7 @@ func (storage *InjectableStorage) LoadInjectables() error {
 }
 
 // Get searches through the Storage and returns an error if the object is not found.
-func (storage *InjectableStorage) Get(key string) (interface{}, error) {
+func (storage *InjectableStorage) Get(key string) (any, error) {
 	splitKey := strings.Split(key, ".")
 	switch {
 	// OS Environment variables aren't stored directly in the injectables dictionary.
@@ -78,7 +78,7 @@ func (storage *InjectableStorage) Get(key string) (interface{}, error) {
 }
 
 // Set stores any proto workable object into the storage.
-func (storage *InjectableStorage) Set(key string, obj interface{}) error {
+func (storage *InjectableStorage) Set(key string, obj any) error {
 	var err error
 	if storage.isValidType(obj) {
 		storage.injectables[key] = obj
@@ -102,7 +102,7 @@ func (storage *InjectableStorage) LogStorageToBuild(ctx context.Context, buildSt
 }
 
 // isValidType checks if a type implements ProtoMessage or is a basic, non struct, type.
-func (storage *InjectableStorage) isValidType(obj interface{}) bool {
+func (storage *InjectableStorage) isValidType(obj any) bool {
 	protoType := reflect.TypeOf((*protoreflect.ProtoMessage)(nil)).Elem()
 	if reflect.TypeOf(obj).Kind() == reflect.Pointer || reflect.TypeOf(obj).Kind() == reflect.Struct {
 		if reflect.TypeOf(obj).Implements(protoType) {
@@ -171,7 +171,7 @@ func Inject(receiver protoreflect.ProtoMessage, injectionPoint string, storage *
 	}
 
 	if injectionPoint == "" {
-		receiverMap = injectable.(map[string]interface{})
+		receiverMap = injectable.(map[string]any)
 	} else {
 		injectionPointParts := strings.Split(injectionPoint, ".")
 		receivingPoint, err := stepThroughInterface(receiverMap, injectionPointParts[0:len(injectionPointParts)-1])
@@ -207,12 +207,12 @@ func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableS
 }
 
 // setValue stores the value into the obj at key.
-func setValue(obj interface{}, key string, value interface{}) error {
+func setValue(obj any, key string, value any) error {
 	if keyNum, err := strconv.ParseInt(key, 10, 64); err == nil {
 		if isSlice(obj) {
 			slice := TranslateSliceToInterface(obj)
 			if int(keyNum) < len(slice) {
-				obj.([]interface{})[keyNum] = value
+				obj.([]any)[keyNum] = value
 			} else {
 				return fmt.Errorf("key %s not found in slice of length %d", key, len(slice))
 			}
@@ -220,21 +220,21 @@ func setValue(obj interface{}, key string, value interface{}) error {
 			return fmt.Errorf("expect slice for injecting at %s, found %s", key, getType(obj).String())
 		}
 	} else {
-		if val, ok := obj.(map[string]interface{})[key]; ok {
+		if val, ok := obj.(map[string]any)[key]; ok {
 			if isSlice(val) && getType(val) != getType(value) {
 				slice := TranslateSliceToInterface(val)
 				slice = append(slice, value)
 				value = slice
 			}
 		}
-		obj.(map[string]interface{})[key] = value
+		obj.(map[string]any)[key] = value
 	}
 
 	return nil
 }
 
 // indexAt indexes the object depending on what the index type is.
-func indexAt(obj interface{}, index string) (interface{}, error) {
+func indexAt(obj any, index string) (any, error) {
 	if indexNum, err := strconv.ParseInt(index, 10, 64); err == nil {
 		slice := TranslateSliceToInterface(obj)
 		if int(indexNum) < len(slice) {
@@ -243,7 +243,7 @@ func indexAt(obj interface{}, index string) (interface{}, error) {
 			return nil, fmt.Errorf("failed to index %s, tried to index %d but length was %d", reflect.TypeOf(obj), indexNum, len(slice))
 		}
 	} else {
-		if val, ok := obj.(map[string]interface{})[index]; ok {
+		if val, ok := obj.(map[string]any)[index]; ok {
 			return val, nil
 		} else {
 			return nil, fmt.Errorf("failed to index %s, missing key: %s", reflect.TypeOf(obj), index)
@@ -252,18 +252,18 @@ func indexAt(obj interface{}, index string) (interface{}, error) {
 }
 
 // isSlice returns true if obj is of type slice.
-func isSlice(obj interface{}) bool {
+func isSlice(obj any) bool {
 	return reflect.ValueOf(obj).Kind() == reflect.Slice
 }
 
 // getType returns the type of obj as dictated by the reflect library.
-func getType(obj interface{}) reflect.Type {
+func getType(obj any) reflect.Type {
 	return reflect.TypeOf(obj)
 }
 
 // unmarshalInterfaceProtoMapToProto converts a map[string]interface{}
 // back into a provided proto message.
-func unmarshalInterfaceProtoMapToProto(protoMap map[string]interface{}, proto protoreflect.ProtoMessage) error {
+func unmarshalInterfaceProtoMapToProto(protoMap map[string]any, proto protoreflect.ProtoMessage) error {
 	jsonBytes, err := json.Marshal(protoMap)
 	if err != nil {
 		return errors.Annotate(err, "failed to marshal to json").Err()
@@ -282,7 +282,7 @@ func unmarshalInterfaceProtoMapToProto(protoMap map[string]interface{}, proto pr
 }
 
 // Converts any object into an actual interface{} type.
-func toInterface(obj interface{}) (interface{}, error) {
+func toInterface(obj any) (any, error) {
 	if isSlice(obj) {
 		return toInterfaceSlice(obj)
 	} else if proto, ok := obj.(protoreflect.ProtoMessage); ok {
@@ -293,9 +293,9 @@ func toInterface(obj interface{}) (interface{}, error) {
 }
 
 // Converts slice objects into a slice of interface{}.
-func toInterfaceSlice(obj interface{}) ([]interface{}, error) {
+func toInterfaceSlice(obj any) ([]any, error) {
 	var err error
-	interfaces := []interface{}{}
+	interfaces := []any{}
 
 	if !isSlice(obj) {
 		return nil, fmt.Errorf("function `toInterfaceSlice` expected a slice, received %s", reflect.ValueOf(obj).Kind())
@@ -314,10 +314,10 @@ func toInterfaceSlice(obj interface{}) ([]interface{}, error) {
 }
 
 // Coverts protos into a map[string]interface{} by marshaling and unmarshaling through json.
-func protoToInterfaceMap(proto protoreflect.ProtoMessage) (map[string]interface{}, error) {
+func protoToInterfaceMap(proto protoreflect.ProtoMessage) (map[string]any, error) {
 	var err error
 	var jsonBytes []byte
-	objMap := map[string]interface{}{}
+	objMap := map[string]any{}
 	jsonBytes, err = protojson.Marshal(proto)
 	if err != nil {
 		return nil, err
@@ -332,7 +332,7 @@ func protoToInterfaceMap(proto protoreflect.ProtoMessage) (map[string]interface{
 
 // stepThroughInterface uses an array of keys to step through
 // the indexes of the provided interface{}.
-func stepThroughInterface(obj interface{}, steps []string) (interface{}, error) {
+func stepThroughInterface(obj any, steps []string) (any, error) {
 	var err error
 	for _, step := range steps {
 		if step == "" {
@@ -351,7 +351,7 @@ func stepThroughInterface(obj interface{}, steps []string) (interface{}, error) 
 // The slice then gets forcefully casted into []interface{}
 // which is a generic slice form that can be interacted with
 // by dependency injection.
-func TranslateSliceToInterface(slice interface{}) []interface{} {
+func TranslateSliceToInterface(slice any) []any {
 	_type := reflect.ValueOf(slice)
 	if _type.IsNil() {
 		return nil
@@ -360,7 +360,7 @@ func TranslateSliceToInterface(slice interface{}) []interface{} {
 		panic(errors.New(fmt.Sprintf("Cannot translate %s objects to []interface{}", _type.Kind())))
 	}
 
-	result := make([]interface{}, _type.Len())
+	result := make([]any, _type.Len())
 	for i := range result {
 		result[i] = _type.Index(i).Interface()
 	}

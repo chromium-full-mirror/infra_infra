@@ -43,7 +43,7 @@ func NewError(msg string) error {
 	return fmt.Errorf("Error: %s \n Stack:%s", msg, stacktraceStr)
 }
 
-func NewErrorf(format string, args ...interface{}) error {
+func NewErrorf(format string, args ...any) error {
 	stacktrace := debug.Stack()
 	stacktraceStr := strings.Join(strings.Split(string(stacktrace), "\n")[5:], "\n")
 	errorMsg := fmt.Sprintf(format, args...)

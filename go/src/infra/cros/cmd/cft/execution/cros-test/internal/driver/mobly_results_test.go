@@ -318,7 +318,7 @@ func TestBuildTestCaseResultFromSessionResponse(t *testing.T) {
 
 // jsonDiff compares the JSON in two byte slices.
 func jsonDiff(jsonBytes1, jsonBytes2 []byte) (string, error) {
-	var json1, json2 interface{}
+	var json1, json2 any
 	if err := json.Unmarshal(jsonBytes1, &json1); err != nil {
 		return "", err
 	}
@@ -330,7 +330,7 @@ func jsonDiff(jsonBytes1, jsonBytes2 []byte) (string, error) {
 }
 
 // convert a struct to a json string
-func structToJSONStr(data interface{}) (string, error) {
+func structToJSONStr(data any) (string, error) {
 	val, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return "", err

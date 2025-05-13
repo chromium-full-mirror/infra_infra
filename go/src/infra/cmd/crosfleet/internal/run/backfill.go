@@ -135,7 +135,7 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 			}
 		}
 		requests := original.Input.Properties.GetFields()["requests"]
-		properties := map[string]interface{}{"requests": requests}
+		properties := map[string]any{"requests": requests}
 
 		if args.qsAccount != "" {
 			newRequests := changeQuotaAccount(requests.GetStructValue().GetFields(), args.qsAccount)
@@ -220,23 +220,23 @@ func (args *backfillRun) backfillTags(build *buildbucketpb.Build) map[string]str
 
 // changeQuotaAccount returns a copy of the given map of CTP requests with a
 // new quota account set on each request.
-func changeQuotaAccount(requests map[string]*structpb.Value, quotaAccount string) map[string]interface{} {
-	newRequests := map[string]interface{}{}
+func changeQuotaAccount(requests map[string]*structpb.Value, quotaAccount string) map[string]any {
+	newRequests := map[string]any{}
 	for key, req := range requests {
 		reqMap := req.GetStructValue().GetFields()
-		newReqMap := map[string]interface{}{}
+		newReqMap := map[string]any{}
 		for key, val := range reqMap {
 			newReqMap[key] = val
 		}
 		paramsMap := reqMap["params"].GetStructValue().GetFields()
-		newParamsMap := map[string]interface{}{}
+		newParamsMap := map[string]any{}
 		for key, val := range paramsMap {
 			newParamsMap[key] = val
 		}
 
 		// Scheduling
 		schedulingMap := paramsMap["scheduling"].GetStructValue().GetFields()
-		newSchedulingMap := map[string]interface{}{}
+		newSchedulingMap := map[string]any{}
 		for key, val := range schedulingMap {
 			if key == "priority" {
 				continue
@@ -248,11 +248,11 @@ func changeQuotaAccount(requests map[string]*structpb.Value, quotaAccount string
 
 		// Software Dependencies
 		rawDependencies := paramsMap["softwareDependencies"].GetListValue().GetValues()[0].GetStructValue().GetFields()
-		santizedDependencies := map[string]interface{}{}
+		santizedDependencies := map[string]any{}
 		for key, val := range rawDependencies {
 			santizedDependencies[key] = val.GetStringValue()
 		}
-		newParamsMap["softwareDependencies"] = []interface{}{santizedDependencies}
+		newParamsMap["softwareDependencies"] = []any{santizedDependencies}
 
 		newReqMap["params"] = newParamsMap
 		newRequests[key] = newReqMap

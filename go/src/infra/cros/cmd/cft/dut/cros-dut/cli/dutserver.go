@@ -297,7 +297,7 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 		}()
 	}
 
-	wait := make(chan interface{})
+	wait := make(chan any)
 	go func() {
 		s.logger.Printf("Waiting for reboot: Connection wait.")
 		_ = s.connection.Wait()

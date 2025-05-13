@@ -46,7 +46,7 @@ func (m *MockCIPDClientInterface) Describe(cipdPackageProto *api.CIPDPackage, de
 }
 
 // Describe indicates an expected call of Describe.
-func (mr *MockCIPDClientInterfaceMockRecorder) Describe(cipdPackageProto, describeTags, describeRefs interface{}) *gomock.Call {
+func (mr *MockCIPDClientInterfaceMockRecorder) Describe(cipdPackageProto, describeTags, describeRefs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Describe", reflect.TypeOf((*MockCIPDClientInterface)(nil).Describe), cipdPackageProto, describeTags, describeRefs)
 }
@@ -60,7 +60,7 @@ func (m *MockCIPDClientInterface) FetchInstanceTo(cipdPackageProto *api.CIPDPack
 }
 
 // FetchInstanceTo indicates an expected call of FetchInstanceTo.
-func (mr *MockCIPDClientInterfaceMockRecorder) FetchInstanceTo(cipdPackageProto, packageName, instanceId, filePath interface{}) *gomock.Call {
+func (mr *MockCIPDClientInterfaceMockRecorder) FetchInstanceTo(cipdPackageProto, packageName, instanceId, filePath any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchInstanceTo", reflect.TypeOf((*MockCIPDClientInterface)(nil).Describe), cipdPackageProto, packageName, instanceId, filePath)
 }

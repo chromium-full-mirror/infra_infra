@@ -44,7 +44,7 @@ func (m *MockGsClient) ListFiles(arg0 context.Context, arg1, arg2 string) ([]str
 }
 
 // ListFiles indicates an expected call of ListFiles.
-func (mr *MockGsClientMockRecorder) ListFiles(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockGsClientMockRecorder) ListFiles(arg0, arg1, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFiles", reflect.TypeOf((*MockGsClient)(nil).ListFiles), arg0, arg1, arg2)
 }
@@ -58,7 +58,7 @@ func (m *MockGsClient) Upload(arg0 context.Context, arg1, arg2 string) error {
 }
 
 // Upload indicates an expected call of Upload.
-func (mr *MockGsClientMockRecorder) Upload(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockGsClientMockRecorder) Upload(arg0, arg1, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upload", reflect.TypeOf((*MockGsClient)(nil).Upload), arg0, arg1, arg2)
 }

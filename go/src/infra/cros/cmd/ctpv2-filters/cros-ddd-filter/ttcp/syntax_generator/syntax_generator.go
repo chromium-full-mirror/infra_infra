@@ -34,7 +34,7 @@ func main() {
 // parseBoxster parses a boxster database file in returns an slice of all the
 // individual values as unmarshaled json value with numbers parsed into
 // json.Number.
-func parseBoxster(boxster_dataset_path string) []interface{} {
+func parseBoxster(boxster_dataset_path string) []any {
 	log.Println("Parsing Boxster dataset")
 	jsonFile, err := os.Open(boxster_dataset_path)
 	if err != nil {
@@ -44,7 +44,7 @@ func parseBoxster(boxster_dataset_path string) []interface{} {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var value interface{}
+	var value any
 	reader := strings.NewReader(string(byteValue))
 	decoder := json.NewDecoder(reader)
 	decoder.UseNumber()
@@ -55,13 +55,13 @@ func parseBoxster(boxster_dataset_path string) []interface{} {
 	}
 
 	switch t := value.(type) {
-	case map[string]interface{}:
-		boxsterValues, ok := value.(map[string]interface{})["values"]
+	case map[string]any:
+		boxsterValues, ok := value.(map[string]any)["values"]
 		if !ok {
 			log.Fatal("Expected boxster value to be container in an outer object.")
 		}
 		switch boxsterValues := boxsterValues.(type) {
-		case []interface{}:
+		case []any:
 			return boxsterValues
 		default:
 			log.Fatal("Boxster values are expected to be an array.")
@@ -73,7 +73,7 @@ func parseBoxster(boxster_dataset_path string) []interface{} {
 }
 
 // This is currently a place holder for just outputing the boxster data for development purposes.
-func processBoxsterEntries(entries []interface{}, outputPath string) {
+func processBoxsterEntries(entries []any, outputPath string) {
 	outputFile, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
 		log.Fatal("Error while opening file:", err)

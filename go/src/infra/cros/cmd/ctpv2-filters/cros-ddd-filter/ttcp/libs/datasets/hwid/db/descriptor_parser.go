@@ -85,7 +85,7 @@ func parseComponentReference(reference string) (string, string, string, string) 
 	return compReference, compType, approvalId, index
 }
 
-func ExtractComponentValues(data map[string]interface{}) map[string]map[string]ComponentInfo {
+func ExtractComponentValues(data map[string]any) map[string]map[string]ComponentInfo {
 	result := map[string]map[string]ComponentInfo{}
 	for componentType, componentsData := range data {
 		if componentType == "region" {
@@ -94,7 +94,7 @@ func ExtractComponentValues(data map[string]interface{}) map[string]map[string]C
 				result[componentType] = map[string]ComponentInfo{}
 			} else {
 				components_map := map[string]ComponentInfo{}
-				regionsData := componentsData.(map[string]interface{})
+				regionsData := componentsData.(map[string]any)
 				for key, value := range regionsData {
 					status := ComponentStatus(key)
 					for _, region := range castToStringArray(value) {
@@ -107,14 +107,14 @@ func ExtractComponentValues(data map[string]interface{}) map[string]map[string]C
 				result[componentType] = components_map
 			}
 		} else {
-			rawComponentsMap := componentsData.(map[string]interface{})["items"].(map[string]interface{})
+			rawComponentsMap := componentsData.(map[string]any)["items"].(map[string]any)
 			componentsMap := map[string]ComponentInfo{}
 			for componentReference, rawCompData := range rawComponentsMap {
 
 				compReference, componentType,
 					componentApprovalId, componentIndex := parseComponentReference(componentReference)
 
-				compData := rawCompData.(map[string]interface{})
+				compData := rawCompData.(map[string]any)
 				status, ok := compData["status"].(string)
 				if !ok {
 					status = string(Supported)
@@ -122,7 +122,7 @@ func ExtractComponentValues(data map[string]interface{}) map[string]map[string]C
 				values := compData["values"]
 				compInfo := ComponentInfo{}
 				switch values := values.(type) {
-				case map[string]interface{}:
+				case map[string]any:
 					compInfo = ComponentInfo{
 						ID:         compReference,
 						Type:       componentType,
@@ -135,7 +135,7 @@ func ExtractComponentValues(data map[string]interface{}) map[string]map[string]C
 					compInfo = ComponentInfo{
 						ID:         componentReference,
 						Status:     ComponentStatus(status),
-						Properties: map[string]interface{}{},
+						Properties: map[string]any{},
 					}
 				}
 				componentsMap[componentReference] = compInfo
@@ -155,7 +155,7 @@ func stringIn(s string, strings ...string) bool {
 	return false
 }
 
-func ExtractFieldValues(data map[string]interface{}, components map[string]map[string]ComponentInfo) map[string][]FieldValue {
+func ExtractFieldValues(data map[string]any, components map[string]map[string]ComponentInfo) map[string][]FieldValue {
 	result := map[string][]FieldValue{}
 	for field_name, field_data := range data {
 		if stringIn(field_name, "region_field", "new_region_field", "legacy_region_field") {
@@ -175,12 +175,12 @@ func ExtractFieldValues(data map[string]interface{}, components map[string]map[s
 			}
 			result[field_name] = field_values
 		} else {
-			field_data_map := field_data.(map[interface{}]interface{})
+			field_data_map := field_data.(map[any]any)
 			field_values := []FieldValue{}
 			for index, field_raw_value := range field_data_map {
 				var propertyType string
 				var propertyValues []ComponentInfo
-				raw_present_component := field_raw_value.(map[string]interface{})
+				raw_present_component := field_raw_value.(map[string]any)
 				component_sets := []ComponentSet{}
 				for k, v := range raw_present_component {
 					propertyType = k
@@ -203,12 +203,12 @@ func ExtractFieldValues(data map[string]interface{}, components map[string]map[s
 	return result
 }
 
-func ExtractFields(data []interface{}, field_values map[string][]FieldValue) map[string]Field {
+func ExtractFields(data []any, field_values map[string][]FieldValue) map[string]Field {
 	result := map[string]Field{}
 
 	start := 0
 	for _, f := range data {
-		fmap := f.(map[string]interface{})
+		fmap := f.(map[string]any)
 		if len(fmap) != 1 {
 			log.Fatal("A field in the pattern can only be a map a needs to have a single entry. Recieved value:", fmap)
 		}
@@ -242,32 +242,32 @@ func ExtractFields(data []interface{}, field_values map[string][]FieldValue) map
 	return result
 }
 
-func ExtractPatterns(raw_patterns []interface{}, field_values map[string][]FieldValue) []PatternStruct {
+func ExtractPatterns(raw_patterns []any, field_values map[string][]FieldValue) []PatternStruct {
 	result := []PatternStruct{}
 	for _, pp_raw := range raw_patterns {
-		pp := pp_raw.(map[string]interface{})
+		pp := pp_raw.(map[string]any)
 		result = append(result,
 			PatternStruct{
-				ImageIds:       castToArrayInt(pp["image_ids"].([]interface{})),
+				ImageIds:       castToArrayInt(pp["image_ids"].([]any)),
 				EncodingScheme: pp["encoding_scheme"].(string),
-				Fields:         ExtractFields(pp["fields"].([]interface{}), field_values),
+				Fields:         ExtractFields(pp["fields"].([]any), field_values),
 			})
 	}
 	return result
 }
 
-func ExtractDescriptor(data map[interface{}]interface{}) HwidDescriptor {
-	components_values := ExtractComponentValues(data["components"].(map[string]interface{}))
-	field_values := ExtractFieldValues(data["encoded_fields"].(map[string]interface{}), components_values)
+func ExtractDescriptor(data map[any]any) HwidDescriptor {
+	components_values := ExtractComponentValues(data["components"].(map[string]any))
+	field_values := ExtractFieldValues(data["encoded_fields"].(map[string]any), components_values)
 	project := cast_to_string(data["project"])
 	brand := cast_to_string(data["brand"])
 
 	return HwidDescriptor{
 		Project:          project,
 		Brand:            brand,
-		EncodingPatterns: castToMapIntString(data["encoding_patterns"].(map[interface{}]interface{})),
-		ImageIds:         castToMapIntString(data["image_id"].(map[interface{}]interface{})),
-		Pattern:          ExtractPatterns(data["pattern"].([]interface{}), field_values),
+		EncodingPatterns: castToMapIntString(data["encoding_patterns"].(map[any]any)),
+		ImageIds:         castToMapIntString(data["image_id"].(map[any]any)),
+		Pattern:          ExtractPatterns(data["pattern"].([]any), field_values),
 		Rules:            data["rules"],
 	}
 }
@@ -278,7 +278,7 @@ func LoadDescriptor(descriptor_path string) HwidDescriptor {
 		log.Fatal("could not read hwid descriptor:", descriptor_path)
 	}
 
-	parsed_data := map[interface{}]interface{}{}
+	parsed_data := map[any]any{}
 
 	err = yaml.Unmarshal(data, &parsed_data)
 	if err != nil {

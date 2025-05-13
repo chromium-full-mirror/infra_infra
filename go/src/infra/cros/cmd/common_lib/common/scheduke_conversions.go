@@ -81,7 +81,7 @@ var (
 
 // leaseBBReq returns a Buildbucket ScheduleBuildRequest for a dut_leaser build.
 func leaseBBReq(schedukeDims *schedukepb.SwarmingDimensions, mins int64) (*buildbucketpb.ScheduleBuildRequest, error) {
-	propsMap := map[string]interface{}{"lease_length_minutes": mins}
+	propsMap := map[string]any{"lease_length_minutes": mins}
 	props, err := structbuilder.NewStruct(propsMap)
 	if err != nil {
 		return nil, err

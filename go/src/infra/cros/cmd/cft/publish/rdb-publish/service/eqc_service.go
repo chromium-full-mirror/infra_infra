@@ -246,7 +246,7 @@ func EqcInfo(eqcInfoMap map[string]string) (*artifact.EqcInfo, error) {
 	// The content of the "eqcCategoryExpression" field is aligned with the
 	// CategoryExpression proto in "/ttcp/protos/ttcp/syntax/syntax.proto".
 	if categoryExpressionJSON, ok := eqcInfoMap["eqcCategoryExpression"]; ok {
-		categoryExpressionMap := make(map[string]interface{})
+		categoryExpressionMap := make(map[string]any)
 		if err := json.Unmarshal([]byte(categoryExpressionJSON), &categoryExpressionMap); err != nil {
 			return nil, fmt.Errorf("unmarshalling the EqC category expression: %w", err)
 		}

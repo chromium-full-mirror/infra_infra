@@ -110,15 +110,15 @@ func TestBackfill_ByTags(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	directSchedProps, err := structpb.NewStruct(map[string]interface{}{
-		"requests": map[string]interface{}{
-			"default": map[string]interface{}{
-				"params": map[string]interface{}{
-					"scheduling": map[string]interface{}{
+	directSchedProps, err := structpb.NewStruct(map[string]any{
+		"requests": map[string]any{
+			"default": map[string]any{
+				"params": map[string]any{
+					"scheduling": map[string]any{
 						"qsAccount": "release_direct_sched",
 					},
-					"softwareDependencies": []interface{}{
-						map[string]interface{}{
+					"softwareDependencies": []any{
+						map[string]any{
 							"chromeosBuildGcsBucket": "chromeos-image-archive",
 						},
 					},
@@ -315,15 +315,15 @@ func TestBackfill_ByTags_AllowDupes(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	inputProps, err := structpb.NewStruct(map[string]interface{}{
-		"requests": map[string]interface{}{
-			"default": map[string]interface{}{
-				"params": map[string]interface{}{
-					"scheduling": map[string]interface{}{
+	inputProps, err := structpb.NewStruct(map[string]any{
+		"requests": map[string]any{
+			"default": map[string]any{
+				"params": map[string]any{
+					"scheduling": map[string]any{
 						"qsAccount": "release_direct_sched",
 					},
-					"softwareDependencies": []interface{}{
-						map[string]interface{}{
+					"softwareDependencies": []any{
+						map[string]any{
 							"chromeosBuildGcsBucket": "chromeos-image-archive",
 						},
 					},
@@ -420,7 +420,7 @@ func TestBackfill_ByTags_DryRun(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	inputProps, err := structpb.NewStruct(map[string]interface{}{
+	inputProps, err := structpb.NewStruct(map[string]any{
 		"request": "foo",
 	})
 	if err != nil {

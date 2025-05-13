@@ -477,7 +477,7 @@ func writeNodes(ctx context.Context, bytes []byte, poolID string, generation int
 		}
 		shards = append(shards, bytes[start:end])
 	}
-	nodes := make([]interface{}, len(shards))
+	nodes := make([]any, len(shards))
 	IDs := make([]string, len(shards))
 	for i, shard := range shards {
 		ID := uuid.New().String()
@@ -512,7 +512,7 @@ func loadNodes(ctx context.Context, nodeIDs []string) (s *blob.QSchedulerPoolSta
 	ctx, span := tracing.Start(ctx, "nodestore.loadNodes")
 	defer func() { tracing.End(span, err) }()
 
-	nodes := make([]interface{}, len(nodeIDs))
+	nodes := make([]any, len(nodeIDs))
 	for i, ID := range nodeIDs {
 		nodes[i] = &stateNode{ID: ID}
 	}

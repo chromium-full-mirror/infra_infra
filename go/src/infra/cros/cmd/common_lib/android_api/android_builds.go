@@ -109,8 +109,8 @@ func getResponseFromAndroidBuildAPI(buildsReq BuildGetRequest, client *http.Clie
 }
 
 // extractBuildInfo extracts information about the first build from the JSON response.
-func extractBuildInfo(resp string) (map[string]interface{}, error) {
-	var result map[string]interface{}
+func extractBuildInfo(resp string) (map[string]any, error) {
+	var result map[string]any
 
 	// Parse the JSON string into the map
 	err := json.Unmarshal([]byte(resp), &result)
@@ -119,13 +119,13 @@ func extractBuildInfo(resp string) (map[string]interface{}, error) {
 	}
 
 	// Check if the "builds" field exists and is a non-empty array
-	builds, ok := result["builds"].([]interface{})
+	builds, ok := result["builds"].([]any)
 	if !ok || len(builds) == 0 {
 		return nil, fmt.Errorf("'builds' field is missing or empty")
 	}
 
 	// Fetch the first build and cast it to a map
-	buildInfo, ok := builds[0].(map[string]interface{})
+	buildInfo, ok := builds[0].(map[string]any)
 	if !ok {
 		return nil, fmt.Errorf("unable to parse build information")
 	}

@@ -41,27 +41,27 @@ type localLoggerImpl struct {
 }
 
 // Debugf performs a Debug level log call.
-func (li *localLoggerImpl) Debugf(format string, args ...interface{}) {
+func (li *localLoggerImpl) Debugf(format string, args ...any) {
 	li.LogCall(logging.Debug, 1, format, args)
 }
 
 // Infof performs a Info level log call.
-func (li *localLoggerImpl) Infof(format string, args ...interface{}) {
+func (li *localLoggerImpl) Infof(format string, args ...any) {
 	li.LogCall(logging.Info, 1, format, args)
 }
 
 // Warningf performs a Warning level log call.
-func (li *localLoggerImpl) Warningf(format string, args ...interface{}) {
+func (li *localLoggerImpl) Warningf(format string, args ...any) {
 	li.LogCall(logging.Warning, 1, format, args)
 }
 
 // Errorf performs a Error level log call.
-func (li *localLoggerImpl) Errorf(format string, args ...interface{}) {
+func (li *localLoggerImpl) Errorf(format string, args ...any) {
 	li.LogCall(logging.Error, 1, format, args)
 }
 
 // LogCall intercepts logging calls with fields attached to format their output and capture important step related content.
-func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string, args []interface{}) {
+func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string, args []any) {
 	if l < li.level {
 		return
 	}
@@ -92,8 +92,8 @@ func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string
 }
 
 // toFields parse the fields string.
-func toFields(s string) (map[string]interface{}, error) {
-	var fields map[string]interface{}
+func toFields(s string) (map[string]any, error) {
+	var fields map[string]any
 	if err := json.Unmarshal([]byte(s), &fields); err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (li *localLoggerImpl) updateStep(message string) (*Step, string) {
 }
 
 // formatWithStepHeaders updates step data and ensures that logging output is sectioned off by the step they are called under.
-func (li *localLoggerImpl) formatWithStepHeaders(format string, args []interface{}) string {
+func (li *localLoggerImpl) formatWithStepHeaders(format string, args []any) string {
 	buf := new(bytes.Buffer)
 	text := fmt.Sprintf(format, args...)
 	step, text := li.updateStep(text)

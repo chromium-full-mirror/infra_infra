@@ -430,7 +430,7 @@ func (l *ctpRunLauncher) scheduleCTPBuild(ctx context.Context, model string) (*b
 func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 	ctpTags := l.cliFlags.buildTagsForCTPBuilds(l.cmdName, l.mainArgsTag)
 	testRunnerTags := l.cliFlags.commonTagsForAllBuilds(l.cmdName, l.mainArgsTag)
-	props := map[string]interface{}{}
+	props := map[string]any{}
 	buildbucket.AddServiceVersion(props)
 
 	if l.cliFlags.releaseRetryUrgent {

@@ -182,7 +182,7 @@ func parseResult(node *yaml.Node, resultsRootDir string) (*api.TestCaseResult, e
 			// Result is in map format.
 			continue
 		}
-		var result map[string]interface{}
+		var result map[string]any
 		if err := c.Decode(&result); err != nil {
 			// Ignore map that we cannot parse.
 			continue
@@ -193,7 +193,7 @@ func parseResult(node *yaml.Node, resultsRootDir string) (*api.TestCaseResult, e
 
 }
 
-func fillTestCaseResult(raw map[string]interface{}, resultsRootDir string) (*api.TestCaseResult, error) {
+func fillTestCaseResult(raw map[string]any, resultsRootDir string) (*api.TestCaseResult, error) {
 	const (
 		testClassKey = "Test Class"
 		testNameKey  = "Test Name"

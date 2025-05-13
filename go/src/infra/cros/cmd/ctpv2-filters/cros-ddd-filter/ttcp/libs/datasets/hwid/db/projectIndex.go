@@ -18,7 +18,7 @@ func loadProjectToBoardIndex(projectsFile string) map[string]string {
 		log.Fatal("could not read hwid model to board map:", projectsFile)
 	}
 
-	parsed_data := map[interface{}]interface{}{}
+	parsed_data := map[any]any{}
 
 	err = yaml.Unmarshal(data, &parsed_data)
 	if err != nil {
@@ -27,7 +27,7 @@ func loadProjectToBoardIndex(projectsFile string) map[string]string {
 	return extractProjectToBoard(parsed_data)
 }
 
-func extractProjectToBoard(parsed_data map[interface{}]interface{}) map[string]string {
+func extractProjectToBoard(parsed_data map[any]any) map[string]string {
 	result := map[string]string{}
 
 	for project, details := range parsed_data {
@@ -36,7 +36,7 @@ func extractProjectToBoard(parsed_data map[interface{}]interface{}) map[string]s
 			fmt.Println("empty details for project ", project)
 			continue
 		}
-		if detailsMap, ok := details.(map[string]interface{}); ok {
+		if detailsMap, ok := details.(map[string]any); ok {
 			if boardValue, ok := detailsMap["board"]; ok {
 				if boardName, ok := boardValue.(string); ok {
 					result[projectName] = boardName

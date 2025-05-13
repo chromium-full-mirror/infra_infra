@@ -121,7 +121,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		return fmt.Errorf("no matching DUTs found; please double-check the provided DUT dimensions")
 	}
 	c.printer.WriteTextStderr("Found %d DUT(s) (%d busy) matching the provided DUT dimensions", duts.Count, duts.Busy)
-	buildProps := map[string]interface{}{
+	buildProps := map[string]any{
 		"lease_length_minutes": c.durationMins,
 	}
 	authOpts, err := c.authFlags.Options()

@@ -77,7 +77,7 @@ func execute(client pb.GenericFilterServiceClient, request string) {
 
 	fmt.Println()
 	jsonStr := protojson.MarshalOptions{}.Format(testPlan)
-	var jsonValue interface{}
+	var jsonValue any
 	json.Unmarshal([]byte(jsonStr), &jsonValue)
 	log.Printf("Imput:")
 	fmt.Println(ppjson.DispValue(jsonValue))

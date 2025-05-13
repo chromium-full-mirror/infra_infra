@@ -41,7 +41,7 @@ func (BuildTarget *BuildTarget) GetVariant() string {
 }
 
 type PackageSummary struct {
-	Info interface{}
+	Info any
 }
 
 func (p *PackageSummary) UnmarshalJSON(b []byte) error {

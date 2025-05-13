@@ -47,12 +47,12 @@ func fmtHandler(storage *InjectableStorage, value string) string {
 	return ResolvePlaceholders(value, lookup)
 }
 
-func jsonHandler(storage *InjectableStorage, value string) (obj interface{}, err error) {
+func jsonHandler(storage *InjectableStorage, value string) (obj any, err error) {
 	lookup := &InjectablePlaceholderLookup{
 		storage: storage,
 	}
 	value = ResolvePlaceholders(value, lookup)
-	jsonMap := make(map[string]interface{})
+	jsonMap := make(map[string]any)
 	err = json.Unmarshal([]byte(value), &jsonMap)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func jsonHandler(storage *InjectableStorage, value string) (obj interface{}, err
 
 // anyHandler attaches the @type field to the found object, setting it to
 // the provided type, essentially converting the object into a valid AnyProto.
-func anyHandler(storage *InjectableStorage, value string) (obj interface{}, err error) {
+func anyHandler(storage *InjectableStorage, value string) (obj any, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
@@ -79,6 +79,6 @@ func anyHandler(storage *InjectableStorage, value string) (obj interface{}, err 
 		return
 	}
 
-	obj.(map[string]interface{})["@type"] = objType
+	obj.(map[string]any)["@type"] = objType
 	return
 }

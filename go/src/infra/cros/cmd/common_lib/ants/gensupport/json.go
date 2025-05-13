@@ -18,7 +18,7 @@ import (
 //   - its field name is present in nullFields.
 //
 // The JSON key for each selected field is taken from the field's json: struct tag.
-func MarshalJSON(schema interface{}, forceSendFields, nullFields []string) ([]byte, error) {
+func MarshalJSON(schema any, forceSendFields, nullFields []string) ([]byte, error) {
 	if len(forceSendFields) == 0 && len(nullFields) == 0 {
 		return json.Marshal(schema)
 	}
@@ -49,8 +49,8 @@ func MarshalJSON(schema interface{}, forceSendFields, nullFields []string) ([]by
 	return json.Marshal(dataMap)
 }
 
-func schemaToMap(schema interface{}, mustInclude, useNull map[string]bool, useNullMaps map[string]map[string]bool) (map[string]interface{}, error) {
-	m := make(map[string]interface{})
+func schemaToMap(schema any, mustInclude, useNull map[string]bool, useNullMaps map[string]map[string]bool) (map[string]any, error) {
+	m := make(map[string]any)
 	s := reflect.ValueOf(schema)
 	st := s.Type()
 
@@ -93,7 +93,7 @@ func schemaToMap(schema interface{}, mustInclude, useNull map[string]bool, useNu
 				m[tag.apiName] = mi
 				continue
 			}
-			mi := map[string]interface{}{}
+			mi := map[string]any{}
 			for k, v := range ms {
 				mi[k] = v
 			}
@@ -127,8 +127,8 @@ func schemaToMap(schema interface{}, mustInclude, useNull map[string]bool, useNu
 
 // initMapSlow uses reflection to build up a map object. This is slower than
 // the default behavior so it should be used only as a fallback.
-func initMapSlow(rv reflect.Value, fieldName string, useNullMaps map[string]map[string]bool) (map[string]interface{}, error) {
-	mi := map[string]interface{}{}
+func initMapSlow(rv reflect.Value, fieldName string, useNullMaps map[string]map[string]bool) (map[string]any, error) {
+	mi := map[string]any{}
 	iter := rv.MapRange()
 	for iter.Next() {
 		k, ok := iter.Key().Interface().(string)

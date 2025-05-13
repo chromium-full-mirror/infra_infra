@@ -230,7 +230,7 @@ func (c *suiteRun) dedupeRequests(ctx context.Context, runToLaunch *ctpRunLaunch
 	return len(filteredModels) != 0, filteredModels, nil
 }
 
-func interfaceToStrSlice(arr []interface{}) []string {
+func interfaceToStrSlice(arr []any) []string {
 	strArr := make([]string, len(arr))
 	for i, v := range arr {
 		strArr[i] = fmt.Sprintf("%v", v)
@@ -240,7 +240,7 @@ func interfaceToStrSlice(arr []interface{}) []string {
 
 func sortTags(request *structpb.Struct) error {
 	if v, ok := crosbb.GetProp(request.AsMap(), "params.decorations.tags"); ok {
-		tags, ok := v.([]interface{})
+		tags, ok := v.([]any)
 		if !ok {
 			return fmt.Errorf("Could not convert tags to []interface{}.")
 		}

@@ -175,7 +175,7 @@ func collectProperties(set []db.ComponentSet, fieldType string, props *targetpro
 	return nil
 }
 
-func collectPropertyValueProperties(props *targetproperties.TargetPropertiesValues, prop_id string, source string, prop interface{}) error {
+func collectPropertyValueProperties(props *targetproperties.TargetPropertiesValues, prop_id string, source string, prop any) error {
 	switch v := prop.(type) {
 	case bool:
 		props.AddPropertyValue(prop_id, source, strconv.FormatBool(v))
@@ -185,7 +185,7 @@ func collectPropertyValueProperties(props *targetproperties.TargetPropertiesValu
 		props.AddPropertyValue(prop_id, source, strconv.FormatInt(int64(v), 10))
 	case float64:
 		props.AddPropertyValue(prop_id, source, strconv.FormatFloat(v, 'f', 2, 64))
-	case map[string]interface{}:
+	case map[string]any:
 		for kk, vv := range v {
 			collectPropertyValueProperties(props, prop_id+"_"+kk, source, vv)
 		}

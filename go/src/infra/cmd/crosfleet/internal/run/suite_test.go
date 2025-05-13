@@ -64,7 +64,7 @@ func TestSuiteNoModels(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
-					Props: map[string]interface{}{
+					Props: map[string]any{
 						"requests.default.params.scheduling.qsAccount": "release_p0",
 					},
 					Tags: map[string]string{
@@ -106,7 +106,7 @@ func TestSuiteModels(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
-					Props: map[string]interface{}{
+					Props: map[string]any{
 						"requests.default.params.scheduling.qsAccount": "release_direct_sched",
 					},
 					Tags: map[string]string{
@@ -119,7 +119,7 @@ func TestSuiteModels(t *testing.T) {
 					},
 				}, {
 					BuilderName: "cros_test_platform",
-					Props: map[string]interface{}{
+					Props: map[string]any{
 						"requests.default.params.scheduling.qsAccount": "release_direct_sched",
 					},
 					Tags: map[string]string{
@@ -172,7 +172,7 @@ func TestSuiteDedupeNoModels_Run(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
-					Props: map[string]interface{}{
+					Props: map[string]any{
 						"requests.default.params.scheduling.priority": "140",
 					},
 					Tags: map[string]string{
@@ -339,63 +339,63 @@ func TestSuiteDedupeModels_Run(t *testing.T) {
 
 func getInputProps(t *testing.T, model string) *structpb.Struct {
 	t.Helper()
-	inputProps, err := structpb.NewStruct(map[string]interface{}{
-		"requests": map[string]interface{}{
-			"my-custom-request-name": map[string]interface{}{
-				"params": map[string]interface{}{
-					"decorations":        map[string]interface{}{},
-					"freeformAttributes": map[string]interface{}{},
-					"hardwareAttributes": map[string]interface{}{},
-					"metadata": map[string]interface{}{
+	inputProps, err := structpb.NewStruct(map[string]any{
+		"requests": map[string]any{
+			"my-custom-request-name": map[string]any{
+				"params": map[string]any{
+					"decorations":        map[string]any{},
+					"freeformAttributes": map[string]any{},
+					"hardwareAttributes": map[string]any{},
+					"metadata": map[string]any{
 						"containerMetadataUrl":   "gs://chromeos-image-archive/drallion-release/R112-15357.0.0/metadata/containers.jsonpb",
 						"debugSymbolsArchiveUrl": "gs://chromeos-image-archive/drallion-release/R112-15357.0.0",
 						"testMetadataUrl":        "gs://chromeos-image-archive/drallion-release/R112-15357.0.0",
 					},
-					"retry": map[string]interface{}{},
-					"scheduling": map[string]interface{}{
+					"retry": map[string]any{},
+					"scheduling": map[string]any{
 						"managedPool": "MANAGED_POOL_QUOTA",
 						"priority":    "140",
 					},
-					"softwareAttributes": map[string]interface{}{
-						"buildTarget": map[string]interface{}{
+					"softwareAttributes": map[string]any{
+						"buildTarget": map[string]any{
 							"name": "drallion",
 						},
 					},
 					"runViaCft": true,
-					"softwareDependencies": []interface{}{
-						map[string]interface{}{
+					"softwareDependencies": []any{
+						map[string]any{
 							"chromeosBuildGcsBucket": "chromeos-image-archive",
 						},
-						map[string]interface{}{
+						map[string]any{
 							"chromeosBuild": "drallion-release/R112-15357.0.0",
 						},
 					},
-					"time": map[string]interface{}{
+					"time": map[string]any{
 						"maximumDuration": "21600s",
 					},
 					"trv2StepsConfig": map[string]any{
 						"hwTestConfig": map[string]any{},
 					},
 				},
-				"testPlan": map[string]interface{}{
-					"suite": []interface{}{
-						map[string]interface{}{
+				"testPlan": map[string]any{
+					"suite": []any{
+						map[string]any{
 							"name":     "bvt-installer",
 							"testArgs": "testArgsExample",
 						},
 					},
-					"tagCriteria": map[string]interface{}{
-						"tags": []interface{}{"tag1"},
+					"tagCriteria": map[string]any{
+						"tags": []any{"tag1"},
 					},
 				},
 			},
-			"default": map[string]interface{}{},
+			"default": map[string]any{},
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	tags := []interface{}{
+	tags := []any{
 		"crosfleet-tool:suite",
 		"label-board:drallion",
 		"label-image:drallion-release/R112-15357.0.0",

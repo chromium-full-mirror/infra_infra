@@ -32,7 +32,7 @@ func Deserialize(data string) (map[string]*Invocation, error) {
 		if line == "" {
 			continue
 		}
-		var entry map[string]interface{}
+		var entry map[string]any
 		err := json.Unmarshal([]byte(line), &entry)
 		if err != nil {
 			return invMap, fmt.Errorf("error while unmarshalling line %d: %s", lineNum+1, err.Error())

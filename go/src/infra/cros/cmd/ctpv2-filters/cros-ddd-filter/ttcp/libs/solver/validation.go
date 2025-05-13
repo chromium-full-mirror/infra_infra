@@ -130,7 +130,7 @@ func areSubexpressions_complet(subExpressions []*ttcpSyntax.Expression, conds ex
 //	   - Its True field is not nil
 //	If op is not of any of the types mentioned above, an "Unexpected operator"
 //	error is returned.
-func isExpression_OperatorComplet(op interface{}) error {
+func isExpression_OperatorComplet(op any) error {
 	if op == nil {
 		return errors.NewError("The operator is nil.")
 	}

@@ -18,7 +18,7 @@ func Map[Tin, Tout any](sourceTable []Tin, f func(int, Tin) Tout) []Tout {
 	return mapped
 }
 
-func CheckFieldIsNotNil(value interface{}) error {
+func CheckFieldIsNotNil(value any) error {
 	structValue := reflect.ValueOf(value)
 	if structValue.Kind() == reflect.Pointer {
 		if structValue.IsNil() {
@@ -28,7 +28,7 @@ func CheckFieldIsNotNil(value interface{}) error {
 	return nil
 }
 
-func CheckFieldIsEmptyString(value interface{}) error {
+func CheckFieldIsEmptyString(value any) error {
 	structValue := reflect.ValueOf(value)
 	if structValue.Kind() == reflect.Pointer {
 		if structValue.IsNil() {

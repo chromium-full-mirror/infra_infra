@@ -62,7 +62,7 @@ func (p *CLIPrinter) Register(fl *flag.FlagSet) {
 // WriteTextStdout writes the given human-readable output string (followed by
 // a line break) to Stdout, as long as the CLI command was NOT passed the -json
 // flag. If -json WAS passed, the function does nothing.
-func (p *CLIPrinter) WriteTextStdout(output string, outputArgs ...interface{}) {
+func (p *CLIPrinter) WriteTextStdout(output string, outputArgs ...any) {
 	if p.json || p.silent {
 		return
 	}
@@ -72,7 +72,7 @@ func (p *CLIPrinter) WriteTextStdout(output string, outputArgs ...interface{}) {
 // WriteTextStderr writes the given human-readable output string (followed by
 // a line break) to Stderr, as long as the CLI command was NOT passed the -json
 // flag. If -json WAS passed, the function does nothing.
-func (p *CLIPrinter) WriteTextStderr(output string, outputArgs ...interface{}) {
+func (p *CLIPrinter) WriteTextStderr(output string, outputArgs ...any) {
 	if p.json || p.silent {
 		return
 	}

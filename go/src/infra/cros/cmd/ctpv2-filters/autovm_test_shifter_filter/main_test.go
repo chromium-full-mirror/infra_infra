@@ -262,7 +262,7 @@ func GenerateSuiteInfo() *api.SuiteInfo {
 	return SuiteInfo
 }
 
-func JSONSerialize(any interface{}) string {
+func JSONSerialize(any any) string {
 	json, _ := json.Marshal(any)
 	return string(json)
 }

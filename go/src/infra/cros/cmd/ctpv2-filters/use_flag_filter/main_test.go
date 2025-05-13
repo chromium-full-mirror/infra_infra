@@ -389,7 +389,7 @@ func GenerateBoardUseFlagDict(boardsToAdd []string) map[string]map[string]bool {
 
 }
 
-func JSONSerialize(any interface{}) string {
+func JSONSerialize(any any) string {
 	json, _ := json.Marshal(any)
 	return string(json)
 }

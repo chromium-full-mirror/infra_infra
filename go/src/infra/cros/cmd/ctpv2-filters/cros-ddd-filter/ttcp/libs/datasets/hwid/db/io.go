@@ -9,7 +9,7 @@ import (
 	"runtime/debug"
 )
 
-func cast_to_string(data interface{}) string {
+func cast_to_string(data any) string {
 	if data == nil {
 		return ""
 	} else {
@@ -17,7 +17,7 @@ func cast_to_string(data interface{}) string {
 	}
 }
 
-func castToMapIntString(data map[interface{}]interface{}) map[int]string {
+func castToMapIntString(data map[any]any) map[int]string {
 	result := map[int]string{}
 	for k, v := range data {
 		result[k.(int)] = v.(string)
@@ -25,7 +25,7 @@ func castToMapIntString(data map[interface{}]interface{}) map[int]string {
 	return result
 }
 
-func castToArrayInt(data []interface{}) []int {
+func castToArrayInt(data []any) []int {
 	result := []int{}
 	for _, v := range data {
 		result = append(result, v.(int))
@@ -33,13 +33,13 @@ func castToArrayInt(data []interface{}) []int {
 	return result
 }
 
-func castToStringArray(data interface{}) []string {
+func castToStringArray(data any) []string {
 	switch data := data.(type) {
 	case nil:
 		return []string{}
 	case string:
 		return []string{data}
-	case []interface{}:
+	case []any:
 		data_slice := data
 		result := []string{}
 		for _, v := range data_slice {

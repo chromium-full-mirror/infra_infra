@@ -101,8 +101,8 @@ type StarfishDevice struct {
 	Params    paramMap
 }
 
-func (s StarfishDevice) MarshalYAML() (interface{}, error) {
-	var simInfos []interface{}
+func (s StarfishDevice) MarshalYAML() (any, error) {
+	var simInfos []any
 	for _, si := range s.SIMInfos {
 		friendlySI, err := yamlFriendlyPb(si)
 		if err != nil {
@@ -117,10 +117,10 @@ func (s StarfishDevice) MarshalYAML() (interface{}, error) {
 	}
 
 	return struct {
-		Carrier   string      `yaml:"carrier"`
-		ModemInfo interface{} `yaml:"modem_info,omitempty"`
-		SIMInfos  interface{} `yaml:"sim_infos,omitempty"`
-		Params    paramMap    `yaml:",inline"`
+		Carrier   string   `yaml:"carrier"`
+		ModemInfo any      `yaml:"modem_info,omitempty"`
+		SIMInfos  any      `yaml:"sim_infos,omitempty"`
+		Params    paramMap `yaml:",inline"`
 	}{
 		Carrier:   s.Carrier,
 		ModemInfo: modemInfo,
@@ -129,15 +129,15 @@ func (s StarfishDevice) MarshalYAML() (interface{}, error) {
 	}, nil
 }
 
-func (p PassportHost) MarshalYAML() (interface{}, error) {
+func (p PassportHost) MarshalYAML() (any, error) {
 	topology, err := yamlFriendlyPb(p.HostTopology)
 	if err != nil {
 		return "", fmt.Errorf("failed to make protobuf yaml compatible: %w", err)
 	}
 
 	return struct {
-		HostTopology interface{} `yaml:"host_topology"`
-		Params       paramMap    `yaml:",inline"`
+		HostTopology any      `yaml:"host_topology"`
+		Params       paramMap `yaml:",inline"`
 	}{
 		HostTopology: topology,
 		Params:       p.Params,
@@ -573,7 +573,7 @@ func ParseDeviceArg(logger *log.Logger, arg *api.Arg) []deviceParams {
 //	  * DeviceSerial -> deviceserial
 //	to
 //	  * DeviceSerial -> device_serial
-func yamlFriendlyPb(m proto.Message) (interface{}, error) {
+func yamlFriendlyPb(m proto.Message) (any, error) {
 	// If message is empty default to nil.
 	if proto.Size(m) == 0 {
 		return nil, nil
@@ -589,7 +589,7 @@ func yamlFriendlyPb(m proto.Message) (interface{}, error) {
 	// be marshalled
 	asJson := marshalOpts.Format(proto.MessageV2(m))
 
-	var res interface{}
+	var res any
 	if err := json.Unmarshal([]byte(asJson), &res); err != nil {
 		return nil, err
 	}

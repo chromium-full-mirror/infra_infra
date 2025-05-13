@@ -50,7 +50,7 @@ func EstablishFirestoreConnection(ctx context.Context, firestoreDatabaseName str
 // FirestoreItem wraps the interface item with it's intended document name.
 type FirestoreItem struct {
 	DocName string
-	Datum   interface{}
+	Datum   any
 }
 
 func BatchSet(ctx context.Context, collection *firestore.CollectionRef, client *firestore.Client, items []*FirestoreItem, opts ...firestore.SetOption) ([]*firestore.BulkWriterJob, error) {

@@ -17,11 +17,11 @@ import (
 
 type PropertyValue struct {
 	Source string
-	Values []interface{}
+	Values []any
 }
 
 func (pValue *PropertyValue) Clone() *PropertyValue {
-	values := make([]interface{}, len(pValue.Values))
+	values := make([]any, len(pValue.Values))
 	copy(values, pValue.Values)
 	result := PropertyValue{
 		Source: pValue.Source,
@@ -73,16 +73,16 @@ func CreateTargetPropertiesValues() TargetPropertiesValues {
 	}
 }
 
-func (properties *TargetPropertiesValues) AddPropertyValue(propertyname string, source string, propertyValue interface{}) {
-	properties.AddPropertyValues(propertyname, source, []interface{}{propertyValue})
+func (properties *TargetPropertiesValues) AddPropertyValue(propertyname string, source string, propertyValue any) {
+	properties.AddPropertyValues(propertyname, source, []any{propertyValue})
 }
 
-func (properties *TargetPropertiesValues) AddPropertyValues(propertyname string, source string, propertyValues []interface{}) {
+func (properties *TargetPropertiesValues) AddPropertyValues(propertyname string, source string, propertyValues []any) {
 	details, ok := properties.PropertiesDetails[propertyname]
 	if !ok {
 		details = PropertyValue{
 			Source: source,
-			Values: []interface{}{},
+			Values: []any{},
 		}
 	}
 
@@ -109,18 +109,18 @@ func (properties *TargetPropertiesValues) Merge(src *TargetPropertiesValues) {
 	}
 }
 
-type PropertiesAndValuesStore map[string]map[string]interface{}
+type PropertiesAndValuesStore map[string]map[string]any
 
 func (store *PropertiesAndValuesStore) AddPropertyValue(propertyPath string, value string) {
 	property, ok := (*store)[propertyPath]
 	if !ok {
-		property = map[string]interface{}{}
+		property = map[string]any{}
 		(*store)[propertyPath] = property
 	}
 	property[value] = struct{}{}
 }
 
-func (store *PropertiesAndValuesStore) ExtractPropertiesAndValue(source interface{}, prefix string) error {
+func (store *PropertiesAndValuesStore) ExtractPropertiesAndValue(source any, prefix string) error {
 	switch t := source.(type) {
 	case string:
 		store.AddPropertyValue(prefix, t)
@@ -140,7 +140,7 @@ func (store *PropertiesAndValuesStore) ExtractPropertiesAndValue(source interfac
 			}
 			store.ExtractPropertiesAndValue(v, prefixProp+k)
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		for k, v := range t {
 			prefixProp := prefix
 			if strings.Contains(prefix, "image:") {

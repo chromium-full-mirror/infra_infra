@@ -129,7 +129,7 @@ func InventoryPropertiesCommand(cliArgs *InventoryPropertiesCmd) {
 	)
 
 	// Extract all the unique properties present across all devices in the provided inventory
-	propertyTypesAvailable := map[string]interface{}{}
+	propertyTypesAvailable := map[string]any{}
 	for _, d := range inventoryInfo {
 		for k := range d.Properties.PropertiesDetails {
 			propertyTypesAvailable[k] = nil

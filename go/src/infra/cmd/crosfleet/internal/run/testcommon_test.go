@@ -720,8 +720,8 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 				},
 				BuilderID: &buildbucketpb.BuilderID{Project: "test"},
 				Model:     "model",
-				Properties: map[string]interface{}{
-					"$chromeos/service_version": map[string]interface{}{
+				Properties: map[string]any{
+					"$chromeos/service_version": map[string]any{
 						// Convert to protoreflect.ProtoMessage for easier type comparison.
 						"version": (&test_platform.ServiceVersion{
 							CrosfleetTool: 4,
@@ -756,8 +756,8 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 				},
 				BuilderID: &buildbucketpb.BuilderID{Project: "test"},
 				Model:     "model",
-				Properties: map[string]interface{}{
-					"$chromeos/service_version": map[string]interface{}{
+				Properties: map[string]any{
+					"$chromeos/service_version": map[string]any{
 						// Convert to protoreflect.ProtoMessage for easier type comparison.
 						"version": (&test_platform.ServiceVersion{
 							CrosfleetTool: 4,
@@ -836,8 +836,8 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 				Model:       "model",
 				Pool:        "pool",
 				Priority:    100,
-				Properties: map[string]interface{}{
-					"$chromeos/service_version": map[string]interface{}{
+				Properties: map[string]any{
+					"$chromeos/service_version": map[string]any{
 						// Convert to protoreflect.ProtoMessage for easier type comparison.
 						"version": (&test_platform.ServiceVersion{
 							CrosfleetTool: 4,

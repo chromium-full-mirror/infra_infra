@@ -240,7 +240,7 @@ type ExtendedSolvedDevice struct {
 	swarmingLabels []*ttcpSolver.SwarmingLabel
 }
 
-func deviceInfoToExtendedSolvedDevice(info deviceinfo.TargetVariant, propertyPath string, propertyValue interface{}) (*ExtendedSolvedDevice, error) {
+func deviceInfoToExtendedSolvedDevice(info deviceinfo.TargetVariant, propertyPath string, propertyValue any) (*ExtendedSolvedDevice, error) {
 	board, ok := info.Properties.PropertiesDetails["board"]
 	swarmingLabels := []*ttcpSolver.SwarmingLabel{}
 	if !ok {
@@ -301,13 +301,13 @@ func toSolvedTargets(extendedDevicesInfo map[deviceinfo.TargetId]*ExtendedSolved
 }
 
 func extractBoardModelMap(extendedDevicesInfo map[deviceinfo.TargetId]*ExtendedSolvedDevice) []*ttcpSolver.LegacyTarget {
-	boardToModels := map[string]map[string]interface{}{}
+	boardToModels := map[string]map[string]any{}
 	for _, solvedDevice := range extendedDevicesInfo {
 		models, ok := boardToModels[solvedDevice.board]
 		if ok {
 			models[solvedDevice.model] = nil
 		} else {
-			models = map[string]interface{}{solvedDevice.model: nil}
+			models = map[string]any{solvedDevice.model: nil}
 			boardToModels[solvedDevice.board] = models
 		}
 	}
@@ -526,7 +526,7 @@ func applyPropertyConditionStrRegexMatch(propertyPath string, conditionValue str
 }
 
 func applyPropertyConditionStrSet(propertyPath string, conditionValues []string, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
-	valuesMap := map[string]interface{}{}
+	valuesMap := map[string]any{}
 	for _, s := range conditionValues {
 		valuesMap[s] = nil
 	}
@@ -647,7 +647,7 @@ func applyPropertyConditionIntGreaterOrEqual(propertyPath string, conditionValue
 }
 
 func applyPropertyConditionIntSet(propertyPath string, conditionValues []int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
-	valuesMap := map[int64]interface{}{}
+	valuesMap := map[int64]any{}
 	for _, s := range conditionValues {
 		valuesMap[s] = nil
 	}

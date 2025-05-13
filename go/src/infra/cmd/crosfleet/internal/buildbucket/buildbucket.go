@@ -44,8 +44,8 @@ var maxServiceVersion = &test_platform.ServiceVersion{
 // AddServiceVersion marshals the max service version proto to a JSON-encoded
 // string, adds it to the given Buildbucket property map, and returns the
 // property map.
-func AddServiceVersion(props map[string]interface{}) map[string]interface{} {
-	props["$chromeos/service_version"] = map[string]interface{}{
+func AddServiceVersion(props map[string]any) map[string]any {
+	props["$chromeos/service_version"] = map[string]any{
 		// Convert to protoreflect.ProtoMessage for easier type comparison.
 		"version": maxServiceVersion.ProtoReflect().Interface(),
 	}
@@ -64,7 +64,7 @@ type BuildsClient interface {
 type Client interface {
 	GetBuildsClient() BuildsClient
 	GetBuilderID() *buildbucketpb.BuilderID
-	ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error)
+	ScheduleBuild(ctx context.Context, props map[string]any, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error)
 	WaitForBuildStepStart(ctx context.Context, id int64, stepNames ...string) (*buildbucketpb.Build, error)
 	GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error)
 	GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error)
@@ -128,7 +128,7 @@ func NewClientForTesting(builder *buildbucketpb.BuilderID) Client {
 // that fulfils the same requirements recursively.
 //
 // NOTE: Buildbucket priority is separate from internal swarming priority.
-func (c *client) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
+func (c *client) ScheduleBuild(ctx context.Context, props map[string]any, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
 	props = AddServiceVersion(props)
 	propStruct, err := common.MapToStruct(props)
 

@@ -191,7 +191,7 @@ func getResponseFromAndroidBuildAPI(requestURL string, client *http.Client) (str
 
 // extractBuildNumberFromResponse extracts the build number from the JSON response.
 func extractBuildNumberFromResponse(resp string) (int, error) {
-	var result map[string]interface{}
+	var result map[string]any
 
 	// Parse the JSON string into the map
 	err := json.Unmarshal([]byte(resp), &result)
@@ -200,13 +200,13 @@ func extractBuildNumberFromResponse(resp string) (int, error) {
 	}
 
 	// Check if the "builds" field exists and is an array
-	builds, ok := result["builds"].([]interface{})
+	builds, ok := result["builds"].([]any)
 	if !ok || len(builds) == 0 {
 		return 0, fmt.Errorf("'builds' field is missing or empty")
 	}
 
 	// Fetch the first build and cast it to a map
-	buildInfo, ok := builds[0].(map[string]interface{})
+	buildInfo, ok := builds[0].(map[string]any)
 	if !ok {
 		return 0, fmt.Errorf("unable to parse build information")
 	}
@@ -228,7 +228,7 @@ func extractBuildNumberFromResponse(resp string) (int, error) {
 }
 
 func extractArtifactUrlFromResponse(resp string) (string, error) {
-	var result map[string]interface{}
+	var result map[string]any
 
 	// Parse the JSON string into the map
 	err := json.Unmarshal([]byte(resp), &result)

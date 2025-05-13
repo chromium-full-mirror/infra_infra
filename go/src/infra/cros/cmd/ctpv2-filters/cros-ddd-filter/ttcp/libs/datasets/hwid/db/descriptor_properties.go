@@ -57,7 +57,7 @@ func (field *FieldValue) collectPatternPropertyValues(fieldType string, props *D
 		}
 	}
 }
-func collectPropertyValueProperties(props *DeviceProperties, prop_id string, source string, prop interface{}) {
+func collectPropertyValueProperties(props *DeviceProperties, prop_id string, source string, prop any) {
 	switch v := prop.(type) {
 	case bool:
 		props.addPropertyValue(prop_id, source, strconv.FormatBool(v))
@@ -67,7 +67,7 @@ func collectPropertyValueProperties(props *DeviceProperties, prop_id string, sou
 		props.addPropertyValue(prop_id, source, strconv.FormatInt(int64(v), 10))
 	case float64:
 		props.addPropertyValue(prop_id, source, strconv.FormatFloat(v, 'f', 2, 64))
-	case map[string]interface{}:
+	case map[string]any:
 		for kk, vv := range v {
 			collectPropertyValueProperties(props, prop_id+"_"+kk, source, vv)
 		}

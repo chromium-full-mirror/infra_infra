@@ -14,10 +14,10 @@ import (
 )
 
 func TestMapToStruct(t *testing.T) {
-	mixedMap := map[string]interface{}{
+	mixedMap := map[string]any{
 		"string": "stringVal",
 		"num":    1,
-		"nestedMap": map[string]interface{}{
+		"nestedMap": map[string]any{
 			"bool": true,
 		},
 		"protoMessage": (&test_platform.Request{

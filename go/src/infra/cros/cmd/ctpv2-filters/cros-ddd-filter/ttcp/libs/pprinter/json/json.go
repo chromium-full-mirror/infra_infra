@@ -20,7 +20,7 @@ import (
 // Note that the Go's standard json library parses any number into a float64,
 // This can result in some undesired changes. To avoid this use
 // func (*Decoder) UseNumber()
-func DispValue(v interface{}) string {
+func DispValue(v any) string {
 	var dest strings.Builder
 	dispValueInt(&dest, v, "", "", "")
 	return dest.String()
@@ -28,20 +28,20 @@ func DispValue(v interface{}) string {
 
 func dispValueInt(
 	dest *strings.Builder,
-	toPrint interface{},
+	toPrint any,
 	firstLineIndent string,
 	nextLineIndent string,
 	postfix string,
 ) {
 	switch toPrint := toPrint.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		dispValueObject(
 			dest,
 			toPrint,
 			firstLineIndent,
 			nextLineIndent,
 			postfix)
-	case []interface{}:
+	case []any:
 		dispValueArray(
 			dest,
 			toPrint,
@@ -101,7 +101,7 @@ func dispValueInt(
 
 func dispValueObject(
 	dest *strings.Builder,
-	objToPrint map[string]interface{},
+	objToPrint map[string]any,
 	firstLineIndent string,
 	nextLineIndent string,
 	postfix string,
@@ -170,7 +170,7 @@ func dispValueObject(
 
 func dispValueArray(
 	dest *strings.Builder,
-	array []interface{},
+	array []any,
 	firstLineIndent string,
 	nextLineIndent string,
 	postfix string,
@@ -199,7 +199,7 @@ func dispValueArray(
 	}
 }
 
-func FormatStructAsJson(st interface{}) (string, error) {
+func FormatStructAsJson(st any) (string, error) {
 	b, err := json.MarshalIndent(st, "", "    ")
 	if err != nil {
 		return "", fmt.Errorf("Error in marshaling results to json:%s", err)

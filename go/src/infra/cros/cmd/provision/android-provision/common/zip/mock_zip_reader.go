@@ -42,7 +42,7 @@ func (m *MockZipReaderInterface) UnzipFile(srcFile, dstPath string) error {
 }
 
 // UnzipFile indicates an expected call of UnzipFile.
-func (mr *MockZipReaderInterfaceMockRecorder) UnzipFile(srcFile, dstPath interface{}) *gomock.Call {
+func (mr *MockZipReaderInterfaceMockRecorder) UnzipFile(srcFile, dstPath any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnzipFile", reflect.TypeOf((*MockZipReaderInterface)(nil).UnzipFile), srcFile, dstPath)
 }

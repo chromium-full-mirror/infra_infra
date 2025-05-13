@@ -20,7 +20,7 @@ func getParentParentStackTrace() string {
 }
 
 // Equal test if the computed and expexted values are identical.
-func Equal(t testing.TB, computed interface{}, expected interface{}) {
+func Equal(t testing.TB, computed any, expected any) {
 	switch v := expected.(type) {
 	case int:
 		computedTyped, ok := computed.(int)
@@ -108,7 +108,7 @@ func Equal(t testing.TB, computed interface{}, expected interface{}) {
 }
 
 // IsNil checks that the value is invalid or a pointer with a nil value.
-func IsNilOrInvalid(t testing.TB, value interface{}) {
+func IsNilOrInvalid(t testing.TB, value any) {
 	metaValue := reflect.ValueOf(value)
 	if !metaValue.IsValid() || (metaValue.Kind() == reflect.Ptr && metaValue.IsNil()) {
 		return
@@ -119,7 +119,7 @@ func IsNilOrInvalid(t testing.TB, value interface{}) {
 }
 
 // IsNotNil checks that the value is not a pointer with a nil value
-func IsNotNil(t testing.TB, value interface{}) {
+func IsNotNil(t testing.TB, value any) {
 	metaValue := reflect.ValueOf(value)
 	if value == nil || (metaValue.Kind() == reflect.Ptr && metaValue.IsNil()) {
 		t.Errorf("The value was expected to not be nil \n   @%v",
@@ -133,7 +133,7 @@ func IsNotNil(t testing.TB, value interface{}) {
 // - A nil pointer is Equivalent to the nil value
 // - Two basic values are Equivalent when they are of the same type and value
 // - Two structures are Equivalent when they are of the same type and all the fields hold values that are Equivalent between the to structures.
-func Equivalent(t testing.TB, computed interface{}, expected interface{}) {
+func Equivalent(t testing.TB, computed any, expected any) {
 	expectedValue := reflect.ValueOf(expected)
 	computedValue := reflect.ValueOf(computed)
 	if expectedValue.Kind() == reflect.Ptr {

@@ -25,7 +25,7 @@ type ComponentInfo struct {
 	ApprovalId string
 	Index      string
 	Status     ComponentStatus
-	Properties map[string]interface{}
+	Properties map[string]any
 }
 
 func (c ComponentInfo) GetPropertyInt(name string) int {
@@ -125,7 +125,7 @@ type HwidDescriptor struct {
 	EncodingPatterns map[int]string
 	ImageIds         map[int]string
 	Pattern          []PatternStruct
-	Rules            interface{}
+	Rules            any
 }
 
 func (descriptor *HwidDescriptor) GetPattern(image_id int) (PatternStruct, error) {

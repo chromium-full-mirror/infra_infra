@@ -310,14 +310,14 @@ func isChromiumTest(testResult *artifact.TestResult) bool {
 
 // extractBaseChromiumRDBConfig extracts base resultdb config from test_args for
 // chromium test results.
-func extractBaseChromiumRDBConfig(testArgs map[string]string) (map[string]interface{}, error) {
+func extractBaseChromiumRDBConfig(testArgs map[string]string) (map[string]any, error) {
 	rdbSettingsBytes, err := base64.StdEncoding.DecodeString(testArgs["resultdb_settings"])
 	if err != nil {
 		return nil, fmt.Errorf("error decoding the resultdb config base64 string for chromium results: %w", err)
 	}
 
 	// Unmarshal the JSON bytes into a map
-	rdbSettings := map[string]interface{}{}
+	rdbSettings := map[string]any{}
 	err = json.Unmarshal(rdbSettingsBytes, &rdbSettings)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling JSON for chromium resultdb config: %w", err)
@@ -379,7 +379,7 @@ func chromiumTestRDBConfig(testResult *artifact.TestResult, baseTags map[string]
 		return nil, err
 	}
 
-	for k, v := range chromiumConfig["base_variant"].(map[string]interface{}) {
+	for k, v := range chromiumConfig["base_variant"].(map[string]any) {
 		baseVariant[k] = v.(string)
 	}
 

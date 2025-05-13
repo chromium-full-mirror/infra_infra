@@ -32,13 +32,13 @@ func TestExtractBuildInfo(t *testing.T) {
 	tests := []struct {
 		name    string
 		resp    string
-		want    map[string]interface{}
+		want    map[string]any
 		wantErr bool
 	}{
 		{
 			name:    "valid response",
 			resp:    `{"builds": [{"buildId": "123", "branch": "test-branch"}]}`,
-			want:    map[string]interface{}{"buildId": "123", "branch": "test-branch"},
+			want:    map[string]any{"buildId": "123", "branch": "test-branch"},
 			wantErr: false,
 		},
 		{

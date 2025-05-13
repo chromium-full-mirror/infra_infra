@@ -149,7 +149,7 @@ func (s *servod) CallWithProxy(ctx context.Context, pool *ssh.Pool, method strin
 // Call performs execution commands by servod daemon by XMLRPC connection.
 func (s *servod) Call(ctx context.Context, host string, port int, method string, args []*xmlrpc_value.Value) (r *xmlrpc_value.Value, rErr error) {
 	c := xmlrpc.New(host, port)
-	var iArgs []interface{}
+	var iArgs []any
 	for _, ra := range args {
 		iArgs = append(iArgs, ra)
 	}

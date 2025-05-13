@@ -16,7 +16,7 @@ import (
 type PropertyDetails struct {
 	Source string
 	// A property can have multiple values.
-	Values map[string]interface{}
+	Values map[string]any
 }
 
 func (prop *PropertyDetails) GetSingleValue() (string, error) {
@@ -57,7 +57,7 @@ func (properties *DeviceProperties) addPropertyValue(propertyname string, source
 	if !ok {
 		details = PropertyDetails{
 			Source: source,
-			Values: map[string]interface{}{propertyValue: nil},
+			Values: map[string]any{propertyValue: nil},
 		}
 		properties.PropertiesDetails[propertyname] = details
 

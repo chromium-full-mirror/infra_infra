@@ -22,7 +22,7 @@ import (
 // match against in the fake client.
 type ScheduleParams struct {
 	BuilderName string
-	Props       map[string]interface{}
+	Props       map[string]any
 	Tags        map[string]string
 }
 
@@ -101,7 +101,7 @@ type ExpectedGetWithTagsCall struct {
 type ExpectedScheduleCall struct {
 	Tags map[string]string
 	// Properties may be nested, '.' is used as a delimiter.
-	Props    map[string]interface{}
+	Props    map[string]any
 	Response *buildbucketpb.Build
 }
 
@@ -127,7 +127,7 @@ func (c *FakeClient) GetBuilderID() *buildbucketpb.BuilderID {
 
 // hasProp checks if the given key value pair is in the dict.
 // prop may be a nested field (. delmited).
-func hasProp(props map[string]interface{}, prop string, value interface{}) bool {
+func hasProp(props map[string]any, prop string, value any) bool {
 	toks := strings.Split(prop, ".")
 	for i, tok := range toks {
 		val, ok := props[tok]
@@ -137,7 +137,7 @@ func hasProp(props map[string]interface{}, prop string, value interface{}) bool 
 		if i == len(toks)-1 {
 			return reflect.DeepEqual(value, val)
 		}
-		subprops, ok := val.(map[string]interface{})
+		subprops, ok := val.(map[string]any)
 		if !ok {
 			return false
 		}
@@ -146,7 +146,7 @@ func hasProp(props map[string]interface{}, prop string, value interface{}) bool 
 	return false
 }
 
-func hasProps(expectedProps map[string]interface{}, props map[string]interface{}) bool {
+func hasProps(expectedProps map[string]any, props map[string]any) bool {
 	fmt.Printf("checking props now... %v have %v", expectedProps, props)
 	for k, v := range expectedProps {
 		if !hasProp(props, k, v) {
@@ -157,7 +157,7 @@ func hasProps(expectedProps map[string]interface{}, props map[string]interface{}
 	return true
 }
 
-func (c *FakeClient) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
+func (c *FakeClient) ScheduleBuild(ctx context.Context, props map[string]any, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
 	for i, expected := range c.ExpectedScheduleBuild {
 		if reflect.DeepEqual(tags, expected.Tags) && hasProps(expected.Props, props) {
 			// Matching an expectation "consumes" it.
