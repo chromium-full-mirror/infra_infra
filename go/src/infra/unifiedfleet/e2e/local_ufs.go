@@ -74,6 +74,7 @@ func (u *LocalUFSEnv) Shivas(ctx context.Context, cmd []string, options ...tcexe
 
 func (u *LocalUFSEnv) ShivasStdin(ctx context.Context, cmd []string, stdin string, options ...tcexec.ProcessOption) (int, string, error) {
 	fullCmd := formatShivasCmd(cmd)
+	log.Printf("exec shivas cmd %q w/ opts: %#v", strings.Join(fullCmd, " "), options)
 
 	provider, err := testcontainers.NewDockerProvider()
 	if err != nil {
