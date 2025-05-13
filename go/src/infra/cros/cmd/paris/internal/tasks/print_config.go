@@ -73,6 +73,8 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 		ds = tlw.DUTSetupType_ANDROID
 	case "cros":
 		ds = tlw.DUTSetupType_CROS
+	case "cros_android":
+		ds = tlw.DUTSetupType_CROS_ANDROID
 	case "browser":
 		ds = tlw.DUTSetupType_CROS_BROWSER
 	default:
