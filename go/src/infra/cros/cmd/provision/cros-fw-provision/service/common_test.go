@@ -37,6 +37,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-omnigul.bin" /* exists */},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Omnigul.14505.832.0.tbz2",
+					Filenames: []string{"image-omnigul.bin"},
+				},
+				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brya-14505.B-branch/R100-14505.832.0-1-8730368903603296945/brya/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-omnigul.bin" /* exists */, "image-omniknight.bin", "image-brya.bin", "image.bin", "bios.bin"},
 				},
@@ -45,6 +49,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/omnigul.EC.14505.832.0.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Omnigul_EC.14505.832.0.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brya-14505.B-branch/R100-14505.832.0-1-8730368903603296945/brya/firmware_from_source.tar.bz2", // exists
@@ -66,6 +74,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-skolas.bin" /* exists */},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Skolas.14505.832.0.tbz2",
+					Filenames: []string{"image-skolas.bin"},
+				},
+				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brya-14505.B-branch/R100-14505.832.0-1-8730368903603296945/brya/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-skolas.bin" /* exists */, "image-aviko.bin", "image-brya.bin", "image.bin", "bios.bin"},
 				},
@@ -74,6 +86,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/brya.EC.14505.832.0.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Brya_EC.14505.832.0.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brya-14505.B-branch/R100-14505.832.0-1-8730368903603296945/brya/firmware_from_source.tar.bz2", // exists
@@ -95,6 +111,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-brox_ec_ish.bin" /* exists */},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_ec_ish.16080.159.0.tbz2",
+					Filenames: []string{"image-brox_ec_ish.bin"},
+				},
+				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brox-16080.B-branch/R132-16080.159.0-1-8718833705983315281/brox/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-brox_ec_ish.bin" /* exists */, "image-brox.bin" /* exists */, "image-brox.bin", "image.bin", "bios.bin"},
 				},
@@ -103,6 +123,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/brox_ec_ish.EC.16080.159.0.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_ec_ish_EC.16080.159.0.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://chromeos-image-archive/firmware-brox-16080.B-branch/R132-16080.159.0-1-8718833705983315281/brox/firmware_from_source.tar.bz2", // exists
@@ -124,6 +148,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-brox_ec_ish.bin"},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox_ec_ish.16209.5.9.tbz2",
+					Filenames: []string{"image-brox_ec_ish.bin"},
+				},
+				{
 					GSURL:     "gs://chromeos-image-archive/firmware-ec-R135-16209.5.B-branch/R135-16209.5.9-1-8720478693255597665/brox/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-brox_ec_ish.bin", "image-brox.bin", "image-brox.bin", "image.bin", "bios.bin"},
 				},
@@ -132,6 +160,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/brox-ish-ec.EC.16209.5.9.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox-ish-ec_EC.16209.5.9.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://chromeos-image-archive/firmware-ec-R135-16209.5.B-branch/R135-16209.5.9-1-8720478693255597665/brox/firmware_from_source.tar.bz2", // exists
@@ -153,6 +185,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-karis.bin"},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis.16181.3.14.tbz2",
+					Filenames: []string{"image-karis.bin"},
+				},
+				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/rex/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-karis.bin", "image-karis.bin", "image-rex.bin", "image.bin", "bios.bin"},
 				},
@@ -161,6 +197,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.EC.16181.3.14.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis_EC.16181.3.14.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/rex/firmware_from_source.tar.bz2", // exists
@@ -182,6 +222,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-karis.bin"},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis.16181.3.14.tbz2",
+					Filenames: []string{"image-karis.bin"},
+				},
+				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.16181.3.14.tar.bz2",
 					Filenames: []string{"image-karis.bin", "image-karis.bin", "image-rex.bin", "image.bin", "bios.bin"},
 				},
@@ -190,6 +234,10 @@ func TestGetCandidateURLs(t *testing.T) {
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.EC.16181.3.14.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists*/},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis_EC.16181.3.14.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.16181.3.14.tar.bz2",
@@ -211,6 +259,10 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-karis.bin"},
 				},
 				{
+					GSURL:     "gs://firmware-image-archive/firmware-rex-15709.B/15709.59.0/Karis.15709.59.0.tbz2",
+					Filenames: []string{"image-karis.bin"},
+				},
+				{
 					GSURL:     "gs://chromeos-image-archive/firmware-rex-15709.B-branch-firmware/R122-15709.59.0/rex/firmware_from_source.tar.bz2", // exists
 					Filenames: []string{"image-karis.bin" /* exists */, "image-karis.bin" /* exists */, "image-rex.bin", "image.bin", "bios.bin"},
 				},
@@ -218,6 +270,10 @@ func TestGetCandidateURLs(t *testing.T) {
 			expectedECCandidates: []ImageCandidate{
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-rex-15709.B/15709.59.0/karis.EC.15709.59.0.tar.bz2",
+					Filenames: []string{"ec.bin"},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-rex-15709.B/15709.59.0/Karis_EC.15709.59.0.tbz2",
 					Filenames: []string{"ec.bin"},
 				},
 				{
@@ -239,11 +295,19 @@ func TestGetCandidateURLs(t *testing.T) {
 					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/omnigul.14505.832.0.tar.bz2", // exists
 					Filenames: []string{"image-omnigul.bin" /* exists */},
 				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Omnigul.14505.832.0.tbz2",
+					Filenames: []string{"image-omnigul.bin"},
+				},
 			},
 			expectedECCandidates: []ImageCandidate{
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/omnigul.EC.14505.832.0.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/Omnigul_EC.14505.832.0.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 			},
 		},
@@ -260,11 +324,19 @@ func TestGetCandidateURLs(t *testing.T) {
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.16181.3.14.tar.bz2",
 					Filenames: []string{"image-karis.bin"},
 				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis.16181.3.14.tbz2",
+					Filenames: []string{"image-karis.bin"},
+				},
 			},
 			expectedECCandidates: []ImageCandidate{
 				{
 					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/karis.EC.16181.3.14.tar.bz2", // exists
 					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R134-16181.3.B/16181.3.14/Karis_EC.16181.3.14.tbz2",
+					Filenames: []string{"ec.bin"},
 				},
 			},
 		},

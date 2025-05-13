@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/pkg/errors"
 
@@ -181,6 +182,12 @@ func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tar.bz2", m[1], m[2], m[3], fws.CorebootName),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName)},
 		})
+		capitalCorebootName := []rune(fws.CorebootName)
+		capitalCorebootName[0] = unicode.ToUpper(capitalCorebootName[0])
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tbz2", m[1], m[2], m[3], string(capitalCorebootName)),
+			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName)},
+		})
 		return candidates, nil
 	}
 
@@ -189,6 +196,12 @@ func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 	if m != nil && fws.CorebootName != "" {
 		candidates = append(candidates, ImageCandidate{
 			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tar.bz2", m[1], m[2], fws.CorebootName),
+			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName)},
+		})
+		capitalCorebootName := []rune(fws.CorebootName)
+		capitalCorebootName[0] = unicode.ToUpper(capitalCorebootName[0])
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tbz2", m[1], m[2], string(capitalCorebootName)),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName)},
 		})
 	}
@@ -230,6 +243,12 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.EC.%[3]s.tar.bz2", m[1], m[2], m[3], ecName),
 			Filenames: []string{"ec.bin"},
 		})
+		capitalECName := []rune(ecName)
+		capitalECName[0] = unicode.ToUpper(capitalECName[0])
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s_EC.%[3]s.tbz2", m[1], m[2], m[3], string(capitalECName)),
+			Filenames: []string{"ec.bin"},
+		})
 		return candidates, nil
 	}
 
@@ -238,6 +257,12 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 	if m != nil && fws.LegacyECName != "" {
 		candidates = append(candidates, ImageCandidate{
 			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.EC.%[2]s.tar.bz2", m[1], m[2], ecName),
+			Filenames: []string{"ec.bin"},
+		})
+		capitalECName := []rune(ecName)
+		capitalECName[0] = unicode.ToUpper(capitalECName[0])
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s_EC.%[2]s.tbz2", m[1], m[2], string(capitalECName)),
 			Filenames: []string{"ec.bin"},
 		})
 	}
