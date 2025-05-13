@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -80,8 +81,8 @@ func (c *ADBClient) IsAlive() bool {
 	return state == "device"
 }
 
-func (c *ADBClient) NewSession() (SessionInterface, error) {
-	return NewAdbSession(c)
+func (c *ADBClient) NewSession(ctx context.Context) (SessionInterface, error) {
+	return NewAdbSession(ctx, c)
 }
 
 type AdbSession struct {
@@ -89,8 +90,14 @@ type AdbSession struct {
 	cmd    *exec.Cmd
 }
 
-func NewAdbSession(client *ADBClient) (*AdbSession, error) {
-	cmd := exec.Command(client.adbPath, "-s", client.target, "shell")
+func NewAdbSession(ctx context.Context, client *ADBClient) (*AdbSession, error) {
+	cmd := exec.CommandContext(ctx, client.adbPath, "-s", client.target, "shell")
+
+	// We want to send a SIGTERM instead of SIGKILL so that adb can clean up
+	// the remote process.
+	cmd.Cancel = func() error {
+		return cmd.Process.Signal(syscall.SIGTERM)
+	}
 
 	return &AdbSession{
 		client: client,

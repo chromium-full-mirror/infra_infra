@@ -5,6 +5,7 @@
 package dutssh
 
 import (
+	"context"
 	"errors"
 	"io"
 
@@ -22,7 +23,7 @@ func (c *SSHClient) Close() error {
 	return c.Client.Close()
 }
 
-func (c *SSHClient) NewSession() (SessionInterface, error) {
+func (c *SSHClient) NewSession(ctx context.Context) (SessionInterface, error) {
 	if c.Client == nil {
 		return nil, errors.New("SSH not connected")
 	}
@@ -30,6 +31,10 @@ func (c *SSHClient) NewSession() (SessionInterface, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	context.AfterFunc(ctx, func() {
+		session.Close()
+	})
 	return &SSHSession{Session: session}, nil
 }
 

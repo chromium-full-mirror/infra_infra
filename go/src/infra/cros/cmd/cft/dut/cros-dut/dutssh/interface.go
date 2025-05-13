@@ -5,12 +5,13 @@
 package dutssh
 
 import (
+	"context"
 	"io"
 )
 
 type ClientInterface interface {
 	Close() error
-	NewSession() (SessionInterface, error)
+	NewSession(ctx context.Context) (SessionInterface, error)
 	Wait() error
 	IsAlive() bool
 }

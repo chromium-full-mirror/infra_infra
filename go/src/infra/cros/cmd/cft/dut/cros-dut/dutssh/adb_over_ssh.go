@@ -5,6 +5,7 @@
 package dutssh
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -79,8 +80,8 @@ func (c *ADBOverSSHClient) Close() error {
 	return errors.Join(errs...)
 }
 
-func (c *ADBOverSSHClient) NewSession() (SessionInterface, error) {
-	return c.adb.NewSession()
+func (c *ADBOverSSHClient) NewSession(ctx context.Context) (SessionInterface, error) {
+	return c.adb.NewSession(ctx)
 }
 
 func (c *ADBOverSSHClient) Wait() error {
