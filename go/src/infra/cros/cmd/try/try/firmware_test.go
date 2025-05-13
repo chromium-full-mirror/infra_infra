@@ -160,7 +160,7 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 	)
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
-	if tc.expectedPatches == nil || len(tc.expectedPatches) == 0 {
+	if len(tc.expectedPatches) == 0 {
 		tc.expectedPatches = tc.patches
 	}
 	for _, patch := range tc.expectedPatches {

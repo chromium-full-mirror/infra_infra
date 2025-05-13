@@ -123,7 +123,7 @@ func (t *tryRunBase) run(ctx context.Context) (int, error) {
 	if err := t.tagBuilds(ctx); err != nil {
 		return CmdError, err
 	}
-	if t.patches != nil && len(t.patches) > 0 {
+	if len(t.patches) > 0 {
 		// Include ancestors of patches.
 		if patchesWithAncestors, err := includeAllAncestors(ctx, t.gerritClient, t.patches); err != nil {
 			return CmdError, err

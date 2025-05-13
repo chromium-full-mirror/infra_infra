@@ -69,7 +69,7 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 		"-p",
 		"@" + propsFile.Name(),
 	}
-	if tc.expectedPatches == nil || len(tc.expectedPatches) == 0 {
+	if len(tc.expectedPatches) == 0 {
 		tc.expectedPatches = tc.patches
 	}
 	for _, patch := range tc.expectedPatches {
