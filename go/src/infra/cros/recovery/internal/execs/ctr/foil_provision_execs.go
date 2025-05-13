@@ -10,7 +10,7 @@ import (
 
 	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/ctr"
@@ -106,7 +106,7 @@ func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) er
 	if dut.GetChromeos() == nil {
 		return errors.Reason("setup foil-provision service: dut is not detected").Err()
 	}
-	var servoNexusAddr, cachingAddress *lab_api.IpEndpoint
+	var servoNexusAddr, cachingAddress *labapi.IpEndpoint
 	argsMap := info.GetActionArgs(ctx)
 	// All provisions required USB-drive.
 	if argsMap.AsBool(ctx, "provide_servo_nexus", true) {

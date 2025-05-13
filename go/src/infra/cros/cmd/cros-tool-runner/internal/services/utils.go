@@ -15,7 +15,7 @@ import (
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/docker"
@@ -107,6 +107,6 @@ func createProvisionInput(state *api.CrosProvisionRequest, dir string) error {
 	return errors.Annotate(err, "create input").Err()
 }
 
-func getAddr(i *lab_api.IpEndpoint) string {
+func getAddr(i *labapi.IpEndpoint) string {
 	return fmt.Sprintf("%s:%d", i.GetAddress(), i.GetPort())
 }

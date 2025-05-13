@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
@@ -89,7 +89,7 @@ type AndroidService struct {
 	ProvisionDir      string
 }
 
-func NewAndroidService(dut *lab_api.Dut, dutClient api.DutServiceClient, req *api.InstallRequest) (*AndroidService, error) {
+func NewAndroidService(dut *labapi.Dut, dutClient api.DutServiceClient, req *api.InstallRequest) (*AndroidService, error) {
 	dir, err := os.MkdirTemp("", "android_provision_")
 	if err != nil {
 		return nil, err

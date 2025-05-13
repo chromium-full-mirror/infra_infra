@@ -17,7 +17,7 @@ import (
 
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/constants"
@@ -32,7 +32,7 @@ const (
 )
 
 type CrossOverParameters struct {
-	Dut                *lab_api.Dut
+	Dut                *labapi.Dut
 	TargetImagePath    *storage_path.StoragePath
 	DutClient          api.DutServiceClient
 	PostProvisionState common_utils.ServiceState

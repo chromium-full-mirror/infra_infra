@@ -19,7 +19,7 @@ import (
 	config "go.chromium.org/chromiumos/config/go"
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
@@ -61,7 +61,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	}
 	log.Printf("Run test: created the test artifact directory %s", resultDir)
 
-	duts := []*lab_api.Dut{req.PrimaryDut.GetDut()}
+	duts := []*labapi.Dut{req.PrimaryDut.GetDut()}
 
 	var companions []*api.CrosTestRequest_Device
 	for _, c := range req.GetCompanionDuts() {
@@ -91,7 +91,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 		}
 	}()
 	for i, c := range companions {
-		c.DutServer = &lab_api.IpEndpoint{Address: "localhost", Port: dutServices[i+1].Port}
+		c.DutServer = &labapi.IpEndpoint{Address: "localhost", Port: dutServices[i+1].Port}
 	}
 
 	// Create and run LibsServer.
@@ -114,8 +114,8 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 		TestSuites: req.GetTestSuites(),
 		Primary: &api.CrosTestRequest_Device{
 			Dut:        req.PrimaryDut.GetDut(),
-			DutServer:  &lab_api.IpEndpoint{Address: "localhost", Port: dutServices[0].Port},
-			LibsServer: &lab_api.IpEndpoint{Address: "localhost", Port: libsServer.Port},
+			DutServer:  &labapi.IpEndpoint{Address: "localhost", Port: dutServices[0].Port},
+			LibsServer: &labapi.IpEndpoint{Address: "localhost", Port: libsServer.Port},
 		},
 		Companions: companions,
 		Metadata:   req.GetMetadata(),

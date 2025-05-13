@@ -16,7 +16,7 @@ import (
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -154,7 +154,7 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 	return out, errors.Annotate(err, "inner run").Err()
 }
 
-func isEmptyEndPoint(i *lab_api.IpEndpoint) bool {
+func isEmptyEndPoint(i *labapi.IpEndpoint) bool {
 	return i == nil || i.GetAddress() == "" || i.GetPort() <= 0
 }
 

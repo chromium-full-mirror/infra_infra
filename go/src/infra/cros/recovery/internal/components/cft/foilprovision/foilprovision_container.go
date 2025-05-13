@@ -12,7 +12,7 @@ import (
 
 	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -23,7 +23,7 @@ import (
 )
 
 // Setup sets the service for future provision calls.
-func Setup(ctx context.Context, client api.GenericProvisionServiceClient, dut *tlw.Dut, labDut *lab_api.Dut, servoNexusAddr *lab_api.IpEndpoint) error {
+func Setup(ctx context.Context, client api.GenericProvisionServiceClient, dut *tlw.Dut, labDut *labapi.Dut, servoNexusAddr *labapi.IpEndpoint) error {
 	if client == nil {
 		return errors.Reason("foil-provision setup: client is not provided").Err()
 	}

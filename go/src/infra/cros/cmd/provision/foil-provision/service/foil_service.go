@@ -12,7 +12,7 @@ import (
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
@@ -42,13 +42,13 @@ type FoilService struct {
 	CacheServerURL   url.URL
 	DutClient        api.DutServiceClient
 	ServoNexusAddr   string
-	Dut              *lab_api.Dut
+	Dut              *labapi.Dut
 	Req              *api.InstallRequest
 	CrossOver        bool
 	Params           *cross_over.CrossOverParameters
 }
 
-func NewFoilService(dut *lab_api.Dut, req *api.InstallRequest, dutClient api.DutServiceClient, servoNexusAddr string) (*FoilService, error) {
+func NewFoilService(dut *labapi.Dut, req *api.InstallRequest, dutClient api.DutServiceClient, servoNexusAddr string) (*FoilService, error) {
 	cacheServerAddr, err := cache.IPEndpointToHostPort(dut.GetCacheServer().GetAddress())
 	if err != nil {
 		return nil, fmt.Errorf("invalid cache server address %v", err)

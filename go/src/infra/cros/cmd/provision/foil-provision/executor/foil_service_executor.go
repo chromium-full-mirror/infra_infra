@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
@@ -35,7 +35,7 @@ func NewFoilProvisionExecutor(logger *log.Logger) (*FoilProvisionExecutor, error
 	}, nil
 }
 
-func (c *FoilProvisionExecutor) GetFirstState(dut *lab_api.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func (c *FoilProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
 	crossOverRequired := c.crossOverRequired(dut, req)
 	if crossOverRequired {
 		state, err := crossOverProvisionState(dut, dutClient, servoNexusAddr, req)
@@ -55,7 +55,7 @@ func (c *FoilProvisionExecutor) GetFirstState(dut *lab_api.Dut, dutClient api.Du
 	return state_machine.NewFoilPreInitState(cs), nil
 }
 
-func crossOverProvisionState(dut *lab_api.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func crossOverProvisionState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
 	if servoNexusAddr == "" {
 		return nil, fmt.Errorf("servoNexusAdd required for crossover provision")
 	}
@@ -74,7 +74,7 @@ func crossOverProvisionState(dut *lab_api.Dut, dutClient api.DutServiceClient, s
 	return cross_over.NewCrossOverInitState(params), nil
 }
 
-func (c *FoilProvisionExecutor) crossOverRequired(dut *lab_api.Dut, req *api.InstallRequest) bool {
+func (c *FoilProvisionExecutor) crossOverRequired(dut *labapi.Dut, req *api.InstallRequest) bool {
 	// Due to ongoing OTA issues; force the flash for now. b/378974495
 	if true {
 		return true

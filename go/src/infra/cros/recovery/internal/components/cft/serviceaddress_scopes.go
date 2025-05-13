@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/ctr"
@@ -70,7 +70,7 @@ func AddressFromScope(ctx context.Context, containerName string) (string, error)
 }
 
 // ADBServiceAddressFromScope read adb service client from scope.
-func ADBServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpEndpoint, error) {
+func ADBServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*labapi.IpEndpoint, error) {
 	addr, err := AddressFromScope(ctx, ADBName(dut))
 	if err != nil {
 		return nil, errors.Annotate(err, "adb service address from scope").Err()
@@ -83,7 +83,7 @@ func ADBServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpE
 }
 
 // ServoServiceAddressFromScope read servo-nexus service client from scope.
-func ServoServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpEndpoint, error) {
+func ServoServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*labapi.IpEndpoint, error) {
 	addr, err := AddressFromScope(ctx, ServoNexusName(dut))
 	if err != nil {
 		return nil, errors.Annotate(err, "servo-nexus service address from scope").Err()
@@ -96,7 +96,7 @@ func ServoServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.I
 }
 
 // FoilProvisionServiceAddressFromScope read foil-provision service client from scope.
-func FoilProvisionServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpEndpoint, error) {
+func FoilProvisionServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*labapi.IpEndpoint, error) {
 	addr, err := AddressFromScope(ctx, FoilProvisionName(dut))
 	if err != nil {
 		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
@@ -109,7 +109,7 @@ func FoilProvisionServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*l
 }
 
 // CacheServiceAddressFromScope read cache service client from scope.
-func CacheServiceAddressFromScope(ctx context.Context) (*lab_api.IpEndpoint, error) {
+func CacheServiceAddressFromScope(ctx context.Context) (*labapi.IpEndpoint, error) {
 	addr, err := AddressFromScope(ctx, CacheService)
 	if err != nil {
 		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
@@ -121,14 +121,14 @@ func CacheServiceAddressFromScope(ctx context.Context) (*lab_api.IpEndpoint, err
 	return ip, nil
 }
 
-func addressToIPEndpoint(addr string) (*lab_api.IpEndpoint, error) {
+func addressToIPEndpoint(addr string) (*labapi.IpEndpoint, error) {
 	addr = strings.Trim(strings.TrimSpace(addr), ":")
 	if addr == "" {
 		return nil, errors.Reason("address to ip endpoint: address is empty").Err()
 	}
 	parts := strings.Split(addr, ":")
 	if len(parts) == 1 {
-		return &lab_api.IpEndpoint{
+		return &labapi.IpEndpoint{
 			Address: parts[0],
 		}, nil
 	}
@@ -136,7 +136,7 @@ func addressToIPEndpoint(addr string) (*lab_api.IpEndpoint, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "address to ip endpoint: bad port").Err()
 	}
-	return &lab_api.IpEndpoint{
+	return &labapi.IpEndpoint{
 		Address: parts[0],
 		Port:    int32(port),
 	}, nil

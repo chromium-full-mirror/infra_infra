@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/constants"
@@ -132,7 +132,7 @@ func (cc *CLICommand) Run() error {
 	cc.log.Printf("New CS Created")
 
 	out := &api.CrosProvisionResponse{
-		Id: &lab_api.Dut_Id{
+		Id: &labapi.Dut_Id{
 			Value: cc.inputProto.GetDut().GetId().GetValue(),
 		},
 		Outcome: &api.CrosProvisionResponse_Success{},

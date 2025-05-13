@@ -16,7 +16,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	"go.chromium.org/infra/cros/cmd/cft/common/dutinteraction"
@@ -178,7 +178,7 @@ func callServodSET(ctx context.Context, log *log.Logger, key, value string, para
 	}
 }
 
-func startServod(ctx context.Context, log *log.Logger, servoNexusClient api.ServodServiceClient, dut *lab_api.Dut) error {
+func startServod(ctx context.Context, log *log.Logger, servoNexusClient api.ServodServiceClient, dut *labapi.Dut) error {
 	req := &api.StartServodRequest{}
 	req.Board = dut.GetChromeos().GetDutModel().GetBuildTarget()
 	req.Model = dut.GetChromeos().GetDutModel().GetModelName()
@@ -217,7 +217,7 @@ func setPDRole(ctx context.Context, log *log.Logger, val string, params *CrossOv
 	return err
 }
 
-func saveServoLogs(ctx context.Context, log *log.Logger, servoNexusClient api.ServodServiceClient, dut *lab_api.Dut) error {
+func saveServoLogs(ctx context.Context, log *log.Logger, servoNexusClient api.ServodServiceClient, dut *labapi.Dut) error {
 	host := dut.GetChromeos().GetServo().GetServodAddress().GetAddress()
 	if strings.Contains(host, satlab) {
 		log.Println("Warning: Saving servo logs on satlab not supported.")

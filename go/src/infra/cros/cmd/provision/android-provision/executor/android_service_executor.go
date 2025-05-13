@@ -8,7 +8,7 @@ import (
 	"errors"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine"
@@ -18,7 +18,7 @@ import (
 type AndroidProvisionExecutor struct {
 }
 
-func (c *AndroidProvisionExecutor) GetFirstState(dut *lab_api.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func (c *AndroidProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
 	svc, err := service.NewAndroidService(dut, dutClient, req)
 	if err != nil {
 		return nil, err

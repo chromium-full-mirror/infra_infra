@@ -19,7 +19,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -144,7 +144,7 @@ func (cc *CLICommand) Run() error {
 	}
 	cc.log.Printf("New AndroidService Created")
 	out := &api.AndroidProvisionCLIResponse{
-		Id: &lab_api.Dut_Id{
+		Id: &labapi.Dut_Id{
 			Value: cc.inputProto.GetDut().GetId().GetValue(),
 		},
 		Outcome: &api.AndroidProvisionCLIResponse_Success{},

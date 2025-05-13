@@ -8,13 +8,13 @@ package metadata
 import (
 	"log"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 // ServerMetadata stores server specific information for a DUT
 type ServerMetadata struct {
 	Port       int
 	Log        *log.Logger
-	Dut        *lab_api.Dut
+	Dut        *labapi.Dut
 	DutAddress string
 }

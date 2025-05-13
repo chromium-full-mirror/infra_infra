@@ -11,7 +11,7 @@ import (
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
@@ -30,7 +30,7 @@ type CrOSService struct {
 	QuickResetDevice bool
 }
 
-func NewCrOSService(dut *lab_api.Dut, dutClient api.DutServiceClient, req *api.InstallRequest) (*CrOSService, error) {
+func NewCrOSService(dut *labapi.Dut, dutClient api.DutServiceClient, req *api.InstallRequest) (*CrOSService, error) {
 	m, err := unpackMetadata(req)
 	if err != nil {
 		return nil, err

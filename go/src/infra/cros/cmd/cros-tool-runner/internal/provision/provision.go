@@ -16,7 +16,7 @@ import (
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
@@ -123,7 +123,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	provisionReq := &api.CrosProvisionRequest{
 		Dut:            device.GetDut(),
 		ProvisionState: device.GetProvisionState(),
-		DutServer: &lab_api.IpEndpoint{
+		DutServer: &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    int32(dutService.ServicePort),
 		},

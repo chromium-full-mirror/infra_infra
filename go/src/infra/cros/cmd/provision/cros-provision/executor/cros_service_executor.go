@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
@@ -28,7 +28,7 @@ type CrOSProvisionExecutor struct {
 	Logger *log.Logger
 }
 
-func (c *CrOSProvisionExecutor) GetFirstState(dut *lab_api.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func (c *CrOSProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
 	cs, err := service.NewCrOSService(dut, dutClient, req)
 	if err != nil {
 		return nil, err

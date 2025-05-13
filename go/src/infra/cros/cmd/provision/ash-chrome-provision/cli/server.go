@@ -19,7 +19,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/lro"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
@@ -34,7 +34,7 @@ type AshChromeProvisionServer struct {
 	// service. Its address may be specified either when server is created,
 	// or later in user's AshChromeProvisionRequest.
 	dutServer api.DutServiceClient
-	dut       *lab_api.Dut
+	dut       *labapi.Dut
 
 	log        *log.Logger
 	listenPort int

@@ -18,7 +18,7 @@ import (
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
@@ -63,7 +63,7 @@ const (
 )
 
 // CreateDutService pulls and starts cros-dut service.
-func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, dutName, networkName string, cacheServer *lab_api.CacheServer, dutSshInfo *lab_api.IpEndpoint, dir string, t string) (*docker.Docker, error) {
+func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, dutName, networkName string, cacheServer *labapi.CacheServer, dutSshInfo *labapi.IpEndpoint, dir string, t string) (*docker.Docker, error) {
 	p, err := createImagePath(image)
 	if err != nil {
 		log.Printf("create cros-dut service: %s", err)
@@ -76,7 +76,7 @@ func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, 
 }
 
 // startDutService starts cros-dut service.
-func startDutService(ctx context.Context, imagePath, registerName, dutName, networkName string, cacheServer *lab_api.CacheServer, dutSshInfo *lab_api.IpEndpoint, port int, dir string, tokenFile string) (*docker.Docker, error) {
+func startDutService(ctx context.Context, imagePath, registerName, dutName, networkName string, cacheServer *labapi.CacheServer, dutSshInfo *labapi.IpEndpoint, port int, dir string, tokenFile string) (*docker.Docker, error) {
 	crosDutResultDirName := "/tmp/cros-dut"
 	d := &docker.Docker{
 		Name:               fmt.Sprintf(crosDutContainerNameTemplate, dutName, os.Getpid(), time.Now().Unix()),
@@ -150,7 +150,7 @@ type DutServerInfo struct {
 }
 
 // CreateDutServicesForHostNetwork pulls and starts cros-dut services in host network.
-func CreateDutServicesForHostNetwork(ctx context.Context, image *build_api.ContainerImageInfo, duts []*lab_api.Dut, dir, t string) ([]*DutServerInfo, error) {
+func CreateDutServicesForHostNetwork(ctx context.Context, image *build_api.ContainerImageInfo, duts []*labapi.Dut, dir, t string) ([]*DutServerInfo, error) {
 	p, err := createImagePath(image)
 	if err != nil {
 		return nil, errors.Annotate(err, "create dut services for host network: failed to create image path").Err()
@@ -364,7 +364,7 @@ func RunTestFinderCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 	return err
 }
 
-func dutEndPoint(dut *lab_api.Dut) *lab_api.IpEndpoint {
+func dutEndPoint(dut *labapi.Dut) *labapi.IpEndpoint {
 	if dut == nil {
 		return nil
 	}
@@ -375,7 +375,7 @@ func dutEndPoint(dut *lab_api.Dut) *lab_api.IpEndpoint {
 	return chromeOS.GetSsh()
 }
 
-func dutAddress(dut *lab_api.Dut) string {
+func dutAddress(dut *labapi.Dut) string {
 	if dut == nil {
 		return ""
 	}
@@ -387,7 +387,7 @@ func dutAddress(dut *lab_api.Dut) string {
 	return endPointToString(endPoint)
 }
 
-func endPointToString(endPoint *lab_api.IpEndpoint) string {
+func endPointToString(endPoint *labapi.IpEndpoint) string {
 	if endPoint == nil {
 		return ""
 	}
