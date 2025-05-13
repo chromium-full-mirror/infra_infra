@@ -42,7 +42,7 @@ func (s *KernelProvisionProvisionState) Execute(ctx context.Context, log *log.Lo
 }
 
 func (s *KernelProvisionProvisionState) Next() commonutils.ServiceState {
-	return NewKernelProvisionCleanUpState(s.service)
+	return NewExitFastbootdState(s.service)
 }
 
 func (s *KernelProvisionProvisionState) Name() string {

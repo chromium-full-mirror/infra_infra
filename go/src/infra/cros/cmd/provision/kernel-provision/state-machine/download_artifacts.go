@@ -100,7 +100,7 @@ func makeExecutable(path string) error {
 }
 
 func (s *DownloadArtifactsState) Next() commonutils.ServiceState {
-	return NewKernelProvisionProvisionState(s.service)
+	return NewEnterFastbootdState(s.service)
 }
 
 func (s *DownloadArtifactsState) Name() string {
