@@ -126,7 +126,7 @@ func (s *AdbSession) Start(script string) error {
 
 	log.Printf("<adb> running %+v", s.cmd.Args)
 	if err := s.cmd.Start(); err != nil {
-		return fmt.Errorf("Failed to invoke %+v: %w", s.cmd.Args, err)
+		return fmt.Errorf("<adb> Failed to invoke %+v: %w", s.cmd.Args, err)
 	}
 
 	return nil
@@ -134,7 +134,7 @@ func (s *AdbSession) Start(script string) error {
 
 func (s *AdbSession) Close() error {
 	if err := s.cmd.Wait(); err != nil {
-		return fmt.Errorf("Failed to wait on process: %w", err)
+		return fmt.Errorf("<adb> command %+v failed: %w", s.cmd.Args, err)
 	}
 
 	return nil
