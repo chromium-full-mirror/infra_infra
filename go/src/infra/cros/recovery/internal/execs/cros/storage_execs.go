@@ -59,8 +59,10 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 func auditStoragePartitionHashExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
 	retryCount := am.AsInt(ctx, "retry_count", 1)
+	copyTimeout := am.AsDuration(ctx, "copy_timeout", 180, time.Second)
+	hashTimeout := am.AsDuration(ctx, "hash_timeout", 180, time.Second)
 	retryPartitionHashFunc := func() error {
-		issueReason := storage.CheckPartitionHash(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut())
+		issueReason := storage.CheckPartitionHash(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut(), copyTimeout, hashTimeout)
 		if issueReason.NotEmpty() {
 			return errors.New("error during partition hash check")
 		}

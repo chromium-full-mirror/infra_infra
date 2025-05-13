@@ -650,8 +650,8 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	return nil
 }
 
-func getPartitionHash(ctx context.Context, r components.Runner, partition string) (string, error) {
-	out, err := r(ctx, 3*time.Minute, fmt.Sprintf("/usr/bin/sha256sum %s", partition))
+func getPartitionHash(ctx context.Context, r components.Runner, timeout time.Duration, partition string) (string, error) {
+	out, err := r(ctx, timeout, fmt.Sprintf("/usr/bin/sha256sum %s", partition))
 	if err != nil {
 		return "", errors.Annotate(err, "get partition hash").Err()
 	}
@@ -666,7 +666,7 @@ func getPartitionHash(ctx context.Context, r components.Runner, partition string
 //
 // This is a helper function to encapsulate the logic and intended to be called
 // from the exec, as well as any other place where such a check is required.
-func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut) tlw.DutStateReason {
+func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut, copyTimeout time.Duration, hashTimeout time.Duration) tlw.DutStateReason {
 	activeKernel, nextKernel, diskBlock, err := kernel.GetKernelData(ctx, r)
 	if err != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
@@ -674,7 +674,7 @@ func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.S
 	}
 	activePartition := fmt.Sprintf("%sp%d", diskBlock, activeKernel.RootPartition)
 	inactivePartition := fmt.Sprintf("%sp%d", diskBlock, nextKernel.RootPartition)
-	_, err = r(ctx, 3*time.Minute, fmt.Sprintf("/bin/dd if=%s of=%s bs=4M", activePartition, inactivePartition))
+	_, err = r(ctx, copyTimeout, fmt.Sprintf("/bin/dd if=%s of=%s bs=4M", activePartition, inactivePartition))
 	if err != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
 		return tlw.DutStateReasonEmpty
@@ -685,17 +685,18 @@ func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.S
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		activeHash, activeErr = getPartitionHash(ctx, r, activePartition)
+		activeHash, activeErr = getPartitionHash(ctx, r, hashTimeout, activePartition)
 	}()
 	go func() {
 		defer wg.Done()
-		inactiveHash, inactiveErr = getPartitionHash(ctx, r, inactivePartition)
+		inactiveHash, inactiveErr = getPartitionHash(ctx, r, hashTimeout, inactivePartition)
 	}()
 	wg.Wait()
 	if activeErr != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
 		return tlw.DutStateReasonEmpty
-	} else if inactiveErr != nil {
+	}
+	if inactiveErr != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
 		return tlw.DutStateReasonEmpty
 	}

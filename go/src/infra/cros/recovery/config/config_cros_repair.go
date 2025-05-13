@@ -542,6 +542,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecExtraArgs: []string{
 				"retry_count:2",
+				"copy_timeout:180",
+				"hash_timeout:180",
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
