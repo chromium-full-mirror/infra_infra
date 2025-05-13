@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,14 +20,24 @@ import (
 
 func (s *service) StartServod(ctx context.Context, req *lsnexus.StartServodRequest) (*lsnexus.StartServodResponse, error) {
 	s.log("Serving StartServod request")
+	config := ""
+	if pools := s.dutTopology.GetPools(); len(pools) > 0 {
+		for _, p := range pools {
+			if strings.Contains(p, "faft-cr50") {
+				config = "cr50.xml"
+				break
+			}
+		}
+	}
 	bolsReq := &bols.StartServodRequest{
 		StationId: &bols.StationIdentifier{
 			ServodPort:    s.dutTopology.GetChromeos().GetServo().GetServodAddress().GetPort(),
 			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
 			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
 		},
-		Board: s.dutTopology.GetChromeos().GetDutModel().GetBuildTarget(),
-		Model: s.dutTopology.GetChromeos().GetDutModel().GetModelName(),
+		Board:  s.dutTopology.GetChromeos().GetDutModel().GetBuildTarget(),
+		Model:  s.dutTopology.GetChromeos().GetDutModel().GetModelName(),
+		Config: config,
 	}
 	if _, err := s.cl.StartServod(ctx, bolsReq); err != nil {
 		err = fmt.Errorf("failed to start servod: %w", err)
