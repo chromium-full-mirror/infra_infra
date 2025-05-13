@@ -267,16 +267,31 @@ plans:
               exec_name: servo_host_is_labstation
               docs:
                 - Condition to check if the servohost is a labstation.
-        - name: Mark base on OS-restriction
-          exec_name: cros_set_from_os_restriction
+        - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+          exec_name: cros_set_as_android_based
           docs:
-            - Mark DUT base on OS restriction.
+            - Mark DUT as Android based.
+        - name: Reset provisioned info (ALWAYS_RUN)
+          exec_name: cros_reset_provision_info
+          docs:
+            - Reset all provision info.
         - name: Deep-repair Android-based DUT
           exec_name: sample_pass
           docs:
             - Force repair DUT with FW flash by servo and reimage from USB-drive in dev mode.
             - The action uses recovery boot.
           conditions:
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+            - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+              exec_name: cros_is_previous_android_based_or_os_type
+              docs:
+                - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
             - name: Recovery version has OS image path
               exec_name: has_stable_version_cros_image
               docs:
@@ -295,17 +310,6 @@ plans:
                   exec_name: has_stable_version_service_path
                   docs:
                     - Verify if we have access to the service provided access to the stable version
-            - name: Run only on ChromeOS hardware (RUN_ONCE)
-              exec_name: dut_check_board
-              exec_args:
-                - string_values:aurora,reven
-                - invert_result:true
-              docs:
-                - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
-              exec_name: cros_is_previous_android_based_or_os_type
-              docs:
-                - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
             - name: Is servod running (ALWAYS_RUN)
               exec_name: sample_pass
               docs:

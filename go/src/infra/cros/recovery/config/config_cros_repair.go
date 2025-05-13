@@ -5129,7 +5129,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Run only on ChromeOS hardware",
-				"Can become ChromeOS-based",
+				"Run only on ChromeOS based DUT",
 				"Recovery version has OS image path",
 				"Is recovery-version has firmware image path",
 				"Is servod running",
@@ -5142,6 +5142,8 @@ func crosRepairActions() map[string]*Action {
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
+				// Clean to avoid having to run re-image for other OS types.
+				"Reset provisioned info",
 				"Remove REFLASH_FW repair-request",
 			},
 			ExecName: "sample_pass",
@@ -5152,10 +5154,10 @@ func crosRepairActions() map[string]*Action {
 				"The action uses recovery boot.",
 			},
 			Conditions: []string{
-				"Recovery version has OS image path",
-				"Is recovery-version has firmware image path",
 				"Run only on ChromeOS hardware",
 				"Is Android based by ADB or provision-info",
+				"Recovery version has OS image path",
+				"Is recovery-version has firmware image path",
 				"Is servod running",
 				"Is servo USB key detected",
 			},
@@ -5170,8 +5172,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is Flex device",
+				"Mark as ChromeOS based",
 				"Recovery version has OS image path",
-				"Can become ChromeOS-based",
 				"Is servod running",
 				"Is servo USB key detected",
 			},

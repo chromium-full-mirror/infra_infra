@@ -25,7 +25,8 @@ func deepMHRepairCrosPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Mark labstation as servod is in-use",
-			"Mark base on OS-restriction",
+			"Mark as Android based",
+			"Reset provisioned info",
 			"Deep-repair Android-based DUT",
 		},
 		Actions: crosRepairActions(),

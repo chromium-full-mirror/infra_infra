@@ -91,10 +91,7 @@ plans:
         - name: Deep-repair ChromeOS-based DUT ('sample_pass')
           conditions:
             - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
-            - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
-              dependencies:
-                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
+            - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
             - name: Recovery version has OS image path ('has_stable_version_cros_image')
               dependencies:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -218,17 +215,15 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Deep-repair Flex DUT ('sample_pass')
           conditions:
             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+            - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: Recovery version has OS image path ('has_stable_version_cros_image')
               dependencies:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-            - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
-              dependencies:
-                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
               dependencies:
                 - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
@@ -404,14 +399,14 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Deep-repair Android-based DUT ('sample_pass')
           conditions:
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+            - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
             - name: Recovery version has OS image path ('has_stable_version_cros_image')
               dependencies:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
               dependencies:
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
-            - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
               dependencies:
                 - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)

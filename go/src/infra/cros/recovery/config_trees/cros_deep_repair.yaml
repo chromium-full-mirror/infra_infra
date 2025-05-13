@@ -284,22 +284,10 @@ plans:
                 - invert_result:true
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Can become ChromeOS-based (ALWAYS_RUN)
-              exec_name: dut_is_chromeos_hw
+            - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
+              exec_name: cros_is_not_android_based
               docs:
-                - Check if DUT can be provisioned to ChromeOS.
-                - Devices runngin under MH is not allowed.
-              dependencies:
-                - name: Do not run on Mobile Harness box (RUN_ONCE)
-                  exec_name: env_is_not_mh_box
-                  docs:
-                    - Check that the process is not running on Mobile Harness box.
-                - name: Run if not restricted to Android only
-                  exec_name: cros_not_match_os_restriction
-                  exec_args:
-                    - restrictions:OSR_ANDROID_ONLY
-                  docs:
-                    - OS does not limited by ChromeOS only
+                - Check if device is marked as ChromeOS based
             - name: Recovery version has OS image path
               exec_name: has_stable_version_cros_image
               docs:
@@ -670,6 +658,10 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+            - name: Reset provisioned info (ALWAYS_RUN)
+              exec_name: cros_reset_provision_info
+              docs:
+                - Reset all provision info.
             - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
               exec_name: dut_remove_repair_requests
               exec_args:
@@ -688,6 +680,10 @@ plans:
                 - invert_result:false
               docs:
                 - Check that DUT is a Flex board
+            - name: Mark as ChromeOS based (ALWAYS_RUN)
+              exec_name: cros_set_as_chrome_based
+              docs:
+                - Mark DUT as Chrome based.
             - name: Recovery version has OS image path
               exec_name: has_stable_version_cros_image
               docs:
@@ -697,22 +693,6 @@ plans:
                   exec_name: has_stable_version_service_path
                   docs:
                     - Verify if we have access to the service provided access to the stable version
-            - name: Can become ChromeOS-based (ALWAYS_RUN)
-              exec_name: dut_is_chromeos_hw
-              docs:
-                - Check if DUT can be provisioned to ChromeOS.
-                - Devices runngin under MH is not allowed.
-              dependencies:
-                - name: Do not run on Mobile Harness box (RUN_ONCE)
-                  exec_name: env_is_not_mh_box
-                  docs:
-                    - Check that the process is not running on Mobile Harness box.
-                - name: Run if not restricted to Android only
-                  exec_name: cros_not_match_os_restriction
-                  exec_args:
-                    - restrictions:OSR_ANDROID_ONLY
-                  docs:
-                    - OS does not limited by ChromeOS only
             - name: Is servod running (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -1336,6 +1316,17 @@ plans:
             - Force repair DUT with FW flash by servo and reimage from USB-drive in dev mode.
             - The action uses recovery boot.
           conditions:
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+            - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+              exec_name: cros_is_previous_android_based_or_os_type
+              docs:
+                - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
             - name: Recovery version has OS image path
               exec_name: has_stable_version_cros_image
               docs:
@@ -1354,17 +1345,6 @@ plans:
                   exec_name: has_stable_version_service_path
                   docs:
                     - Verify if we have access to the service provided access to the stable version
-            - name: Run only on ChromeOS hardware (RUN_ONCE)
-              exec_name: dut_check_board
-              exec_args:
-                - string_values:aurora,reven
-                - invert_result:true
-              docs:
-                - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
-              exec_name: cros_is_previous_android_based_or_os_type
-              docs:
-                - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
             - name: Is servod running (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
