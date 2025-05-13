@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -31,13 +31,13 @@ func NewCheckFirmwareSlotCommand(ctx context.Context, cs *service.CrOSService) *
 func (c *CheckFirmwareSlotCommand) Execute(log *log.Logger) error {
 	log.Printf("Start CheckFirmwareSlotCommand Execute")
 
-	current, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{common_utils.CrossystemCurrentFirmwareSlotKey})
+	current, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{commonutils.CrossystemCurrentFirmwareSlotKey})
 	if err != nil {
 		return fmt.Errorf("check current firmware slot: %w", err)
 	}
 	log.Printf("Current firmware slot: %s", current)
 
-	next, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{common_utils.CrossystemNextFirmwareSlotKey})
+	next, err := c.cs.Connection.RunCmd(c.ctx, "crossystem", []string{commonutils.CrossystemNextFirmwareSlotKey})
 
 	if err != nil {
 		return fmt.Errorf("check next firmware slot: %w", err)

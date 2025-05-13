@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/executor"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/server"
 )
@@ -63,7 +63,7 @@ func (sc *ServerCommand) Init(args []string) error {
 
 	if sc.metadataFile != "" {
 		sc.metadata.Log.Println("warning: CLI arg 'metadata' is deprecated, please use the StartUp RPC instead.")
-		apr, err := common_utils.ParseAndroidProvisionRequest(sc.metadataFile)
+		apr, err := commonutils.ParseAndroidProvisionRequest(sc.metadataFile)
 		if err != nil {
 			return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %w", err)
 		}

@@ -19,7 +19,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/foil-provision/state-machine"
@@ -35,7 +35,7 @@ func NewFoilProvisionExecutor(logger *log.Logger) (*FoilProvisionExecutor, error
 	}, nil
 }
 
-func (c *FoilProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func (c *FoilProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (commonutils.ServiceState, error) {
 	crossOverRequired := c.crossOverRequired(dut, req)
 	if crossOverRequired {
 		state, err := crossOverProvisionState(dut, dutClient, servoNexusAddr, req)
@@ -55,7 +55,7 @@ func (c *FoilProvisionExecutor) GetFirstState(dut *labapi.Dut, dutClient api.Dut
 	return state_machine.NewFoilPreInitState(cs), nil
 }
 
-func crossOverProvisionState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error) {
+func crossOverProvisionState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (commonutils.ServiceState, error) {
 	if servoNexusAddr == "" {
 		return nil, fmt.Errorf("servoNexusAdd required for crossover provision")
 	}

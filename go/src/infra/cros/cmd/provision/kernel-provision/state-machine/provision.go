@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 )
 
@@ -25,7 +25,7 @@ type KernelProvisionProvisionState struct {
 	service *service.KernelProvisionService
 }
 
-func NewKernelProvisionProvisionState(service *service.KernelProvisionService) common_utils.ServiceState {
+func NewKernelProvisionProvisionState(service *service.KernelProvisionService) commonutils.ServiceState {
 	return &KernelProvisionProvisionState{service: service}
 }
 
@@ -41,7 +41,7 @@ func (s *KernelProvisionProvisionState) Execute(ctx context.Context, log *log.Lo
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s *KernelProvisionProvisionState) Next() common_utils.ServiceState {
+func (s *KernelProvisionProvisionState) Next() commonutils.ServiceState {
 	return NewKernelProvisionCleanUpState(s.service)
 }
 

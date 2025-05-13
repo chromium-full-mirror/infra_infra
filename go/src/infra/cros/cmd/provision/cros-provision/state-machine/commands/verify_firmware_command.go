@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -58,11 +58,11 @@ func (c *VerifyFirmwareCommand) Execute(log *log.Logger) error {
 
 // getAvailableFirmwareVersion read firmware manifest from current OS and extract available firmware version based on model.
 func (c *VerifyFirmwareCommand) getAvailableFirmwareVersion() (string, error) {
-	out, err := c.cs.Connection.RunCmd(c.ctx, common_utils.FirmwareUpdaterPath, []string{"--manifest"})
+	out, err := c.cs.Connection.RunCmd(c.ctx, commonutils.FirmwareUpdaterPath, []string{"--manifest"})
 	if err != nil {
 		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to get firmware manifest, %w", err)
 	}
-	var manifest common_utils.FirmwareManifest
+	var manifest commonutils.FirmwareManifest
 	if err := json.Unmarshal([]byte(out), &manifest); err != nil {
 		return "", fmt.Errorf("getAvailableFirmwareVersion: failed to unmarshal firmware manifest, %w", err)
 	}

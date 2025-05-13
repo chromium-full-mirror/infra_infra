@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const curlExtractTimeout = 20 * time.Minute
@@ -34,7 +34,7 @@ type ImageArchiveMetadata struct {
 // GetFlashECScript finds flash_ec script locally and returns path to it.
 // If flash_ec is not found, download the latest version with git to |prefix|,
 // and return path to downloaded flash_ec.
-func GetFlashECScript(ctx context.Context, s common_utils.ServiceAdapterInterface, prefix string) (string, error) {
+func GetFlashECScript(ctx context.Context, s commonutils.ServiceAdapterInterface, prefix string) (string, error) {
 	// flash_ec within checkout will have access to the dependencies/config files
 	preferredFlashEC := "~/chromiumos/src/platform/ec/util/flash_ec"
 	if preferredExists, err := s.PathExists(ctx, preferredFlashEC); preferredExists && err == nil {

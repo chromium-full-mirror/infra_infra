@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -43,7 +43,7 @@ func (s CrOSProvisionDLCState) Execute(ctx context.Context, log *log.Logger) (*a
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSProvisionDLCState) Next() common_utils.ServiceState {
+func (s CrOSProvisionDLCState) Next() commonutils.ServiceState {
 	return CrOSInstallMiniOSState(s)
 }
 

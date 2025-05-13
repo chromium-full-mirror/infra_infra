@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
@@ -49,7 +49,7 @@ func (c *GetRootInfoCommand) Execute(log *log.Logger) error {
 	}
 	log.Printf("GetRootInfoCommand got part number")
 
-	pi := common_utils.GetPartitionInfo(root, rootDisk, rootPartNum)
+	pi := commonutils.GetPartitionInfo(root, rootDisk, rootPartNum)
 	log.Printf("GetRootInfoCommand got partition info")
 
 	c.cs.MachineMetadata.RootInfo = &metadata.RootInfo{
@@ -101,7 +101,7 @@ func (c *GetRootInfoCommand) getRootPartNumber(root string) (string, error) {
 	}
 
 	switch match[1] {
-	case common_utils.PartitionNumRootA, common_utils.PartitionNumRootB:
+	case commonutils.PartitionNumRootA, commonutils.PartitionNumRootB:
 		break
 	default:
 		return "", fmt.Errorf("invalid partition number %s", match[1])

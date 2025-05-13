@@ -5,12 +5,12 @@
 // Plain Old Go Object for root disk information
 package metadata
 
-import common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+import commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 
 // RootInfo stores Root information pertaining to a DUT
 type RootInfo struct {
 	Root          string
 	RootDisk      string
 	RootPartNum   string
-	PartitionInfo *common_utils.PartitionInfo
+	PartitionInfo *commonutils.PartitionInfo
 }

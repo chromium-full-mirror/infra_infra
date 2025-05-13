@@ -13,7 +13,7 @@ import (
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -31,7 +31,7 @@ func NewInstallDLCsCommand(ctx context.Context, cs *service.CrOSService) *Instal
 
 func (c *InstallDLCsCommand) Execute(log *log.Logger) error {
 	log.Printf("Start InstallDLCsCommand Execute")
-	activeSlot := common_utils.ActiveDlcMap[c.cs.MachineMetadata.RootInfo.RootPartNum]
+	activeSlot := commonutils.ActiveDlcMap[c.cs.MachineMetadata.RootInfo.RootPartNum]
 	var err error
 	errCh := make(chan error)
 	for _, spec := range c.cs.DlcSpecs {
@@ -59,7 +59,7 @@ func (c *InstallDLCsCommand) Revert() error {
 // installDLC installs all relevant DLCs
 func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvisionMetadata_DLCSpec, slot string) error {
 	dlcID := spec.GetId()
-	dlcOutputDir := path.Join(common_utils.DlcCacheDir, dlcID, common_utils.DlcPackage)
+	dlcOutputDir := path.Join(commonutils.DlcCacheDir, dlcID, commonutils.DlcPackage)
 	verified, err := c.isDLCVerified(ctx, spec.GetId(), slot)
 	if err != nil {
 		return fmt.Errorf("failed is DLC verified check, %w", err)
@@ -74,10 +74,10 @@ func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvi
 	if c.cs.ImagePath.HostType == conf.StoragePath_LOCAL || c.cs.ImagePath.HostType == conf.StoragePath_HOSTTYPE_UNSPECIFIED {
 		return fmt.Errorf("only GS copying is implemented")
 	}
-	dlcURL := path.Join(c.cs.ImagePath.GetPath(), "dlc", dlcID, common_utils.DlcPackage, common_utils.DlcImage)
+	dlcURL := path.Join(c.cs.ImagePath.GetPath(), "dlc", dlcID, commonutils.DlcPackage, commonutils.DlcImage)
 
 	dlcOutputSlotDir := path.Join(dlcOutputDir, string(slot))
-	dlcOutputImage := path.Join(dlcOutputSlotDir, common_utils.DlcImage)
+	dlcOutputImage := path.Join(dlcOutputSlotDir, commonutils.DlcImage)
 	if err := c.cs.Connection.CreateDirectories(ctx, []string{dlcOutputSlotDir}); err != nil {
 		return fmt.Errorf("failed to create DLC directories %s, %w", dlcID, err)
 	}
@@ -90,7 +90,7 @@ func (c *InstallDLCsCommand) installDLC(ctx context.Context, spec *api.CrOSProvi
 
 // isDLCVerified checks if the desired DLC already exists within the system
 func (c *InstallDLCsCommand) isDLCVerified(ctx context.Context, dlcID, slot string) (bool, error) {
-	verified, err := c.cs.Connection.PathExists(ctx, path.Join(common_utils.DlcLibDir, dlcID, slot, common_utils.DlcVerified))
+	verified, err := c.cs.Connection.PathExists(ctx, path.Join(commonutils.DlcLibDir, dlcID, slot, commonutils.DlcVerified))
 	if err != nil {
 		return false, fmt.Errorf("failed to check if DLC %s is verified, %w", dlcID, err)
 	}

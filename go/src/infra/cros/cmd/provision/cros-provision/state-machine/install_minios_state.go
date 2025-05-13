@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -25,7 +25,7 @@ type CrOSInstallMiniOSState struct {
 
 func (s CrOSInstallMiniOSState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSInstallMiniOSState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewInstallMiniOSCommand(ctx, s.service),
 	}
 
@@ -44,7 +44,7 @@ func (s CrOSInstallMiniOSState) Execute(ctx context.Context, log *log.Logger) (*
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSInstallMiniOSState) Next() common_utils.ServiceState {
+func (s CrOSInstallMiniOSState) Next() commonutils.ServiceState {
 	return nil
 }
 

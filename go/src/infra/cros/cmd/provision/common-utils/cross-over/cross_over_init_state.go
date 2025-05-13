@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/constants"
 )
 
@@ -35,7 +35,7 @@ type CrossOverParameters struct {
 	Dut                *labapi.Dut
 	TargetImagePath    *storage_path.StoragePath
 	DutClient          api.DutServiceClient
-	PostProvisionState common_utils.ServiceState
+	PostProvisionState commonutils.ServiceState
 	ServoNexusClient   api.ServodServiceClient
 	PrevError          string
 	StopServo          bool
@@ -48,7 +48,7 @@ type CrossOverInitState struct {
 	params *CrossOverParameters
 }
 
-func NewCrossOverInitState(params *CrossOverParameters) common_utils.ServiceState {
+func NewCrossOverInitState(params *CrossOverParameters) commonutils.ServiceState {
 	return &CrossOverInitState{
 		params: params,
 	}
@@ -84,13 +84,13 @@ func (s CrossOverInitState) Execute(ctx context.Context, log *log.Logger) (*anyp
 	if err != nil && strings.Contains(err.Error(), jobRunning) {
 		stopServo = false
 	} else if err != nil {
-		return common_utils.WrapStringInAny("INFRA: unable to start servod process"), api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to start servod process"), api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, err
 	}
 	s.params.StopServo = stopServo
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrossOverInitState) Next() common_utils.ServiceState {
+func (s CrossOverInitState) Next() commonutils.ServiceState {
 	return NewSetupUSBState(s.params)
 }
 

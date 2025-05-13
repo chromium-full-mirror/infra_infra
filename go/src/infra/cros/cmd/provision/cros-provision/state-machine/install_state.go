@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -26,7 +26,7 @@ type CrOSInstallState struct {
 
 func (s CrOSInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSInstallState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewStopSystemDaemonsCommand(ctx, s.service),
 		commands.NewInstallPartitionsCommand(ctx, s.service),
 		commands.NewPostInstallCommand(ctx, s.service),
@@ -54,7 +54,7 @@ func (s CrOSInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSInstallState) Next() common_utils.ServiceState {
+func (s CrOSInstallState) Next() commonutils.ServiceState {
 	return CrosUpdateFirmwareState(s)
 }
 

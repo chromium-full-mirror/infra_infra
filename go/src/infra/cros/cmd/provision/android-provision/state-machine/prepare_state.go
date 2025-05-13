@@ -17,14 +17,14 @@ import (
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine/commands"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type PrepareState struct {
 	svc *service.AndroidService
 }
 
-func NewPrepareState(s *service.AndroidService) common_utils.ServiceState {
+func NewPrepareState(s *service.AndroidService) commonutils.ServiceState {
 	return PrepareState{
 		svc: s,
 	}
@@ -33,7 +33,7 @@ func NewPrepareState(s *service.AndroidService) common_utils.ServiceState {
 func (s PrepareState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Println("State: Execute AndroidPrepareState")
 	ctx = context.WithValue(ctx, common.StageCtxKey, common.Prepare)
-	cmds := []common_utils.CommandInterface{
+	cmds := []commonutils.CommandInterface{
 		commands.NewRestartADBCommand(ctx, s.svc),
 		commands.NewFetchDutInfoCommand(ctx, s.svc),
 	}
@@ -54,7 +54,7 @@ func (s PrepareState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any,
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s PrepareState) Next() common_utils.ServiceState {
+func (s PrepareState) Next() commonutils.ServiceState {
 	return OSFetchState(s)
 }
 

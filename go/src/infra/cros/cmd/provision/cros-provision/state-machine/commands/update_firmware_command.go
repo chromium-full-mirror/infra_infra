@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -30,7 +30,7 @@ func NewRunFirmwareUpdaterCommand(ctx context.Context, cs *service.CrOSService) 
 func (c *RunFirmwareUpdaterCommand) Execute(log *log.Logger) error {
 	log.Printf("Start RunFirmwareUpdaterCommand Execute")
 
-	if _, err := c.cs.Connection.RunCmd(c.ctx, common_utils.FirmwareUpdaterPath, []string{"--wp=1", "--mode=autoupdate"}); err != nil {
+	if _, err := c.cs.Connection.RunCmd(c.ctx, commonutils.FirmwareUpdaterPath, []string{"--wp=1", "--mode=autoupdate"}); err != nil {
 		return fmt.Errorf("run firmware updater: %w", err)
 	}
 

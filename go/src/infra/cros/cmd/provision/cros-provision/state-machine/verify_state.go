@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -25,7 +25,7 @@ type CrOSVerifyState struct {
 
 func (s CrOSVerifyState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSVerfiyState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewGetVersionCommand(ctx, s.service),
 		commands.NewCheckVersionMatches(ctx, s.service),
 		commands.NewEnableChargeLimitCommand(ctx, s.service),
@@ -42,7 +42,7 @@ func (s CrOSVerifyState) Execute(ctx context.Context, log *log.Logger) (*anypb.A
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSVerifyState) Next() common_utils.ServiceState {
+func (s CrOSVerifyState) Next() commonutils.ServiceState {
 	return CrOSProvisionDLCState(s)
 }
 

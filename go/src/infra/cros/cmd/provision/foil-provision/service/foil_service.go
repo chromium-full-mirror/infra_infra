@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
@@ -26,7 +26,7 @@ var buildIDPatterns = []*regexp.Regexp{
 
 // FoilService inherits ServiceInterface
 type FoilService struct {
-	Connection      common_utils.ServiceAdapterInterface
+	Connection      commonutils.ServiceAdapterInterface
 	MachineMetadata metadata.MachineMetadata
 	// ImagePath is the android build explorer path.
 	// example1: android-build/build_explorer/build_details/P78687640/brya-trunk_staging-userdebug/android-desktop-ota-packages.zip
@@ -87,7 +87,7 @@ func ExtractBuildID(imagePath string) (string, error) {
 
 // CleanupOnFailure is called if one of service's states fails to Execute() and
 // should clean up the temporary files, and undo the execution, if feasible.
-func (c *FoilService) CleanupOnFailure(states []common_utils.ServiceState, executionErr error) error {
+func (c *FoilService) CleanupOnFailure(states []commonutils.ServiceState, executionErr error) error {
 	// TODO: evaluate whether cleanup is needed.
 	return nil
 }

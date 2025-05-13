@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 // TODO: Optimize so that we dont have to write to USB every single time.
@@ -30,7 +30,7 @@ type SetupUSBState struct {
 	params *CrossOverParameters
 }
 
-func NewSetupUSBState(params *CrossOverParameters) common_utils.ServiceState {
+func NewSetupUSBState(params *CrossOverParameters) commonutils.ServiceState {
 	return &SetupUSBState{
 		params: params,
 	}
@@ -44,10 +44,10 @@ func (s SetupUSBState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 	// TODO: Move these two calls to servod into cros-servod as a composite API SetupUSBKey.
 	// TODO: Deprecate primitive callServod and Exec API.
 	if err := callServodRetry(ctx, log, "download_image_to_usb_dev", provisionImgCacheServerPath, s.params); err != nil {
-		return common_utils.WrapStringInAny("INFRA: unable to download image to usb"), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to download image to usb"), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
 	}
 	if err := callServodRetry(ctx, log, "image_usbkey_mux", "dut_sees_usbkey", s.params); err != nil {
-		return common_utils.WrapStringInAny("INFRA: unable to set USB to DUT"), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to set USB to DUT"), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
 	}
 	// Wait for some time for the dut_sees_usbkey to take affect.
 	time.Sleep(dutSeesUsbkeyWait)
@@ -66,7 +66,7 @@ func (s SetupUSBState) getProvisionOSImagePath(ctx context.Context, log *log.Log
 	return provisionOSImagePath
 }
 
-func (s SetupUSBState) Next() common_utils.ServiceState {
+func (s SetupUSBState) Next() commonutils.ServiceState {
 	return NewRebootFromUSBState(s.params)
 }
 

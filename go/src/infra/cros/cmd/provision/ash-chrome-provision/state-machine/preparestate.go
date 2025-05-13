@@ -17,14 +17,14 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	ashchromeservice "go.chromium.org/infra/cros/cmd/provision/ash-chrome-provision/service"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type AshChromePrepareState struct {
 	service *ashchromeservice.AshChromeService
 }
 
-func NewAshChromePrepareState(service *ashchromeservice.AshChromeService) common_utils.ServiceState {
+func NewAshChromePrepareState(service *ashchromeservice.AshChromeService) commonutils.ServiceState {
 	return AshChromePrepareState{
 		service: service,
 	}
@@ -55,7 +55,7 @@ func (s AshChromePrepareState) Execute(ctx context.Context, log *log.Logger) (*a
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s AshChromePrepareState) Next() common_utils.ServiceState {
+func (s AshChromePrepareState) Next() commonutils.ServiceState {
 	return DeployState(s)
 }
 

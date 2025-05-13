@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const waitForPowerOff = 30 * time.Second
@@ -24,7 +24,7 @@ type RebootFromUSBState struct {
 	params *CrossOverParameters
 }
 
-func NewRebootFromUSBState(params *CrossOverParameters) common_utils.ServiceState {
+func NewRebootFromUSBState(params *CrossOverParameters) commonutils.ServiceState {
 	return &RebootFromUSBState{
 		params: params,
 	}
@@ -34,7 +34,7 @@ func (s RebootFromUSBState) Execute(ctx context.Context, log *log.Logger) (*anyp
 	log.Println("Executing " + s.Name())
 	if err := callServodRetry(ctx, log, "power_state", "off", s.params); err != nil {
 		setPDRole(ctx, log, "src", s.params)
-		return common_utils.WrapStringInAny("INFRA: unable to set turn off USB"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to set turn off USB"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
 	}
 	log.Printf("\nWaiting for the power state to turn off.")
 	// TODO: Instead of fixed wait time, use a poll based status checker. Refer WaitForPowerStates and GetECSystemPowerState in firmware code.
@@ -48,7 +48,7 @@ func (s RebootFromUSBState) Execute(ctx context.Context, log *log.Logger) (*anyp
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s RebootFromUSBState) Next() common_utils.ServiceState {
+func (s RebootFromUSBState) Next() commonutils.ServiceState {
 	return NewFullOSImageState(s.params)
 }
 

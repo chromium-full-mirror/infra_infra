@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 var reBoard = regexp.MustCompile(`CHROMEOS_RELEASE_BOARD=(.*)`)
@@ -32,7 +32,7 @@ var reBoard = regexp.MustCompile(`CHROMEOS_RELEASE_BOARD=(.*)`)
 // AshChromeService implements ServiceInterface
 type AshChromeService struct {
 	// |connection| connects to the DUT.
-	connection common_utils.ServiceAdapterInterface
+	connection commonutils.ServiceAdapterInterface
 
 	artifactPath *conf.StoragePath
 	buildDir     string
@@ -58,7 +58,7 @@ func NewAshChromeService(ctx context.Context, dutServer api.DutServiceClient,
 		return nil, api.InstallResponse_STATUS_INVALID_REQUEST, errors.Errorf("AshChromeProvisionInstallMetadata is required, got %s", req.String())
 	}
 	detailedRequest := metadata.AshChromeConfig
-	dutAdapter := common_utils.NewServiceAdapter(dutServer, false /*noReboot*/)
+	dutAdapter := commonutils.NewServiceAdapter(dutServer, false /*noReboot*/)
 
 	service := AshChromeService{
 		connection:  dutAdapter,

@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -26,7 +26,7 @@ type CrOSPreInitState struct {
 }
 
 // NewCrOSPreInitState provides an interface to CrOSPreInitState.
-func NewCrOSPreInitState(service *service.CrOSService) common_utils.ServiceState {
+func NewCrOSPreInitState(service *service.CrOSService) commonutils.ServiceState {
 	return CrOSPreInitState{
 		service: service,
 	}
@@ -35,7 +35,7 @@ func NewCrOSPreInitState(service *service.CrOSService) common_utils.ServiceState
 // Execute executes the steps needed to support CrOSPreInitState. Xheck if the chromeOS target == current, if so skip install.
 func (s CrOSPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSPreInitState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewGetBoardCommand(ctx, s.service),
 		commands.NewGetVersionCommand(ctx, s.service),
 		commands.NewCheckInstallNeeded(ctx, s.service),
@@ -53,7 +53,7 @@ func (s CrOSPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 }
 
 // Next provides the interface to the CrosInitState if the install flag is set.
-func (s CrOSPreInitState) Next() common_utils.ServiceState {
+func (s CrOSPreInitState) Next() commonutils.ServiceState {
 	if s.service.UpdateCros {
 		return CrOSInitState(s)
 	} else if s.service.QuickResetDevice {

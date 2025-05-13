@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/server"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/constants"
@@ -65,7 +65,7 @@ func (sc *ServerCommand) Init(args []string) error {
 
 	if sc.metadataFile != "" {
 		sc.metadata.Log.Println("warning: CLI arg 'metadata' is deprecated, please use the StartUp RPC instead.")
-		cpp, err := common_utils.ParseCrosProvisionRequest(sc.metadataFile)
+		cpp, err := commonutils.ParseCrosProvisionRequest(sc.metadataFile)
 		if err != nil {
 			return fmt.Errorf("unable to parse CrosProvisionRequest proto: %w", err)
 		}

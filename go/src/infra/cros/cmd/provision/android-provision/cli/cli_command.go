@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/test"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 var statusToResult = map[api.InstallResponse_Status]api.InstallFailure_Reason{
@@ -85,7 +85,7 @@ func (cc *CLICommand) Init(args []string) error {
 		return err
 	}
 
-	cc.inputProto, err = common_utils.ParseAndroidProvisionRequest(cc.inputFile)
+	cc.inputProto, err = commonutils.ParseAndroidProvisionRequest(cc.inputFile)
 	if err != nil {
 		return fmt.Errorf("unable to parse AndroidProvisionRequest proto: %w", err)
 	}
@@ -151,7 +151,7 @@ func (cc *CLICommand) Run() error {
 	}
 	defer cc.saveResponse(out)
 	cc.log.Printf("Starting State Machine.")
-	respStatus, _, err := common_utils.ExecuteStateMachine(context.Background(), state_machine.NewPrepareState(svc), cc.log)
+	respStatus, _, err := commonutils.ExecuteStateMachine(context.Background(), state_machine.NewPrepareState(svc), cc.log)
 	if os := svc.OS; os != nil && os.UpdatedBuildInfo != nil {
 		out.InstalledAndroidOs = &api.InstalledAndroidOS{
 			BuildId:            os.UpdatedBuildInfo.Id,

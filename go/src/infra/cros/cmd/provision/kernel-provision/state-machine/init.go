@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 )
 
@@ -24,7 +24,7 @@ type KernelProvisionInitState struct {
 	service *service.KernelProvisionService
 }
 
-func NewKernelProvisionInitState(service *service.KernelProvisionService) common_utils.ServiceState {
+func NewKernelProvisionInitState(service *service.KernelProvisionService) commonutils.ServiceState {
 	return &KernelProvisionInitState{service: service}
 }
 
@@ -32,7 +32,7 @@ func (s *KernelProvisionInitState) Execute(ctx context.Context, log *log.Logger)
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s *KernelProvisionInitState) Next() common_utils.ServiceState {
+func (s *KernelProvisionInitState) Next() commonutils.ServiceState {
 	return NewDownloadArtifactsState(s.service)
 }
 

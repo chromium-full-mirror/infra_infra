@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/state-machine/commands"
 )
@@ -25,7 +25,7 @@ type FoilPostState struct {
 	service *service.FoilService
 }
 
-func NewFoilPostState(service *service.FoilService) common_utils.ServiceState {
+func NewFoilPostState(service *service.FoilService) commonutils.ServiceState {
 	return FoilPostState{
 		service: service,
 	}
@@ -33,7 +33,7 @@ func NewFoilPostState(service *service.FoilService) common_utils.ServiceState {
 
 func (s FoilPostState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute FoilPostState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewGetVersionSetup(ctx, s.service),
 		commands.NewVerifyInstallCommand(ctx, s.service),
 	}
@@ -41,14 +41,14 @@ func (s FoilPostState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 	for _, comm := range comms {
 		err := comm.Execute(log)
 		if err != nil {
-			return common_utils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
 		}
 	}
 	log.Printf("State: FoilPostState Completed")
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s FoilPostState) Next() common_utils.ServiceState {
+func (s FoilPostState) Next() commonutils.ServiceState {
 	return nil
 }
 

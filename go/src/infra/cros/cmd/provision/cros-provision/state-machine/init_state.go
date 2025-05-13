@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -25,7 +25,7 @@ type CrOSInitState struct {
 	service *service.CrOSService
 }
 
-func NewCrOSInitState(service *service.CrOSService) common_utils.ServiceState {
+func NewCrOSInitState(service *service.CrOSService) commonutils.ServiceState {
 	return CrOSInitState{
 		service: service,
 	}
@@ -33,7 +33,7 @@ func NewCrOSInitState(service *service.CrOSService) common_utils.ServiceState {
 
 func (s CrOSInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSInitState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewCreateProvisionMarkerCommand(ctx, s.service),
 		commands.NewGetRootInfoCommand(ctx, s.service),
 		commands.NewCheckKvmEnabled(ctx, s.service),
@@ -49,7 +49,7 @@ func (s CrOSInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSInitState) Next() common_utils.ServiceState {
+func (s CrOSInitState) Next() commonutils.ServiceState {
 	return CrOSInstallState(s)
 }
 

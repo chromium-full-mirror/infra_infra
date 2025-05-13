@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -41,7 +41,7 @@ func (s CrosUpdateFirmwareState) Execute(ctx context.Context, log *log.Logger) (
 
 	log.Printf("State: Execute CrosUpdateFirmwareState")
 
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewWaitForDutToStabilizeCommand(ctx, s.service),
 		commands.NewRunFirmwareUpdaterCommand(ctx, s.service),
 	}
@@ -80,7 +80,7 @@ func (s CrosUpdateFirmwareState) Execute(ctx context.Context, log *log.Logger) (
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrosUpdateFirmwareState) Next() common_utils.ServiceState {
+func (s CrosUpdateFirmwareState) Next() commonutils.ServiceState {
 	return CrOSPostInstallState(s)
 }
 

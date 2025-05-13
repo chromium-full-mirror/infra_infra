@@ -13,13 +13,13 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 )
 
 // CrOSService inherits ServiceInterface
 type CrOSService struct {
-	Connection       common_utils.ServiceAdapterInterface
+	Connection       commonutils.ServiceAdapterInterface
 	MachineMetadata  metadata.MachineMetadata
 	ImagePath        *conf.StoragePath
 	OverwritePayload *conf.StoragePath
@@ -36,7 +36,7 @@ func NewCrOSService(dut *labapi.Dut, dutClient api.DutServiceClient, req *api.In
 		return nil, err
 	}
 	return &CrOSService{
-		Connection:       common_utils.NewServiceAdapter(dutClient, req.GetPreventReboot()),
+		Connection:       commonutils.NewServiceAdapter(dutClient, req.GetPreventReboot()),
 		ImagePath:        req.ImagePath,
 		OverwritePayload: req.OverwritePayload,
 		PreserveStateful: m.PreserveStateful,
@@ -56,7 +56,7 @@ func NewCrOSServiceFromCrOSProvisionRequest(dutClient api.DutServiceClient, req 
 		dlcSpecs = append(dlcSpecs, dlcSpec)
 	}
 	return &CrOSService{
-		Connection:       common_utils.NewServiceAdapter(dutClient, req.GetProvisionState().GetPreventReboot()),
+		Connection:       commonutils.NewServiceAdapter(dutClient, req.GetProvisionState().GetPreventReboot()),
 		ImagePath:        req.GetProvisionState().SystemImage.SystemImagePath,
 		OverwritePayload: req.GetProvisionState().GetSystemImage().GetOverwritePayload(),
 		PreserveStateful: false,
@@ -70,7 +70,7 @@ func NewCrOSServiceFromCrOSProvisionRequest(dutClient api.DutServiceClient, req 
 
 // NewCrOSServiceFromExistingConnection is equivalent to the above constructor,
 // but recycles a ServiceAdapter. Generally useful for tests.
-func NewCrOSServiceFromExistingConnection(conn common_utils.ServiceAdapterInterface, imagePath *conf.StoragePath, overwritePayload *conf.StoragePath, preserverStateful bool, dlcSpecs []*api.CrOSProvisionMetadata_DLCSpec, updateFirmware bool) CrOSService {
+func NewCrOSServiceFromExistingConnection(conn commonutils.ServiceAdapterInterface, imagePath *conf.StoragePath, overwritePayload *conf.StoragePath, preserverStateful bool, dlcSpecs []*api.CrOSProvisionMetadata_DLCSpec, updateFirmware bool) CrOSService {
 	return CrOSService{
 		Connection:       conn,
 		ImagePath:        imagePath,
@@ -86,7 +86,7 @@ func NewCrOSServiceFromExistingConnection(conn common_utils.ServiceAdapterInterf
 
 // CleanupOnFailure is called if one of service's states fails to Execute() and
 // should clean up the temporary files, and undo the execution, if feasible.
-func (c *CrOSService) CleanupOnFailure(states []common_utils.ServiceState, executionErr error) error {
+func (c *CrOSService) CleanupOnFailure(states []commonutils.ServiceState, executionErr error) error {
 	// TODO: evaluate whether cleanup is needed.
 	return nil
 }
@@ -112,7 +112,7 @@ func (c *CrOSService) InstallZippedImage(ctx context.Context, remoteImagePath st
 		return fmt.Errorf("only GS copying is implemented")
 	}
 	err := c.Connection.PipeData(ctx,
-		common_utils.BucketJoin(c.ImagePath.GetPath(), remoteImagePath),
+		commonutils.BucketJoin(c.ImagePath.GetPath(), remoteImagePath),
 		fmt.Sprintf("gzip -d | %s %s", fmt.Sprintf("dd of=%s obs=2M", outputFile), fmt.Sprintf(pipeStatusHandler, c.ImagePath.GetPath(), outputFile)),
 	)
 	if err != nil {
@@ -127,7 +127,7 @@ func (c *CrOSService) InstallZstdCompressedFile(ctx context.Context, remoteImage
 		return fmt.Errorf("only GS copying is implemented")
 	}
 	err := c.Connection.PipeData(ctx,
-		common_utils.BucketJoin(c.ImagePath.GetPath(), remoteImagePath),
+		commonutils.BucketJoin(c.ImagePath.GetPath(), remoteImagePath),
 		// Fine to reuse the pipe status handler for now.
 		fmt.Sprintf("zstdcat | %s %s", fmt.Sprintf("dd of=%s obs=2M", outputPath), fmt.Sprintf(pipeStatusHandler, c.ImagePath.GetPath(), outputPath)),
 	)

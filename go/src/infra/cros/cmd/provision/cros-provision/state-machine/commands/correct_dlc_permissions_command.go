@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -34,13 +34,13 @@ func (c *CorrectDLCPermissionsCommand) Execute(log *log.Logger) error {
 	// dlcservice daemon will not fix this due to security concerns.
 	log.Printf("Start CorrectDLCPermissionsCommand Execute")
 
-	if _, err := c.cs.Connection.RunCmd(c.ctx, "chown", []string{"-R", "dlcservice:dlcservice", common_utils.DlcCacheDir}); err != nil {
-		return fmt.Errorf("unable to set owner for DLC cache (%s), %w", common_utils.DlcCacheDir, err)
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "chown", []string{"-R", "dlcservice:dlcservice", commonutils.DlcCacheDir}); err != nil {
+		return fmt.Errorf("unable to set owner for DLC cache (%s), %w", commonutils.DlcCacheDir, err)
 	}
 	log.Printf("CorrectDLCPermissionsCommand chown completed")
 
-	if _, err := c.cs.Connection.RunCmd(c.ctx, "chmod", []string{"-R", "0755", common_utils.DlcCacheDir}); err != nil {
-		return fmt.Errorf("unable to set permissions for DLC cache (%s), %w", common_utils.DlcCacheDir, err)
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "chmod", []string{"-R", "0755", commonutils.DlcCacheDir}); err != nil {
+		return fmt.Errorf("unable to set permissions for DLC cache (%s), %w", commonutils.DlcCacheDir, err)
 	}
 	log.Printf("CorrectDLCPermissionsCommand Success")
 

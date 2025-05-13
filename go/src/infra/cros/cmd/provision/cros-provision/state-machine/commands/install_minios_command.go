@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -30,7 +30,7 @@ func NewInstallMiniOSCommand(ctx context.Context, cs *service.CrOSService) *Inst
 
 func (c *InstallMiniOSCommand) Execute(log *log.Logger) error {
 	log.Printf("Start InstallMiniOSCommand Execute")
-	for _, rootPart := range common_utils.GetMiniOSPartitions() {
+	for _, rootPart := range commonutils.GetMiniOSPartitions() {
 		if isSupported, err := c.isMiniOSPartitionSupported(rootPart); err == nil && !isSupported {
 			log.Printf("InstallMiniOSCommand device does not support MiniOS, skipping installation.")
 			return nil
@@ -54,7 +54,7 @@ func (c *InstallMiniOSCommand) isMiniOSPartitionSupported(rootPart string) (bool
 		return false, fmt.Errorf("failed to get partition type, %w\n %s", err, guidPartition)
 	}
 
-	return strings.TrimSpace(guidPartition) == common_utils.MiniOSUnsupportedGUIDPartition, nil
+	return strings.TrimSpace(guidPartition) == commonutils.MiniOSUnsupportedGUIDPartition, nil
 }
 
 // InstallMiniOS downloads and installs the minios images

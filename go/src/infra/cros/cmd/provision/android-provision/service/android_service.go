@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/gsstorage"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 // AndroidPackage contains information about installed Android package.
@@ -76,7 +76,7 @@ type AndroidOS struct {
 
 // DUTConnection has information about CrosDUT connection and DUT serial number.
 type DUTConnection struct {
-	AssociatedHost common_utils.ServiceAdapterInterface
+	AssociatedHost commonutils.ServiceAdapterInterface
 	SerialNumber   string
 	Board          string
 }
@@ -96,7 +96,7 @@ func NewAndroidService(dut *labapi.Dut, dutClient api.DutServiceClient, req *api
 	}
 	svc := &AndroidService{
 		DUT: &DUTConnection{
-			AssociatedHost: common_utils.NewServiceAdapter(dutClient, true),
+			AssociatedHost: commonutils.NewServiceAdapter(dutClient, true),
 			SerialNumber:   dut.GetAndroid().GetSerialNumber(),
 		},
 		ProvisionDir: dir,
@@ -137,7 +137,7 @@ func NewAndroidServiceFromAndroidProvisionRequest(dutClient api.DutServiceClient
 	}
 	return &AndroidService{
 		DUT: &DUTConnection{
-			AssociatedHost: common_utils.NewServiceAdapter(dutClient, true),
+			AssociatedHost: commonutils.NewServiceAdapter(dutClient, true),
 			SerialNumber:   req.GetDut().GetAndroid().GetSerialNumber(),
 		},
 		OS:                androidOs,
@@ -147,7 +147,7 @@ func NewAndroidServiceFromAndroidProvisionRequest(dutClient api.DutServiceClient
 }
 
 // NewAndroidServiceFromExistingConnection utilizes a given ServiceAdapter. Generally useful for tests.
-func NewAndroidServiceFromExistingConnection(conn common_utils.ServiceAdapterInterface, dutSerialNumber string, osImage *api.AndroidOsImage, pkgProtos []*api.CIPDPackage) (*AndroidService, error) {
+func NewAndroidServiceFromExistingConnection(conn commonutils.ServiceAdapterInterface, dutSerialNumber string, osImage *api.AndroidOsImage, pkgProtos []*api.CIPDPackage) (*AndroidService, error) {
 	dir, err := os.MkdirTemp("", "android_provision_")
 	if err != nil {
 		return nil, err
@@ -186,7 +186,7 @@ func NewAndroidServiceFromExistingConnection(conn common_utils.ServiceAdapterInt
 
 // CleanupOnFailure is called if one of service's states failes to Execute() and
 // should clean up the temporary files, and undo the execution, if feasible.
-func (svc *AndroidService) CleanupOnFailure(states []common_utils.ServiceState, executionErr error) error {
+func (svc *AndroidService) CleanupOnFailure(states []commonutils.ServiceState, executionErr error) error {
 	os.RemoveAll(svc.ProvisionDir)
 	ctx := context.Background()
 	if svc.OS != nil && svc.OS.ImagePath.DutAndroidProductOut != "" {

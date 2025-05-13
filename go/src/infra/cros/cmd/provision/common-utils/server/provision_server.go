@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/chromiumos/lro"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 )
 
@@ -153,5 +153,5 @@ func (ps *ProvisionServer) installTarget(ctx context.Context, req *api.InstallRe
 		return api.InstallResponse_STATUS_INVALID_REQUEST, nil, err
 	}
 
-	return common_utils.ExecuteStateMachine(ctx, fs, ps.options.Log)
+	return commonutils.ExecuteStateMachine(ctx, fs, ps.options.Log)
 }

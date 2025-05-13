@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -26,7 +26,7 @@ type CrOSPostInstallState struct {
 func (s CrOSPostInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSPostInstallState")
 
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewWaitForDutToStabilizeCommand(ctx, s.service),
 		commands.NewGetRootInfoCommand(ctx, s.service),
 		commands.NewWaitForStickyKernel(ctx, s.service),
@@ -55,7 +55,7 @@ func (s CrOSPostInstallState) Execute(ctx context.Context, log *log.Logger) (*an
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrOSPostInstallState) Next() common_utils.ServiceState {
+func (s CrOSPostInstallState) Next() commonutils.ServiceState {
 	return CrOSVerifyState(s)
 }
 

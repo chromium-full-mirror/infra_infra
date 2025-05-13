@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -37,7 +37,7 @@ func (c *CheckKvmEnabled) Execute(log *log.Logger) error {
 	if strings.Contains(c.cs.MachineMetadata.Board, "labstation") {
 		log.Printf("CheckKvmEnabled skipping labstation boards")
 	} else {
-		exist, err := c.cs.Connection.PathExists(c.ctx, common_utils.KvmDevicePath)
+		exist, err := c.cs.Connection.PathExists(c.ctx, commonutils.KvmDevicePath)
 		if err != nil {
 			return err
 		}

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const (
@@ -101,11 +101,11 @@ func (cc *CLICommand) Run() error {
 		return err
 	}
 
-	startupProto, err := common_utils.ParseProvisionStartupRequest(cc.startupFile)
+	startupProto, err := commonutils.ParseProvisionStartupRequest(cc.startupFile)
 	if err != nil {
 		return errors.Wrap(err, "unable to parse ProvisionStartupRequest proto")
 	}
-	installProto, err := common_utils.ParseInstallRequest(cc.installFile)
+	installProto, err := commonutils.ParseInstallRequest(cc.installFile)
 	if err != nil {
 		return errors.Wrap(err, "unable to parse InstallRequest proto")
 	}

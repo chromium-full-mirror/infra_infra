@@ -19,7 +19,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const (
@@ -51,7 +51,7 @@ type FullOSImageState struct {
 	params *CrossOverParameters
 }
 
-func NewFullOSImageState(params *CrossOverParameters) common_utils.ServiceState {
+func NewFullOSImageState(params *CrossOverParameters) commonutils.ServiceState {
 	return &FullOSImageState{
 		params: params,
 	}
@@ -97,9 +97,9 @@ func (s FullOSImageState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 
 	// Attempt to connect to the DUT post boot from USB. Retry
 	// checkSSHRetryCount times using the common retry function.
-	if err := common_utils.Retry(log, checkSSHRetryCount, "checkSSH", f); err != nil {
+	if err := commonutils.Retry(log, checkSSHRetryCount, "checkSSH", f); err != nil {
 		setPDRole(ctx, log, "src", s.params)
-		return common_utils.WrapStringInAny(s.errStatus(err.Error())), api.InstallResponse_STATUS_PRE_PROVISION_USB_BOOT_FAILURE, errors.New(err.Error())
+		return commonutils.WrapStringInAny(s.errStatus(err.Error())), api.InstallResponse_STATUS_PRE_PROVISION_USB_BOOT_FAILURE, errors.New(err.Error())
 
 	}
 	defer client.Close()
@@ -164,11 +164,11 @@ func (s FullOSImageState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 		}
 		buildId, err := targetBuild(targetImgPath)
 		if err != nil {
-			return common_utils.WrapStringInAny(s.errStatus("INFRA: unable to parse image path from target")), api.InstallResponse_STATUS_INVALID_REQUEST, err
+			return commonutils.WrapStringInAny(s.errStatus("INFRA: unable to parse image path from target")), api.InstallResponse_STATUS_INVALID_REQUEST, err
 		}
 		launchTarget, err := extractTargetLaunch(targetImgPath)
 		if err != nil {
-			return common_utils.WrapStringInAny(s.errStatus("INFRA: unable to parse image path from target")), api.InstallResponse_STATUS_INVALID_REQUEST, err
+			return commonutils.WrapStringInAny(s.errStatus("INFRA: unable to parse image path from target")), api.InstallResponse_STATUS_INVALID_REQUEST, err
 		}
 		if strings.Contains(launchTarget, engImg) {
 			// Uart logs are only enabled in -eng img.
@@ -181,7 +181,7 @@ func (s FullOSImageState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	if err := installCommandWithRetry(client, installCommand, log); err != nil {
 		log.Println("Failed to run installCommand: ", installCommand, err)
 		collectUARTLogs(ctx, log, s.params)
-		return common_utils.WrapStringInAny(s.errStatus("FAILED TO RUN CROSOVER INSTALL COMMAND")), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
+		return commonutils.WrapStringInAny(s.errStatus("FAILED TO RUN CROSOVER INSTALL COMMAND")), api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED, err
 	}
 	errStatus, responseStatus, err := s.handleReboot(ctx, client, log)
 	if err != nil {
@@ -197,7 +197,7 @@ func (s FullOSImageState) errStatus(curErr string) string {
 	return curErr
 }
 
-func (s FullOSImageState) Next() common_utils.ServiceState {
+func (s FullOSImageState) Next() commonutils.ServiceState {
 	return NewValidateState(s.params)
 }
 
@@ -207,14 +207,14 @@ func (s FullOSImageState) Name() string {
 
 func (s FullOSImageState) handleReboot(ctx context.Context, sshClient *ssh.Client, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	if err := callServodRetry(ctx, log, "power_state", "off", s.params); err != nil {
-		return common_utils.WrapStringInAny("INFRA: unable to set turn off power via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to set turn off power via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
 	}
 	if err := sshFailWait(sshClient, log); err != nil {
-		return common_utils.WrapStringInAny("INFRA: dut did not power off post provision image installation"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: dut did not power off post provision image installation"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
 	}
 	log.Println("Device successfully powered off.")
 	if err := callServodRetry(ctx, log, "image_usbkey_direction", "servo_sees_usbkey", s.params); err != nil {
-		return common_utils.WrapStringInAny("INFRA: unable to set usb direction via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
+		return commonutils.WrapStringInAny("INFRA: unable to set usb direction via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
 	}
 	log.Printf("\nWaiting for the image_usbkey_direction.")
 	// TODO: Instead of fixed wait time, use a poll based status checker. Refer WaitForPowerStates and GetECSystemPowerState in firmware code.
@@ -226,7 +226,7 @@ func (s FullOSImageState) handleReboot(ctx context.Context, sshClient *ssh.Clien
 		log.Println("Waiting for 10 seconds before trying power resetting.")
 		time.Sleep(powerResetDelay)
 		if err := callServodRetry(ctx, log, "power_state", "reset", s.params); err != nil {
-			return common_utils.WrapStringInAny("INFRA: unable to reset power via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
+			return commonutils.WrapStringInAny("INFRA: unable to reset power via servo"), api.InstallResponse_STATUS_PROVISIONING_FAILED, err
 		}
 	}
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil

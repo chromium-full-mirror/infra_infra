@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine/commands"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type OSFetchState struct {
@@ -27,7 +27,7 @@ type OSFetchState struct {
 func (s OSFetchState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Println("State: Execute AndroidOSFetchState")
 	ctx = context.WithValue(ctx, common.StageCtxKey, common.OSFetch)
-	cmds := []common_utils.CommandInterface{
+	cmds := []commonutils.CommandInterface{
 		commands.NewResolveImagePathCommand(ctx, s.svc),
 		commands.NewCopyDataCommand(ctx, s.svc),
 	}
@@ -48,7 +48,7 @@ func (s OSFetchState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any,
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s OSFetchState) Next() common_utils.ServiceState {
+func (s OSFetchState) Next() commonutils.ServiceState {
 	return OSInstallState(s)
 }
 

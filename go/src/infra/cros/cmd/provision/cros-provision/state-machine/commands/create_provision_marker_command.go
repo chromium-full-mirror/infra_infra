@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -29,7 +29,7 @@ func NewCreateProvisionMarkerCommand(ctx context.Context, cs *service.CrOSServic
 
 func (c *CreateProvisionMarkerCommand) Execute(log *log.Logger) error {
 	log.Printf("Start CreateProvisionMarkerCommand Execute")
-	if _, err := c.cs.Connection.RunCmd(c.ctx, "touch", []string{common_utils.ProvisionMarker}); err != nil {
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "touch", []string{commonutils.ProvisionMarker}); err != nil {
 		log.Printf("CreateProvisionMarkerCommand touch marker errord")
 		return err
 	}

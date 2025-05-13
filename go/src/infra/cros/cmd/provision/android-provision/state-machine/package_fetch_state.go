@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine/commands"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type PackageFetchState struct {
@@ -27,7 +27,7 @@ type PackageFetchState struct {
 func (s PackageFetchState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Println("State: Execute AndroidPackageFetchState")
 	ctx = context.WithValue(ctx, common.StageCtxKey, common.PackageFetch)
-	cmds := []common_utils.CommandInterface{
+	cmds := []commonutils.CommandInterface{
 		commands.NewResolveCIPDPackageCommand(ctx, s.svc),
 		commands.NewFetchCIPDPackageCommand(ctx, s.svc),
 		commands.NewExtractZipCommand(ctx, s.svc),
@@ -51,7 +51,7 @@ func (s PackageFetchState) Execute(ctx context.Context, log *log.Logger) (*anypb
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s PackageFetchState) Next() common_utils.ServiceState {
+func (s PackageFetchState) Next() commonutils.ServiceState {
 	return PackageInstallState(s)
 }
 

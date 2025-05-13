@@ -11,10 +11,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type ProvisionExecutor interface {
-	GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (common_utils.ServiceState, error)
+	GetFirstState(dut *labapi.Dut, dutClient api.DutServiceClient, servoNexusAddr string, req *api.InstallRequest) (commonutils.ServiceState, error)
 	Validate(req *api.ProvisionStartupRequest) error
 }

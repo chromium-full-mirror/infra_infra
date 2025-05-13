@@ -15,7 +15,7 @@ import (
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/cli"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/constants"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
@@ -26,13 +26,13 @@ import (
 const (
 	deviceDisk                        = "/dev/nvme0n1"
 	deviceDiskPartition               = deviceDisk + "p"
-	deviceDiskStateful                = deviceDiskPartition + common_utils.PartitionNumStateful
-	deviceDiskKernelB                 = deviceDiskPartition + common_utils.PartitionNumKernelB
-	deviceDiskRootA                   = deviceDiskPartition + common_utils.PartitionNumRootA
-	deviceDiskRootB                   = deviceDiskPartition + common_utils.PartitionNumRootB
-	deviceDiskMiniA                   = deviceDiskPartition + common_utils.PartitionNumMiniOSA
-	deviceDiskMiniB                   = deviceDiskPartition + common_utils.PartitionNumMiniOSB
-	deviceDiskPowerwashData           = deviceDiskPartition + common_utils.PartitionNumPowerwashData
+	deviceDiskStateful                = deviceDiskPartition + commonutils.PartitionNumStateful
+	deviceDiskKernelB                 = deviceDiskPartition + commonutils.PartitionNumKernelB
+	deviceDiskRootA                   = deviceDiskPartition + commonutils.PartitionNumRootA
+	deviceDiskRootB                   = deviceDiskPartition + commonutils.PartitionNumRootB
+	deviceDiskMiniA                   = deviceDiskPartition + commonutils.PartitionNumMiniOSA
+	deviceDiskMiniB                   = deviceDiskPartition + commonutils.PartitionNumMiniOSB
+	deviceDiskPowerwashData           = deviceDiskPartition + commonutils.PartitionNumPowerwashData
 	mockedValidCrosidStdout           = "SKU=33\nCONFIG_INDEX=9\nFIRMWARE_MANIFEST_KEY='babytiger'\n"
 	mockedValidFirmwareManifestStdout = "{\n  \"babytiger\": {\n    \"host\": { \"versions\": { \"ro\": \"Google_Coral.10068.113.0\", \"rw\": \"Google_Coral.10068.113.0\" },\n      \"keys\": { \"root\": \"b11d74edd286c144e1135b49e7f0bc20cf041f10\", \"recovery\": \"c14bd720b70d97394257e3e826bd8f43de48d4ed\" },\n      \"image\": \"images/bios-coral.ro-10068-113-0.rw-10068-113-0.bin\" },\n    \"ec\": { \"versions\": { \"ro\": \"coral_v1.1.7302-d2b56e247\", \"rw\": \"coral_v1.1.7302-d2b56e247\" },\n      \"image\": \"images/ec-coral.ro-1-1-7302.rw-1-1-7302.bin\" },\n    \"signature_id\": \"babytiger\"\n  }\n}\n"
 )
@@ -73,7 +73,7 @@ var (
 	getVersion                = RunCommandStructure{Command: "cat", Args: []string{"/etc/lsb-release"}}
 	stopUI                    = RunCommandStructure{Command: "stop", Args: []string{"ui"}}
 	stopUpdateEngine          = RunCommandStructure{Command: "stop", Args: []string{"update-engine"}}
-	kvmDevicePathExists       = PathExistsCommandStructure{Path: common_utils.KvmDevicePath}
+	kvmDevicePathExists       = PathExistsCommandStructure{Path: commonutils.KvmDevicePath}
 	stopDLCservice            = RunCommandStructure{Command: "stop", Args: []string{"dlcservice"}}
 	startDLCservice           = RunCommandStructure{Command: "start", Args: []string{"dlcservice"}}
 	copyKernel                = PipeCommandStructure{Source: "gs://path/to/image/full_dev_part_KERN.bin.gz", Command: "gzip -d | dd of=" + deviceDiskKernelB + " obs=2M \npipestatus=(\"${PIPESTATUS[@]}\")\nif [[ \"${pipestatus[0]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Fetching path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[1]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Decompressing path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[2]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Writing to " + deviceDiskKernelB + " failed.\" >&2\n  exit 1\nfi"}
@@ -101,11 +101,11 @@ var (
 	cgptStickyCheck           = RunCommandStructure{Command: "cgpt", Args: []string{"show", "-S", "-i", "2", deviceDisk}}
 	copyMiniOS9               = PipeCommandStructure{Source: "gs://path/to/image/full_dev_part_MINIOS.bin.gz", Command: "gzip -d | dd of=" + deviceDiskMiniA + " obs=2M \npipestatus=(\"${PIPESTATUS[@]}\")\nif [[ \"${pipestatus[0]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Fetching path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[1]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Decompressing path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[2]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Writing to " + deviceDiskMiniA + " failed.\" >&2\n  exit 1\nfi"}
 	copyMiniOS10              = PipeCommandStructure{Source: "gs://path/to/image/full_dev_part_MINIOS.bin.gz", Command: "gzip -d | dd of=" + deviceDiskMiniB + " obs=2M \npipestatus=(\"${PIPESTATUS[@]}\")\nif [[ \"${pipestatus[0]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Fetching path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[1]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Decompressing path/to/image failed.\" >&2\n  exit 1\nelif [[ \"${pipestatus[2]}\" -ne 0 ]]; then\n  echo \"$(date --rfc-3339=seconds) ERROR: Writing to " + deviceDiskMiniB + " failed.\" >&2\n  exit 1\nfi"}
-	checkFirmwareUpdater      = PathExistsCommandStructure{Path: common_utils.FirmwareUpdaterPath}
-	updateFirmware            = RunCommandStructure{Command: common_utils.FirmwareUpdaterPath, Args: []string{"--wp=1", "--mode=autoupdate"}}
-	currentFirmwareSlot       = RunCommandStructure{Command: "crossystem", Args: []string{common_utils.CrossystemCurrentFirmwareSlotKey}}
-	nextFirmwareSlot          = RunCommandStructure{Command: "crossystem", Args: []string{common_utils.CrossystemNextFirmwareSlotKey}}
-	firmwareManifest          = RunCommandStructure{Command: common_utils.FirmwareUpdaterPath, Args: []string{"--manifest"}}
+	checkFirmwareUpdater      = PathExistsCommandStructure{Path: commonutils.FirmwareUpdaterPath}
+	updateFirmware            = RunCommandStructure{Command: commonutils.FirmwareUpdaterPath, Args: []string{"--wp=1", "--mode=autoupdate"}}
+	currentFirmwareSlot       = RunCommandStructure{Command: "crossystem", Args: []string{commonutils.CrossystemCurrentFirmwareSlotKey}}
+	nextFirmwareSlot          = RunCommandStructure{Command: "crossystem", Args: []string{commonutils.CrossystemNextFirmwareSlotKey}}
+	firmwareManifest          = RunCommandStructure{Command: commonutils.FirmwareUpdaterPath, Args: []string{"--manifest"}}
 	getCrosid                 = RunCommandStructure{Command: "crosid", Args: []string{}}
 	getCurrentFirmware        = RunCommandStructure{Command: "crossystem", Args: []string{"fwid"}}
 	hwsecID                   = RunCommandStructure{Command: "hwsec-ownership-id", Args: []string{"id"}}

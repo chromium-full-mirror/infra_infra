@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -70,9 +70,9 @@ func (c *PostInstallCommand) Revert() error {
 
 // RevertStatefulInstall literally reverses a stateful installation
 func (c *PostInstallCommand) revertStatefulInstall() {
-	varNewPath := path.Join(common_utils.StatefulPath, "var_new")
-	devImageNewPath := path.Join(common_utils.StatefulPath, "dev_image_new")
-	_, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-rf", varNewPath, devImageNewPath, common_utils.UpdateStatefulFilePath})
+	varNewPath := path.Join(commonutils.StatefulPath, "var_new")
+	devImageNewPath := path.Join(commonutils.StatefulPath, "dev_image_new")
+	_, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-rf", varNewPath, devImageNewPath, commonutils.UpdateStatefulFilePath})
 	if err != nil {
 		log.Printf("revert stateful install: failed to revert stateful installation, %s", err)
 	}

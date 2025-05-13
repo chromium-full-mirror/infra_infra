@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/servo_lib"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/servoadapter"
 )
@@ -53,7 +53,7 @@ type FirmwareVersions struct {
 type FirmwareService struct {
 	// In case of flashing over SSH, |connection| connects to the DUT.
 	// In case of flashing over Servo, |connection| connects to the ServoHost.
-	connection common_utils.ServiceAdapterInterface
+	connection commonutils.ServiceAdapterInterface
 
 	// DetailedRequest fields
 	mainRwPath *conf.StoragePath
@@ -118,7 +118,7 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 		return nil, api.InstallResponse_STATUS_INVALID_REQUEST, errors.Errorf("FirmwareProvisionInstallMetadata is required, got %s", req.String())
 	}
 	detailedRequest := metadata.FirmwareConfig
-	dutAdapter := common_utils.NewServiceAdapter(dutServer, false /*noReboot*/)
+	dutAdapter := commonutils.NewServiceAdapter(dutServer, false /*noReboot*/)
 
 	durableTmpDir := "/var/tmp"
 	if isAndroid {
@@ -345,7 +345,7 @@ func (fws *FirmwareService) GetModel() string {
 
 // DeleteArchiveDirectories deletes files on the servo host or DUT.
 func (fws *FirmwareService) DeleteArchiveDirectories() error {
-	var cleanedDevice common_utils.ServiceAdapterInterface
+	var cleanedDevice commonutils.ServiceAdapterInterface
 	if fws.useServo {
 		// If servo is used, the files will be located on the ServoHost.
 		cleanedDevice = fws.servoConnection
@@ -419,7 +419,7 @@ func (fws *FirmwareService) FlashWithFutility(ctx context.Context, rwOnly bool, 
 			}
 			waitCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			opAny, err := common_utils.WaitLongRunningOp(waitCtx, log.Default(), op)
+			opAny, err := commonutils.WaitLongRunningOp(waitCtx, log.Default(), op)
 			if err != nil {
 				return errors.Wrap(err, "failed to start servod (lro)")
 			}
@@ -824,7 +824,7 @@ func (fws *FirmwareService) CheckForCSMESections(ctx context.Context, imagePath 
 // GetConnectionToFlashingDevice returns connection to the device that stores the
 // firmware image and runs futility.
 // Returns connection to ServoHost if fws.useServo, connection to DUT otherwise.
-func (fws *FirmwareService) GetConnectionToFlashingDevice() common_utils.ServiceAdapterInterface {
+func (fws *FirmwareService) GetConnectionToFlashingDevice() commonutils.ServiceAdapterInterface {
 	if fws.useServo {
 		return fws.servoConnection
 	}

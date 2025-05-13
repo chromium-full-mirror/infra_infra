@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	kpService "go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 	kpStateMachine "go.chromium.org/infra/cros/cmd/provision/kernel-provision/state-machine"
 )
@@ -24,7 +24,7 @@ type CrossOverTerminateState struct {
 	params *CrossOverParameters
 }
 
-func NewCrossOverTerminateState(params *CrossOverParameters) common_utils.ServiceState {
+func NewCrossOverTerminateState(params *CrossOverParameters) commonutils.ServiceState {
 	return &CrossOverTerminateState{
 		params: params,
 	}
@@ -50,14 +50,14 @@ func (s CrossOverTerminateState) Execute(ctx context.Context, log *log.Logger) (
 		if err != nil {
 			log.Println("Warning: failed to stop servod", err)
 			saveServoLogs(ctx, log, s.params.ServoNexusClient, s.params.Dut)
-			return common_utils.WrapStringInAny(successMsg), api.InstallResponse_STATUS_SUCCESS, nil
+			return commonutils.WrapStringInAny(successMsg), api.InstallResponse_STATUS_SUCCESS, nil
 		}
 		log.Printf("\nStopped servod process")
 	}
-	return common_utils.WrapStringInAny(successMsg), api.InstallResponse_STATUS_SUCCESS, nil
+	return commonutils.WrapStringInAny(successMsg), api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s CrossOverTerminateState) Next() common_utils.ServiceState {
+func (s CrossOverTerminateState) Next() commonutils.ServiceState {
 	// TODO: b/405174207 - Move kernel provisioning to its own container.
 	if s.params.KernelPrebuilts != nil {
 		return kpStateMachine.NewKernelProvisionInitState(

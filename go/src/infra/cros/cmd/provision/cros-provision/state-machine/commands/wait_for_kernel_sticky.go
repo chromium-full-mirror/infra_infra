@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -33,7 +33,7 @@ func NewWaitForStickyKernel(ctx context.Context, cs *service.CrOSService) *WaitF
 func (c *WaitForStickyKernel) Execute(log *log.Logger) error {
 	log.Printf("Start WaitForStickyKernel Execute")
 
-	pi := common_utils.GetPartitionInfo(c.cs.MachineMetadata.RootInfo.Root,
+	pi := commonutils.GetPartitionInfo(c.cs.MachineMetadata.RootInfo.Root,
 		c.cs.MachineMetadata.RootInfo.RootDisk,
 		c.cs.MachineMetadata.RootInfo.RootPartNum)
 

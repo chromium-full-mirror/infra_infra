@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const (
@@ -45,13 +45,13 @@ func startServer(d []string) int {
 	fs.Parse(d)
 
 	// Configure log file
-	logFile, err := common_utils.CreateLogFile(a.logPath)
+	logFile, err := commonutils.CreateLogFile(a.logPath)
 	if err != nil {
 		log.Fatalln("Failed to create log file", err)
 		return 2
 	}
 	defer logFile.Close()
-	logger := common_utils.NewLogger(logFile)
+	logger := commonutils.NewLogger(logFile)
 
 	// Read and validate auth token required by vm-provision
 	authTokenFilePath := defaultAuthTokenFilePath

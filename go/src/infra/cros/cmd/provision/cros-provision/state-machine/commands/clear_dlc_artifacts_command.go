@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -30,7 +30,7 @@ func NewClearDLCArtifactsCommand(ctx context.Context, cs *service.CrOSService) *
 
 func (c *ClearDLCArtifactsCommand) Execute(log *log.Logger) error {
 	log.Printf("Start ClearDLCArtifactsCommand Execute")
-	exists, err := c.cs.Connection.PathExists(c.ctx, common_utils.DlcLibDir)
+	exists, err := c.cs.Connection.PathExists(c.ctx, commonutils.DlcLibDir)
 	if err != nil {
 		return fmt.Errorf("failed path existance, %w", err)
 	}
@@ -48,11 +48,11 @@ func (c *ClearDLCArtifactsCommand) Execute(log *log.Logger) error {
 		}
 	}()
 
-	inactiveSlot := common_utils.InactiveDlcMap[c.cs.MachineMetadata.RootInfo.RootPartNum]
+	inactiveSlot := commonutils.InactiveDlcMap[c.cs.MachineMetadata.RootInfo.RootPartNum]
 	if inactiveSlot == "" {
 		return fmt.Errorf("invalid root partition number: %s", c.cs.MachineMetadata.RootInfo.RootPartNum)
 	}
-	_, err = c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-f", path.Join(common_utils.DlcCacheDir, "*", "*", string(inactiveSlot), common_utils.DlcVerified)})
+	_, err = c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-f", path.Join(commonutils.DlcCacheDir, "*", "*", string(inactiveSlot), commonutils.DlcVerified)})
 	if err != nil {
 		return fmt.Errorf("failed remove inactive verified DLCs, %w", err)
 	}

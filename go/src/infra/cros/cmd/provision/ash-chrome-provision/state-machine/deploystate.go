@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	ashchromeservice "go.chromium.org/infra/cros/cmd/provision/ash-chrome-provision/service"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 // DeployState is a state that deploy to DUT
@@ -40,7 +40,7 @@ func (s DeployState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, 
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s DeployState) Next() common_utils.ServiceState {
+func (s DeployState) Next() commonutils.ServiceState {
 	return nil
 }
 

@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/state-machine/commands"
 )
@@ -27,7 +27,7 @@ type FoilPreInitState struct {
 }
 
 // NewFoilPreInitState provides an interface to FoilPreInitState.
-func NewFoilPreInitState(service *service.FoilService) common_utils.ServiceState {
+func NewFoilPreInitState(service *service.FoilService) commonutils.ServiceState {
 	return FoilPreInitState{
 		service: service,
 	}
@@ -36,7 +36,7 @@ func NewFoilPreInitState(service *service.FoilService) common_utils.ServiceState
 // Execute executes the steps needed to support FoilPreInitState. Check if the chromeOS target == current, if so skip install.
 func (s FoilPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute FoilPreInitState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewAdbRootSetup(ctx, s.service),
 		commands.NewGetEnginePidSetup(ctx, s.service),
 		commands.NewGetVersionSetup(ctx, s.service),
@@ -46,7 +46,7 @@ func (s FoilPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	for _, comm := range comms {
 		err := comm.Execute(log)
 		if err != nil {
-			return common_utils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s: %w", comm.GetErrorMessage(), err)
+			return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s: %w", comm.GetErrorMessage(), err)
 		}
 	}
 
@@ -55,7 +55,7 @@ func (s FoilPreInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 }
 
 // Next provides the interface if the install flag is set.
-func (s FoilPreInitState) Next() common_utils.ServiceState {
+func (s FoilPreInitState) Next() commonutils.ServiceState {
 	// NOTE: currently a device can be in the right build; but in a broken state (even though it can be reached through the shell)
 	// Thus for now: we must always re-provision.
 	// if s.service.SkipUpdate == true {

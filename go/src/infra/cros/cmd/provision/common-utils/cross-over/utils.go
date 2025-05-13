@@ -20,7 +20,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	"go.chromium.org/infra/cros/cmd/cft/common/dutinteraction"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type OS_TYPE int
@@ -196,7 +196,7 @@ func startServod(ctx context.Context, log *log.Logger, servoNexusClient api.Serv
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err = common_utils.WaitLongRunningOp(ctx, log, op)
+	_, err = commonutils.WaitLongRunningOp(ctx, log, op)
 	return err
 }
 

@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/state-machine/commands"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 type PostInstallState struct {
@@ -25,7 +25,7 @@ type PostInstallState struct {
 func (s PostInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Println("State: Execute AndroidPostInstallState")
 	ctx = context.WithValue(ctx, common.StageCtxKey, common.PostInstall)
-	cmds := []common_utils.CommandInterface{
+	cmds := []commonutils.CommandInterface{
 		commands.NewCleanupCommand(ctx, s.svc),
 	}
 	for _, c := range cmds {
@@ -38,7 +38,7 @@ func (s PostInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	return resp, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s PostInstallState) Next() common_utils.ServiceState {
+func (s PostInstallState) Next() commonutils.ServiceState {
 	return nil
 }
 

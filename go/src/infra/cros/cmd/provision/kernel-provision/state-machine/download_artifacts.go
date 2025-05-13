@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/cache"
 	"go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 )
@@ -30,7 +30,7 @@ type DownloadArtifactsState struct {
 	service *service.KernelProvisionService
 }
 
-func NewDownloadArtifactsState(service *service.KernelProvisionService) common_utils.ServiceState {
+func NewDownloadArtifactsState(service *service.KernelProvisionService) commonutils.ServiceState {
 	return &DownloadArtifactsState{service: service}
 }
 
@@ -99,7 +99,7 @@ func makeExecutable(path string) error {
 	return nil
 }
 
-func (s *DownloadArtifactsState) Next() common_utils.ServiceState {
+func (s *DownloadArtifactsState) Next() commonutils.ServiceState {
 	return NewKernelProvisionProvisionState(s.service)
 }
 

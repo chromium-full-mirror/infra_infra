@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 var ErrNotImplemented = errors.New("LocalAdapter: not implemented")
@@ -26,7 +26,7 @@ const CurlWithRetriesArgs = "-S -s -v -# -C - --retry 3 --retry-delay 60"
 
 // ServoHostInterface is used to interface with a ServoHost
 type ServoHostInterface interface {
-	common_utils.ServiceAdapterInterface
+	commonutils.ServiceAdapterInterface
 
 	// Returns value of a variable, requested with dut-control.
 	GetVariable(ctx context.Context, varName string) (string, error)

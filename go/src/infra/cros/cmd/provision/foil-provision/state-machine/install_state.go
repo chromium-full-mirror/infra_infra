@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/state-machine/commands"
@@ -26,7 +26,7 @@ type FoilInstallState struct {
 	service *service.FoilService
 }
 
-func NewFoilInstallState(service *service.FoilService) common_utils.ServiceState {
+func NewFoilInstallState(service *service.FoilService) commonutils.ServiceState {
 	return FoilInstallState{
 		service: service,
 	}
@@ -56,7 +56,7 @@ func (s FoilInstallState) setupForCrosover(ctx context.Context, log *log.Logger,
 
 func (s FoilInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute FoilInstallState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 
 		commands.NewSetSelinuxCommandSetup(ctx, s.service),
 		commands.NewInstall(ctx, s.service),
@@ -69,7 +69,7 @@ func (s FoilInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 			err = s.setupForCrosover(ctx, log, comm.GetErrorMessage())
 			if err != nil {
 				log.Println("Unable to setup for crossover provision after OTA failed. Failing.")
-				return common_utils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+				return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
 			}
 			s.service.CrossOver = true
 			break
@@ -88,7 +88,7 @@ func (s FoilInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	}
 }
 
-func (s FoilInstallState) Next() common_utils.ServiceState {
+func (s FoilInstallState) Next() commonutils.ServiceState {
 	if s.service.CrossOver {
 		return cross_over.NewCrossOverInitState(s.service.Params)
 	} else {

@@ -19,7 +19,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	"go.chromium.org/infra/cros/cmd/cft/common/files"
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const (
@@ -33,7 +33,7 @@ type ValidateState struct {
 	params *CrossOverParameters
 }
 
-func NewValidateState(params *CrossOverParameters) common_utils.ServiceState {
+func NewValidateState(params *CrossOverParameters) commonutils.ServiceState {
 	return &ValidateState{
 		params: params,
 	}
@@ -55,7 +55,7 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 			select {
 			case <-adbCtx.Done():
 				collectUARTLogs(ctx, log, s.params)
-				return common_utils.WrapStringInAny("PLATFORM: unable to connect to device post al-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, fmt.Errorf("adb timeout into device=%s", dutAddress)
+				return commonutils.WrapStringInAny("PLATFORM: unable to connect to device post al-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, fmt.Errorf("adb timeout into device=%s", dutAddress)
 			default:
 				if adberr := adb.RetrySetupAdb(log, dutAddress, adbInterval); adberr != nil {
 					log.Println("Error while testing adb connection ", adberr)
@@ -77,17 +77,17 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 		c1, err := adb.AdbShellCmd([]string{"svc", "power", "stayon", "true"}, dutAddress, log, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
 			log.Println("Unable to set stay awake:", c1)
-			return common_utils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		c2, err := adb.AdbShellCmd([]string{"settings", "put", "global", "stay_on_while_plugged_in", "7"}, dutAddress, log, powerStayOnAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
 			log.Println("Unable to set stay awake:", c2)
-			return common_utils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: setting stay awake failed"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 
 		dutVersion, err := adb.AdbShellCmd([]string{"getprop", "ro.system.build.version.incremental"}, dutAddress, log, powerStayOnAttempts, adb.DefaultCommandSeconds)
 		if err != nil {
-			return common_utils.WrapStringInAny("PLATFORM: unable to get build from device post install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: unable to get build from device post install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		dutVersion = strings.Trim(dutVersion, " \n")
 		targetBuild, err := targetBuild(s.params.TargetImagePath.GetPath())
@@ -96,7 +96,7 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 		}
 		if targetBuild != dutVersion {
 			err := fmt.Errorf("post provision verification failed. Installed version on dut is %s but want %s", dutVersion, targetBuild)
-			return common_utils.WrapStringInAny("PLATFORM: device version not correct post al-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: device version not correct post al-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		if err := adb.TeardownAdb(log, dutAddress); err != nil {
 			log.Println("Warning: TeardownAdb failed in ValidateState ", err)
@@ -104,35 +104,35 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 	} else {
 		log.Println("Calling force connect on cros-dut")
 		if err := retryForceReconnect(ctx, log, s.params.DutClient, bootWaitRetryCount, bootWaitRetryInterval); err != nil {
-			return common_utils.WrapStringInAny("PLATFORM: unable to connect to device post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: unable to connect to device post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		osReleaseFile, err := files.GetFile(ctx, "/etc/os-release", s.params.DutClient)
 		if err != nil {
 			log.Printf("Could not fetch /etc/os-release : %s\n", err)
-			return common_utils.WrapStringInAny("PLATFORM: unable to obtain /etc/os-release post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: unable to obtain /etc/os-release post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		contentBytes, err := ioutil.ReadFile(osReleaseFile)
 		if err != nil {
 			log.Printf("Could not read %v : %s\n", osReleaseFile, err)
-			return common_utils.WrapStringInAny("PLATFORM: unable to read /etc/os-release post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: unable to read /etc/os-release post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 		content := string(contentBytes)
 		log.Println("Content of /etc/os-release ", content)
 		buildIDRegex := regexp.MustCompile("BUILD_ID=(.*)")
 		buildIDResult := buildIDRegex.FindStringSubmatch(content)
 		if len(buildIDResult) == 0 {
-			return common_utils.WrapStringInAny("PLATFORM: device version not correct post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, fmt.Errorf("could not find buildId")
+			return commonutils.WrapStringInAny("PLATFORM: device version not correct post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, fmt.Errorf("could not find buildId")
 		}
 		targetImgPath := s.params.TargetImagePath.GetPath()
 		if !strings.Contains(targetImgPath, buildIDResult[1]) {
 			err = fmt.Errorf("expected version %s but got %s", targetImgPath, buildIDResult[1])
-			return common_utils.WrapStringInAny("PLATFORM: device version not correct post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
+			return commonutils.WrapStringInAny("PLATFORM: device version not correct post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
 	}
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
-func (s ValidateState) Next() common_utils.ServiceState {
+func (s ValidateState) Next() commonutils.ServiceState {
 	return NewCrossOverTerminateState(s.params)
 }
 

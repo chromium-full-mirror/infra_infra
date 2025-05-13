@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 )
 
@@ -30,7 +30,7 @@ func NewCheckFirmwareUpdaterCommand(ctx context.Context, cs *service.CrOSService
 func (c *CheckFirmwareUpdaterCommand) Execute(log *log.Logger) error {
 	log.Printf("Start CheckFirmwareUpdaterCommand Execute")
 
-	exist, err := c.cs.Connection.PathExists(c.ctx, common_utils.FirmwareUpdaterPath)
+	exist, err := c.cs.Connection.PathExists(c.ctx, commonutils.FirmwareUpdaterPath)
 	if err != nil {
 		return err
 	}

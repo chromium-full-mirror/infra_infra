@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/state-machine/commands"
 )
@@ -26,7 +26,7 @@ type CrOSResetDeviceState struct {
 }
 
 // NewCrOSResetDeviceState provides an interface to CrOSResetDeviceState.
-func NewCrOSResetDeviceState(service *service.CrOSService) common_utils.ServiceState {
+func NewCrOSResetDeviceState(service *service.CrOSService) commonutils.ServiceState {
 	return CrOSResetDeviceState{
 		service: service,
 	}
@@ -35,7 +35,7 @@ func NewCrOSResetDeviceState(service *service.CrOSService) common_utils.ServiceS
 // Execute executes the steps needed to support CrOSResetDeviceState.
 func (s CrOSResetDeviceState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Printf("State: Execute CrOSResetDeviceState")
-	comms := []common_utils.CommandInterface{
+	comms := []commonutils.CommandInterface{
 		commands.NewStopSystemDaemonsCommand(ctx, s.service),
 		commands.NewProvisionStatefulCommand(ctx, s.service),
 		commands.NewClearTPMCommand(ctx, s.service),
@@ -55,7 +55,7 @@ func (s CrOSResetDeviceState) Execute(ctx context.Context, log *log.Logger) (*an
 }
 
 // Nothing to do for Next.
-func (s CrOSResetDeviceState) Next() common_utils.ServiceState {
+func (s CrOSResetDeviceState) Next() commonutils.ServiceState {
 	return nil
 }
 
