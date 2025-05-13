@@ -921,7 +921,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 	testName := g.Invocation.Test.Name
 	testCaseIds := []*testapi.TestCase_Id{}
 	// "Names" field takes priority and "Name" will only be checked/modified when "Names" is not provided.
-	if g.Invocation.Test.Names == nil || len(g.Invocation.Test.Names) == 0 {
+	if len(g.Invocation.Test.Names) == 0 {
 		testCaseIds = append(testCaseIds, &testapi.TestCase_Id{
 			Value: testName,
 		})

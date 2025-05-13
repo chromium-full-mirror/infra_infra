@@ -582,8 +582,8 @@ func TestValidatePublicChromiumTest(t *testing.T) {
 				}
 				return
 			}
-			gotValidationErrString := ""
-			if results.testValidationErrors != nil && len(results.testValidationErrors) != 0 {
+			var gotValidationErrString string
+			if len(results.testValidationErrors) != 0 {
 				gotValidationErrString = results.testValidationErrors[0]
 			}
 			if !strings.Contains(gotValidationErrString, tt.wantValidationErrString) {
