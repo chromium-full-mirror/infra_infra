@@ -73,6 +73,22 @@ func (s *unixSocketBridge) Start() error {
 		}
 	}()
 
+	// If the ssh connection closes we need to shut down the listener.
+	//
+	// `ssh` is using `sync.Cond` to signal when the ssh client closes. This
+	// doesn't play well with `select` or `context`. We unfortunately can't cancel
+	// this goroutine when our `context` is canceled, so this goroutine will leak
+	// until the ssh connection is closed.
+	go func() {
+		var err error
+		// Be extra cautious in case `Wait()` panics.
+		defer func() {
+			log.Printf("SSH Proxy: ssh connection was closed, shutting down.")
+			s.close(fmt.Errorf("SSH proxy: ssh connection was closed by %w", err))
+		}()
+		err = s.ssh.Wait()
+	}()
+
 	// Main server loop.
 	s.wg.Add(1)
 	go func() {
