@@ -285,5 +285,5 @@ func diffString(label string, s1, s2 any) string {
 }
 
 func hasLabels(d *devicesdb.DeviceDAO) bool {
-	return d.DeviceSpec.Labels != nil && len(d.DeviceSpec.Labels) > 0
+	return len(d.DeviceSpec.Labels) > 0
 }
