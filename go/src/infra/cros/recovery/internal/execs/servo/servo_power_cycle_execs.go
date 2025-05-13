@@ -6,6 +6,7 @@ package servo
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -39,7 +40,8 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	log.Infof(ctx, "Servo usb devnum before reset: %s", preResetDevnum)
 	// Resetting servo. Call powercycle-servo-usbhub-port
 	log.Infof(ctx, "Try to reset servo through usbhub.")
-	if _, err = run(ctx, resetTimeout, "powercycle-servo-usbhub-port --servo_serial ", servoSerial, " --downtime_sec 10"); err != nil {
+	servoRestartCMD := fmt.Sprintf("powercycle-servo-usbhub-port --servo_serial %s --downtime_sec 10", servoSerial)
+	if _, err = run(ctx, resetTimeout, servoRestartCMD); err != nil {
 		log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a supported USB hub`, servoSerial)
 		return errors.Annotate(err, "servo power cycle root servo").Err()
 	}
