@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"strings"
 
 	conf "go.chromium.org/chromiumos/config/go"
 
@@ -40,7 +39,7 @@ func (client *Client) DownloadABArtifactByStoragePath(sp *conf.StoragePath) (str
 	if sp.GetHostType() != conf.StoragePath_ANDROID_BUILD {
 		return "", fmt.Errorf("storage path %+v had unexpected host type %v", sp, sp.GetHostType())
 	}
-	buildID, buildTarget, artifactName, err := parseAndroidPath(sp.GetPath())
+	buildID, buildTarget, artifactName, err := common.ParseAndroidPath(sp.GetPath())
 	if err != nil {
 		return "", fmt.Errorf("parsing android storage path: %w", err)
 	}
@@ -49,26 +48,6 @@ func (client *Client) DownloadABArtifactByStoragePath(sp *conf.StoragePath) (str
 		return "", fmt.Errorf("downloading android build artifact %+v: %w", sp, err)
 	}
 	return localPath, nil
-}
-
-// parseAndroidPath returns the build ID, build target, and artifact name from an Android Build path.
-// Typical path: "android-build/build_explorer/artifacts_list/${BUILD_ID}/${BUILD_TARGET}/${ARTIFACT_NAME}"
-func parseAndroidPath(fullPath string) (buildID, buildTarget, artifactName string, err error) {
-	if !strings.HasPrefix(fullPath, common.AndroidBuildPrefix) {
-		err = fmt.Errorf("path does not have expected prefix '%s': %s", common.AndroidBuildPrefix, fullPath)
-		return
-	}
-	relativePath := strings.TrimPrefix(fullPath, common.AndroidBuildPrefix)
-	relativePath = strings.TrimPrefix(relativePath, "/")
-	parts := strings.SplitN(relativePath, "/", 3)
-	if len(parts) < 3 {
-		err = fmt.Errorf("path format invalid after prefix: expected buildID/target/artifactName, got '%s'", relativePath)
-		return
-	}
-	buildID = parts[0]
-	buildTarget = parts[1]
-	artifactName = parts[2]
-	return
 }
 
 // DownloadABArtifact returns an Android Build artifact from the cache server.

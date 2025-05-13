@@ -6,6 +6,7 @@ package common
 
 import (
 	"fmt"
+	"strings"
 
 	conf "go.chromium.org/chromiumos/config/go"
 )
@@ -35,4 +36,22 @@ func GetABOTAPath(buildId, buildTarget, board string) string {
 		buildTarget,
 		fmt.Sprintf("%s-ota-%s.zip", board, buildId),
 	)
+}
+
+// ParseAndroidPath returns the build ID, build target, and artifact name from an Android Build path.
+// Typical path: "android-build/build_explorer/artifacts_list/${BUILD_ID}/${BUILD_TARGET}/${ARTIFACT_NAME}"
+func ParseAndroidPath(fullPath string) (buildID, buildTarget, artifactName string, err error) {
+	if !strings.HasPrefix(fullPath, AndroidBuildPrefix) {
+		return "", "", "", fmt.Errorf("path does not have expected prefix '%s': %s", AndroidBuildPrefix, fullPath)
+	}
+	relativePath := strings.TrimPrefix(fullPath, AndroidBuildPrefix)
+	relativePath = strings.TrimPrefix(relativePath, "/")
+	parts := strings.SplitN(relativePath, "/", 3)
+	if len(parts) < 3 {
+		return "", "", "", fmt.Errorf("path format invalid after prefix: expected buildID/target/artifactName, got '%s'", relativePath)
+	}
+	buildID = parts[0]
+	buildTarget = parts[1]
+	artifactName = parts[2]
+	return buildID, buildTarget, artifactName, nil
 }
