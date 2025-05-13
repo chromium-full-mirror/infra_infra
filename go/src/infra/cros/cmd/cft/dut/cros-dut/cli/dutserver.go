@@ -502,6 +502,13 @@ func (s *DutServiceServer) ForceReconnect(ctx context.Context, req *api.ForceRec
 // reconnect starts a new ssh client connection
 func (s *DutServiceServer) reconnect(ctx context.Context) error {
 	s.logger.Printf("attempting to reconnect to DUT.")
+
+	if s.connection != nil {
+		if err := s.connection.Close(); err != nil {
+			s.logger.Printf("Closing previous connection failed: %s", err.Error())
+		}
+	}
+
 	conn, err := GetConnection(ctx, s.dutName, s.wiringAddress, s.logger)
 	if err != nil {
 		s.logger.Printf("Failed to reconnect to DUT.")
