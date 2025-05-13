@@ -66,10 +66,6 @@ func (s *unixSocketBridge) Start() error {
 			if err := listener.Close(); err != nil {
 				log.Printf("SSH Proxy: error closing listener: %s", err.Error())
 			}
-
-			if err := os.Remove(s.socketPath); err != nil {
-				log.Printf("SSH Proxy: failed to cleanup socket %s: %s", s.socketPath, err.Error())
-			}
 		}
 	}()
 
