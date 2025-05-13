@@ -108,7 +108,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 
 	// Parse provision info
 	var prejob *skylab_test_runner.Result_Prejob = nil
-	if cmd.ProvisionResps != nil && len(cmd.ProvisionResps) > 0 {
+	if len(cmd.ProvisionResps) > 0 {
 		for dutName, provisionResps := range cmd.ProvisionResps {
 			for _, provisionResp := range provisionResps {
 				if provisionResp.GetStatus() == api.InstallResponse_STATUS_SUCCESS && prejobVerdict != skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL {

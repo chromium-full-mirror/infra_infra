@@ -184,7 +184,7 @@ func (cmd *ParseDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	}
 	cmd.PrimaryDutModel = sk.PrimaryDutModel
 
-	if sk.CompanionDutModels == nil || len(sk.CompanionDutModels) == 0 {
+	if len(sk.CompanionDutModels) == 0 {
 		logging.Infof(ctx, "Cmd %s missing non-required dependency: companionDutModels", cmd.GetCommandType())
 	}
 	cmd.CompanionDutModels = sk.CompanionDutModels
