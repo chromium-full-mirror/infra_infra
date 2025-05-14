@@ -186,7 +186,6 @@ func computeVariants(cliArgs CliArgs) *solver_proto.SolvedCategory {
 		optOut,
 		categoriesAndClassesCollection,
 		logger,
-		nil,
 		cliArgs.InventorySwarming,
 		cliArgs.InventorySwarmingPool)
 	if err != nil {

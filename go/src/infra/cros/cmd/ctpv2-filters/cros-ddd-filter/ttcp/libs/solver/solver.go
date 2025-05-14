@@ -134,7 +134,6 @@ func EvalExpression(
 	optOut *ttcpSyntax.ClassExpression,
 	collection *ttcpSyntax.Collection,
 	logger *log.Logger,
-	solvedCache map[uint64]map[deviceinfo.TargetId]*ExtendedSolvedDevice,
 	useSwarmingInventory bool,
 	pool string) (*ttcpSolver.SolvedCategory, error) {
 
@@ -820,7 +819,22 @@ func filterSwarmingDevices(
 	return filteredDevs
 }
 
+var (
+	// Type: map[string]map[string][]*swarmingdata.SwarmingdataEntry
+	inventoryByHwidCache = sync.Map{}
+	// Lock the inventoryByHwidCache down by pool.
+	// Type: map[string]sync.Mutex{}
+	inventoryByHwidCacheLocksByPool = sync.Map{}
+)
+
 func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingdata.SwarmingdataEntry {
+	lock, _ := inventoryByHwidCacheLocksByPool.LoadOrStore(pool, &sync.Mutex{})
+	lock.(*sync.Mutex).Lock()
+	defer lock.(*sync.Mutex).Unlock()
+	inventoryByHwid, ok := inventoryByHwidCache.Load(pool)
+	if ok {
+		return inventoryByHwid.(map[string][]*swarmingdata.SwarmingdataEntry)
+	}
 	// Get the lab data which is cached if data on the pool has been queried
 	swarmDataResc, err := croslab.GetInventory(pool, logger)
 	if err != nil {
@@ -835,6 +849,7 @@ func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingd
 	if err != nil {
 		log.Fatal(errors.ApiError(err))
 	}
+	inventoryByHwidCache.Store(pool, swarmData)
 	return swarmData
 }
 

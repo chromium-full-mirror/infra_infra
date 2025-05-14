@@ -28,15 +28,22 @@ import (
 // TODO(b:275572044) The inventory is currently retreived from bigquery. In the
 //                  future it should be retreived from databake.
 
-var GetInventory = getSwarmingInventory
+var (
+	GetInventory = getSwarmingInventory
 
-// Add inventory cache to minimize cost on inventory data access requests
-// Type: map[string]*swarmingdata.SwarmDataResources{}
-var inventoryCache = sync.Map{}
+	// Add inventory cache to minimize cost on inventory data access requests
+	// Type: map[string]*swarmingdata.SwarmDataResources{}
+	inventoryCache = sync.Map{}
+	// Lock the inventoryCache down by pool. Saves on resources when pulling from bigquery.
+	// Type: map[string]sync.Mutex{}
+	inventoryCacheLocksByPool = sync.Map{}
 
-// Lock the inventoryCache down by pool. Saves on resources when pulling from bigquery.
-// Type: map[string]sync.Mutex{}
-var poolLocks = sync.Map{}
+	// Type: map[string][]*deviceinfo.TargetVariant
+	deviceInfosCache = sync.Map{}
+	// Lock the deviceInfosCache down by pool.
+	// Type: map[string]sync.Mutex{}
+	deviceInfosCacheLocksByPool = sync.Map{}
+)
 
 func GenerateAvailableDevicesInfo(resc *datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []*deviceinfo.TargetVariant {
 	swarmResc, err := GetInventory(pool, logger, clientOpts...)
@@ -46,10 +53,18 @@ func GenerateAvailableDevicesInfo(resc *datasets.AllDatasetsResources, pool stri
 		}
 		log.Fatal("Could not retrieve swarming inventory:", err)
 	}
-	return GeneratePropertiesFromInventory(swarmResc, resc, logger)
+	return GeneratePropertiesFromInventory(pool, swarmResc, resc, logger)
 }
 
-func GeneratePropertiesFromInventory(inventory *swarmingdata.SwarmDataResources, resc *datasets.AllDatasetsResources, logger *log.Logger) []*deviceinfo.TargetVariant {
+func GeneratePropertiesFromInventory(pool string, inventory *swarmingdata.SwarmDataResources, resc *datasets.AllDatasetsResources, logger *log.Logger) []*deviceinfo.TargetVariant {
+	lock, _ := deviceInfosCacheLocksByPool.LoadOrStore(pool, &sync.Mutex{})
+	lock.(*sync.Mutex).Lock()
+	defer lock.(*sync.Mutex).Unlock()
+	deviceInfos, ok := deviceInfosCache.Load(pool)
+	if ok {
+		return deviceInfos.([]*deviceinfo.TargetVariant)
+	}
+
 	fleetSet, err := inventory.ParseAsList()
 	if err != nil {
 		if logger != nil {
@@ -60,6 +75,7 @@ func GeneratePropertiesFromInventory(inventory *swarmingdata.SwarmDataResources,
 	hwids := fleetSet.GetUniqueHwids()
 	allDeviceProperties := HwidToProperties(hwids, resc)
 	mergeSwarmPropsToHwid(inventory, allDeviceProperties)
+	deviceInfosCache.Store(pool, allDeviceProperties)
 	return allDeviceProperties
 }
 
@@ -186,7 +202,7 @@ func getSwarmingInventory(pool string, logger *log.Logger, clientOpts ...option.
 	swarmingResource := &swarmingdata.SwarmDataResources{}
 
 	// Return inventory data if already queried
-	lock, _ := poolLocks.LoadOrStore(pool, &sync.Mutex{})
+	lock, _ := inventoryCacheLocksByPool.LoadOrStore(pool, &sync.Mutex{})
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	inventoryData, ok := inventoryCache.Load(pool)

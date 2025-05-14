@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -79,52 +80,67 @@ func computeVariants(requests []*requestTestCaseVariants, pool string, authHelpe
 
 	solutions := map[string]*solver_proto.SolvedCategory{}
 
-	// solved will be based to `EvalExpression`, as a cache for previously solved expressions.
-	var solved = map[uint64]map[deviceinfo.TargetId]*solver.ExtendedSolvedDevice{}
-
-	// solutionCache will be used on the loop between requests.
-	solutionCache := map[string]*solver_proto.SolvedCategory{}
-
 	for _, request := range requests {
-		logger.Println("SERVICING REQUEST: ", request)
-		// Load and parse the TTCP request that specifies the dimension constraints on the desired variants
-		if request.variantsStr == "" {
-			logger.Println("TEST HAD NO TTCP EXPRESSION. WILL BE SKIPPED")
-			continue
-		}
-		v, solutionFound := solutionCache[request.variantsStr]
-		if solutionFound {
-			solutions[request.requestId] = v
-			continue
-		}
-
-		variants := solver.ParseTtcpCategoryExpression(request.variantsStr, logger)
-		optIn := solver.ParseTtcpClassExpression(request.optInStr, logger)
-		optOut := solver.ParseTtcpClassExpression(request.optOutStr, logger)
-
-		// Compute the solution (Set of requests variants)
-		solution, err := solver.EvalExpression(
-			variants,
-			solver.ClassFilterOnlyTestable,
-			inventoryInfo,
-			optIn,
-			optOut,
-			categoriesAndClassesCollection,
-			logger,
-			solved,
-			true,
-			pool)
-
+		solution, err := serviceRequest(logger, request, inventoryInfo, pool)
 		if err != nil {
-			// This might to need to be handled better if we want to allow partial results
 			logger.Println("Error during solving: ", err)
 			return map[string]*solver_proto.SolvedCategory{}, err
 		}
-		solutions[request.requestId] = solution
-		solutionCache[request.variantsStr] = solution
+		if solution != nil {
+			solutions[request.requestId] = solution
+		}
 	}
 
 	return solutions, nil
+}
+
+var (
+	// Type: map[string]*solver_proto.SolvedCategory
+	solutionCache = sync.Map{}
+	// Lock the solutionCache down by pool and variant.
+	// Type: map[string]sync.Mutex{}
+	solutionCacheLocksByPoolAndVariant = sync.Map{}
+)
+
+func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, inventoryInfo []*deviceinfo.TargetVariant, pool string) (*solver_proto.SolvedCategory, error) {
+	logger.Println("SERVICING REQUEST: ", request)
+	// Load and parse the TTCP request that specifies the dimension constraints on the desired variants
+	if request.variantsStr == "" {
+		logger.Println("TEST HAD NO TTCP EXPRESSION. WILL BE SKIPPED")
+		return nil, nil
+	}
+	cacheKey := fmt.Sprint(pool, request.variantsStr)
+	lock, _ := solutionCacheLocksByPoolAndVariant.LoadOrStore(cacheKey, &sync.Mutex{})
+	lock.(*sync.Mutex).Lock()
+	defer lock.(*sync.Mutex).Unlock()
+	v, solutionFound := solutionCache.Load(cacheKey)
+	if solutionFound {
+		return v.(*solver_proto.SolvedCategory), nil
+	}
+
+	variants := solver.ParseTtcpCategoryExpression(request.variantsStr, logger)
+	optIn := solver.ParseTtcpClassExpression(request.optInStr, logger)
+	optOut := solver.ParseTtcpClassExpression(request.optOutStr, logger)
+
+	// Compute the solution (Set of requests variants)
+	solution, err := solver.EvalExpression(
+		variants,
+		solver.ClassFilterOnlyTestable,
+		inventoryInfo,
+		optIn,
+		optOut,
+		categoriesAndClassesCollection,
+		logger,
+		true,
+		pool)
+
+	if err != nil {
+		// This might to need to be handled better if we want to allow partial results
+		logger.Println("Error during solving: ", err)
+		return nil, err
+	}
+	solutionCache.Store(cacheKey, solution)
+	return solution, nil
 }
 
 // getAllHwidEntries loads all the HWID db entries that are stored in the container.

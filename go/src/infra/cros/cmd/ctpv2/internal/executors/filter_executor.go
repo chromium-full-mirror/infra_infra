@@ -218,6 +218,8 @@ func (ex *FilterExecutor) ExecuteFilter(
 		return
 	}
 	resp, err = serverCommuncationHandler.GetInternalTestplan()
+	// Send empty testplan as ack that client is done.
+	serverCommuncationHandler.SendInternalTestplan(&testapi.InternalTestplan{})
 
 	return
 }

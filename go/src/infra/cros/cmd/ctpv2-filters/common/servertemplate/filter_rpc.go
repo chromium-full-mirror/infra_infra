@@ -121,7 +121,12 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	// When InternalTestplan is sent, the client will mark the stream as closed.
 	// No more message streaming should occur past this point.
 	err = clientCommunicationHandler.SendInternalTestplan(testplan)
-	return err
+	if err != nil {
+		return errors.Annotate(err, "Executor: failed to send InternalTestplan").Err()
+	}
+	// Receive an empty testplan as ack to close server after success.
+	clientCommunicationHandler.GetInternalTestplan()
+	return nil
 }
 
 func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *log.Logger) (resp *api.InternalTestplan, err error) {
