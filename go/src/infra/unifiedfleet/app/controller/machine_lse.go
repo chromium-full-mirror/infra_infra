@@ -1825,6 +1825,8 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				updateCellularModemInfo(ctx, dut, labData)
 				// Update Cellular SIM Info
 				updateCellularSIMInfo(ctx, dut, labData)
+				// updatePASITHost info.
+				updatePASIT(ctx, peri)
 				// Update supported cellular carriers
 				peri.SupportedCarriers = labData.GetSupportedCarriers()
 				// Update Bluetooth peers
@@ -1906,6 +1908,48 @@ func updateCellularModemInfo(ctx context.Context, dut *chromeosLab.DeviceUnderTe
 
 	if modemType := mi.GetType(); modemType != chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED {
 		m.Type = modemType
+	}
+}
+
+// Populate chromosLab pasit info from api info.
+// TODO (b/415825020) remove once migration complete.
+func updatePASIT(ctx context.Context, p *chromeosLab.Peripherals) {
+	in := p.GetPasitHost2()
+	if in == nil {
+		return
+	}
+
+	p.Pasit = &chromeosLab.Pasit{
+		Hostname: in.GetHostname(),
+	}
+
+	for _, d := range in.GetDevices() {
+		newDevice := &chromeosLab.Pasit_Device{
+			Id:    d.GetId(),
+			Model: d.GetModel(),
+			Type:  chromeosLab.Pasit_Device_Type(d.GetType()),
+		}
+
+		if d.GetPowerSupply() != nil {
+			newDevice.PowerSupply = &chromeosLab.Pasit_Device_PowerSupply{
+				Current: d.GetPowerSupply().GetCurrent(),
+				Voltage: d.GetPowerSupply().GetVoltage(),
+				Power:   d.GetPowerSupply().GetPower(),
+			}
+		}
+		p.Pasit.Devices = append(p.Pasit.Devices, newDevice)
+	}
+
+	for _, c := range in.GetConnections() {
+		p.Pasit.Connections = append(p.Pasit.Connections,
+			&chromeosLab.Pasit_Connection{
+				ParentPort: c.GetParentPort(),
+				ParentId:   c.GetParentId(),
+				ChildId:    c.GetChildId(),
+				Speed:      c.GetSpeed(),
+				Type:       c.GetType(),
+			},
+		)
 	}
 }
 
