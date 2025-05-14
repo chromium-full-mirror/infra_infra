@@ -17,6 +17,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"go.chromium.org/infra/build/siso/subcmd/ninja/ninjalog"
 )
 
 // Step is one step in ninja_log file.
@@ -159,6 +161,9 @@ type Metadata struct {
 
 	// Build target.
 	Targets []string `json:"targets"`
+
+	// Metadata populated by siso. Not populated ninja builds, or by older versions of siso.
+	SisoMetadata *ninjalog.SisoMetadata `json:"siso_metadata"`
 
 	// Raw is raw string for metadata.
 	Raw string
