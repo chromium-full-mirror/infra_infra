@@ -72,7 +72,7 @@ func (client *Client) DownloadABArtifact(buildID, buildTarget, artifactName stri
 	defer out.Close()
 	log.Printf("Created tempfile %s to store the pulled file", out.Name())
 	if _, err = io.Copy(out, resp.Body); err != nil {
-		return "", "INFRA: unable to copy cache to tempfile", fmt.Errorf("failed to copy request data to tempfile: %+v", err)
+		return "", "INFRA: unable to copy cache to tempfile", fmt.Errorf("failed to copy request data to tempfile: %w", err)
 	}
 	return out.Name(), "", nil
 }

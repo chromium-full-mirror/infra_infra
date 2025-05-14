@@ -6,6 +6,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,7 +16,6 @@ import (
 	"google.golang.org/api/googleapi"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/gsstorage"
@@ -51,24 +51,25 @@ func (c *UploadAPKToGSCommand) Execute(log *log.Logger) error {
 			}
 			apkPath := filepath.Join(dstPath, apkName)
 			if _, err = os.Stat(apkPath); os.IsNotExist(err) {
-				err = errors.Reason("APK file is missing from CIPD package: %s", apkName).Err()
+				err = fmt.Errorf("APK file is missing from CIPD package: %s", apkName)
 				log.Printf("UploadAPKToGSCommand Failure: %v", err)
 				return err
 			}
 			apkRemotePath := cipdPkg.InstanceId + "/" + apkName
 			if err := c.gs.Upload(c.ctx, apkPath, apkRemotePath); err != nil {
-				switch e := err.(type) {
-				case *googleapi.Error:
+				var googleAPIError *googleapi.Error
+				if errors.As(err, &googleAPIError) {
 					// If file already exists we do nothing.
-					if e.Code != http.StatusPreconditionFailed {
+					if googleAPIError.Code != http.StatusPreconditionFailed {
 						log.Printf("UploadAPKToGSCommand Failure: %v", err)
 						return err
 					}
-				default:
+				} else {
 					log.Printf("UploadAPKToGSCommand Failure: %v", err)
 					return err
 				}
 			}
+
 			gspath := "gs://" + common.GSPackageBucketName + "/" + apkRemotePath
 			pkg.APKFile = &service.PkgFile{
 				Name:   apkName,
@@ -106,7 +107,7 @@ func (c *UploadAPKToGSCommand) getApkName(cipdPkgProto *api.CIPDPackage) (string
 		}
 		return c.resolveGmsCoreApkName(apkDetails)
 	default:
-		return "", errors.Reason("unsupported Android package: %s", p.String()).Err()
+		return "", fmt.Errorf("unsupported Android package: %s", p.String())
 	}
 }
 
@@ -122,7 +123,7 @@ func (c *UploadAPKToGSCommand) getGmsCoreApkNameFromProto(apkDetails *api.ApkDet
 	case api.ApkDetails_X86:
 		arch = "x86"
 	default:
-		return "", errors.Reason("unsupported APK architecture: %s", archEnum.String()).Err()
+		return "", fmt.Errorf("unsupported APK architecture: %s", archEnum.String())
 	}
 	switch btEnum := apkDetails.GetBuildType(); btEnum {
 	case api.ApkDetails_PHONE_PRE_LMP:
@@ -146,7 +147,7 @@ func (c *UploadAPKToGSCommand) getGmsCoreApkNameFromProto(apkDetails *api.ApkDet
 	case api.ApkDetails_PHONE_GO_S:
 		bt = "prodgos"
 	default:
-		return "", errors.Reason("unsupported APK build type: %s", btEnum.String()).Err()
+		return "", fmt.Errorf("unsupported APK build type: %s", btEnum.String())
 	}
 	switch dpiEnum := apkDetails.GetDensity(); dpiEnum {
 	case api.ApkDetails_MDPI:
@@ -161,7 +162,7 @@ func (c *UploadAPKToGSCommand) getGmsCoreApkNameFromProto(apkDetails *api.ApkDet
 		// Default value.
 		dpi = "alldpi"
 	default:
-		return "", errors.Reason("unsupported APK density: %s", dpiEnum.String()).Err()
+		return "", fmt.Errorf("unsupported APK density: %s", dpiEnum.String())
 	}
 	switch bpEnum := apkDetails.GetBuildPurpose(); bpEnum {
 	case api.ApkDetails_RAW:
@@ -174,7 +175,7 @@ func (c *UploadAPKToGSCommand) getGmsCoreApkNameFromProto(apkDetails *api.ApkDet
 	case api.ApkDetails_DEBUG_SHRUNK:
 		bp = "debug_shrunk"
 	default:
-		return "", errors.Reason("unsupported APK build purpose: %s", bpEnum.String()).Err()
+		return "", fmt.Errorf("unsupported APK build purpose: %s", bpEnum.String())
 	}
 	return fmt.Sprintf("gmscore_%s_%s_%s_%s.apk", bt, arch, dpi, bp), nil
 }
@@ -194,7 +195,7 @@ func (c *UploadAPKToGSCommand) resolveGmsCoreApkName(apkDetails *api.ApkDetails)
 	}
 	platform := common.OSVersionToGMSCorePlatformMap[osVersion]
 	if platform == "" {
-		return "", errors.Reason("missing GMSCore package platform for Android OS v.%s", osVersion).Err()
+		return "", fmt.Errorf("missing GMSCore package platform for Android OS v.%s", osVersion)
 	}
 	dpi := "alldpi"
 	if apkDetails != nil && apkDetails.GetDensity() == api.ApkDetails_XXHDPI {

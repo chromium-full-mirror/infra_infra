@@ -182,7 +182,7 @@ func (service *AshChromeService) LogChromeVersion(ctx context.Context) error {
 func (service *AshChromeService) MakeRootfsWritable(ctx context.Context) error {
 	out, err := service.connection.RunCmd(ctx, "cat", []string{"/proc/mounts"})
 	if err != nil {
-		return fmt.Errorf("cat /proc/mounts failed: %v", err)
+		return fmt.Errorf("cat /proc/mounts failed: %w", err)
 	}
 	log.Printf("cat /proc/mounts: \n%s", out)
 	for _, line := range strings.Split(strings.TrimRight(out, "\n"), "\n") {
@@ -246,7 +246,7 @@ func (service *AshChromeService) ChromiteDeployChrome(ctx context.Context, local
 func (service *AshChromeService) GetDUTBoard(ctx context.Context) (string, error) {
 	out, err := service.connection.RunCmd(ctx, "cat", []string{"/etc/lsb-release"})
 	if err != nil {
-		return "", fmt.Errorf("cat /etc/lsb-release failed: %v", err)
+		return "", fmt.Errorf("cat /etc/lsb-release failed: %w", err)
 	}
 	log.Printf("cat /etc/lsb-release: \n%s", out)
 	match := reBoard.FindStringSubmatch(out)
@@ -267,7 +267,7 @@ func (service *AshChromeService) GetTmpDir() string {
 func (service *AshChromeService) runRemoteCommandAndLog(ctx context.Context, cmd string, args ...string) error {
 	out, err := service.connection.RunCmd(ctx, cmd, args)
 	if err != nil {
-		return fmt.Errorf("%s %v failed: %v", cmd, args, err)
+		return fmt.Errorf("%s %v failed: %w", cmd, args, err)
 	}
 	log.Printf("%s %v: %s", cmd, args, out)
 	return nil

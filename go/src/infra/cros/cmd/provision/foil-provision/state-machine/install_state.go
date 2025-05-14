@@ -69,7 +69,7 @@ func (s FoilInstallState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 			err = s.setupForCrosover(ctx, log, comm.GetErrorMessage())
 			if err != nil {
 				log.Println("Unable to setup for crossover provision after OTA failed. Failing.")
-				return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+				return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 			}
 			s.service.CrossOver = true
 			break

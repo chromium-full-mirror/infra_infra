@@ -52,7 +52,7 @@ func (sc *ServerCommand) Init(args []string) error {
 
 	sc.metadata.Log, err = SetUpLog(sc.logFileName)
 	if err != nil {
-		return fmt.Errorf("unable to set up logs: %s", err)
+		return fmt.Errorf("unable to set up logs: %w", err)
 	}
 
 	if err = sc.validateCLIInputs(); err != nil {

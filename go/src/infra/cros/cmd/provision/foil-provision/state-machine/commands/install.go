@@ -47,7 +47,7 @@ func (c *Install) Execute(log *log.Logger) error {
 	log.Printf("Start Install Execute, with reboot changed")
 	localImagePath, err := c.pullFromCache(log, c.cs.ImagePath.GetPath())
 	if err != nil {
-		return fmt.Errorf("Unable to pull image from cache %v", err)
+		return fmt.Errorf("Unable to pull image from cache %w", err)
 	}
 	defer os.Remove(localImagePath)
 	log.Println("Image pulled from cache and stored at ", localImagePath)
@@ -145,15 +145,6 @@ func logcat(log *log.Logger, pid string, addr string) {
 	log.Println("logcat out", outStr)
 }
 
-// Helper function to read output from a pipe
-func readOutput(r io.Reader, ch chan string) {
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		ch <- scanner.Text()
-	}
-	close(ch)
-}
-
 func install(log *log.Logger, lcpid string, addr, localImagePath string) (string, error) {
 	log.Printf("Install start")
 	// logcmd, logchan, err := logcat()
@@ -171,12 +162,11 @@ func install(log *log.Logger, lcpid string, addr, localImagePath string) (string
 		return "", fmt.Errorf("StdoutPipe failed")
 	}
 	if err := cmd.Start(); err != nil {
-		return "", fmt.Errorf("failed to run Cmd: %v", err)
+		return "", fmt.Errorf("failed to run Cmd: %w", err)
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	const maxCapacity = 4096 * 1024
 	found1 := false
 	found2 := false
 	status := ""

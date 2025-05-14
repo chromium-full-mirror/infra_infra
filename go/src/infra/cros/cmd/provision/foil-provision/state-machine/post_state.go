@@ -41,7 +41,7 @@ func (s FoilPostState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 	for _, comm := range comms {
 		err := comm.Execute(log)
 		if err != nil {
-			return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return commonutils.WrapStringInAny(comm.GetErrorMessage()), comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 		}
 	}
 	log.Printf("State: FoilPostState Completed")

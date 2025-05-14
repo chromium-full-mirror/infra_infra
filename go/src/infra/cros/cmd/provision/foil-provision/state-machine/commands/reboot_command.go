@@ -22,9 +22,8 @@ type OptionalRebootArgs struct {
 }
 
 type RebootCommand struct {
-	ctx   context.Context
-	cs    *service.FoilService
-	force bool
+	ctx context.Context
+	cs  *service.FoilService
 }
 
 func NewRebootCommand(ctx context.Context, cs *service.FoilService, optRebootArgs ...OptionalRebootArgs) *RebootCommand {
@@ -41,7 +40,7 @@ func (c *RebootCommand) Execute(log *log.Logger) error {
 	addr := c.cs.DutIp
 
 	if err != nil {
-		return fmt.Errorf("ADB Start failed. %s: %s", err, outStr)
+		return fmt.Errorf("ADB Start failed. %w: %s", err, outStr)
 	}
 	err = adb.RetrySetupAdb(log, addr, 3*time.Minute)
 	if err != nil {

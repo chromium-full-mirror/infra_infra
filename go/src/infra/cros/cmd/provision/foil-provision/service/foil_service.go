@@ -51,7 +51,7 @@ type FoilService struct {
 func NewFoilService(dut *labapi.Dut, req *api.InstallRequest, dutClient api.DutServiceClient, servoNexusAddr string) (*FoilService, error) {
 	cacheServerAddr, err := cache.IPEndpointToHostPort(dut.GetCacheServer().GetAddress())
 	if err != nil {
-		return nil, fmt.Errorf("invalid cache server address %v", err)
+		return nil, fmt.Errorf("invalid cache server address %w", err)
 	}
 	cacheURL := url.URL{Scheme: "http", Host: cacheServerAddr}
 	// TODO: Verify that the req.ImagePath.HostType is Android_build.

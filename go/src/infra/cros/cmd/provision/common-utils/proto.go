@@ -5,10 +5,11 @@
 package common_utils
 
 import (
+	"io"
 	"os"
 
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
@@ -21,10 +22,16 @@ func ParseCrosProvisionRequest(path string) (*api.CrosProvisionRequest, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "open file %q", path)
 	}
+	defer r.Close()
 
-	umrsh := jsonpb.Unmarshaler{}
-	umrsh.AllowUnknownFields = true
-	err = umrsh.Unmarshal(r, in)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	umrsh := protojson.UnmarshalOptions{}
+	umrsh.DiscardUnknown = false
+	err = umrsh.Unmarshal(data, in)
 	if err != nil {
 		return nil, errors.Wrapf(err, "invalid json in %q", path)
 	}
@@ -40,10 +47,16 @@ func ParseAndroidProvisionRequest(path string) (*api.AndroidProvisionRequest, er
 	if err != nil {
 		return nil, errors.Wrapf(err, "open file %q", path)
 	}
+	defer r.Close()
 
-	umrsh := jsonpb.Unmarshaler{}
-	umrsh.AllowUnknownFields = true
-	err = umrsh.Unmarshal(r, in)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	umrsh := protojson.UnmarshalOptions{}
+	umrsh.DiscardUnknown = false
+	err = umrsh.Unmarshal(data, in)
 	if err != nil {
 		return nil, errors.Wrapf(err, "invalid json in %q", path)
 	}
@@ -59,10 +72,16 @@ func ParseInstallRequest(path string) (*api.InstallRequest, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "open file %q", path)
 	}
+	defer r.Close()
 
-	umrsh := jsonpb.Unmarshaler{}
-	umrsh.AllowUnknownFields = false
-	err = umrsh.Unmarshal(r, in)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	umrsh := protojson.UnmarshalOptions{}
+	umrsh.DiscardUnknown = false
+	err = umrsh.Unmarshal(data, in)
 	if err != nil {
 		return nil, errors.Wrapf(err, "invalid json in %q", path)
 	}
@@ -78,10 +97,16 @@ func ParseProvisionStartupRequest(path string) (*api.ProvisionStartupRequest, er
 	if err != nil {
 		return nil, errors.Wrapf(err, "open file %q", path)
 	}
+	defer r.Close()
 
-	umrsh := jsonpb.Unmarshaler{}
-	umrsh.AllowUnknownFields = false
-	err = umrsh.Unmarshal(r, in)
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	umrsh := protojson.UnmarshalOptions{}
+	umrsh.DiscardUnknown = false
+	err = umrsh.Unmarshal(data, in)
 	if err != nil {
 		return nil, errors.Wrapf(err, "invalid json in %q", path)
 	}

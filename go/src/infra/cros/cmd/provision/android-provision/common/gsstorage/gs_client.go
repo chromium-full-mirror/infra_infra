@@ -6,6 +6,7 @@ package gsstorage
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -92,7 +93,7 @@ func (gs *gs) ListFiles(ctx context.Context, prefix, delim string) ([]string, er
 	var names []string
 	for {
 		attrs, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

@@ -32,7 +32,7 @@ func (s CrosUpdateFirmwareState) Execute(ctx context.Context, log *log.Logger) (
 	// Some type of build(e.g. public build) doesn't have built-in firmware updater, so skip the firmware update in this case.
 	checkUpdaterComm := commands.NewCheckFirmwareUpdaterCommand(ctx, s.service)
 	if err := checkUpdaterComm.Execute(log); err != nil {
-		return nil, checkUpdaterComm.GetStatus(), fmt.Errorf("%s, %s", checkUpdaterComm.GetErrorMessage(), err)
+		return nil, checkUpdaterComm.GetStatus(), fmt.Errorf("%s, %w", checkUpdaterComm.GetErrorMessage(), err)
 	}
 	if !checkUpdaterComm.UpdaterExist {
 		log.Printf("State: Skip CrosUpdateFirmwareState as firmware updater does not exist on the build")
@@ -54,10 +54,10 @@ func (s CrosUpdateFirmwareState) Execute(ctx context.Context, log *log.Logger) (
 			for ; i >= 0; i-- {
 				log.Printf("CrosUpdateFirmwareState REVERT CALLED")
 				if innerErr := comm.Revert(); innerErr != nil {
-					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %s: %s", err, innerErr)
+					return nil, comm.GetStatus(), fmt.Errorf("failure while reverting, %w: %w", err, innerErr)
 				}
 			}
-			return nil, comm.GetStatus(), fmt.Errorf("%s, %s", comm.GetErrorMessage(), err)
+			return nil, comm.GetStatus(), fmt.Errorf("%s, %w", comm.GetErrorMessage(), err)
 		}
 	}
 	// Reboot if firmware slot changed.
@@ -65,14 +65,14 @@ func (s CrosUpdateFirmwareState) Execute(ctx context.Context, log *log.Logger) (
 		// Post firmware update reboot could take longer time, so give it 300 seconds timeout here.
 		rebootComm := commands.NewRebootWithTimeoutCommand(300*time.Second, ctx, s.service)
 		if err := rebootComm.Execute(log); err != nil {
-			return nil, rebootComm.GetStatus(), fmt.Errorf("%s, %s", rebootComm.GetErrorMessage(), err)
+			return nil, rebootComm.GetStatus(), fmt.Errorf("%s, %w", rebootComm.GetErrorMessage(), err)
 		}
 	} else {
 		log.Printf("no firmware slot change detected, skip post firmware update reboot.")
 	}
 	verifyFirmwareComm := commands.NewVerifyFirmwareCommand(ctx, s.service)
 	if err := verifyFirmwareComm.Execute(log); err != nil {
-		return nil, verifyFirmwareComm.GetStatus(), fmt.Errorf("%s, %s", verifyFirmwareComm.GetErrorMessage(), err)
+		return nil, verifyFirmwareComm.GetStatus(), fmt.Errorf("%s, %w", verifyFirmwareComm.GetErrorMessage(), err)
 	}
 
 	log.Printf("State: CrosUpdateFirmwareState Completed")

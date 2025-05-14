@@ -22,8 +22,10 @@ import (
 // FoilPreInitState can be thought of as the constructor state, which initializes
 // variables in FoilService
 type FoilPreInitState struct {
-	service    *service.FoilService
-	shouldSkip bool
+	service *service.FoilService
+
+	// Unused for now. Will likely come back.
+	// shouldSkip bool
 }
 
 // NewFoilPreInitState provides an interface to FoilPreInitState.
@@ -61,9 +63,7 @@ func (s FoilPreInitState) Next() commonutils.ServiceState {
 	// if s.service.SkipUpdate == true {
 	// 	return nil
 	// }
-	return FoilInstallState{
-		service: s.service,
-	}
+	return FoilInstallState(s)
 
 }
 
