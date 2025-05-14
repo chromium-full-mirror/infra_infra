@@ -312,7 +312,7 @@ func TestUnpackTarball(t *testing.T) {
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	if symbolPaths == nil || len(symbolPaths) <= 0 {
+	if len(symbolPaths) == 0 {
 		t.Error("error: Empty list of paths returned")
 	}
 	// Verify that we received a list pointing to all the expected files and no
@@ -474,7 +474,7 @@ func TestUnpackSplitdebugTarballs(t *testing.T) {
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	if breakpadPaths == nil || len(breakpadPaths) <= 0 {
+	if len(breakpadPaths) == 0 {
 		t.Error("error: Empty list of breakpad paths returned")
 	}
 	// Verify that we received a list pointing to all the expected files and no

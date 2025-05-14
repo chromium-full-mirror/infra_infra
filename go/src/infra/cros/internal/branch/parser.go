@@ -37,7 +37,7 @@ var (
 // Returns -1 if the branch name does not contain a build number.
 func ExtractBuildNum(branch string) int {
 	match := branchRegexp.FindStringSubmatch(branch)
-	if match == nil || len(match) < 4 {
+	if len(match) < 4 {
 		return -1
 	}
 	result := make(map[string]string)
@@ -59,7 +59,7 @@ func ExtractBuildNum(branch string) int {
 // 85/13277.0.0.xml.
 func ParseBuildspec(buildspec string) (*cv.VersionInfo, error) {
 	match := buildspecRegexp.FindStringSubmatch(buildspec)
-	if match == nil || len(match) < 5 {
+	if len(match) < 5 {
 		return nil, fmt.Errorf("invalid buildspec")
 	}
 	result := make(map[string]string)
@@ -94,7 +94,7 @@ func releaseBranches(branchList []string, minMilestone int) ([]string, error) {
 	for _, branch := range branchList {
 		if strings.HasPrefix(branch, "release-R") {
 			match := milestoneRegexp.FindStringSubmatch(branch)
-			if match == nil || len(match) < 2 {
+			if len(match) < 2 {
 				return nil, fmt.Errorf("malformatted release branch: %s", branch)
 			}
 			if milestone, err := strconv.Atoi(match[1]); err != nil {
