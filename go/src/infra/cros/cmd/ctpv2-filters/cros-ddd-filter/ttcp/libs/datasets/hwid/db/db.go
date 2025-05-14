@@ -18,7 +18,7 @@ type HwidDb struct {
 	DescriptorPaths   []string
 	ProjectsIndexPath string
 	ProjectsIndex     map[string]string
-	DescriptorProject map[string]HwidDescriptor
+	DescriptorProject map[string]*HwidDescriptor
 }
 
 type HwidDbResources struct {
@@ -26,8 +26,8 @@ type HwidDbResources struct {
 	ProjectIndexPath string
 }
 
-func InitializeHwidDb(resc HwidDbResources) HwidDb {
-	result := HwidDb{
+func InitializeHwidDb(resc *HwidDbResources) *HwidDb {
+	result := &HwidDb{
 		DescriptorPaths:   resc.DescriptorsPaths,
 		ProjectsIndexPath: resc.ProjectIndexPath,
 		ProjectsIndex:     loadProjectToBoardIndex(resc.ProjectIndexPath),
@@ -49,24 +49,24 @@ type descriptorType struct {
 const internalLabel = ".internal"
 
 // returns the model name and if the descriptor is an internal version
-func parseDescriptorPath(path string) descriptorType {
+func parseDescriptorPath(path string) *descriptorType {
 	internal := strings.HasSuffix(path, internalLabel)
 	normalizedPath := path
 	if internal {
 		normalizedPath = path[0 : len(path)-len(internalLabel)]
 	}
 	_, model := filepath.Split(normalizedPath)
-	return descriptorType{
+	return &descriptorType{
 		model:    model,
 		internal: internal,
 		path:     path,
 	}
 }
 
-func LoadDescriptors(paths []string) map[string]HwidDescriptor {
-	descriptors := map[string]HwidDescriptor{}
+func LoadDescriptors(paths []string) map[string]*HwidDescriptor {
+	descriptors := map[string]*HwidDescriptor{}
 
-	todo := map[string]descriptorType{}
+	todo := map[string]*descriptorType{}
 	for _, path := range paths {
 		t := parseDescriptorPath(path)
 		current, ok := todo[t.model]
@@ -85,10 +85,10 @@ func LoadDescriptors(paths []string) map[string]HwidDescriptor {
 	return descriptors
 }
 
-func (db *HwidDb) GetDescriptor(modelBrand string) (HwidDescriptor, error) {
+func (db *HwidDb) GetDescriptor(modelBrand string) (*HwidDescriptor, error) {
 	descriptor, ok := db.DescriptorProject[modelBrand]
 	if !ok {
-		return HwidDescriptor{}, fmt.Errorf("model %s has no descriptor", modelBrand)
+		return &HwidDescriptor{}, fmt.Errorf("model %s has no descriptor", modelBrand)
 	}
 	return descriptor, nil
 }

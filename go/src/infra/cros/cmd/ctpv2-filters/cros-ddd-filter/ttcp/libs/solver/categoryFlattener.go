@@ -27,8 +27,8 @@ import (
 )
 
 func FlattenCategoryExpression(
-	exp ttcpSyntax.CategoryExpression,
-	collection ttcpSyntax.Collection,
+	exp *ttcpSyntax.CategoryExpression,
+	collection *ttcpSyntax.Collection,
 	previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	return flattenCategoryExpression(exp, collection, []string{})
 }
@@ -36,8 +36,8 @@ func FlattenCategoryExpression(
 // flattenCategoryExpression flattens an ttcp.CategoryExpression by transforming
 // category referenced by name into their values are flattening recursively.
 func flattenCategoryExpression(
-	exp ttcpSyntax.CategoryExpression,
-	collection ttcpSyntax.Collection,
+	exp *ttcpSyntax.CategoryExpression,
+	collection *ttcpSyntax.Collection,
 	previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	var val *ttcpSyntax.EnumeratedCategory
 	var err error = nil
@@ -54,13 +54,13 @@ func flattenCategoryExpression(
 		return &ttcpSyntax.EnumeratedCategory{}, errors.NewErrorf("The evaluator does not implement the evaluation for %T", exp.GetBody())
 	}
 	if err != nil {
-		return &ttcpSyntax.EnumeratedCategory{}, errors.JoinError(fmt.Sprintf("Could not flatten category expression:\n%s", protojson.Format(&exp)), err)
+		return &ttcpSyntax.EnumeratedCategory{}, errors.JoinError(fmt.Sprintf("Could not flatten category expression:\n%s", protojson.Format(exp)), err)
 	}
 	return val, nil
 }
 
 // flattenCategory flattens ttcp.Category objects into ttcp.EnumerateCategory and recursively flatten the contents.
-func flattenCategory(category *ttcpSyntax.Category, collection ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
+func flattenCategory(category *ttcpSyntax.Category, collection *ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	if category == nil {
 		return nil, errors.NewError("The category argument is nil.")
 	}
@@ -89,7 +89,7 @@ func flattenCategory(category *ttcpSyntax.Category, collection ttcpSyntax.Collec
 }
 
 // flattenCombinatorialCategory flatens a ttcpSyntax.CombinatorialCategory into a ttcpSyntax.EnumeratedCategory
-func flattenCombinatorialCategory(exp *ttcpSyntax.CombinatorialCategory, collection ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
+func flattenCombinatorialCategory(exp *ttcpSyntax.CombinatorialCategory, collection *ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	subCategories := []*ttcpSyntax.EnumeratedCategory{}
 	for _, subItem := range exp.Subcategories {
 		switch typedItem := subItem.Body.(type) {
@@ -116,21 +116,21 @@ func flattenCombinatorialCategory(exp *ttcpSyntax.CombinatorialCategory, collect
 	if len(subCategories) == 0 {
 		return &ttcpSyntax.EnumeratedCategory{}, nil
 	}
-	expressions := []nameExpression{}
+	expressions := []*nameExpression{}
 	for i, expItem := range subCategories[0].Classes {
 		expressions = append(expressions,
-			nameExpression{
+			&nameExpression{
 				name: "Comb_" + strconv.Itoa(i),
 				exp:  expItem.GetValue().Expression,
 			})
 	}
 	for _, subCat := range subCategories[1:] {
-		combinedExpressions := []nameExpression{}
+		combinedExpressions := []*nameExpression{}
 		for _, currentExp := range expressions {
 			for _, nextExpItem := range subCat.Classes {
 				nextExp := nextExpItem.GetValue()
 				combinedExpressions = append(combinedExpressions,
-					nameExpression{
+					&nameExpression{
 						exp: &ttcpSyntax.Expression{
 							Operator: &ttcpSyntax.Expression_And{
 								And: &ttcpSyntax.And{
@@ -157,14 +157,14 @@ type nameExpression struct {
 	exp  *ttcpSyntax.Expression
 }
 
-func flattenEnumeratedCategory(cat *ttcpSyntax.EnumeratedCategory, collection ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
+func flattenEnumeratedCategory(cat *ttcpSyntax.EnumeratedCategory, collection *ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	if cat == nil {
 		return &ttcpSyntax.EnumeratedCategory{}, errors.NewError("The EnumeratedCategory cat is nil.")
 	}
 	if cat.Classes == nil {
 		return &ttcpSyntax.EnumeratedCategory{}, errors.NewError("The field Classes of the EnumeratedCategory cat is nil.")
 	}
-	res := ttcpSyntax.EnumeratedCategory{}
+	res := &ttcpSyntax.EnumeratedCategory{}
 	for _, subCat := range cat.Classes {
 		switch typedItem := subCat.Body.(type) {
 		case *ttcpSyntax.ClassExpression_Name:
@@ -178,20 +178,20 @@ func flattenEnumeratedCategory(cat *ttcpSyntax.EnumeratedCategory, collection tt
 						Value: cat}})
 		case *ttcpSyntax.ClassExpression_Value:
 			if err := isClassExpression_ValueComplet(typedItem); err != nil {
-				return &res, err
+				return res, err
 			}
 			res.Classes = append(res.Classes,
 				&ttcpSyntax.ClassExpression{
 					Body: &ttcpSyntax.ClassExpression_Value{
 						Value: typedItem.Value}})
 		default:
-			return &res, errors.NewError("A ClassExpression is missing a body field.")
+			return res, errors.NewError("A ClassExpression is missing a body field.")
 		}
 	}
-	return &res, nil
+	return res, nil
 }
 
-func flattenUnionCategory(cat *ttcpSyntax.UnionCategory, collection ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
+func flattenUnionCategory(cat *ttcpSyntax.UnionCategory, collection *ttcpSyntax.Collection, previouslyEncounteredNamedCategories []string) (*ttcpSyntax.EnumeratedCategory, error) {
 	if cat == nil {
 		return &ttcpSyntax.EnumeratedCategory{}, errors.NewError("The UnionCategory cat is nil.")
 	}
@@ -201,7 +201,7 @@ func flattenUnionCategory(cat *ttcpSyntax.UnionCategory, collection ttcpSyntax.C
 	res := []*ttcpSyntax.ClassExpression{}
 	for _, subCat := range cat.Subcategories {
 		flattenCategory, error := flattenCategoryExpression(
-			*subCat,
+			subCat,
 			collection,
 			previouslyEncounteredNamedCategories)
 		if error != nil {
@@ -215,13 +215,13 @@ func flattenUnionCategory(cat *ttcpSyntax.UnionCategory, collection ttcpSyntax.C
 	}, nil
 }
 
-func ParseTtcpCategoryExpression(expression string, logger *log.Logger) ttcpSyntax.CategoryExpression {
+func ParseTtcpCategoryExpression(expression string, logger *log.Logger) *ttcpSyntax.CategoryExpression {
 	unmarshalOptions := protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
 	}
-	parsedExpression := ttcpSyntax.CategoryExpression{}
-	err := unmarshalOptions.Unmarshal([]byte(expression), &parsedExpression)
+	parsedExpression := &ttcpSyntax.CategoryExpression{}
+	err := unmarshalOptions.Unmarshal([]byte(expression), parsedExpression)
 	if err != nil {
 		if logger != nil {
 			// Verbosely note this for CTPv2 logs for now.
@@ -241,8 +241,8 @@ func ParseTtcpClassExpression(expression string, logger *log.Logger) *ttcpSyntax
 		AllowPartial:   false,
 		DiscardUnknown: false,
 	}
-	parsedExpression := ttcpSyntax.ClassExpression{}
-	err := unmarshalOptions.Unmarshal([]byte(expression), &parsedExpression)
+	parsedExpression := &ttcpSyntax.ClassExpression{}
+	err := unmarshalOptions.Unmarshal([]byte(expression), parsedExpression)
 	if err != nil {
 		if logger != nil {
 			// Verbosely note this for CTPv2 logs for now.
@@ -250,17 +250,17 @@ func ParseTtcpClassExpression(expression string, logger *log.Logger) *ttcpSyntax
 		}
 		log.Fatal(errors.JoinError("Error parsing ttcp class expression.", errors.ApiError(err)))
 	}
-	return &parsedExpression
+	return parsedExpression
 }
 
 // decodeTtcpCategoryAndClassCollection parses a []byte into a  ttcpSyntax.Collection
-func decodeTtcpCategoryAndClassCollection(data []byte) ttcpSyntax.Collection {
+func decodeTtcpCategoryAndClassCollection(data []byte) *ttcpSyntax.Collection {
 	unmarshalOptions := protojson.UnmarshalOptions{
 		AllowPartial:   false,
 		DiscardUnknown: false,
 	}
-	parsedExpression := ttcpSyntax.Collection{}
-	err := unmarshalOptions.Unmarshal(data, &parsedExpression)
+	parsedExpression := &ttcpSyntax.Collection{}
+	err := unmarshalOptions.Unmarshal(data, parsedExpression)
 	if err != nil {
 		log.Fatal(errors.JoinError("Error parsing categories and classes collection ", errors.ApiError(err)))
 	}
@@ -268,7 +268,7 @@ func decodeTtcpCategoryAndClassCollection(data []byte) ttcpSyntax.Collection {
 }
 
 // loadTtcpCategoryAndClassCollection parses the file path into a  ttcpSyntax.Collection
-func loadTtcpCategoryAndClassCollection(path string) ttcpSyntax.Collection {
+func loadTtcpCategoryAndClassCollection(path string) *ttcpSyntax.Collection {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal(errors.JoinError("Could not read file '"+path+"'", errors.ApiError(err)))
@@ -279,11 +279,11 @@ func loadTtcpCategoryAndClassCollection(path string) ttcpSyntax.Collection {
 // parseTtcpCategoryAndClassCollection parses a list of files references and merges them into
 // single ttcpSyntax.Collection it accepts file that are a serialized ttcp.Collection or a zip file
 // and attempts to parse all contained .json files are ttcp.Collection objects.
-func ParseTtcpCategoryAndClassCollection(cpaths []string, logger *log.Logger) (ttcpSyntax.Collection, error) {
+func ParseTtcpCategoryAndClassCollection(cpaths []string, logger *log.Logger) (*ttcpSyntax.Collection, error) {
 	if logger != nil {
 		logger.Println("parsing classes & categories:", cpaths)
 	}
-	AllCategoriesAndClasses := ttcpSyntax.Collection{
+	AllCategoriesAndClasses := &ttcpSyntax.Collection{
 		Name:             "All available Classes and Categories",
 		Description:      ``,
 		Categories:       map[string]*ttcpSyntax.Category{},
@@ -293,17 +293,17 @@ func ParseTtcpCategoryAndClassCollection(cpaths []string, logger *log.Logger) (t
 	for _, path := range cpaths {
 		switch extension := filepath.Ext(path); extension {
 		case ".json":
-			err := parseTtcpCategoryAndClassCollectionJson(path, &AllCategoriesAndClasses)
+			err := parseTtcpCategoryAndClassCollectionJson(path, AllCategoriesAndClasses)
 			if err != nil {
-				return ttcpSyntax.Collection{}, err
+				return &ttcpSyntax.Collection{}, err
 			}
 		case ".zip":
-			err := parseTtcpCategoryAndClassCollectionZip(path, &AllCategoriesAndClasses)
+			err := parseTtcpCategoryAndClassCollectionZip(path, AllCategoriesAndClasses)
 			if err != nil {
-				return ttcpSyntax.Collection{}, err
+				return &ttcpSyntax.Collection{}, err
 			}
 		default:
-			return ttcpSyntax.Collection{}, errors.NewError("Unknow ttcp collection type:" + extension)
+			return &ttcpSyntax.Collection{}, errors.NewError("Unknow ttcp collection type:" + extension)
 		}
 	}
 

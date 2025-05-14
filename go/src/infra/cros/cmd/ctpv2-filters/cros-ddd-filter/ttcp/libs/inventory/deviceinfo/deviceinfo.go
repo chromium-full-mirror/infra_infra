@@ -11,8 +11,8 @@ import (
 
 type TargetVariant struct {
 	DeviceId    string
-	BuildTarget buildmetadata.BuildTarget
-	Properties  targetproperties.TargetPropertiesValues
+	BuildTarget *buildmetadata.BuildTarget
+	Properties  *targetproperties.TargetPropertiesValues
 }
 
 type TargetId string
@@ -25,7 +25,7 @@ func (t *TargetVariant) Clone() *TargetVariant {
 	return &TargetVariant{
 		DeviceId:    t.DeviceId,
 		BuildTarget: t.BuildTarget,
-		Properties:  *(t.Properties.Clone()),
+		Properties:  t.Properties.Clone(),
 	}
 
 }

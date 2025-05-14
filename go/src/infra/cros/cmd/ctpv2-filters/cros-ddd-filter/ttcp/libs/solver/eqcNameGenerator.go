@@ -23,9 +23,9 @@ import (
 // GenerateEqcName is the entry function to generated the eqc readable name string
 func GenerateEqcName(
 	classSolution map[deviceinfo.TargetId]*ExtendedSolvedDevice,
-	expression ttcpSyntax.CategoryExpression,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	expression *ttcpSyntax.CategoryExpression,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) (string, []*ttcpSolver.EqcCategory, error) {
 	return generateEqcName(classSolution, expression, devicesInfo, collection)
 }
@@ -39,9 +39,9 @@ type EqcCategory struct {
 // and joining the reportable properties as specified by the collection metadata
 func generateEqcName(
 	classSolution map[deviceinfo.TargetId]*ExtendedSolvedDevice,
-	expression ttcpSyntax.CategoryExpression,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	expression *ttcpSyntax.CategoryExpression,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) (string, []*ttcpSolver.EqcCategory, error) {
 	eqcName := ""
 	equivClasses := []*ttcpSolver.EqcCategory{}
@@ -69,9 +69,9 @@ func generateEqcName(
 // collections metadata for a user-defined category
 func getEqcReportVals(
 	targetId string,
-	expression ttcpSyntax.CategoryExpression,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	expression *ttcpSyntax.CategoryExpression,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) ([]*ttcpSolver.EqcCategory, error) {
 	eqcCategories := []*ttcpSolver.EqcCategory{}
 	switch typedBody := expression.GetBody().(type) {
@@ -108,8 +108,8 @@ func getEqcReportVals(
 func getEqcFromCategory(
 	category *ttcpSyntax.Category,
 	targetId string,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) ([]*ttcpSolver.EqcCategory, error) {
 	eqcCategories := []*ttcpSolver.EqcCategory{}
 	switch typedExp := category.Category.(type) {
@@ -140,8 +140,8 @@ func getEqcFromCategory(
 func getEqcFromCombinatorialCategory(
 	exp *ttcpSyntax.CombinatorialCategory,
 	targetId string,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) ([]*ttcpSolver.EqcCategory, error) {
 	return getEqcFromSubCategories(exp.Subcategories, targetId, devicesInfo, collection)
 }
@@ -151,8 +151,8 @@ func getEqcFromCombinatorialCategory(
 func getEqcFromUnionCategory(
 	exp *ttcpSyntax.UnionCategory,
 	targetId string,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) ([]*ttcpSolver.EqcCategory, error) {
 	return getEqcFromSubCategories(exp.Subcategories, targetId, devicesInfo, collection)
 }
@@ -162,13 +162,13 @@ func getEqcFromUnionCategory(
 func getEqcFromSubCategories(
 	subCategories []*ttcpSyntax.CategoryExpression,
 	targetId string,
-	devicesInfo []deviceinfo.TargetVariant,
-	collection ttcpSyntax.Collection,
+	devicesInfo []*deviceinfo.TargetVariant,
+	collection *ttcpSyntax.Collection,
 ) ([]*ttcpSolver.EqcCategory, error) {
 	eqcCategories := []*ttcpSolver.EqcCategory{}
 	for _, subItem := range subCategories {
 		// Recursive call to determine if the next level has reportable fields
-		eqcCats, err := getEqcReportVals(targetId, *subItem, devicesInfo, collection)
+		eqcCats, err := getEqcReportVals(targetId, subItem, devicesInfo, collection)
 		if err != nil {
 			return eqcCategories, err
 		}
@@ -179,7 +179,7 @@ func getEqcFromSubCategories(
 
 // flattenReportCategories recursively flattens the reportCategories metadata for a user-defined category
 // The flattened slice of report categories will be used to retrieve the values specified in the collections metadata
-func flattenReportCategories(reportCategoriesList *ttcpSyntax.ReportCategoryList, collection ttcpSyntax.Collection) []*ttcpSyntax.ReportCategory {
+func flattenReportCategories(reportCategoriesList *ttcpSyntax.ReportCategoryList, collection *ttcpSyntax.Collection) []*ttcpSyntax.ReportCategory {
 	reportCategories := []*ttcpSyntax.ReportCategory{}
 
 	for _, reportCategory := range reportCategoriesList.Categories {
@@ -205,7 +205,7 @@ func flattenReportCategories(reportCategoriesList *ttcpSyntax.ReportCategoryList
 func getEqcReportCategories(
 	reportCategories []*ttcpSyntax.ReportCategory,
 	targetId string,
-	devicesInfo []deviceinfo.TargetVariant) []*ttcpSolver.EqcCategory {
+	devicesInfo []*deviceinfo.TargetVariant) []*ttcpSolver.EqcCategory {
 
 	eqcCategories := []*ttcpSolver.EqcCategory{}
 	for _, info := range devicesInfo {
@@ -227,7 +227,7 @@ func getEqcReportCategories(
 // getEqcCategory takes the target deviceInfo and report category information
 // of a class to determine the eqcCategory for the target device. nil will be
 // returned when there is no report category class information available.
-func getEqcCategory(deviceInfo deviceinfo.TargetVariant, reportCategory *ttcpSyntax.ReportCategory) (*ttcpSolver.EqcCategory, error) {
+func getEqcCategory(deviceInfo *deviceinfo.TargetVariant, reportCategory *ttcpSyntax.ReportCategory) (*ttcpSolver.EqcCategory, error) {
 	if reportCategory == nil {
 		return nil, errors.NewError("ReportCategory is empty.")
 	}
@@ -242,7 +242,7 @@ func getEqcCategory(deviceInfo deviceinfo.TargetVariant, reportCategory *ttcpSyn
 // getEqcCategoryValue takes the target deviceInfo and report category information
 // of a class to determine the eqcCategory value for the target device. And error will be
 // returned when a eqcCategory value can not be determined.
-func getEqcCategoryValue(deviceInfo deviceinfo.TargetVariant, reportCategory *ttcpSyntax.ReportCategory) (string, error) {
+func getEqcCategoryValue(deviceInfo *deviceinfo.TargetVariant, reportCategory *ttcpSyntax.ReportCategory) (string, error) {
 	namedCategory := reportCategory.GetValue().Property
 	deviceProp, ok := deviceInfo.Properties.PropertiesDetails[namedCategory]
 	if !ok {

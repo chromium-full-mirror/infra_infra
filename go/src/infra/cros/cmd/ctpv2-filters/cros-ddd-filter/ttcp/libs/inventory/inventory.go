@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory/deviceinfo"
 )
 
-func RetreiveInventoryProperties(useSwarmingInventory bool, inventoryFile string, resc datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []deviceinfo.TargetVariant {
-	var inventoryInfo []deviceinfo.TargetVariant
+func RetreiveInventoryProperties(useSwarmingInventory bool, inventoryFile string, resc *datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []*deviceinfo.TargetVariant {
+	var inventoryInfo []*deviceinfo.TargetVariant
 	if useSwarmingInventory {
 		inventoryInfo = croslab.GenerateAvailableDevicesInfo(resc, pool, logger, clientOpts...)
 

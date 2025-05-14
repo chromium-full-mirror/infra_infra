@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"google.golang.org/protobuf/proto"
@@ -53,7 +54,7 @@ func ParseClassFilter(str string) (ClassFilter, error) {
 }
 
 // getClass convers a ClassExpression in a flat class
-func getClass(expression *ttcpSyntax.ClassExpression, collection ttcpSyntax.Collection) (*ttcpSyntax.Class, error) {
+func getClass(expression *ttcpSyntax.ClassExpression, collection *ttcpSyntax.Collection) (*ttcpSyntax.Class, error) {
 	switch body := expression.Body.(type) {
 	case *ttcpSyntax.ClassExpression_Name:
 		cls, ok := collection.Classes[body.Name]
@@ -75,9 +76,9 @@ func getClass(expression *ttcpSyntax.ClassExpression, collection ttcpSyntax.Coll
 //   - add:
 //   - If true, only the devices that fit the class criteria will be in the returned list.
 //   - If false, only the device that do NOT fit the class criteria will be in the returned list.
-func filterDevices(deviceInfo []deviceinfo.TargetVariant, class *ttcpSyntax.Class, add bool) []deviceinfo.TargetVariant {
+func filterDevices(deviceInfo []*deviceinfo.TargetVariant, class *ttcpSyntax.Class, add bool) []*deviceinfo.TargetVariant {
 	positiveDevices := applyClass(class.Expression, deviceInfo)
-	filterDevices := []deviceinfo.TargetVariant{}
+	filterDevices := []*deviceinfo.TargetVariant{}
 	for _, dev := range deviceInfo {
 		_, ok := positiveDevices[dev.Id()]
 		if add {
@@ -121,38 +122,36 @@ func filterDevices(deviceInfo []deviceinfo.TargetVariant, class *ttcpSyntax.Clas
 //     that do fit the optOut class.
 //   - collection: Dataset of predefined classes and categories that expression
 //     can reference.
-var solvedString = map[string]map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
-var solved = map[uint64]map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
+//
+// Type: map[string]map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
+var solvedString = sync.Map{}
 
 func EvalExpression(
-	expression ttcpSyntax.CategoryExpression,
+	expression *ttcpSyntax.CategoryExpression,
 	classFilter ClassFilter,
-	devicesInfo []deviceinfo.TargetVariant,
+	devicesInfo []*deviceinfo.TargetVariant,
 	optIn *ttcpSyntax.ClassExpression,
 	optOut *ttcpSyntax.ClassExpression,
-	collection ttcpSyntax.Collection,
+	collection *ttcpSyntax.Collection,
 	logger *log.Logger,
 	solvedCache map[uint64]map[deviceinfo.TargetId]*ExtendedSolvedDevice,
 	useSwarmingInventory bool,
-	pool string) (ttcpSolver.SolvedCategory, error) {
+	pool string) (*ttcpSolver.SolvedCategory, error) {
 
 	if optIn != nil {
 		cls, err := getClass(optIn, collection)
 		if err != nil {
-			return ttcpSolver.SolvedCategory{}, errors.JoinError(
+			return &ttcpSolver.SolvedCategory{}, errors.JoinError(
 				"Unable to resolve the opt in class.",
 				err)
 		}
 		devicesInfo = filterDevices(devicesInfo, cls, true)
 	}
 
-	if solvedCache != nil {
-		solved = solvedCache
-	}
 	if optOut != nil {
 		cls, err := getClass(optOut, collection)
 		if err != nil {
-			return ttcpSolver.SolvedCategory{}, errors.JoinError(
+			return &ttcpSolver.SolvedCategory{}, errors.JoinError(
 				"Unable to resolve the opt in class.",
 				err)
 		}
@@ -164,16 +163,16 @@ func EvalExpression(
 	flatten, err := FlattenCategoryExpression(expression, collection, []string{})
 
 	if err != nil {
-		return ttcpSolver.SolvedCategory{}, errors.JoinError("Could not flatten expression.", err)
+		return &ttcpSolver.SolvedCategory{}, errors.JoinError("Could not flatten expression.", err)
 	}
 
 	if len(flatten.Classes) == 0 {
-		return ttcpSolver.SolvedCategory{}, errors.NewError("The category needs to have at least one class")
+		return &ttcpSolver.SolvedCategory{}, errors.NewError("The category needs to have at least one class")
 	}
 
 	err = handleLargeExpression(len(flatten.Classes))
 	if err != nil {
-		return ttcpSolver.SolvedCategory{}, err
+		return &ttcpSolver.SolvedCategory{}, err
 	}
 
 	classes := []*ttcpSolver.SolvedClass{}
@@ -190,7 +189,7 @@ func EvalExpression(
 			}
 			eqcName, equivClasses, err := GenerateEqcName(classSolution, expression, devicesInfo, collection)
 			if err != nil {
-				return ttcpSolver.SolvedCategory{}, err
+				return &ttcpSolver.SolvedCategory{}, err
 			}
 			classes = append(classes,
 				&ttcpSolver.SolvedClass{
@@ -221,8 +220,8 @@ func EvalExpression(
 		}
 	}
 
-	solution := ttcpSolver.SolvedCategory{
-		Expression: &expression,
+	solution := &ttcpSolver.SolvedCategory{
+		Expression: expression,
 		Classes:    filteredClasses,
 	}
 	if logger != nil {
@@ -233,18 +232,18 @@ func EvalExpression(
 }
 
 type ExtendedSolvedDevice struct {
-	solvedDevice   ttcpSolver.SolvedTarget
+	solvedDevice   *ttcpSolver.SolvedTarget
 	board          string
 	model          string
 	imageVariant   string
 	swarmingLabels []*ttcpSolver.SwarmingLabel
 }
 
-func deviceInfoToExtendedSolvedDevice(info deviceinfo.TargetVariant, propertyPath string, propertyValue any) (*ExtendedSolvedDevice, error) {
+func deviceInfoToExtendedSolvedDevice(info *deviceinfo.TargetVariant, propertyPath string, propertyValue any) (*ExtendedSolvedDevice, error) {
 	board, ok := info.Properties.PropertiesDetails["board"]
 	swarmingLabels := []*ttcpSolver.SwarmingLabel{}
 	if !ok {
-		return nil, errors.NewErrorf("The device is missing the property \"board\". DeviceProperties:%s", info)
+		return nil, errors.NewErrorf("The device is missing the property \"board\". DeviceProperties:%v", info)
 	}
 	modelVal, err := getModelValue(info)
 	if err != nil {
@@ -253,7 +252,7 @@ func deviceInfoToExtendedSolvedDevice(info deviceinfo.TargetVariant, propertyPat
 	if strings.Contains(propertyPath, "swarming:") {
 		propValue, ok := propertyValue.(string)
 		if !ok {
-			return nil, errors.NewErrorf("Swarming property value must be of type string. DeviceProperties:%s, PropertyValueType:%s", info, reflect.TypeOf(propertyValue))
+			return nil, errors.NewErrorf("Swarming property value must be of type string. DeviceProperties:%v, PropertyValueType:%s", info, reflect.TypeOf(propertyValue))
 		}
 		if _, ok := info.Properties.PropertiesDetails[propertyPath]; ok {
 			splitSlice := strings.Split(propertyPath, "swarming:_")
@@ -271,7 +270,7 @@ func deviceInfoToExtendedSolvedDevice(info deviceinfo.TargetVariant, propertyPat
 		}
 	}
 	return &ExtendedSolvedDevice{
-		solvedDevice: ttcpSolver.SolvedTarget{
+		solvedDevice: &ttcpSolver.SolvedTarget{
 			DeviceId: info.DeviceId,
 			ImageId:  info.BuildTarget.Id(),
 		},
@@ -327,12 +326,12 @@ func extractBoardModelMap(extendedDevicesInfo map[deviceinfo.TargetId]*ExtendedS
 	return results
 }
 
-func applyClass(exp *ttcpSyntax.Expression, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyClass(exp *ttcpSyntax.Expression, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	sh, _ := proto.Marshal(exp)
 	expHash := string(sh)
-	v, hwExists := solvedString[expHash]
+	v, hwExists := solvedString.Load(expHash)
 	if hwExists {
-		return v
+		return v.(map[deviceinfo.TargetId]*ExtendedSolvedDevice)
 	}
 
 	var solution = map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
@@ -350,11 +349,11 @@ func applyClass(exp *ttcpSyntax.Expression, deviceInfo []deviceinfo.TargetVarian
 	default:
 		log.Fatalf("applyClass is not implemented for the expression type:%T", operator)
 	}
-	solvedString[expHash] = solution
+	solvedString.Store(expHash, solution)
 	return solution
 }
 
-func applyTrue(deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyTrue(deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
 		solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, "", nil)
@@ -366,7 +365,7 @@ func applyTrue(deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*E
 	return result
 }
 
-func applyOr(operator *ttcpSyntax.Or, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyOr(operator *ttcpSyntax.Or, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	if len(operator.SubExpressions) == 0 {
 		return result
@@ -397,7 +396,7 @@ func applyOr(operator *ttcpSyntax.Or, deviceInfo []deviceinfo.TargetVariant) map
 	return result
 }
 
-func applyAnd(operator *ttcpSyntax.And, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyAnd(operator *ttcpSyntax.And, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	if len(operator.SubExpressions) == 0 {
 		return result
@@ -428,7 +427,7 @@ func applyAnd(operator *ttcpSyntax.And, deviceInfo []deviceinfo.TargetVariant) m
 	return result
 }
 
-func applyNot(operator *ttcpSyntax.Not, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyNot(operator *ttcpSyntax.Not, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	solvedSubExpression := applyClass(operator.SubExpression, deviceInfo)
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
@@ -444,7 +443,7 @@ func applyNot(operator *ttcpSyntax.Not, deviceInfo []deviceinfo.TargetVariant) m
 	return result
 }
 
-func applyPropertyCondition(condition *ttcpSyntax.Condition, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyCondition(condition *ttcpSyntax.Condition, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	switch typedCondition := condition.Condition.(type) {
 	case *ttcpSyntax.Condition_Present:
 		return applyPropertyConditionPresent(condition.PropertyPath, typedCondition.Present, deviceInfo)
@@ -472,7 +471,7 @@ func applyPropertyCondition(condition *ttcpSyntax.Condition, deviceInfo []device
 	return map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 }
 
-func applyPropertyConditionPresent(propertyPath string, conditionPresent bool, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionPresent(propertyPath string, conditionPresent bool, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
 		_, present := info.Properties.PropertiesDetails[propertyPath]
@@ -487,11 +486,14 @@ func applyPropertyConditionPresent(propertyPath string, conditionPresent bool, d
 	return result
 }
 
-func applyPropertyConditionStrEqual(propertyPath string, conditionValue string, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionStrEqual(propertyPath string, conditionValue string, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			if _, ok := value.(string); ok && value == conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
 				if err != nil {
@@ -505,11 +507,14 @@ func applyPropertyConditionStrEqual(propertyPath string, conditionValue string, 
 	return result
 }
 
-func applyPropertyConditionStrRegexMatch(propertyPath string, conditionValue string, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionStrRegexMatch(propertyPath string, conditionValue string, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			if _, ok := value.(string); ok {
 				if matched, _ := regexp.MatchString(conditionValue, value.(string)); matched {
 					solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -525,15 +530,18 @@ func applyPropertyConditionStrRegexMatch(propertyPath string, conditionValue str
 	return result
 }
 
-func applyPropertyConditionStrSet(propertyPath string, conditionValues []string, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionStrSet(propertyPath string, conditionValues []string, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	valuesMap := map[string]any{}
 	for _, s := range conditionValues {
 		valuesMap[s] = nil
 	}
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(string)
 			if !ok {
 				continue
@@ -551,11 +559,14 @@ func applyPropertyConditionStrSet(propertyPath string, conditionValues []string,
 	return result
 }
 
-func applyPropertyConditionIntEqual(propertyPath string, conditionValue int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntEqual(propertyPath string, conditionValue int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if ok && typedValue < conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -570,11 +581,14 @@ func applyPropertyConditionIntEqual(propertyPath string, conditionValue int64, d
 	return result
 }
 
-func applyPropertyConditionIntLess(propertyPath string, conditionValue int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntLess(propertyPath string, conditionValue int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if ok && typedValue < conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -589,11 +603,14 @@ func applyPropertyConditionIntLess(propertyPath string, conditionValue int64, de
 	return result
 }
 
-func applyPropertyConditionIntLessOrEqual(propertyPath string, conditionValue int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntLessOrEqual(propertyPath string, conditionValue int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if ok && typedValue <= conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -608,11 +625,14 @@ func applyPropertyConditionIntLessOrEqual(propertyPath string, conditionValue in
 	return result
 }
 
-func applyPropertyConditionIntGreater(propertyPath string, conditionValue int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntGreater(propertyPath string, conditionValue int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if ok && typedValue > conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -627,11 +647,14 @@ func applyPropertyConditionIntGreater(propertyPath string, conditionValue int64,
 	return result
 }
 
-func applyPropertyConditionIntGreaterOrEqual(propertyPath string, conditionValue int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntGreaterOrEqual(propertyPath string, conditionValue int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if ok && typedValue > conditionValue {
 				solvedDevice, err := deviceInfoToExtendedSolvedDevice(info, propertyPath, value)
@@ -646,15 +669,18 @@ func applyPropertyConditionIntGreaterOrEqual(propertyPath string, conditionValue
 	return result
 }
 
-func applyPropertyConditionIntSet(propertyPath string, conditionValues []int64, deviceInfo []deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyPropertyConditionIntSet(propertyPath string, conditionValues []int64, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	valuesMap := map[int64]any{}
 	for _, s := range conditionValues {
 		valuesMap[s] = nil
 	}
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
-		Values := info.Properties.PropertiesDetails[propertyPath].Values
-		for _, value := range Values {
+		detail, ok := info.Properties.PropertiesDetails[propertyPath]
+		if !ok {
+			continue
+		}
+		for _, value := range detail.Values {
 			typedValue, ok := value.(int64)
 			if !ok {
 				continue
@@ -734,11 +760,11 @@ func mergeSolvedDevices(devices []*ExtendedSolvedDevice) (*ExtendedSolvedDevice,
 	}, nil
 }
 
-func getModelValue(info deviceinfo.TargetVariant) (string, error) {
+func getModelValue(info *deviceinfo.TargetVariant) (string, error) {
 	model, ok := info.Properties.PropertiesDetails["dlm:model"]
 	if !ok {
 		if model, ok = info.Properties.PropertiesDetails["project"]; !ok {
-			return "", errors.NewErrorf("The device is missing the property \"project\". DeviceProperties:%s", info)
+			return "", errors.NewErrorf("The device is missing the property \"project\". DeviceProperties:%v", info)
 		}
 	}
 	modelVal, err := model.GetSingleStringValue()
@@ -794,7 +820,7 @@ func filterSwarmingDevices(
 	return filteredDevs
 }
 
-func getInventoryByHWID(pool string, logger *log.Logger) map[string][]swarmingdata.SwarmingdataEntry {
+func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingdata.SwarmingdataEntry {
 	// Get the lab data which is cached if data on the pool has been queried
 	swarmDataResc, err := croslab.GetInventory(pool, logger)
 	if err != nil {
@@ -812,7 +838,7 @@ func getInventoryByHWID(pool string, logger *log.Logger) map[string][]swarmingda
 	return swarmData
 }
 
-func GetEqcExpressionHash(eqcClass ttcpSolver.SolvedClass) uint64 {
+func GetEqcExpressionHash(eqcClass *ttcpSolver.SolvedClass) uint64 {
 	exp := eqcClass.GetExpression()
 	eqcHash, err := hashstructure.Hash(exp, hashstructure.FormatV2, nil)
 	if err != nil {

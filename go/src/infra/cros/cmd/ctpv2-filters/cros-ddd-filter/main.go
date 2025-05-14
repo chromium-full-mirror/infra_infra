@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver"
 )
 
-var categoriesAndClassesCollection ttcpSyntax.Collection
+var categoriesAndClassesCollection *ttcpSyntax.Collection
 
 type Filter3DServerArgs struct {
 	// From argument flags.
@@ -43,14 +43,14 @@ type Filter3D struct {
 func (ddd *Filter3D) Executor(req *ctpApi.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*ctpApi.InternalTestplan, error) {
 
 	// Convert InternalTestplan to a list of requestTestCaseVariants
-	requests := []requestTestCaseVariants{}
+	requests := []*requestTestCaseVariants{}
 	tcSkippedDeps := map[string][]string{}
 	pool := req.SuiteInfo.SuiteMetadata.Pool
 	for _, testCase := range req.TestCases {
 		testCaseName := testCase.Name
 		dddVariant, skippedDeps := getTestCaseVariantExpression(testCase, log)
 		tcSkippedDeps[testCaseName] = skippedDeps
-		requests = append(requests, requestTestCaseVariants{
+		requests = append(requests, &requestTestCaseVariants{
 			requestId:   testCaseName,
 			variantsStr: dddVariant,
 			optInStr:    "",

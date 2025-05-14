@@ -20,7 +20,7 @@ type ApiErrorStruct struct {
 	Stack    string
 }
 
-func (nErr ApiErrorStruct) Error() string {
+func (nErr *ApiErrorStruct) Error() string {
 	return fmt.Sprintf("ApiError: %s \n Stack: %s", nErr.ApiError, nErr.Stack)
 }
 
@@ -31,7 +31,7 @@ func ApiError(err error) error {
 	if err == nil {
 		return nil
 	}
-	return ApiErrorStruct{
+	return &ApiErrorStruct{
 		ApiError: err,
 		Stack:    stacktraceStr,
 	}
@@ -55,7 +55,7 @@ type NestedError struct {
 	InnerError   error
 }
 
-func (nErr NestedError) Error() string {
+func (nErr *NestedError) Error() string {
 	return fmt.Sprintf("Error: %s \n InnerError: %s", nErr.ErrorMessage, nErr.InnerError.Error())
 }
 
@@ -63,7 +63,7 @@ func JoinError(outerError string, innerError error) error {
 	if innerError == nil {
 		return nil
 	}
-	return NestedError{
+	return &NestedError{
 		ErrorMessage: outerError,
 		InnerError:   innerError,
 	}
@@ -73,7 +73,7 @@ type MultivalidationError struct {
 	Errors []error
 }
 
-func (me MultivalidationError) Error() string {
+func (me *MultivalidationError) Error() string {
 	var buffer bytes.Buffer
 
 	for _, e := range me.Errors {
@@ -84,7 +84,7 @@ func (me MultivalidationError) Error() string {
 }
 
 func MultiCheck(errorArgs ...error) error {
-	var errorList MultivalidationError
+	errorList := &MultivalidationError{}
 	for _, e := range errorArgs {
 		if e != nil {
 			errorList.Errors = append(errorList.Errors, e)

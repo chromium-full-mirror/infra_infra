@@ -60,7 +60,7 @@ func (dlmMd *DlmMetadataEntry) GetModel() string {
 }
 
 type DlmMetadataSet struct {
-	Values []DlmMetadataEntry `json:"values"`
+	Values []*DlmMetadataEntry `json:"values"`
 }
 
 type DlmResources struct {
@@ -69,17 +69,17 @@ type DlmResources struct {
 	Path string
 }
 
-func PaseAsMapPerModel(resc DlmResources) (map[string][]DlmMetadataEntry, error) {
+func PaseAsMapPerModel(resc *DlmResources) (map[string][]*DlmMetadataEntry, error) {
 	metaDataSet, err := ParseAsList(resc)
 	if err != nil {
-		return map[string][]DlmMetadataEntry{}, err
+		return map[string][]*DlmMetadataEntry{}, err
 	}
-	results := map[string][]DlmMetadataEntry{}
+	results := map[string][]*DlmMetadataEntry{}
 	for _, entry := range metaDataSet.Values {
 		model := strings.ToUpper(entry.Model)
 		devices, ok := results[model]
 		if !ok {
-			devices = []DlmMetadataEntry{entry}
+			devices = []*DlmMetadataEntry{entry}
 		}
 		devices = append(devices, entry)
 		results[model] = devices
@@ -87,24 +87,24 @@ func PaseAsMapPerModel(resc DlmResources) (map[string][]DlmMetadataEntry, error)
 	return results, nil
 }
 
-func ParseAsList(resc DlmResources) (DlmMetadataSet, error) {
+func ParseAsList(resc *DlmResources) (*DlmMetadataSet, error) {
 	dataStream, err := os.Open(resc.Path)
 
 	if err != nil {
-		return DlmMetadataSet{}, errors.JoinError("Error in open the dlm metadata file "+resc.Path, errors.ApiError(err))
+		return &DlmMetadataSet{}, errors.JoinError("Error in open the dlm metadata file "+resc.Path, errors.ApiError(err))
 	}
 	defer dataStream.Close()
 
 	byteValue, err := ioutil.ReadAll(dataStream)
 	if err != nil {
-		return DlmMetadataSet{}, errors.JoinError("Error in reading the build metadata file.", errors.ApiError(err))
+		return &DlmMetadataSet{}, errors.JoinError("Error in reading the build metadata file.", errors.ApiError(err))
 	}
-	var dataSet DlmMetadataSet
+	var dataSet *DlmMetadataSet
 	json.Unmarshal(byteValue, &dataSet)
 	return dataSet, nil
 }
 
-func (metadata *DlmMetadataEntry) GetProperties() (targetproperties.TargetPropertiesValues, error) {
+func (metadata *DlmMetadataEntry) GetProperties() (*targetproperties.TargetPropertiesValues, error) {
 	targetProperties := targetproperties.CreateTargetPropertiesValues()
 	propertiesAndValues := targetproperties.PropertiesAndValuesStore{}
 	propertiesAndValues.AddPropertyValue("dlm:device_id", strconv.Itoa(metadata.GetDeviceId()))

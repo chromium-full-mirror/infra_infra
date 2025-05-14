@@ -50,7 +50,7 @@ type requestTestCaseVariants struct {
 //
 //	for each variant need to belong to. If the pool is "" the pool will be defaulted
 //	to the quota pool
-func computeVariants(requests []requestTestCaseVariants, pool string, authHelper common.FilterAuthInterface, logger *log.Logger) (map[string]solver_proto.SolvedCategory, error) {
+func computeVariants(requests []*requestTestCaseVariants, pool string, authHelper common.FilterAuthInterface, logger *log.Logger) (map[string]*solver_proto.SolvedCategory, error) {
 	if pool == "" {
 		pool = "DUT_POOL_QUOTA"
 	}
@@ -62,28 +62,28 @@ func computeVariants(requests []requestTestCaseVariants, pool string, authHelper
 	// This involves a large cost to retrieve the inventory from BQ swarming or
 	// Databake.
 	inventoryInfo := inventory.RetreiveInventoryProperties(true, "",
-		datasets.AllDatasetsResources{
-			HwidDB: db.HwidDbResources{
+		&datasets.AllDatasetsResources{
+			HwidDB: &db.HwidDbResources{
 				DescriptorsPaths: getAllHwidEntries(),
 				ProjectIndexPath: "HWID_DB/projects.yaml",
 			},
-			Buildmetadata: buildmetadata.BuildMetadataResources{
+			Buildmetadata: &buildmetadata.BuildMetadataResources{
 				Path: "build_metadata.jsonproto",
 			},
-			Dlmmetadata: dlmmetadata.DlmResources{
+			Dlmmetadata: &dlmmetadata.DlmResources{
 				Path: "dlm_devices.json",
 			}},
 		pool,
 		logger,
 		option.WithTokenSource(tokenSource))
 
-	solutions := map[string]solver_proto.SolvedCategory{}
+	solutions := map[string]*solver_proto.SolvedCategory{}
 
 	// solved will be based to `EvalExpression`, as a cache for previously solved expressions.
 	var solved = map[uint64]map[deviceinfo.TargetId]*solver.ExtendedSolvedDevice{}
 
 	// solutionCache will be used on the loop between requests.
-	solutionCache := map[string]solver_proto.SolvedCategory{}
+	solutionCache := map[string]*solver_proto.SolvedCategory{}
 
 	for _, request := range requests {
 		logger.Println("SERVICING REQUEST: ", request)
@@ -118,7 +118,7 @@ func computeVariants(requests []requestTestCaseVariants, pool string, authHelper
 		if err != nil {
 			// This might to need to be handled better if we want to allow partial results
 			logger.Println("Error during solving: ", err)
-			return map[string]solver_proto.SolvedCategory{}, err
+			return map[string]*solver_proto.SolvedCategory{}, err
 		}
 		solutions[request.requestId] = solution
 		solutionCache[request.variantsStr] = solution
@@ -215,7 +215,7 @@ func getTestCaseVariantExpression(testCase *ctpApi.CTPTestCase, logger *log.Logg
 	}
 	categoryExpressions := generateDependencyExpressions(dependencies)
 	tcVarExp := solver.ParseTtcpCategoryExpression(testCaseVarCat, logger)
-	categoryExpressions = append(categoryExpressions, &tcVarExp)
+	categoryExpressions = append(categoryExpressions, tcVarExp)
 	testCaseVarCat = comboCategoryExpressionStr(categoryExpressions)
 	return testCaseVarCat, skippedDeps
 }
@@ -232,7 +232,7 @@ func generateDependencyExpressions(dependencies []string) []*ttcpSyntax.Category
 		}
 		depProp := depPropValue[0]
 		depValue := depPropValue[1]
-		expression := ttcpSyntax.CategoryExpression{
+		expression := &ttcpSyntax.CategoryExpression{
 			Body: &ttcpSyntax.CategoryExpression_Value{
 				Value: &ttcpSyntax.Category{
 					Category: &ttcpSyntax.Category_Enumerated{
@@ -261,14 +261,14 @@ func generateDependencyExpressions(dependencies []string) []*ttcpSyntax.Category
 				},
 			},
 		}
-		categoryExpressions = append(categoryExpressions, &expression)
+		categoryExpressions = append(categoryExpressions, expression)
 	}
 	return categoryExpressions
 }
 
 // comboCategoryExpressionStr returns a string from the combinational expression of a list category expressions
 func comboCategoryExpressionStr(catExpressions []*ttcpSyntax.CategoryExpression) string {
-	comboExpression := ttcpSyntax.CategoryExpression{
+	comboExpression := &ttcpSyntax.CategoryExpression{
 		Body: &ttcpSyntax.CategoryExpression_Value{
 			Value: &ttcpSyntax.Category{
 				Category: &ttcpSyntax.Category_Combinatorial{
@@ -282,7 +282,7 @@ func comboCategoryExpressionStr(catExpressions []*ttcpSyntax.CategoryExpression)
 	marshalOptions := protojson.MarshalOptions{
 		AllowPartial: false,
 	}
-	comboExp, err := marshalOptions.Marshal(&comboExpression)
+	comboExp, err := marshalOptions.Marshal(comboExpression)
 	if err != nil {
 		log.Fatalf("err: Combinational expression could not be generated: %v", err)
 	}
@@ -325,7 +325,7 @@ func generateSchedulingUnitOptions(eqcVariant *solver_proto.SolvedClass,
 	testCase *ctpApi.CTPTestCase,
 	ctpTargets []*ctpApi.SwarmingDefinition,
 	log *log.Logger) *ctpApi.SchedulingUnitOptions {
-	eqcHash := solver.GetEqcExpressionHash(*eqcVariant)
+	eqcHash := solver.GetEqcExpressionHash(eqcVariant)
 	dddVariantStr := testCase.GetMetadata().GetTestCaseInfo().GetVariantCategory().GetValue()
 	options := &ctpApi.SchedulingUnitOptions{
 		State:       ctpApi.SchedulingUnitOptions_ONEOF,

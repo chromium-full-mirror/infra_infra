@@ -23,11 +23,11 @@ type PropertyValue struct {
 func (pValue *PropertyValue) Clone() *PropertyValue {
 	values := make([]any, len(pValue.Values))
 	copy(values, pValue.Values)
-	result := PropertyValue{
+	result := &PropertyValue{
 		Source: pValue.Source,
 		Values: values,
 	}
-	return &result
+	return result
 }
 
 func (prop *PropertyValue) GetSingleStringValue() (string, error) {
@@ -42,7 +42,7 @@ func (prop *PropertyValue) GetSingleStringValue() (string, error) {
 }
 
 type TargetPropertiesValues struct {
-	PropertiesDetails map[string]PropertyValue
+	PropertiesDetails map[string]*PropertyValue
 }
 
 func (properties *TargetPropertiesValues) ToString() string {
@@ -58,18 +58,18 @@ func (properties *TargetPropertiesValues) Print() {
 }
 
 func (DeviceProps *TargetPropertiesValues) Clone() *TargetPropertiesValues {
-	result := TargetPropertiesValues{
-		PropertiesDetails: map[string]PropertyValue{},
+	result := &TargetPropertiesValues{
+		PropertiesDetails: map[string]*PropertyValue{},
 	}
 	for k, v := range DeviceProps.PropertiesDetails {
-		result.PropertiesDetails[k] = *v.Clone()
+		result.PropertiesDetails[k] = v.Clone()
 	}
-	return &result
+	return result
 }
 
-func CreateTargetPropertiesValues() TargetPropertiesValues {
-	return TargetPropertiesValues{
-		PropertiesDetails: map[string]PropertyValue{},
+func CreateTargetPropertiesValues() *TargetPropertiesValues {
+	return &TargetPropertiesValues{
+		PropertiesDetails: map[string]*PropertyValue{},
 	}
 }
 
@@ -80,7 +80,7 @@ func (properties *TargetPropertiesValues) AddPropertyValue(propertyname string, 
 func (properties *TargetPropertiesValues) AddPropertyValues(propertyname string, source string, propertyValues []any) {
 	details, ok := properties.PropertiesDetails[propertyname]
 	if !ok {
-		details = PropertyValue{
+		details = &PropertyValue{
 			Source: source,
 			Values: []any{},
 		}
@@ -186,7 +186,7 @@ func (store *PropertiesAndValuesStore) ExportCategories(categories *ttcpSyntax.C
 				},
 			)
 		}
-		category := ttcpSyntax.Category{
+		category := &ttcpSyntax.Category{
 			Name: name,
 			Category: &ttcpSyntax.Category_Enumerated{
 				Enumerated: &ttcpSyntax.EnumeratedCategory{
@@ -194,6 +194,6 @@ func (store *PropertiesAndValuesStore) ExportCategories(categories *ttcpSyntax.C
 				},
 			},
 		}
-		categories.Categories[name] = &category
+		categories.Categories[name] = category
 	}
 }

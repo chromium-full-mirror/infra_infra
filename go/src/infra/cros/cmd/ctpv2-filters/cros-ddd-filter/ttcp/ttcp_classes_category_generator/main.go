@@ -54,19 +54,19 @@ func mainInt(osargs []string) {
 	}
 	log.Println("Args:", osargs)
 	parser.MustParse(osargs)
-	CreateTtcpClasessAndCategories(db.HwidDbResources{
+	CreateTtcpClasessAndCategories(&db.HwidDbResources{
 		DescriptorsPaths: cliArgs.DbPaths,
 		ProjectIndexPath: cliArgs.Index,
-	}, buildmetadata.BuildMetadataResources{
+	}, &buildmetadata.BuildMetadataResources{
 		Path: cliArgs.BuildMetaData},
-		dlmmetadata.DlmResources{
+		&dlmmetadata.DlmResources{
 			Path: cliArgs.DlmMetaData}, cliArgs.OutPath, cliArgs.DocOutPath)
 }
 
 const maxSectionSize = 500
 
-func CreateTtcpClasessAndCategories(hwidResc db.HwidDbResources, buildResc buildmetadata.BuildMetadataResources, dlmResc dlmmetadata.DlmResources, outputPath string, docOutPath string) {
-	categoriesAndClasses := ttcpSyntax.Collection{
+func CreateTtcpClasessAndCategories(hwidResc *db.HwidDbResources, buildResc *buildmetadata.BuildMetadataResources, dlmResc *dlmmetadata.DlmResources, outputPath string, docOutPath string) {
+	categoriesAndClasses := &ttcpSyntax.Collection{
 		Name: "HWID based auto generated Classes and Categories",
 		Description: `TTCP named classes and categories.
 					   This file is a json serialize protobuffer message of type NamedCollection.
@@ -75,15 +75,15 @@ func CreateTtcpClasessAndCategories(hwidResc db.HwidDbResources, buildResc build
 		Classes:    map[string]*ttcpSyntax.Class{},
 	}
 
-	extractHwidClassesAndCategories(hwidResc, &categoriesAndClasses)
-	extractBuildClassesAndCategories(buildResc, &categoriesAndClasses)
-	extractDlmClassesAndCategories(dlmResc, &categoriesAndClasses)
+	extractHwidClassesAndCategories(hwidResc, categoriesAndClasses)
+	extractBuildClassesAndCategories(buildResc, categoriesAndClasses)
+	extractDlmClassesAndCategories(dlmResc, categoriesAndClasses)
 
 	swarmResc, err := croslab.GetInventory("", nil)
 	if err != nil {
 		log.Fatal("Could not retrieve swarming inventory:", err)
 	}
-	extractSwarmClassesAndCategories(swarmResc, &categoriesAndClasses)
+	extractSwarmClassesAndCategories(swarmResc, categoriesAndClasses)
 	//TODO add user generated classes and categories
 
 	chunks := chunkClassesAndCategories(categoriesAndClasses, maxSectionSize)
@@ -91,7 +91,7 @@ func CreateTtcpClasessAndCategories(hwidResc db.HwidDbResources, buildResc build
 	writeDocs(chunks, docOutPath)
 }
 
-func extractBuildClassesAndCategories(resc buildmetadata.BuildMetadataResources, categoriesAndClasses *ttcpSyntax.Collection) {
+func extractBuildClassesAndCategories(resc *buildmetadata.BuildMetadataResources, categoriesAndClasses *ttcpSyntax.Collection) {
 	buildData, err := buildmetadata.ParseAsList(resc)
 	if err != nil {
 		log.Fatal("Fatal error.", err)
@@ -102,12 +102,12 @@ func extractBuildClassesAndCategories(resc buildmetadata.BuildMetadataResources,
 	}
 }
 
-func extractHwidClassesAndCategories(resc db.HwidDbResources, categoriesAndClasses *ttcpSyntax.Collection) {
+func extractHwidClassesAndCategories(resc *db.HwidDbResources, categoriesAndClasses *ttcpSyntax.Collection) {
 	hwidDb := db.InitializeHwidDb(resc)
 	hwidDb.ExportCategories(categoriesAndClasses)
 }
 
-func extractDlmClassesAndCategories(resc dlmmetadata.DlmResources, categoriesAndClasses *ttcpSyntax.Collection) {
+func extractDlmClassesAndCategories(resc *dlmmetadata.DlmResources, categoriesAndClasses *ttcpSyntax.Collection) {
 	dlmData, err := dlmmetadata.ParseAsList(resc)
 	if err != nil {
 		log.Fatal("Fatal error.", err)
@@ -115,7 +115,7 @@ func extractDlmClassesAndCategories(resc dlmmetadata.DlmResources, categoriesAnd
 	dlmData.ExportCategories(categoriesAndClasses)
 }
 
-func extractSwarmClassesAndCategories(resc swarmingdata.SwarmDataResources, categoriesAndClasses *ttcpSyntax.Collection) {
+func extractSwarmClassesAndCategories(resc *swarmingdata.SwarmDataResources, categoriesAndClasses *ttcpSyntax.Collection) {
 	swarmData, err := resc.ParseAsList()
 	if err != nil {
 		log.Fatal("Fatal error.", err)
@@ -126,7 +126,7 @@ func extractSwarmClassesAndCategories(resc swarmingdata.SwarmDataResources, cate
 	}
 }
 
-func writeClassesAndCategoriesArchive(chunks []ttcpSyntax.Collection, outputPath string) {
+func writeClassesAndCategoriesArchive(chunks []*ttcpSyntax.Collection, outputPath string) {
 	classesAndCategoriesArchive, err := os.Create(outputPath)
 	if err != nil {
 		log.Fatal(errors.JoinError("Unable to creating the archive for the dataset", err))
@@ -151,7 +151,7 @@ func writeClassesAndCategoriesArchive(chunks []ttcpSyntax.Collection, outputPath
 	}
 }
 
-func writeDocs(chunks []ttcpSyntax.Collection, docOutPath string) {
+func writeDocs(chunks []*ttcpSyntax.Collection, docOutPath string) {
 	docs, err := os.Create(docOutPath)
 	if err != nil {
 		log.Fatal(errors.JoinError("Unable to create the archive for the documentation", err))
@@ -186,8 +186,8 @@ func min(a, b int) int {
 	}
 }
 
-func chunkClassesAndCategories(classesAndCategories ttcpSyntax.Collection, sliceLength int) []ttcpSyntax.Collection {
-	chunks := []ttcpSyntax.Collection{}
+func chunkClassesAndCategories(classesAndCategories *ttcpSyntax.Collection, sliceLength int) []*ttcpSyntax.Collection {
+	chunks := []*ttcpSyntax.Collection{}
 	if len(classesAndCategories.Categories) > 0 {
 		categoryKeys := []string{}
 		for name := range classesAndCategories.Categories {
@@ -196,7 +196,7 @@ func chunkClassesAndCategories(classesAndCategories ttcpSyntax.Collection, slice
 		sort.SliceStable(categoryKeys, func(i, j int) bool { return categoryKeys[i] < categoryKeys[j] })
 		for nextKey := 0; nextKey < len(categoryKeys); {
 			chunkLastKey := min(nextKey+sliceLength-1, len(categoryKeys)-1)
-			newChunk := ttcpSyntax.Collection{
+			newChunk := &ttcpSyntax.Collection{
 				Name:        classesAndCategories.Name,
 				Description: "Categories from " + categoryKeys[nextKey] + " to " + categoryKeys[chunkLastKey],
 				Categories:  map[string]*ttcpSyntax.Category{},
@@ -217,7 +217,7 @@ func chunkClassesAndCategories(classesAndCategories ttcpSyntax.Collection, slice
 		sort.SliceStable(classKeys, func(i, j int) bool { return classKeys[i] < classKeys[j] })
 		for nextKey := 0; nextKey < len(classKeys); {
 			chunkLastKey := min(nextKey+sliceLength-1, len(classKeys)-1)
-			newChunk := ttcpSyntax.Collection{
+			newChunk := &ttcpSyntax.Collection{
 				Name:        classesAndCategories.Name,
 				Description: "Classes from " + classKeys[nextKey] + " to " + classKeys[chunkLastKey],
 				Categories:  map[string]*ttcpSyntax.Category{},
@@ -233,7 +233,7 @@ func chunkClassesAndCategories(classesAndCategories ttcpSyntax.Collection, slice
 	return chunks
 }
 
-func writeClassesAndCategories(outputStream io.Writer, categoriesAndClasses ttcpSyntax.Collection) {
+func writeClassesAndCategories(outputStream io.Writer, categoriesAndClasses *ttcpSyntax.Collection) {
 	// serializing the classes and categories to json encoded protobuf
 	protosMarshaler := protojson.MarshalOptions{
 		Multiline:       true,
@@ -242,7 +242,7 @@ func writeClassesAndCategories(outputStream io.Writer, categoriesAndClasses ttcp
 		UseEnumNumbers:  false,
 		EmitUnpopulated: false,
 	}
-	categoriesAndClassesJson, err := protosMarshaler.Marshal(&categoriesAndClasses)
+	categoriesAndClassesJson, err := protosMarshaler.Marshal(categoriesAndClasses)
 	checkOrFatal(err, "Unable to marshal ttcp categories and classes to json.")
 	re := regexp.MustCompile(`:\s+`) // Matches a colon followed by a space
 	categoriesAndClassesJson = []byte(re.ReplaceAllLiteralString(string(categoriesAndClassesJson), ": "))
@@ -251,7 +251,7 @@ func writeClassesAndCategories(outputStream io.Writer, categoriesAndClasses ttcp
 	checkOrFatal(err, "writing classes and categories ")
 }
 
-func writeIndexDocumentation(outputStream io.Writer, chunks []ttcpSyntax.Collection) {
+func writeIndexDocumentation(outputStream io.Writer, chunks []*ttcpSyntax.Collection) {
 	docs := "#  3D Classes and Categories index\n\n"
 	docs += "## Index\n\n"
 
@@ -266,7 +266,7 @@ func writeIndexDocumentation(outputStream io.Writer, chunks []ttcpSyntax.Collect
 	checkOrFatal(err, "writing documentation ")
 }
 
-func writeChunkDocumentation(outputStream io.Writer, categoriesAndClasses ttcpSyntax.Collection) {
+func writeChunkDocumentation(outputStream io.Writer, categoriesAndClasses *ttcpSyntax.Collection) {
 	docs := "# " + categoriesAndClasses.Name + "\n\n"
 
 	docs += "## Categories\n\n"

@@ -21,7 +21,7 @@ type PortageBuildTarget struct {
 }
 
 type BuildTarget struct {
-	PortageBuildTarget PortageBuildTarget
+	PortageBuildTarget *PortageBuildTarget
 }
 
 func (BuildTarget *BuildTarget) Id() string {
@@ -49,8 +49,8 @@ func (p *PackageSummary) UnmarshalJSON(b []byte) error {
 }
 
 type BuildMetadataEntry struct {
-	BuildTarget     BuildTarget
-	Package_Summary PackageSummary
+	BuildTarget     *BuildTarget
+	Package_Summary *PackageSummary
 }
 
 func (buildMd *BuildMetadataEntry) Id() string {
@@ -66,7 +66,7 @@ func (buildMd *BuildMetadataEntry) GetVariant() string {
 }
 
 type BuildMetadataSet struct {
-	Values []BuildMetadataEntry
+	Values []*BuildMetadataEntry
 }
 
 type BuildMetadataResources struct {
@@ -75,17 +75,17 @@ type BuildMetadataResources struct {
 	Path string
 }
 
-func PaseAsMapPerBoard(resc BuildMetadataResources) (map[string][]BuildMetadataEntry, error) {
+func PaseAsMapPerBoard(resc *BuildMetadataResources) (map[string][]*BuildMetadataEntry, error) {
 	metaDataSet, err := ParseAsList(resc)
 	if err != nil {
-		return map[string][]BuildMetadataEntry{}, err
+		return map[string][]*BuildMetadataEntry{}, err
 	}
-	results := map[string][]BuildMetadataEntry{}
+	results := map[string][]*BuildMetadataEntry{}
 	for _, entry := range metaDataSet.Values {
 		board := strings.ToUpper(entry.GetBoard())
 		buildImages, ok := results[board]
 		if !ok {
-			buildImages = []BuildMetadataEntry{entry}
+			buildImages = []*BuildMetadataEntry{entry}
 		}
 		buildImages = append(buildImages, entry)
 		results[board] = buildImages
@@ -93,24 +93,24 @@ func PaseAsMapPerBoard(resc BuildMetadataResources) (map[string][]BuildMetadataE
 	return results, nil
 }
 
-func ParseAsList(resc BuildMetadataResources) (BuildMetadataSet, error) {
+func ParseAsList(resc *BuildMetadataResources) (*BuildMetadataSet, error) {
 	dataStream, err := os.Open(resc.Path)
 	if err != nil {
-		return BuildMetadataSet{}, errors.JoinError("Error in open the build metadata file "+resc.Path, errors.ApiError(err))
+		return &BuildMetadataSet{}, errors.JoinError("Error in open the build metadata file "+resc.Path, errors.ApiError(err))
 	}
 	defer dataStream.Close()
 
 	byteValue, err := ioutil.ReadAll(dataStream)
 	if err != nil {
-		return BuildMetadataSet{}, errors.JoinError("Error in reading the build metadata file.", errors.ApiError(err))
+		return &BuildMetadataSet{}, errors.JoinError("Error in reading the build metadata file.", errors.ApiError(err))
 	}
-	var dataSet BuildMetadataSet
+	var dataSet *BuildMetadataSet
 	json.Unmarshal(byteValue, &dataSet)
 
 	return dataSet, nil
 }
 
-func (metadata *BuildMetadataEntry) GetProperties() (targetproperties.TargetPropertiesValues, error) {
+func (metadata *BuildMetadataEntry) GetProperties() (*targetproperties.TargetPropertiesValues, error) {
 	targetProperties := targetproperties.CreateTargetPropertiesValues()
 	propertiesAndValues := targetproperties.PropertiesAndValuesStore{}
 	propertiesAndValues.AddPropertyValue("image:variant", metadata.GetVariant())

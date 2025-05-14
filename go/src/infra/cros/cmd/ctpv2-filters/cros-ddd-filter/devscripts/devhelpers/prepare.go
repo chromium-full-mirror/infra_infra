@@ -118,12 +118,12 @@ func createTtcpClassesAndCategories(ctx context.Context, dir string) error {
 	if err != nil {
 		return fmt.Errorf("failed to find v3 internal files, %s", err)
 	}
-	ttcpclassescategorygenerator.CreateTtcpClasessAndCategories(db.HwidDbResources{
+	ttcpclassescategorygenerator.CreateTtcpClasessAndCategories(&db.HwidDbResources{
 		DescriptorsPaths: DbPaths,
 		ProjectIndexPath: path.Join(dir, "chromeos-hwid", "projects.yaml"),
-	}, buildmetada.BuildMetadataResources{
+	}, &buildmetada.BuildMetadataResources{
 		Path: path.Join(dir, BuildMetadataPath),
-	}, dlmmetadata.DlmResources{
+	}, &dlmmetadata.DlmResources{
 		Path: path.Join(dir, DlmDevicesPath),
 	}, path.Join(dir, ClassesAndCategoriesPath), path.Join(dir, ClassesAndCategoriesDocPath))
 

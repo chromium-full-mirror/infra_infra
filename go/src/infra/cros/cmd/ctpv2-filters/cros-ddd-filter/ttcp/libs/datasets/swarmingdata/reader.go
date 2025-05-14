@@ -17,8 +17,8 @@ type LabelObj struct {
 	Val   string `bigquery:"val"`
 }
 type SwarmingBot struct {
-	Values []LabelObj `bigquery:"labels"`
-	DutId  string     `bigquery:"dut_id"`
+	Values []*LabelObj `bigquery:"labels"`
+	DutId  string      `bigquery:"dut_id"`
 }
 
 type SwarmingdataEntry struct {
@@ -27,17 +27,17 @@ type SwarmingdataEntry struct {
 }
 
 type SwarmingdataSet struct {
-	Values []SwarmingdataEntry
+	Values []*SwarmingdataEntry
 }
 
 type SwarmDataResources struct {
-	SwarmDb []SwarmingBot
+	SwarmDb []*SwarmingBot
 }
 
-func (resc *SwarmDataResources) ParseAsList() (SwarmingdataSet, error) {
-	dataSet := SwarmingdataSet{Values: []SwarmingdataEntry{}}
+func (resc *SwarmDataResources) ParseAsList() (*SwarmingdataSet, error) {
+	dataSet := &SwarmingdataSet{Values: []*SwarmingdataEntry{}}
 	for _, swarmingBot := range resc.SwarmDb {
-		entry := SwarmingdataEntry{DutId: swarmingBot.DutId, Labels: map[string][]string{}}
+		entry := &SwarmingdataEntry{DutId: swarmingBot.DutId, Labels: map[string][]string{}}
 		for _, label := range swarmingBot.Values {
 			labelVals, ok := entry.Labels[label.Label]
 			if !ok {
@@ -50,18 +50,18 @@ func (resc *SwarmDataResources) ParseAsList() (SwarmingdataSet, error) {
 	return dataSet, nil
 }
 
-func (resc *SwarmDataResources) ParseAsMapPerHwid() (map[string][]SwarmingdataEntry, error) {
+func (resc *SwarmDataResources) ParseAsMapPerHwid() (map[string][]*SwarmingdataEntry, error) {
 	metaDataSet, err := resc.ParseAsList()
 	if err != nil {
-		return map[string][]SwarmingdataEntry{}, err
+		return map[string][]*SwarmingdataEntry{}, err
 	}
-	results := map[string][]SwarmingdataEntry{}
+	results := map[string][]*SwarmingdataEntry{}
 	for _, entry := range metaDataSet.Values {
 		labels := entry.Labels
 		hwid := strings.ToUpper(labels["hwid"][0])
 		devices, ok := results[hwid]
 		if !ok {
-			devices = []SwarmingdataEntry{}
+			devices = []*SwarmingdataEntry{}
 		}
 		devices = append(devices, entry)
 		results[hwid] = devices
@@ -81,7 +81,7 @@ func (db *SwarmingdataSet) ExportCategories(categories *ttcpSyntax.Collection) e
 	return nil
 }
 
-func (metadata *SwarmingdataEntry) GetProperties() (targetproperties.TargetPropertiesValues, error) {
+func (metadata *SwarmingdataEntry) GetProperties() (*targetproperties.TargetPropertiesValues, error) {
 	targetProperties := targetproperties.CreateTargetPropertiesValues()
 
 	propertiesAndValues := targetproperties.PropertiesAndValuesStore{}

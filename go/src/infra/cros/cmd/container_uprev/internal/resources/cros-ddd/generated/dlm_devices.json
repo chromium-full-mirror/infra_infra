@@ -2807,7 +2807,7 @@
       "soc_vendor": "Intel",
       "architecture": "X86",
       "device_type": "DEVICE",
-      "build_targets": "NONE",
+      "build_targets": "nissa",
       "model": "uldrenite"
     },
     {
@@ -2817,7 +2817,7 @@
       "soc_vendor": "Intel",
       "architecture": "X86",
       "device_type": "DEVICE",
-      "build_targets": "NONE",
+      "build_targets": "nissa",
       "model": "uldrenite360"
     },
     {
@@ -3251,16 +3251,6 @@
       "model": "yoruk"
     },
     {
-      "device_id": 136,
-      "soc": "Ice Lake-Y",
-      "form_factor": "CONVERTIBLE",
-      "soc_vendor": "Intel",
-      "architecture": "X86_64",
-      "device_type": "DEVICE",
-      "build_targets": "dragonegg",
-      "model": "dragonegg"
-    },
-    {
       "device_id": 272,
       "soc": "NONE",
       "form_factor": "NONE",
@@ -3269,6 +3259,16 @@
       "device_type": "DEVICE",
       "build_targets": "NONE",
       "model": "ryu"
+    },
+    {
+      "device_id": 136,
+      "soc": "Ice Lake-Y",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "dragonegg",
+      "model": "dragonegg"
     },
     {
       "device_id": 123,

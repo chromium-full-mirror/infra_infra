@@ -173,7 +173,7 @@ func TestBitRangeOffset(t *testing.T) {
 
 func TestBitRangeSequence(t *testing.T) {
 	sequence := BitRangeSequence{
-		Ranges: []BitRange{
+		Ranges: []*BitRange{
 			{
 				Start:  2,
 				Length: 5,
@@ -199,8 +199,8 @@ func TestGetUint64(t *testing.T) {
 	array.Append(1, 1)
 	asserBitSequenceValue(t,
 		array,
-		BitRangeSequence{
-			Ranges: []BitRange{
+		&BitRangeSequence{
+			Ranges: []*BitRange{
 				{
 					Start:  0,
 					Length: 2,
@@ -211,8 +211,8 @@ func TestGetUint64(t *testing.T) {
 	)
 	asserBitSequenceValue(t,
 		array,
-		BitRangeSequence{
-			Ranges: []BitRange{
+		&BitRangeSequence{
+			Ranges: []*BitRange{
 				{
 					Start:  2,
 					Length: 1,
@@ -223,8 +223,8 @@ func TestGetUint64(t *testing.T) {
 	)
 	asserBitSequenceValue(t,
 		array,
-		BitRangeSequence{
-			Ranges: []BitRange{
+		&BitRangeSequence{
+			Ranges: []*BitRange{
 				{
 					Start:  0,
 					Length: 3,
@@ -235,14 +235,14 @@ func TestGetUint64(t *testing.T) {
 	)
 }
 
-func asserBitSequenceValue(t *testing.T, array BitArray, sequence BitRangeSequence, value uint64) {
+func asserBitSequenceValue(t *testing.T, array *BitArray, sequence *BitRangeSequence, value uint64) {
 	// the offset of 5 is due to the fact that fields of a encoded BOM do only start at index 5
 	result, err := array.GetUInt64(sequence)
 	testingtools.IsNilOrInvalid(t, err)
 	testingtools.Equal(t, result, value)
 }
 
-func asserBitSequenceValueWithHwidHeaderOffset(t *testing.T, array BitArray, sequence BitRangeSequence, value uint64) {
+func asserBitSequenceValueWithHwidHeaderOffset(t *testing.T, array *BitArray, sequence *BitRangeSequence, value uint64) {
 	// the offset of 5 is due to the fact that fields of a encoded BOM do only start at index 5
 	result, err := array.GetUInt64WithOffset(sequence, 5)
 	testingtools.IsNilOrInvalid(t, err)
@@ -263,8 +263,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	// bits:                                                  *     *
 	// value: 0 1 -> 10b -> 2d
 	//        #the binary string is the segments of selected bits concatenated in inverted order.
-	audio_codec_field := BitRangeSequence{
-		Ranges: []BitRange{
+	audio_codec_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  43,
 				Length: 1,
@@ -282,8 +282,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                              **
 	// value: 01 -> 01b -> 1d
-	battery_field := BitRangeSequence{
-		Ranges: []BitRange{
+	battery_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  39,
 				Length: 2,
@@ -298,8 +298,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	// bits:
 	// value: -> 0b -> 0d
 	//        # segments outside the range of the bit array have 0 value.
-	bluetooth_field := BitRangeSequence{
-		Ranges: []BitRange{
+	bluetooth_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  68,
 				Length: 1,
@@ -313,8 +313,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:               *****
 	// value: 00000 -> 0b -> 0d
-	chassis_field := BitRangeSequence{
-		Ranges: []BitRange{
+	chassis_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  8,
 				Length: 5,
@@ -328,8 +328,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                    ***
 	// value: 000 -> 0b -> 0d
-	cpu_field := BitRangeSequence{
-		Ranges: []BitRange{
+	cpu_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  13,
 				Length: 3,
@@ -343,8 +343,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                           **
 	// value: 10  -> 10b -> 2d
-	display_panel_field := BitRangeSequence{
-		Ranges: []BitRange{
+	display_panel_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  36,
 				Length: 2,
@@ -362,8 +362,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                            *****
 	// value: 00000  -> 0b -> 0d
-	dram_field := BitRangeSequence{
-		Ranges: []BitRange{
+	dram_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  21,
 				Length: 5,
@@ -378,8 +378,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	// bits:
 	// value:   -> 0b -> 0d
 	//.       # an emptry sequence should have a 0 value
-	ec_flash_chip_field := BitRangeSequence{
-		Ranges: []BitRange{},
+	ec_flash_chip_field := &BitRangeSequence{
+		Ranges: []*BitRange{},
 	}
 	asserBitSequenceValueWithHwidHeaderOffset(t, array, ec_flash_chip_field, 0)
 
@@ -388,8 +388,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:
 	// value:   -> 0b -> 0d
-	embedded_controller_field := BitRangeSequence{
-		Ranges: []BitRange{},
+	embedded_controller_field := &BitRangeSequence{
+		Ranges: []*BitRange{},
 	}
 	asserBitSequenceValueWithHwidHeaderOffset(t, array, embedded_controller_field, 0)
 
@@ -398,8 +398,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                 ***
 	// value: 010  -> 10b -> 2d
-	firmware_keys_field := BitRangeSequence{
-		Ranges: []BitRange{
+	firmware_keys_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  26,
 				Length: 3,
@@ -413,8 +413,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                                **
 	// value: 0 1 -> 10b -> 2d
-	flash_chip_field := BitRangeSequence{
-		Ranges: []BitRange{
+	flash_chip_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  41,
 				Length: 1,
@@ -436,8 +436,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:       ***
 	// value: 010  -> 10b -> 2d
-	mainboard_field := BitRangeSequence{
-		Ranges: []BitRange{
+	mainboard_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  0,
 				Length: 3,
@@ -451,8 +451,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:          *****
 	// value: 010  -> 10b -> 2d
-	region_field := BitRangeSequence{
-		Ranges: []BitRange{
+	region_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  3,
 				Length: 5,
@@ -474,8 +474,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                       **             **
 	// value: 00 01  -> 100b -> 4d
-	ro_ec_firmware_field := BitRangeSequence{
-		Ranges: []BitRange{
+	ro_ec_firmware_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  32,
 				Length: 2,
@@ -497,8 +497,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                    ***
 	// value: 100  -> 100b -> 4d
-	ro_main_firmware_field := BitRangeSequence{
-		Ranges: []BitRange{
+	ro_main_firmware_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  29,
 				Length: 3,
@@ -516,8 +516,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                       *****
 	// value: 00000  -> 0b -> 0d
-	storage_field := BitRangeSequence{
-		Ranges: []BitRange{
+	storage_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  16,
 				Length: 5,
@@ -531,8 +531,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                             *     *
 	// value: 1 1  -> 11b -> 3d
-	touchpad_field := BitRangeSequence{
-		Ranges: []BitRange{
+	touchpad_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  38,
 				Length: 1,
@@ -554,8 +554,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:
 	// value:   -> 0b -> 0d
-	tpm_field := BitRangeSequence{
-		Ranges: []BitRange{
+	tpm_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  34,
 				Length: 0,
@@ -569,8 +569,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:
 	// value:   -> 0b -> 0d
-	usb_hosts_field := BitRangeSequence{
-		Ranges: []BitRange{
+	usb_hosts_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  53,
 				Length: 1,
@@ -584,8 +584,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:                                         **         **
 	// value: 11 00 -> 11b -> 3d
-	video_field := BitRangeSequence{
-		Ranges: []BitRange{
+	video_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  34,
 				Length: 2,
@@ -607,8 +607,8 @@ func TestBitArrayExtraction(t *testing.T) {
 	//             0         1         2         3         4
 	// bits:
 	// value:  -> 0b -> 0d
-	wireless_field := BitRangeSequence{
-		Ranges: []BitRange{
+	wireless_field := &BitRangeSequence{
+		Ranges: []*BitRange{
 			{
 				Start:  54,
 				Length: 1,

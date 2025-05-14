@@ -98,7 +98,7 @@ func mainInt(osargs []string) {
 	marshalOptions := protojson.MarshalOptions{
 		Indent: "    ",
 	}
-	json, err := marshalOptions.Marshal(&results)
+	json, err := marshalOptions.Marshal(results)
 
 	if err != nil {
 		log.Println("Error:", err)
@@ -117,7 +117,7 @@ func mainInt(osargs []string) {
 }
 
 // computeVariants process the CliArgs in order to feed them to the TTCP solver.
-func computeVariants(cliArgs CliArgs) solver_proto.SolvedCategory {
+func computeVariants(cliArgs CliArgs) *solver_proto.SolvedCategory {
 	// retrieve the set of devices in the inventory specified in the options.
 	var (
 		buf    bytes.Buffer
@@ -125,15 +125,15 @@ func computeVariants(cliArgs CliArgs) solver_proto.SolvedCategory {
 	)
 
 	inventoryInfo := inventory.RetreiveInventoryProperties(cliArgs.InventorySwarming, cliArgs.InventoryFile,
-		datasets.AllDatasetsResources{
-			HwidDB: db.HwidDbResources{
+		&datasets.AllDatasetsResources{
+			HwidDB: &db.HwidDbResources{
 				DescriptorsPaths: cliArgs.DbPaths,
 				ProjectIndexPath: cliArgs.Index,
 			},
-			Buildmetadata: buildmetadata.BuildMetadataResources{
+			Buildmetadata: &buildmetadata.BuildMetadataResources{
 				Path: cliArgs.BuildMetadataPath,
 			},
-			Dlmmetadata: dlmmetadata.DlmResources{
+			Dlmmetadata: &dlmmetadata.DlmResources{
 				Path: cliArgs.DlmMetadataPath,
 			},
 		},

@@ -38,7 +38,7 @@ func (c ComponentInfo) GetPropertyString(name string) string {
 
 type ComponentSet struct {
 	PropertyType     string
-	ComponentsValues []ComponentInfo
+	ComponentsValues []*ComponentInfo
 }
 
 // GetID creates a unique id for a component set.
@@ -58,7 +58,7 @@ func (compSet *ComponentSet) GetId() string {
 
 type FieldValue struct {
 	EncodedBitValue int
-	ComponentSets   []ComponentSet
+	ComponentSets   []*ComponentSet
 }
 
 func (field *FieldValue) GetId() string {
@@ -71,8 +71,8 @@ func (field *FieldValue) GetId() string {
 
 type Field struct {
 	Name    string
-	BitMask bitarray.BitRangeSequence
-	Values  []FieldValue
+	BitMask *bitarray.BitRangeSequence
+	Values  []*FieldValue
 }
 
 var regions = []string{
@@ -104,19 +104,19 @@ func idToRegion(id int) string {
 	return regions[id]
 }
 
-func (f *Field) DecodeValue(value int) ([]ComponentSet, error) {
+func (f *Field) DecodeValue(value int) ([]*ComponentSet, error) {
 	for _, fvalue := range f.Values {
 		if fvalue.EncodedBitValue == value {
 			return fvalue.ComponentSets, nil
 		}
 	}
-	return []ComponentSet{}, fmt.Errorf("The value %d is out of the range of values for field %s", value, f.Name)
+	return []*ComponentSet{}, fmt.Errorf("The value %d is out of the range of values for field %s", value, f.Name)
 }
 
 type PatternStruct struct {
 	ImageIds       []int
 	EncodingScheme string
-	Fields         map[string]Field
+	Fields         map[string]*Field
 }
 
 type HwidDescriptor struct {
@@ -124,11 +124,11 @@ type HwidDescriptor struct {
 	Project          string
 	EncodingPatterns map[int]string
 	ImageIds         map[int]string
-	Pattern          []PatternStruct
+	Pattern          []*PatternStruct
 	Rules            any
 }
 
-func (descriptor *HwidDescriptor) GetPattern(image_id int) (PatternStruct, error) {
+func (descriptor *HwidDescriptor) GetPattern(image_id int) (*PatternStruct, error) {
 	for _, pattern := range descriptor.Pattern {
 		for _, pattern_image_id := range pattern.ImageIds {
 			if pattern_image_id == image_id {
@@ -136,5 +136,5 @@ func (descriptor *HwidDescriptor) GetPattern(image_id int) (PatternStruct, error
 			}
 		}
 	}
-	return PatternStruct{}, fmt.Errorf("There is no associated pattern for the image_id:%d", image_id)
+	return &PatternStruct{}, fmt.Errorf("There is no associated pattern for the image_id:%d", image_id)
 }

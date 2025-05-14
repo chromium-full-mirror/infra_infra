@@ -63,22 +63,22 @@ type expressionArgsConditions struct {
 }
 
 // expConds initializes expressionArgsConditions struct
-func expConds() expressionArgsConditions {
-	return expressionArgsConditions{
+func expConds() *expressionArgsConditions {
+	return &expressionArgsConditions{
 		hasMin: false,
 		hasMax: false,
 	}
 }
 
 // expressionArgsConditions.min sets the minimum allowed number of arguments
-func (conds expressionArgsConditions) min(value int) expressionArgsConditions {
+func (conds *expressionArgsConditions) min(value int) *expressionArgsConditions {
 	conds.hasMin = true
 	conds.minimumArgs = value
 	return conds
 }
 
 // expressionArgsConditions.max sets the maximum allowed number of arguments
-func (conds expressionArgsConditions) max(value int) expressionArgsConditions {
+func (conds *expressionArgsConditions) max(value int) *expressionArgsConditions {
 	conds.hasMax = true
 	conds.minimumArgs = value
 	return conds
@@ -91,7 +91,7 @@ func (conds expressionArgsConditions) max(value int) expressionArgsConditions {
 //   - if conds has a minimumArgs, the subExpressions lenght is larger than it.
 //   - if conds has a maximumArgs, the subExpressions length is smaller than it.
 //   - each element of subExpressions is complet
-func areSubexpressions_complet(subExpressions []*ttcpSyntax.Expression, conds expressionArgsConditions) error {
+func areSubexpressions_complet(subExpressions []*ttcpSyntax.Expression, conds *expressionArgsConditions) error {
 	if subExpressions == nil {
 		return errors.NewError("SubExpressions is nil")
 	}

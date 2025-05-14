@@ -11,7 +11,7 @@ import (
 )
 
 type AllDatasetsResources struct {
-	Buildmetadata buildmetadata.BuildMetadataResources
-	HwidDB        db.HwidDbResources
-	Dlmmetadata   dlmmetadata.DlmResources
+	Buildmetadata *buildmetadata.BuildMetadataResources
+	HwidDB        *db.HwidDbResources
+	Dlmmetadata   *dlmmetadata.DlmResources
 }

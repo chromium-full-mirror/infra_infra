@@ -19,7 +19,7 @@ import (
 type ComponentSets struct {
 	HwidEncode    int
 	componentType string
-	components    []db.ComponentInfo
+	components    []*db.ComponentInfo
 }
 
 type HWID struct {
@@ -36,10 +36,10 @@ type HWID struct {
 	Pattern_name         string
 	Image                uint64
 	Image_name           string
-	Components           map[string][]db.ComponentSet
+	Components           map[string][]*db.ComponentSet
 }
 
-func DecodeHwid(hwid string, hwidDb db.HwidDb) (HWID, error) {
+func DecodeHwid(hwid string, hwidDb *db.HwidDb) (*HWID, error) {
 	hwid_parts := strings.Split(hwid, " ")
 	project := ""
 	brand := ""
@@ -54,7 +54,7 @@ func DecodeHwid(hwid string, hwidDb db.HwidDb) (HWID, error) {
 		configless = hwid_parts[1]
 		encoded_bom_checksum = hwid_parts[2]
 	default:
-		return HWID{}, fmt.Errorf("A HWID is composed of two or three parts seperated by a space. This HWID has parts:%s", hwid_parts)
+		return &HWID{}, fmt.Errorf("A HWID is composed of two or three parts seperated by a space. This HWID has parts:%s", hwid_parts)
 	}
 	if strings.Contains(project, "-") {
 		parts := strings.Split(project, "-")
@@ -63,7 +63,7 @@ func DecodeHwid(hwid string, hwidDb db.HwidDb) (HWID, error) {
 	}
 	encoded_bom_checksum = strings.ReplaceAll(encoded_bom_checksum, "-", "")
 	if len(encoded_bom_checksum) < 3 {
-		return HWID{}, fmt.Errorf("Error decoding bom, the bom must be at least 3 characters long:%s", encoded_bom_checksum)
+		return &HWID{}, fmt.Errorf("Error decoding bom, the bom must be at least 3 characters long:%s", encoded_bom_checksum)
 	}
 	encode_bom := encoded_bom_checksum[:len(encoded_bom_checksum)-2]
 	checksum := encoded_bom_checksum[len(encoded_bom_checksum)-2:]
@@ -72,55 +72,55 @@ func DecodeHwid(hwid string, hwidDb db.HwidDb) (HWID, error) {
 
 	binary_bom, err := bitarray.BitArrayFromString535(encode_bom)
 	if err != nil {
-		return HWID{}, fmt.Errorf("Error decoding bom:%s", err)
+		return &HWID{}, fmt.Errorf("Error decoding bom:%s", err)
 	}
 	binary_bom.RightTrim()
 	// The format of the header of the encoded BOM is based on https://source.corp.google.com/chromeos_public/src/platform/factory/py/hwid/v3/identity.py;l=25
 	var pattern_id uint64 = 0
 	if binary_bom.GetBitAt(0) != 0 {
-		return HWID{}, fmt.Errorf("only encoding patterrn 0 is implemented")
+		return &HWID{}, fmt.Errorf("only encoding patterrn 0 is implemented")
 	}
-	image_id, err := binary_bom.GetRange(bitarray.BitRange{
+	image_id, err := binary_bom.GetRange(&bitarray.BitRange{
 		Start:  1,
 		Length: 4,
 	})
 	if err != nil {
-		return HWID{}, err
+		return &HWID{}, err
 	}
 	bom_offset := 5
 	descriptor, err := hwidDb.GetDescriptor(project)
 	if err != nil {
-		return HWID{}, fmt.Errorf("#1 Unable to decode HWID: %w", err)
+		return &HWID{}, fmt.Errorf("#1 Unable to decode HWID: %w", err)
 	}
 	pattern, err := descriptor.GetPattern(int(image_id))
 	if err != nil {
-		return HWID{}, fmt.Errorf("#2 Unable to decode HWID: %w", err)
+		return &HWID{}, fmt.Errorf("#2 Unable to decode HWID: %w", err)
 	}
-	components := map[string][]db.ComponentSet{}
+	components := map[string][]*db.ComponentSet{}
 	for field_name, field := range pattern.Fields {
 		if field_name == "region_field" {
 			// invalidated region decoding
-			components[field_name] = []db.ComponentSet{
+			components[field_name] = []*db.ComponentSet{
 				{
 					PropertyType:     "region",
-					ComponentsValues: []db.ComponentInfo{{}},
+					ComponentsValues: []*db.ComponentInfo{{}},
 				},
 			}
 			continue
 		}
 		field_value, err := binary_bom.GetUInt64WithOffset(field.BitMask, bom_offset)
 		if err != nil {
-			return HWID{}, fmt.Errorf("#3 Unable to decode HWID field %s: %w", field_name, err)
+			return &HWID{}, fmt.Errorf("#3 Unable to decode HWID field %s: %w", field_name, err)
 		}
 		component_set, err := field.DecodeValue(int(field_value))
 		if err != nil {
-			return HWID{}, fmt.Errorf("Could not decode HWID value: %w", err)
+			return &HWID{}, fmt.Errorf("Could not decode HWID value: %w", err)
 		}
 
 		components[field_name] = component_set
 	}
 
-	return HWID{
+	return &HWID{
 		Hwid:                 hwid,
 		Project:              project,
 		Brand:                brand,
@@ -138,7 +138,7 @@ func DecodeHwid(hwid string, hwidDb db.HwidDb) (HWID, error) {
 	}, nil
 }
 
-func (hwid *HWID) ToPropertiesBag() (targetproperties.TargetPropertiesValues, error) {
+func (hwid *HWID) ToPropertiesBag() (*targetproperties.TargetPropertiesValues, error) {
 	properties := targetproperties.CreateTargetPropertiesValues()
 
 	if hwid.Brand != "" {
@@ -148,7 +148,7 @@ func (hwid *HWID) ToPropertiesBag() (targetproperties.TargetPropertiesValues, er
 	properties.AddPropertyValue("board", db.HwidSource, hwid.Board)
 	properties.AddPropertyValue("image", db.HwidSource, hwid.Image_name)
 	for k, c := range hwid.Components {
-		err := collectProperties(c, k, &properties)
+		err := collectProperties(c, k, properties)
 		if err != nil {
 			return properties, errors.JoinError(fmt.Sprintf("Error in collecting properties of HWID:%s", hwid.Hwid), err)
 		}
@@ -159,7 +159,7 @@ func (hwid *HWID) ToPropertiesBag() (targetproperties.TargetPropertiesValues, er
 // todo
 const nbComponentsSuffix = "_nb_components"
 
-func collectProperties(set []db.ComponentSet, fieldType string, props *targetproperties.TargetPropertiesValues) error {
+func collectProperties(set []*db.ComponentSet, fieldType string, props *targetproperties.TargetPropertiesValues) error {
 	for _, cs := range set {
 		props.AddPropertyValue(fieldType, db.HwidSource, cs.GetId())
 		props.AddPropertyValue(fieldType+nbComponentsSuffix, db.HwidSource, strconv.Itoa(len(cs.ComponentsValues)))

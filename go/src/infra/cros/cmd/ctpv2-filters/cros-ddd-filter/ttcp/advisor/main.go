@@ -115,12 +115,12 @@ func InventoryPropertiesCommand(cliArgs *InventoryPropertiesCmd) {
 		logger = log.New(&buf, "logger: ", log.Lshortfile)
 	)
 	inventoryInfo := inventory.RetreiveInventoryProperties(cliArgs.InventorySwarming, cliArgs.InventoryFile,
-		datasets.AllDatasetsResources{
-			HwidDB: db.HwidDbResources{
+		&datasets.AllDatasetsResources{
+			HwidDB: &db.HwidDbResources{
 				DescriptorsPaths: cliArgs.DbPaths,
 				ProjectIndexPath: cliArgs.Index,
 			},
-			Buildmetadata: buildmetadata.BuildMetadataResources{
+			Buildmetadata: &buildmetadata.BuildMetadataResources{
 				Path: cliArgs.BuildMetadataPath,
 			},
 		},
@@ -187,7 +187,7 @@ func propertiesSubCommand(cliArgs *PropertiesCmd) {
 	}
 
 	log.Println("Load Hwid DB")
-	hwidDb := db.InitializeHwidDb(db.HwidDbResources{
+	hwidDb := db.InitializeHwidDb(&db.HwidDbResources{
 		DescriptorsPaths: cliArgs.DbPaths,
 		ProjectIndexPath: cliArgs.Index,
 	})
@@ -220,7 +220,7 @@ func descriptorSubCommand(cliArgs *HwidDescriptorCmd) {
 	}
 
 	log.Println("Load Hwid DB")
-	hwidDb := db.InitializeHwidDb(db.HwidDbResources{
+	hwidDb := db.InitializeHwidDb(&db.HwidDbResources{
 		DescriptorsPaths: cliArgs.DbPaths,
 		ProjectIndexPath: cliArgs.Index,
 	})
@@ -261,12 +261,12 @@ func ListLabInventorySubCommand(cliArgs *ListLabInventoryCmd) {
 		logger = log.New(&buf, "logger: ", log.Lshortfile)
 	)
 	labDevices := croslab.GenerateAvailableDevicesInfo(
-		datasets.AllDatasetsResources{
-			HwidDB: db.HwidDbResources{
+		&datasets.AllDatasetsResources{
+			HwidDB: &db.HwidDbResources{
 				DescriptorsPaths: cliArgs.DbPaths,
 				ProjectIndexPath: cliArgs.Index,
 			},
-			Buildmetadata: buildmetadata.BuildMetadataResources{
+			Buildmetadata: &buildmetadata.BuildMetadataResources{
 				Path: cliArgs.BuildMetadataPath,
 			},
 		},

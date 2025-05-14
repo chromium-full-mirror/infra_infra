@@ -32,7 +32,7 @@ func (prop *PropertyDetails) GetSingleValue() (string, error) {
 }
 
 type DeviceProperties struct {
-	PropertiesDetails map[string]PropertyDetails
+	PropertiesDetails map[string]*PropertyDetails
 }
 
 func (props *DeviceProperties) Print() {
@@ -48,14 +48,14 @@ func (props *DeviceProperties) Print() {
 
 func CreateHwidProperties() DeviceProperties {
 	return DeviceProperties{
-		PropertiesDetails: map[string]PropertyDetails{},
+		PropertiesDetails: map[string]*PropertyDetails{},
 	}
 }
 
 func (properties *DeviceProperties) addPropertyValue(propertyname string, source string, propertyValue string) {
 	details, ok := properties.PropertiesDetails[propertyname]
 	if !ok {
-		details = PropertyDetails{
+		details = &PropertyDetails{
 			Source: source,
 			Values: map[string]any{propertyValue: nil},
 		}

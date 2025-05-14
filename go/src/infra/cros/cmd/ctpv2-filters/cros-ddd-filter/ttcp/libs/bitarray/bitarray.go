@@ -19,8 +19,8 @@ type BitArray struct {
 }
 
 // NewBitArray returns a empty BitArray
-func NewBitArray() BitArray {
-	return BitArray{
+func NewBitArray() *BitArray {
+	return &BitArray{
 		// The array in the data field should have a length always greater or equal to 1
 		data:         []uint64{0},
 		rightPadding: 64,
@@ -74,7 +74,7 @@ func indexOfLastOneInBlock(block uint64, rightPadding int32) int32 {
 }
 
 // Len returns the number of bits stored in the array
-func (array BitArray) Len() int {
+func (array *BitArray) Len() int {
 	return (64 * len(array.data)) - int(array.rightPadding)
 }
 
@@ -107,7 +107,7 @@ func (array *BitArray) Append(bits uint64, length int32) {
 }
 
 // InternalRepresentation returns a string with the full internal representation of the array
-func (array BitArray) InternalRepresentation() string {
+func (array *BitArray) InternalRepresentation() string {
 	result := bytes.NewBufferString("{")
 	fmt.Fprintf(result, "nbBlocks:%d lastBlockRightPadding:%d bitLength:%d bits: ", len(array.data), array.rightPadding, array.Len())
 	for i := range len(array.data) - 1 {
@@ -122,7 +122,7 @@ func (array BitArray) InternalRepresentation() string {
 }
 
 // ToString returns a string with the bit reprsentation of the array
-func (array BitArray) ToString() string {
+func (array *BitArray) ToString() string {
 	result := bytes.NewBufferString("")
 	for i := range len(array.data) - 1 {
 		fmt.Fprintf(result, "%064b", array.data[i])
@@ -144,8 +144,8 @@ type BitRange struct {
 }
 
 // Offset shifts the bitrange of offset bits to the right
-func (r *BitRange) Offset(offset int) BitRange {
-	return BitRange{
+func (r *BitRange) Offset(offset int) *BitRange {
+	return &BitRange{
 		Start:  r.Start + offset,
 		Length: r.Length,
 	}
@@ -157,7 +157,7 @@ func (r *BitRange) ToString() string {
 }
 
 // LastBitOffset returns the index in a BitArray of the last bit in the BitRange
-func (r BitRange) LastBitOffset() int {
+func (r *BitRange) LastBitOffset() int {
 	lastBitOffsetIndex := r.Start + r.Length
 	if r.Length != 0 {
 		lastBitOffsetIndex -= 1
@@ -167,7 +167,7 @@ func (r BitRange) LastBitOffset() int {
 
 // BitRangeSequence represent a non contigous subsequence in BitArrays.
 type BitRangeSequence struct {
-	Ranges []BitRange
+	Ranges []*BitRange
 }
 
 // ToString returns a string containing a user friendly representation of the BitRangeSequence
@@ -180,18 +180,18 @@ func (sequence *BitRangeSequence) ToString() string {
 }
 
 // Offset shifts the bitrange of offset bits to the right
-func (sequence *BitRangeSequence) Offset(offset int) BitRangeSequence {
-	offseted_ranges := []BitRange{}
+func (sequence *BitRangeSequence) Offset(offset int) *BitRangeSequence {
+	offseted_ranges := []*BitRange{}
 	for _, r := range sequence.Ranges {
 		offseted_ranges = append(offseted_ranges, r.Offset(offset))
 	}
-	return BitRangeSequence{
+	return &BitRangeSequence{
 		Ranges: offseted_ranges,
 	}
 }
 
 // Length returns the number of bits in the sequence
-func (sequence BitRangeSequence) Length() int {
+func (sequence *BitRangeSequence) Length() int {
 	total := 0
 	for _, r := range sequence.Ranges {
 		total += r.Length
@@ -200,7 +200,7 @@ func (sequence BitRangeSequence) Length() int {
 }
 
 // Returns the bits of Array selected by the sub sequence defined by the BitRange R
-func (array *BitArray) GetRange(r BitRange) (uint64, error) {
+func (array *BitArray) GetRange(r *BitRange) (uint64, error) {
 	startBlock := r.Start / 64
 	startOffset := r.Start % 64
 	endBlock := r.LastBitOffset() / 64
@@ -222,14 +222,14 @@ func (array *BitArray) GetRange(r BitRange) (uint64, error) {
 	return result, nil
 }
 
-func (array *BitArray) GetUInt64WithOffset(seq BitRangeSequence, offset int) (uint64, error) {
+func (array *BitArray) GetUInt64WithOffset(seq *BitRangeSequence, offset int) (uint64, error) {
 	return array.GetUInt64(
 		seq.Offset(offset),
 	)
 }
 
 // if the sequence length is 0, getUInt64 will return 0.
-func (array *BitArray) GetUInt64(seq BitRangeSequence) (uint64, error) {
+func (array *BitArray) GetUInt64(seq *BitRangeSequence) (uint64, error) {
 	if seq.Length() > 64 {
 		return 0, errors.New("Bitsequence is longer than size of a uint64. Max length for a uint64 is 64.")
 	}
@@ -302,7 +302,7 @@ var RuneTo8Bits = map[rune]uint64{
 
 // BitArrayFromString535 decodes a string that encode a bit array in format 535
 // into a BitArray
-func BitArrayFromString535(data string) (BitArray, error) {
+func BitArrayFromString535(data string) (*BitArray, error) {
 	result := NewBitArray()
 	state := 0
 	for index, rune := range data {
