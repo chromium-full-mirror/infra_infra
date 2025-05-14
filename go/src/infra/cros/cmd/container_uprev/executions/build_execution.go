@@ -103,14 +103,15 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 				configsByRepoHostname[repo.Hostname] = []*internal.UprevConfig{}
 			}
 			configsByRepoHostname[repo.Hostname] = append(configsByRepoHostname[repo.Hostname], &internal.UprevConfig{
-				Name:          config.Name,
-				FirestoreName: config.FirestoreName,
-				Repositories:  []*internal.Repository{repo},
-				ContainerName: config.ContainerName,
-				CIPDPackages:  config.CIPDPackages,
-				Prepper:       config.Prepper,
-				Resources:     config.Resources,
-				Entrypoint:    config.Entrypoint,
+				Name:           config.Name,
+				FirestoreName:  config.FirestoreName,
+				Repositories:   []*internal.Repository{repo},
+				ContainerName:  config.ContainerName,
+				CIPDPackages:   config.CIPDPackages,
+				Prepper:        config.Prepper,
+				Resources:      config.Resources,
+				Entrypoint:     config.Entrypoint,
+				CloudRunConfig: config.CloudRunConfig,
 			})
 		}
 	}

@@ -50,6 +50,8 @@ cloud.google.com/go/profiler v0.4.2 h1:KojCmZ+bEPIQrd7bo2UFvZ2xUPLHl55KzHl7iaR4V
 cloud.google.com/go/profiler v0.4.2/go.mod h1:7GcWzs9deJHHdJ5J9V1DzKQ9JoIoTGhezwlLbwkOoCs=
 cloud.google.com/go/pubsub v1.49.0 h1:5054IkbslnrMCgA2MAEPcsN3Ky+AyMpEZcii/DoySPo=
 cloud.google.com/go/pubsub v1.49.0/go.mod h1:K1FswTWP+C1tI/nfi3HQecoVeFvL4HUOB1tdaNXKhUY=
+cloud.google.com/go/run v1.9.3 h1:BrB0Y/BlsyWKdHebDp3CpbV9knwcWqqQI4RWYElf1zQ=
+cloud.google.com/go/run v1.9.3/go.mod h1:Si9yDIkUGr5vsXE2QVSWFmAjJkv/O8s3tJ1eTxw3p1o=
 cloud.google.com/go/secretmanager v1.14.7 h1:VkscIRzj7GcmZyO4z9y1EH7Xf81PcoiAo7MtlD+0O80=
 cloud.google.com/go/secretmanager v1.14.7/go.mod h1:uRuB4F6NTFbg0vLQ6HsT7PSsfbY7FqHbtJP1J94qxGc=
 cloud.google.com/go/spanner v1.79.0 h1:HSg+P01K6I1ZFxvLGYToLdZkp+noM7P777Hd/ZHFvdk=

@@ -64,14 +64,23 @@ func UprevContainer(ctx context.Context, imageCache map[string]any, config *Upre
 	// Multiple filters may upload to the same container name.
 	// Differentiate between prod and staging in this situation
 	// by adding the unique config name as a suffix.
-	if imageTag == common.LabelProd || imageTag == common.LabelStaging {
-		imageTag = fmt.Sprintf("%s_%s", imageTag, config.Name)
+	containerTag := imageTag
+	if containerTag == common.LabelProd || containerTag == common.LabelStaging {
+		containerTag = fmt.Sprintf("%s_%s", containerTag, config.Name)
 	}
 	// Will have exactly one repository after upstream mapping.
 	repo := config.Repositories[0]
-	if containerInfoItem, err = buildAndPush(ctx, imageCache, repo, dir, config.ContainerName, config.Entrypoint, imageTag); err != nil {
+	if containerInfoItem, err = buildAndPush(ctx, imageCache, repo, dir, config.ContainerName, config.Entrypoint, containerTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
+	}
+
+	// Deploy the container to Cloud Run.
+	if config.CloudRunConfig != nil {
+		if err = DeployFilterToCloudRun(ctx, containerInfoItem.Digest, imageTag, config); err != nil {
+			err = errors.Annotate(err, "failed to deploy to Cloud Run").Err()
+			return
+		}
 	}
 
 	return

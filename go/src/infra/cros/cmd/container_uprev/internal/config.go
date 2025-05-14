@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/cloudrun"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/container_uprev/internal/preppers"
 )
@@ -158,6 +159,10 @@ type UprevConfig struct {
 	// any custom work needed by the Dockerfile.
 	Prepper   func(ctx context.Context, dir string) error
 	Resources []string
+	// CloudRunConfig contains arguments for setting up a cloud
+	// run instance. If not nil, will use default or set values
+	// to push this config into cloud run.
+	CloudRunConfig *cloudrun.Config
 }
 
 type Repository struct {
@@ -177,6 +182,7 @@ func GetConfigs() []*UprevConfig {
 			Repositories: []*Repository{
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "provision-filter",
@@ -190,12 +196,14 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "firmware-filter",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/firmware-filter/${platform}"),
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "foil-filter",
@@ -206,6 +214,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "cros-legacy-hw-filter",
@@ -216,6 +225,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "use_flag_filter",
@@ -226,6 +236,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "pre_process_filter",
@@ -236,6 +247,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "al-provision-filter",
@@ -246,6 +258,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "adb-base",
@@ -276,6 +289,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "rdb-publish",
@@ -391,6 +405,7 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/autovm_test_shifter_filter/${platform}"),
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "pretest-container-filter",
@@ -401,6 +416,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name:          "test-finder",
@@ -413,6 +429,7 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "foil-test",
@@ -449,6 +466,10 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/cros-ddd-filter/${platform}"),
 			},
 			Prepper: preppers.PrepareCrosDDD,
+			CloudRunConfig: &cloudrun.Config{
+				CPU:    "8",
+				Memory: "32Gi",
+			},
 		},
 		{
 			Name: "bols_satlab",
@@ -487,6 +508,10 @@ func CleanConfigs(configs []*UprevConfig) []*UprevConfig {
 
 		if len(config.Repositories) == 0 {
 			config.Repositories = []*Repository{DefaultRepository}
+		}
+
+		if config.Entrypoint == "" {
+			config.Entrypoint = config.ContainerName
 		}
 	}
 

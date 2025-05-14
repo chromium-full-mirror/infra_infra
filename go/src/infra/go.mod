@@ -24,6 +24,7 @@ require (
 	cloud.google.com/go/monitoring v1.24.2
 	cloud.google.com/go/profiler v0.4.2
 	cloud.google.com/go/pubsub v1.49.0
+	cloud.google.com/go/run v1.9.3
 	cloud.google.com/go/secretmanager v1.14.7
 	cloud.google.com/go/storage v1.51.0
 	cloud.google.com/go/trace v1.11.6

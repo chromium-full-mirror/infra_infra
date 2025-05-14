@@ -60,6 +60,7 @@ const (
 	FireStoreContainersProdCollection      = "containers-prod"
 	LabelStaging                           = "staging"
 	LabelProd                              = "prod"
+	LabelPartner                           = "partner"
 	LabelPool                              = "label-pool"
 	LabelSuite                             = "label-suite"
 	Suite                                  = "suite"
@@ -79,6 +80,7 @@ const (
 	CbMetricsPropName                      = "crystalball_has_data"
 	GeminiApiKey                           = "gemini-api-key"
 	GeminiApiKeyProject                    = "cros-registry"
+	FilterCloudRunPort                     = "443"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.
@@ -253,4 +255,9 @@ type TestType string
 const (
 	OSTestType     TestType = "OS"
 	KernelTestType TestType = "KERNEL"
+)
+
+var (
+	// Arguments common to each filter for cloud run deployment.
+	FilterArgs = []string{"server", "-port", FilterCloudRunPort}
 )
