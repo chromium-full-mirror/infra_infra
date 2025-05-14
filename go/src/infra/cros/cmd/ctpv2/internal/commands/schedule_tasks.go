@@ -923,8 +923,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 }
 
 func (cmd *ScheduleTasksCmd) RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *data.BuildRequest) *data.BuildRequest {
-	retriableTestsMap := determineRetriablity(trResult)
-	if len(retriableTestsMap) == 0 {
+	shouldRetry, retriableTestsMap := determineRetriablity(trResult)
+	if !shouldRetry {
 		logging.Infof(ctx, "no retriable tests found for: %s", buildReq.Key)
 		return nil
 	}
@@ -1042,17 +1042,14 @@ func CheckBuildInfoIfBuildEnded(ctx context.Context, statusReq *buildbucketpb.Ge
 }
 
 func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildRequest, retriableTests map[string]bool) *data.BuildRequest {
-	if len(retriableTests) == 0 {
-		return nil
-	}
-
 	// dereference so that we can make changes
 	retryBuildReq := *buildReq
 	retryBuildReq.Err = nil
 	testCases := retryBuildReq.OriginalTrReq.Tcs
 
-	// If any tauto.tast failure, rerun all the test cases
-	if IsAnyTautoTastTestCase(testCases) && len(retriableTests) > 0 {
+	// If any tauto.tast failure or incomplete result, rerun all the test cases
+	if IsAnyTautoTastTestCase(testCases) || len(retriableTests) == 0 {
+		logging.Infof(ctx, "Reruning all the test cases...")
 		return &retryBuildReq
 	}
 
@@ -1080,20 +1077,23 @@ func IsAnyTautoTastTestCase(testCases []*api.TestCase_Id) bool {
 	return false
 }
 
-func determineRetriablity(trResult *skylab_test_runner.Result) map[string]bool {
+func determineRetriablity(trResult *skylab_test_runner.Result) (bool, map[string]bool) {
+	shouldRetry := false
 	retriableTests := map[string]bool{}
 	// First check if there are valid trResult
 	resultsMap := trResult.GetAutotestResults()
 	if len(resultsMap) > 0 {
+		shouldRetry = resultsMap["original_test"].GetIncomplete()
 		testCases := resultsMap["original_test"].GetTestCases()
 		for _, testCase := range testCases {
 			if IsTcRetriable(testCase.GetVerdict()) {
 				retriableTests[testCase.GetName()] = true
+				shouldRetry = true
 			}
 		}
 	}
 
-	return retriableTests
+	return shouldRetry, retriableTests
 }
 
 // IsTcRetriable determines if a task result indicates that the test needs to
