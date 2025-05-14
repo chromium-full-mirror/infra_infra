@@ -136,3 +136,7 @@ func getTargetBuilderPath(targetPath string) (string, error) {
 	targetBuilderPath := path.Join(d, version)
 	return targetBuilderPath, nil
 }
+
+func (c *CheckInstallNeeded) Retry() bool {
+	return false
+}

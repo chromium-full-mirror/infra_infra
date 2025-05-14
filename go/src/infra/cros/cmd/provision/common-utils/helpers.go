@@ -49,11 +49,29 @@ func ExecuteStateMachine(ctx context.Context, cs ServiceState, log *log.Logger) 
 		msg := "input State cannot be empty in ExecuteStateMachine"
 		return api.InstallResponse_STATUS_PROVISIONING_FAILED, nil, stderrors.New(msg)
 	}
+
+	// Create a retry tracking map so that we do not end up in an infinite loop
+	// of retry attempts.
+	retryMap := map[*ServiceState]bool{}
 	for {
 		md, status, err := cs.Execute(ctx, log)
 		if err != nil {
+			// If the state has specified that we should retry on error then
+			// continue to the next loop iteration where cs will not have been
+			// updated with cs = cs.Next().
+			if _, ok := retryMap[&cs]; cs.Retry() && !ok {
+				// Add the current state to the retry map so that we do not
+				// retry it twice.
+				retryMap[&cs] = true
+
+				log.Printf("failed provisioning on %s step, %s", cs.Name(), err.Error())
+				continue
+			}
+
 			return status, md, fmt.Errorf("failed provisioning on %s step, %w", cs.Name(), err)
 		}
+
+		// Move to the next state in the state machine.
 		cs = cs.Next()
 		if cs == nil {
 			return api.InstallResponse_STATUS_SUCCESS, md, nil

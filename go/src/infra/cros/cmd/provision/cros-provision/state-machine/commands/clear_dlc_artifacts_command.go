@@ -72,3 +72,7 @@ func (c *ClearDLCArtifactsCommand) GetErrorMessage() string {
 func (c *ClearDLCArtifactsCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *ClearDLCArtifactsCommand) Retry() bool {
+	return false
+}

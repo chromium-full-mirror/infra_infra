@@ -75,3 +75,7 @@ func (c *ExtractZipCommand) extractCIPDPackages() error {
 	}
 	return nil
 }
+
+func (c *ExtractZipCommand) Retry() bool {
+	return false
+}

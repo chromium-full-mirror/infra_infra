@@ -71,3 +71,7 @@ func (s FoilPreInitState) Next() commonutils.ServiceState {
 func (s FoilPreInitState) Name() string {
 	return "Foil Init"
 }
+
+func (s FoilPreInitState) Retry() bool {
+	return false
+}

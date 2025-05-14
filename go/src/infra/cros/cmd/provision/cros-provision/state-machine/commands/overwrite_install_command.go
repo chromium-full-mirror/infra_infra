@@ -65,3 +65,7 @@ func (c *OverwriteInstalCommand) GetErrorMessage() string {
 func (c *OverwriteInstalCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *OverwriteInstalCommand) Retry() bool {
+	return false
+}

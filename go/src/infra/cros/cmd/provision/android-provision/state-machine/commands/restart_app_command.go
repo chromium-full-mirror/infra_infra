@@ -61,3 +61,7 @@ func (c *RestartAppCommand) GetErrorMessage() string {
 func (c *RestartAppCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED
 }
+
+func (c *RestartAppCommand) Retry() bool {
+	return false
+}

@@ -55,3 +55,7 @@ func (c *AdbRoot) GetErrorMessage() string {
 func (c *AdbRoot) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED
 }
+
+func (c *AdbRoot) Retry() bool {
+	return false
+}

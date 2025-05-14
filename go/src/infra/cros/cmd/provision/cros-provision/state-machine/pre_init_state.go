@@ -66,3 +66,7 @@ func (s CrOSPreInitState) Next() commonutils.ServiceState {
 func (s CrOSPreInitState) Name() string {
 	return "CrOS Init"
 }
+
+func (s CrOSPreInitState) Retry() bool {
+	return false
+}

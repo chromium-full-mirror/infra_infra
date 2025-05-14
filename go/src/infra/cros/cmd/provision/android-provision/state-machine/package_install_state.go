@@ -57,3 +57,7 @@ func (s PackageInstallState) Next() commonutils.ServiceState {
 func (s PackageInstallState) Name() string {
 	return "Android Package Install State"
 }
+
+func (s PackageInstallState) Retry() bool {
+	return false
+}

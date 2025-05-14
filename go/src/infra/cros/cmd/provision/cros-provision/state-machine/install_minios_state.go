@@ -51,3 +51,7 @@ func (s CrOSInstallMiniOSState) Next() commonutils.ServiceState {
 func (s CrOSInstallMiniOSState) Name() string {
 	return "CrOS Install MiniOS"
 }
+
+func (s CrOSInstallMiniOSState) Retry() bool {
+	return false
+}

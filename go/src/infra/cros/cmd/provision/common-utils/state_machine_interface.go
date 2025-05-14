@@ -30,6 +30,8 @@ type CommandInterface interface {
 
 	// GetStatus returns the proto status response for the message
 	GetStatus() api.InstallResponse_Status
+
+	Retry() bool
 }
 
 // ServiceState is a single state representation.
@@ -40,6 +42,8 @@ type ServiceState interface {
 	Next() ServiceState
 	// Name gets the fully qualified name of this state
 	Name() string
+
+	Retry() bool
 }
 
 // ServiceInterface represents the state machine for this specific service installation.

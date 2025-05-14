@@ -39,3 +39,7 @@ func (s *KernelProvisionInitState) Next() commonutils.ServiceState {
 func (s *KernelProvisionInitState) Name() string {
 	return "Kernel-Provision Init"
 }
+
+func (s *KernelProvisionInitState) Retry() bool {
+	return false
+}

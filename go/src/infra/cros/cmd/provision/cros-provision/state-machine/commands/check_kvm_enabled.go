@@ -67,3 +67,7 @@ func (c *CheckKvmEnabled) GetErrorMessage() string {
 func (c *CheckKvmEnabled) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *CheckKvmEnabled) Retry() bool {
+	return false
+}

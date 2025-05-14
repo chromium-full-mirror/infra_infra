@@ -50,3 +50,7 @@ func (c *StopSystemDaemonsCommand) GetErrorMessage() string {
 func (c *StopSystemDaemonsCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *StopSystemDaemonsCommand) Retry() bool {
+	return false
+}

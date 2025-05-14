@@ -104,3 +104,7 @@ func (c *InstallDLCsCommand) GetErrorMessage() string {
 func (c *InstallDLCsCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_INSTALL_DLC_FAILED
 }
+
+func (c *InstallDLCsCommand) Retry() bool {
+	return false
+}

@@ -116,3 +116,7 @@ func (c *FetchDutInfoCommand) fetchPackagesInfo() error {
 	}
 	return nil
 }
+
+func (c *FetchDutInfoCommand) Retry() bool {
+	return false
+}

@@ -45,3 +45,7 @@ func (s PostInstallState) Next() commonutils.ServiceState {
 func (s PostInstallState) Name() string {
 	return "Android Post Install State"
 }
+
+func (s PostInstallState) Retry() bool {
+	return false
+}

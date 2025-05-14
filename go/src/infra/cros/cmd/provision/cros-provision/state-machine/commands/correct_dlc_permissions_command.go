@@ -58,3 +58,7 @@ func (c *CorrectDLCPermissionsCommand) GetErrorMessage() string {
 func (c *CorrectDLCPermissionsCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *CorrectDLCPermissionsCommand) Retry() bool {
+	return false
+}

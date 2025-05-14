@@ -111,3 +111,7 @@ func (c *VerifyFirmwareCommand) GetErrorMessage() string {
 func (c *VerifyFirmwareCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE
 }
+
+func (c *VerifyFirmwareCommand) Retry() bool {
+	return false
+}

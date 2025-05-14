@@ -64,3 +64,7 @@ func (c *CheckVersionMatches) GetErrorMessage() string {
 func (c *CheckVersionMatches) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_IMAGE_MISMATCH_POST_PROVISION_UPDATE
 }
+
+func (c *CheckVersionMatches) Retry() bool {
+	return false
+}

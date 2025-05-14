@@ -75,3 +75,7 @@ func (c *ResolveImagePathCommand) GetErrorMessage() string {
 func (c *ResolveImagePathCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED
 }
+
+func (c *ResolveImagePathCommand) Retry() bool {
+	return false
+}

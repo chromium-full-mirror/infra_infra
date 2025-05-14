@@ -133,3 +133,7 @@ func (c *FlashOsCommand) fetchOSInfo() error {
 	log.Printf("Installed Android OS: version=%s, build ID=%s", osVersion, buildId)
 	return nil
 }
+
+func (c *FlashOsCommand) Retry() bool {
+	return false
+}

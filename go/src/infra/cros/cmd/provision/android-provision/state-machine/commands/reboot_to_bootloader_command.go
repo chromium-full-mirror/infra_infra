@@ -48,3 +48,7 @@ func (c *RebootToBootloaderCommand) GetErrorMessage() string {
 func (c *RebootToBootloaderCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *RebootToBootloaderCommand) Retry() bool {
+	return false
+}

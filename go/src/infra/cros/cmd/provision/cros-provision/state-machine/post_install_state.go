@@ -62,3 +62,7 @@ func (s CrOSPostInstallState) Next() commonutils.ServiceState {
 func (s CrOSPostInstallState) Name() string {
 	return "CrOS Post-Install"
 }
+
+func (s CrOSPostInstallState) Retry() bool {
+	return false
+}

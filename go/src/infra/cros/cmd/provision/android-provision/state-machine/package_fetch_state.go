@@ -58,3 +58,7 @@ func (s PackageFetchState) Next() commonutils.ServiceState {
 func (s PackageFetchState) Name() string {
 	return "Android Package Fetch State"
 }
+
+func (s PackageFetchState) Retry() bool {
+	return false
+}

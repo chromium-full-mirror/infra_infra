@@ -106,3 +106,7 @@ func (s *DownloadArtifactsState) Next() commonutils.ServiceState {
 func (s *DownloadArtifactsState) Name() string {
 	return "Kernel-Provision Download Artifacts"
 }
+
+func (s *DownloadArtifactsState) Retry() bool {
+	return false
+}

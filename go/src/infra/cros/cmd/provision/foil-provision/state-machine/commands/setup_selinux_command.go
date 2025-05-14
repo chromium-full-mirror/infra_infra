@@ -45,3 +45,7 @@ func (c *SetSelinuxCommand) GetErrorMessage() string {
 func (c *SetSelinuxCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *SetSelinuxCommand) Retry() bool {
+	return false
+}

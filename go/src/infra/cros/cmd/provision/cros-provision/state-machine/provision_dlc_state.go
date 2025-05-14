@@ -50,3 +50,7 @@ func (s CrOSProvisionDLCState) Next() commonutils.ServiceState {
 func (s CrOSProvisionDLCState) Name() string {
 	return "CrOS Provision DLC"
 }
+
+func (s CrOSProvisionDLCState) Retry() bool {
+	return false
+}

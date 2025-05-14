@@ -63,3 +63,7 @@ func (s CrOSResetDeviceState) Next() commonutils.ServiceState {
 func (s CrOSResetDeviceState) Name() string {
 	return "CrOS Init"
 }
+
+func (s CrOSResetDeviceState) Retry() bool {
+	return false
+}

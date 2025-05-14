@@ -87,3 +87,7 @@ func (s CrosUpdateFirmwareState) Next() commonutils.ServiceState {
 func (s CrosUpdateFirmwareState) Name() string {
 	return "CrOS Update Firmware"
 }
+
+func (s CrosUpdateFirmwareState) Retry() bool {
+	return false
+}

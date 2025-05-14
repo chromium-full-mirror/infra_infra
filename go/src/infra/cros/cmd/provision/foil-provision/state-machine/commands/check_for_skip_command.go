@@ -46,3 +46,7 @@ func (c *CheckForSkip) GetErrorMessage() string {
 func (c *CheckForSkip) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *CheckForSkip) Retry() bool {
+	return false
+}

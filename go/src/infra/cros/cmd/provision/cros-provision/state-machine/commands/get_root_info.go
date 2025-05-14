@@ -117,3 +117,7 @@ func (c *GetRootInfoCommand) GetErrorMessage() string {
 func (c *GetRootInfoCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *GetRootInfoCommand) Retry() bool {
+	return false
+}

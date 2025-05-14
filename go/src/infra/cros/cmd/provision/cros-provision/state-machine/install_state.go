@@ -61,3 +61,7 @@ func (s CrOSInstallState) Next() commonutils.ServiceState {
 func (s CrOSInstallState) Name() string {
 	return "CrOS Install"
 }
+
+func (s CrOSInstallState) Retry() bool {
+	return false
+}

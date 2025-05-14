@@ -70,3 +70,7 @@ func (c *InstallPartitionsCommand) GetErrorMessage() string {
 func (c *InstallPartitionsCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED
 }
+
+func (c *InstallPartitionsCommand) Retry() bool {
+	return false
+}

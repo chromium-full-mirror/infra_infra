@@ -63,3 +63,7 @@ func (c *WaitForDutToStabilizeCommand) GetErrorMessage() string {
 func (c *WaitForDutToStabilizeCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_STABLIZE_DUT_FAILED
 }
+
+func (c *WaitForDutToStabilizeCommand) Retry() bool {
+	return false
+}

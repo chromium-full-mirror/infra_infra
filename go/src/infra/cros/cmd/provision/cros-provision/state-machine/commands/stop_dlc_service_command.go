@@ -46,3 +46,7 @@ func (c *StopDLCServiceCommand) GetErrorMessage() string {
 func (c *StopDLCServiceCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *StopDLCServiceCommand) Retry() bool {
+	return false
+}

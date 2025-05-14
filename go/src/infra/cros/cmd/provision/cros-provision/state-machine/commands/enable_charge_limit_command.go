@@ -93,3 +93,7 @@ func (c *EnableChargeLimitCommand) GetErrorMessage() string {
 func (c *EnableChargeLimitCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *EnableChargeLimitCommand) Retry() bool {
+	return false
+}

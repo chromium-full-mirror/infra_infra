@@ -56,3 +56,7 @@ func (s OSInstallState) Next() commonutils.ServiceState {
 func (s OSInstallState) Name() string {
 	return "Android OS Install State"
 }
+
+func (s OSInstallState) Retry() bool {
+	return false
+}

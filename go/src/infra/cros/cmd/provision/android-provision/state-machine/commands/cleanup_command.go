@@ -64,3 +64,7 @@ func (c *CleanupCommand) GetStatus() api.InstallResponse_Status {
 	}
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *CleanupCommand) Retry() bool {
+	return false
+}

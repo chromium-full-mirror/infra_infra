@@ -143,3 +143,7 @@ func getProvisionFiles(files []string) []string {
 	}
 	return provisionFiles
 }
+
+func (c *CopyDataCommand) Retry() bool {
+	return false
+}

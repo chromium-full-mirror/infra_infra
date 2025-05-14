@@ -61,3 +61,7 @@ func (c *InstallAPKCommand) GetErrorMessage() string {
 func (c *InstallAPKCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *InstallAPKCommand) Retry() bool {
+	return false
+}

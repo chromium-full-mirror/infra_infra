@@ -55,3 +55,7 @@ func (s FoilPostState) Next() commonutils.ServiceState {
 func (s FoilPostState) Name() string {
 	return "Foil Post Instsll"
 }
+
+func (s FoilPostState) Retry() bool {
+	return false
+}

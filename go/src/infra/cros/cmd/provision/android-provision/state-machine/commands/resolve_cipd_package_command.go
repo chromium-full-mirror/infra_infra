@@ -116,3 +116,7 @@ func (c *ResolveCIPDPackageCommand) resolvePackageName(cipdPackageProto *api.CIP
 	}
 	return nil
 }
+
+func (c *ResolveCIPDPackageCommand) Retry() bool {
+	return false
+}

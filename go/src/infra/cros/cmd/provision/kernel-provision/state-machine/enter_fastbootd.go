@@ -39,3 +39,7 @@ func (s *EnterFastbootdState) Next() commonutils.ServiceState {
 func (s *EnterFastbootdState) Name() string {
 	return "Kernel-Provision Enter Fastbootd"
 }
+
+func (s *EnterFastbootdState) Retry() bool {
+	return false
+}

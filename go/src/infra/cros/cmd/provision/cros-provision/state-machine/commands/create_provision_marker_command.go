@@ -48,3 +48,7 @@ func (c *CreateProvisionMarkerCommand) GetErrorMessage() string {
 func (c *CreateProvisionMarkerCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION
 }
+
+func (c *CreateProvisionMarkerCommand) Retry() bool {
+	return false
+}

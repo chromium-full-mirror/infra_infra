@@ -58,3 +58,7 @@ func (c *RestartADBCommand) GetErrorMessage() string {
 func (c *RestartADBCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION
 }
+
+func (c *RestartADBCommand) Retry() bool {
+	return false
+}

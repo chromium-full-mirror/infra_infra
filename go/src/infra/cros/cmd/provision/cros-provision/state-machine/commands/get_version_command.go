@@ -77,3 +77,7 @@ func (c *GetVersionCommand) GetErrorMessage() string {
 func (c *GetVersionCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED
 }
+
+func (c *GetVersionCommand) Retry() bool {
+	return false
+}

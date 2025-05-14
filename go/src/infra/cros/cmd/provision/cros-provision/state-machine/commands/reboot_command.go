@@ -103,3 +103,7 @@ func (c *RebootCommand) GetErrorMessage() string {
 func (c *RebootCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_DUT_UNREACHABLE_POST_PROVISION
 }
+
+func (c *RebootCommand) Retry() bool {
+	return false
+}

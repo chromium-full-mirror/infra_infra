@@ -70,3 +70,7 @@ func (c *GetBoardCommand) GetErrorMessage() string {
 func (c *GetBoardCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *GetBoardCommand) Retry() bool {
+	return false
+}

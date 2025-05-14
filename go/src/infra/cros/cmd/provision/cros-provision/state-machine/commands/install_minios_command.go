@@ -78,3 +78,7 @@ func (c *InstallMiniOSCommand) GetErrorMessage() string {
 func (c *InstallMiniOSCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_UPDATE_MINIOS_FAILED
 }
+
+func (c *InstallMiniOSCommand) Retry() bool {
+	return false
+}

@@ -55,3 +55,7 @@ func (s RebootFromUSBState) Next() commonutils.ServiceState {
 func (s RebootFromUSBState) Name() string {
 	return "Reboot from USB State"
 }
+
+func (s RebootFromUSBState) Retry() bool {
+	return false
+}

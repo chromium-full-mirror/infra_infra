@@ -64,3 +64,7 @@ func (c *FetchCIPDPackageCommand) GetErrorMessage() string {
 func (c *FetchCIPDPackageCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_CIPD_PACKAGE_FETCH_FAILED
 }
+
+func (c *FetchCIPDPackageCommand) Retry() bool {
+	return false
+}

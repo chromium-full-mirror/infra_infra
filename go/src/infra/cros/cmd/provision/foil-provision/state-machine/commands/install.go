@@ -206,3 +206,7 @@ func install(log *log.Logger, lcpid string, addr, localImagePath string) (string
 
 	return status, fmt.Errorf("unable to find successful status.")
 }
+
+func (c *Install) Retry() bool {
+	return false
+}

@@ -62,3 +62,7 @@ func (c *CheckFirmwareSlotCommand) GetErrorMessage() string {
 func (c *CheckFirmwareSlotCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *CheckFirmwareSlotCommand) Retry() bool {
+	return false
+}

@@ -78,3 +78,7 @@ func (c *WaitForStickyKernel) GetErrorMessage() string {
 func (c *WaitForStickyKernel) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_STABLIZE_DUT_FAILED
 }
+
+func (c *WaitForStickyKernel) Retry() bool {
+	return false
+}

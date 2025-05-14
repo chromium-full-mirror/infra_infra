@@ -113,3 +113,7 @@ func (c *SwapStatefulPartitionCommand) GetErrorMessage() string {
 func (c *SwapStatefulPartitionCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *SwapStatefulPartitionCommand) Retry() bool {
+	return false
+}

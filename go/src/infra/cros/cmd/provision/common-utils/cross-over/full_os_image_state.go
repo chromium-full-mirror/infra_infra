@@ -302,3 +302,7 @@ func targetBuild(imagePath string) (string, error) {
 	}
 	return "", fmt.Errorf("could not extract buildId from %s", imagePath)
 }
+
+func (s FullOSImageState) Retry() bool {
+	return false
+}

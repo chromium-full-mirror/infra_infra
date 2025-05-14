@@ -49,3 +49,7 @@ func (c *VerifyInstall) GetErrorMessage() string {
 func (c *VerifyInstall) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_IMAGE_MISMATCH_POST_PROVISION_UPDATE
 }
+
+func (c *VerifyInstall) Retry() bool {
+	return false
+}

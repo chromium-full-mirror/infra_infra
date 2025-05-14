@@ -55,3 +55,7 @@ func (s OSFetchState) Next() commonutils.ServiceState {
 func (s OSFetchState) Name() string {
 	return "Android OS Fetch State"
 }
+
+func (s OSFetchState) Retry() bool {
+	return false
+}

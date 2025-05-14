@@ -152,3 +152,7 @@ func retryForceReconnect(ctx context.Context, log *log.Logger, dutClient api.Dut
 	}
 	return err
 }
+
+func (s ValidateState) Retry() bool {
+	return false
+}

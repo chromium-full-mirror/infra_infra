@@ -51,3 +51,7 @@ func (c *GetEnginePid) GetErrorMessage() string {
 func (c *GetEnginePid) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED
 }
+
+func (c *GetEnginePid) Retry() bool {
+	return false
+}

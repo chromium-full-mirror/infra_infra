@@ -97,3 +97,7 @@ func (s CrossOverInitState) Next() commonutils.ServiceState {
 func (s CrossOverInitState) Name() string {
 	return "Cross Over Init State"
 }
+
+func (s CrossOverInitState) Retry() bool {
+	return false
+}

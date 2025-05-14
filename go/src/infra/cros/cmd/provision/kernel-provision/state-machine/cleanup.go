@@ -39,3 +39,7 @@ func (s *KernelProvisionCleanUpState) Next() commonutils.ServiceState {
 func (s *KernelProvisionCleanUpState) Name() string {
 	return "Kernel-Provision Clean Up"
 }
+
+func (s *KernelProvisionCleanUpState) Retry() bool {
+	return false
+}

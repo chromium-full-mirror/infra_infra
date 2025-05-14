@@ -49,3 +49,7 @@ func (s CrOSVerifyState) Next() commonutils.ServiceState {
 func (s CrOSVerifyState) Name() string {
 	return "CrOS Verify"
 }
+
+func (s CrOSVerifyState) Retry() bool {
+	return false
+}

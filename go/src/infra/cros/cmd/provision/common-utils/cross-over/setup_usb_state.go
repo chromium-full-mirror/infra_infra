@@ -73,3 +73,7 @@ func (s SetupUSBState) Next() commonutils.ServiceState {
 func (s SetupUSBState) Name() string {
 	return "Setup USB State"
 }
+
+func (s SetupUSBState) Retry() bool {
+	return false
+}

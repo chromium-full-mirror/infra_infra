@@ -55,3 +55,7 @@ func (c *ClearTPMCommand) GetErrorMessage() string {
 func (c *ClearTPMCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_CLEAR_TPM_FAILED
 }
+
+func (c *ClearTPMCommand) Retry() bool {
+	return false
+}

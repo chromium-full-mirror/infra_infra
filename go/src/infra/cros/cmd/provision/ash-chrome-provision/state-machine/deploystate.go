@@ -47,3 +47,7 @@ func (s DeployState) Next() commonutils.ServiceState {
 func (s DeployState) Name() string {
 	return "Deploy State"
 }
+
+func (s DeployState) Retry() bool {
+	return false
+}

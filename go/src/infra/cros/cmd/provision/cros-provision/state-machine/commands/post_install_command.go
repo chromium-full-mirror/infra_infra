@@ -92,3 +92,7 @@ func (c *PostInstallCommand) GetErrorMessage() string {
 func (c *PostInstallCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED
 }
+
+func (c *PostInstallCommand) Retry() bool {
+	return false
+}

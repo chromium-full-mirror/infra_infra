@@ -73,3 +73,7 @@ func (s CrossOverTerminateState) Next() commonutils.ServiceState {
 func (s CrossOverTerminateState) Name() string {
 	return "Cross Over Terminate State"
 }
+
+func (s CrossOverTerminateState) Retry() bool {
+	return false
+}

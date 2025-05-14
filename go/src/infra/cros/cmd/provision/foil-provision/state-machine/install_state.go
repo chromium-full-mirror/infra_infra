@@ -99,3 +99,7 @@ func (s FoilInstallState) Next() commonutils.ServiceState {
 func (s FoilInstallState) Name() string {
 	return "Foil Install"
 }
+
+func (s FoilInstallState) Retry() bool {
+	return false
+}

@@ -85,3 +85,7 @@ func (c *ProvisionStatefulCommand) GetErrorMessage() string {
 func (c *ProvisionStatefulCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_PROVISIONING_FAILED
 }
+
+func (c *ProvisionStatefulCommand) Retry() bool {
+	return false
+}

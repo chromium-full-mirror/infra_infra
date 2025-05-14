@@ -61,3 +61,7 @@ func (s PrepareState) Next() commonutils.ServiceState {
 func (s PrepareState) Name() string {
 	return "Android Prepare State"
 }
+
+func (s PrepareState) Retry() bool {
+	return false
+}

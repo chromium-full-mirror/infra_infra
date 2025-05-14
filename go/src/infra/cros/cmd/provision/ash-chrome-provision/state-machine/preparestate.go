@@ -62,3 +62,7 @@ func (s AshChromePrepareState) Next() commonutils.ServiceState {
 func (s AshChromePrepareState) Name() string {
 	return "Ash Chrome Prepare"
 }
+
+func (s AshChromePrepareState) Retry() bool {
+	return false
+}

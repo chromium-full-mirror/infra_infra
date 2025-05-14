@@ -202,3 +202,7 @@ func (c *UploadAPKToGSCommand) resolveGmsCoreApkName(apkDetails *api.ApkDetails)
 	}
 	return fmt.Sprintf("gmscore_%s_arm64_%s_release.apk", platform, dpi), nil
 }
+
+func (c *UploadAPKToGSCommand) Retry() bool {
+	return false
+}

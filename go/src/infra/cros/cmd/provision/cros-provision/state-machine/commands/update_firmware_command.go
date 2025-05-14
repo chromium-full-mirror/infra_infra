@@ -50,3 +50,7 @@ func (c *RunFirmwareUpdaterCommand) GetErrorMessage() string {
 func (c *RunFirmwareUpdaterCommand) GetStatus() api.InstallResponse_Status {
 	return api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED
 }
+
+func (c *RunFirmwareUpdaterCommand) Retry() bool {
+	return false
+}
