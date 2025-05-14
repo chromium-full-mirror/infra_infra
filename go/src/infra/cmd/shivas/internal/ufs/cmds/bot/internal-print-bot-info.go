@@ -140,23 +140,25 @@ func getBrowserBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string
 		}
 		return nil, err
 	}
-	var state string
-	var zone string
+	var state, zone, maintenanceConfig string
 	if resp.GetBrowserDeviceData().GetHost() != nil {
 		state = dutstate.ConvertFromUFSState(resp.GetBrowserDeviceData().GetHost().GetResourceState()).String()
 		zone = resp.GetBrowserDeviceData().GetHost().GetZone()
+		maintenanceConfig = resp.GetBrowserDeviceData().GetHost().GetMaintenanceConfigName()
 	} else {
 		state = dutstate.ConvertFromUFSState(resp.GetBrowserDeviceData().GetVm().GetResourceState()).String()
 		zone = resp.GetBrowserDeviceData().GetVm().GetZone()
 	}
-	return &botInfo{
-		Dimensions: map[string][]string{
-			"ufs_state": {state},
-			// Duplicate state to dut_state to reuse analytics logic built for ChromeOS lab
-			"dut_state": {state},
-			"ufs_zone":  {zone},
-		},
-	}, nil
+	dims := map[string][]string{
+		"ufs_state": {state},
+		// Duplicate state to dut_state to reuse analytics logic built for ChromeOS lab
+		"dut_state": {state},
+		"ufs_zone":  {zone},
+	}
+	if maintenanceConfig != "" {
+		dims["maintenance_config"] = []string{maintenanceConfig}
+	}
+	return &botInfo{Dimensions: dims}, nil
 }
 
 func getOSBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string, byHostname bool, r swarming.ReportFunc) (*botInfo, error) {
