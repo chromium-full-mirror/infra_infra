@@ -13,12 +13,13 @@ import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.prot
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/pasit.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_host.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 26
+// Peripherals of device. Next Tag: 27
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -61,7 +62,9 @@ message Peripherals {
   // The host and topology used in peripheral interop test beds.
   reserved "pasit_host";
   reserved 23;
+  // TODO(b/415825020): Remove pasit_host2 and use pasit instead.
   chromiumos.test.lab.api.PasitHost pasit_host2 = 24;
+  Pasit pasit = 26;
   // Indicate if the DUT is equipped with Intel AMT.
   AMTManager amt_manager = 25;
 }

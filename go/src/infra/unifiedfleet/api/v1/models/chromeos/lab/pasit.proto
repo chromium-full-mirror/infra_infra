@@ -1,0 +1,78 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models.chromeos.lab;
+
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+
+// PASIT is a connected set of peripheral components used in interop testing.
+// The components connected are controlled via an external host. Pasit
+// describes the devices in the testbed and their connection topology.
+message Pasit {
+  // The name of the host that controls the devices (e.g. switches)
+  string hostname = 1;
+  // The components/devices in the PASIT testbed (e.g. docks, switches, cameras,
+  // monitors, etc)
+  repeated Device devices = 2;
+  // The connections between devices/components in the testbed.
+  repeated Connection connections = 3;
+
+  // A single connection between two components in the topology.
+  message Connection {
+    // If the parent device has multiple connection ports/slots,
+    // this is the name or id of the port.
+    string parent_port = 1;
+    // The ID of the parent component;
+    string parent_id = 2;
+    // The ID of the child component;
+    string child_id = 3;
+    // The speed of the connection.
+    float speed = 4;
+    // The physical port type/technology, e.g. "USBA", "USBC", "HDMI".
+    string type = 5;
+  }
+
+  // A single device/component in the testbed.
+  message Device {
+    // The unique ID of the device. This is not unique across all devices,
+    // in the lab but is unique within a testbed.
+    string id = 1;
+    // The the make/model of the device.
+    string model = 2;
+    // The type of device represented.
+    Type type = 3;
+    // Additional power supply information for devices that provide
+    // power to the DUT.
+    PowerSupply power_supply = 4;
+    // Optional RPM if one exists
+    OSRPM rpm = 5;
+
+    // The type of device represented.
+    enum Type {
+      UNKNOWN = 0;
+      DUT = 1;
+      SWITCH_FIXTURE = 2;
+      DOCKING_STATION = 3;
+      MONITOR = 4;
+      CAMERA = 5;
+      STORAGE = 6;
+      HID = 7;
+      NETWORK = 8;
+      HEADPHONE = 9;
+      SPEAKER = 10;
+      IP_POWER = 11;
+    }
+
+    // Information on the power capabilities of the device.
+    message PowerSupply {
+      float current = 1;
+      float voltage = 2;
+      float power = 3;
+    }
+  }
+}
