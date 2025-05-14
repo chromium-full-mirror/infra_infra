@@ -33,7 +33,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RW] extracting AP image to flash\n")
 		mainRwPath, err = firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, mainRwMetadata, s.service.GetMainRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
 		}
 		futilityImageArgs = []string{fmt.Sprint("--image=", mainRwPath)}
 	}
@@ -44,7 +44,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RW] extracting EC-RW image to flash\n")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
 		}
 
 		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRwPath, ecRwPath)

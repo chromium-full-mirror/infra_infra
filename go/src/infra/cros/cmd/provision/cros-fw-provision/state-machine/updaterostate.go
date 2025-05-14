@@ -64,7 +64,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting EC image to flash")
 		ecRoPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRoMetadata, s.service.GetEcRoPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
 		}
 		if s.service.IsServoUsed() {
 			log.Printf("[FW Provisioning: Update RO] separately flashing EC over Servo with flash_ec")
@@ -90,7 +90,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting AP image to flash")
 		mainRoPath, err = firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, mainRoMetadata, s.service.GetMainRoPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
 		}
 		futilityImageArgs = append(futilityImageArgs, []string{fmt.Sprint("--image=", mainRoPath)}...)
 		hasCSME, err := s.service.CheckForCSMESections(ctx, mainRoPath)
@@ -110,7 +110,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
 		}
 		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRoPath, ecRwPath)
 		if err != nil {
