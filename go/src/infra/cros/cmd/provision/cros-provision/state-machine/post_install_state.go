@@ -32,7 +32,6 @@ func (s CrOSPostInstallState) Execute(ctx context.Context, log *log.Logger) (*an
 		commands.NewWaitForStickyKernel(ctx, s.service),
 		commands.NewStopSystemDaemonsCommand(ctx, s.service),
 		commands.NewProvisionStatefulCommand(ctx, s.service),
-		commands.NewClearTPMCommand(ctx, s.service),
 		commands.NewRebootCommand(ctx, s.service),
 		commands.NewOverwriteInstalCommand(ctx, s.service),
 		commands.NewGetRootInfoCommand(ctx, s.service),
