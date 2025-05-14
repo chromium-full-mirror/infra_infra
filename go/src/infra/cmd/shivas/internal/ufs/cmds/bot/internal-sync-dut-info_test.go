@@ -43,7 +43,7 @@ func TestGetNamespace(t *testing.T) {
 		//t.Parallel() -- sets environment variables, cannot be parallelized.
 		t.Setenv("SHIVAS_NAMESPACE", "")
 		t.Run(tt.name, func(t *testing.T) {
-			c := printBotInfoRun{}
+			c := syncDUTInfoRun{}
 			c.envFlags.Register(&c.Flags)
 			err := c.GetFlags().Set("namespace", tt.passedNamespace)
 			if err != nil {
