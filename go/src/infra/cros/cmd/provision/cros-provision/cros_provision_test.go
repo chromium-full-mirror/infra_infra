@@ -116,6 +116,7 @@ var (
 	getForceProvisionMarker   = PathExistsCommandStructure{Path: "/mnt/stateful_partition/.force_provision"}
 	bootIDCheck               = RunCommandStructure{Command: "/bin/cat", Args: []string{"/proc/sys/kernel/random/boot_id"}}
 	sysrqTrigger              = RunCommandStructure{Command: "/bin/echo", Args: []string{"\"b\"", ">", "/proc/sysrq-trigger"}}
+	sync                      = RunCommandStructure{Command: "sync", Args: []string{}}
 )
 
 // WIPE STATEFUL CONSTANTS + COMMANDS
@@ -265,6 +266,7 @@ func TestStateTransitions(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, copyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 		getRestartCommand(sam).Return(nil),
 		getRunCmdCommand(sam, rootDevPartition).Return(deviceDiskRootA, nil),
@@ -448,6 +450,7 @@ func TestStateTransitionsInstallationFallback(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, copyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 		getRestartCommand(sam).Return(nil),
 		getRunCmdCommand(sam, rootDevPartition).Return(deviceDiskRootA, nil),
@@ -629,6 +632,7 @@ func TestMismatchPostInstall(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, copyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 		getRestartCommand(sam).Return(nil),
 		getRunCmdCommand(sam, rootDevPartition).Return(deviceDiskRootA, nil),
@@ -812,6 +816,7 @@ func TestSkipInstallAndResetDeviceState(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, drallionCopyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 		getRestartCommand(sam).Return(nil),
 		getRunCmdCommand(sam, chargeLimitEnabled).Return("", nil),
@@ -876,6 +881,7 @@ func TestSkipInstallAndResetDeviceStateZstFailure(t *testing.T) {
 		getPipeDataCommand(sam, drallionCopyZstStateful).Return(fmt.Errorf("some err")),
 		getPipeDataCommand(sam, drallionCopyStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 		getRestartCommand(sam).Return(nil),
 		getRunCmdCommand(sam, chargeLimitEnabled).Return("", nil),
@@ -1296,6 +1302,7 @@ func TestPostInstallStatePreservesStatefulWhenRequested(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, copyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 
 		getRestartCommand(sam).Return(nil),
@@ -1567,6 +1574,7 @@ func TestPostInstallOverwriteWhenSpecified(t *testing.T) {
 		getRunCmdCommand(sam, cleanPostInstall).Return("", nil),
 		getPipeDataCommand(sam, copyZstStateful).Return(nil),
 		getRunCmdCommand(sam, createUpdateAvailableFile).Return("", nil),
+		getRunCmdCommand(sam, sync).Return("", nil),
 		getRunCmdCommand(sam, crosSystem).Return("", nil),
 
 		getRestartCommand(sam).Return(nil),

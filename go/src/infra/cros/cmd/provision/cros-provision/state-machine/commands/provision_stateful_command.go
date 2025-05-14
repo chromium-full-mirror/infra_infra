@@ -63,6 +63,12 @@ func (c *ProvisionStatefulCommand) Execute(log *log.Logger) error {
 		log.Printf("ProvisionStatefulCommand UpdateStatefulFilePath FAILED")
 		return err
 	}
+
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "sync", []string{}); err != nil {
+		log.Printf("ProvisionStatefulCommand sync FAILED")
+		return err
+	}
+
 	log.Printf("ProvisionStatefulCommand UpdateStatefulFilePath Completed")
 	log.Printf("ProvisionStatefulCommand Success")
 	return nil
