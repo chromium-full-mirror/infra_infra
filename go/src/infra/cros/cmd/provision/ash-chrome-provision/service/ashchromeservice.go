@@ -29,6 +29,9 @@ import (
 
 var reBoard = regexp.MustCompile(`CHROMEOS_RELEASE_BOARD=(.*)`)
 
+const DRONE_SERVICE_ACCOUNT_PATH = "/creds/service_accounts/skylab-drone.json"
+const DRONE_SERVICE_ACCOUNT_GSUTIL_OPT = "Credentials:gs_service_key_file=/creds/service_accounts/skylab-drone.json"
+
 // AshChromeService implements ServiceInterface
 type AshChromeService struct {
 	// |connection| connects to the DUT.
@@ -139,8 +142,16 @@ func (service *AshChromeService) runWithTimeout(ctx context.Context, timeoutSecs
 // Download Chrome Artifacts
 func (service *AshChromeService) DownloadChromeArtifactsFromGS(ctx context.Context, gsPath string, dest string) error {
 	log.Printf("Downloading Chrome build artifacts from %s.", gsPath)
-	_, _, err := service.runWithTimeout(ctx, 1200, true, "gsutil", "-o", "Credentials:gs_service_key_file=/creds/service_accounts/skylab-drone.json",
-		"cp", gsPath, dest)
+	var err error
+	if _, e := os.Stat(DRONE_SERVICE_ACCOUNT_PATH); errors.Is(e, os.ErrNotExist) {
+		if _, _, err := service.runWithTimeout(ctx, 300, true, "gcloud", "auth", "list", "--format", "value(account)"); err != nil {
+			return err
+		}
+		_, _, err = service.runWithTimeout(ctx, 1200, true, "gsutil", "cp", gsPath, dest)
+	} else {
+		_, _, err = service.runWithTimeout(ctx, 1200, true, "gsutil", "-o", DRONE_SERVICE_ACCOUNT_GSUTIL_OPT,
+			"cp", gsPath, dest)
+	}
 
 	if err != nil {
 		log.Printf("Download Chrome artifact failed: %v", err)

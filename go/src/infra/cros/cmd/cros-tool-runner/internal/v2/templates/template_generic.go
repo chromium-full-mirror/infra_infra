@@ -59,6 +59,11 @@ func (p *genericProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		path := os.Getenv("DOCKER_CERT_PATH")
 		volumes = append(volumes, fmt.Sprintf("%s:%s", path, path))
 	}
+	// Required for ash-chrome-provision to download Chrome build artifacts from test-specific service account.
+	// env.IsCloudBot() is not checked here since both vmlab bot and cloudbot needs this. Just like cros-test.
+	if slices.Contains(envs, "USE_GCE_METADATA=True") {
+		envs = append(envs, gceMetadataEnvVars()...)
+	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  t.Expose,
