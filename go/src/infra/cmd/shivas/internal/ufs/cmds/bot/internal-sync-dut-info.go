@@ -64,6 +64,8 @@ type syncDUTInfoRun struct {
 
 	uploadHealthStatus string
 	downloadDUTInfo    bool
+
+	ufs ufsAPI.FleetClient
 }
 
 func (c *syncDUTInfoRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -85,28 +87,48 @@ func (c *syncDUTInfoRun) innerRun(a subcommands.Application, args []string, env 
 	}
 	e := c.envFlags.Env()
 
-	ns := c.getNamespace()
 	if c.commonFlags.Verbose() {
-		fmt.Printf("Using UnifiedFleet service %s (namespace %s)\n", e.UnifiedFleetService, ns)
+		fmt.Printf("Using UnifiedFleet service %s (namespace %s)\n", e.UnifiedFleetService, c.getNamespace())
 	}
-	ctx = utils.SetupContext(ctx, ns)
+	ctx = utils.SetupContext(ctx, c.getNamespace())
 
-	ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	c.ufs = ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
-	stderr := a.GetErr()
-	r := func(e error) { fmt.Fprintf(stderr, "sanitize dimensions: %s\n", err) }
-	var bi *botInfo
 
-	if ns == ufsUtil.BrowserNamespace {
-		if bi, err = getBrowserBotInfo(ctx, ufsClient, args[0]); err != nil {
-			return err
+	if err := c.uploadHealth(ctx, a, args[0]); err != nil {
+		return err
+	}
+
+	if err := c.downloadInfo(ctx, a, args[0]); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *syncDUTInfoRun) uploadHealth(ctx context.Context, a subcommands.Application, dutID string) error {
+	return nil
+}
+
+// downloadInfo downloads DUT info from UFS and prints out.
+func (c *syncDUTInfoRun) downloadInfo(ctx context.Context, a subcommands.Application, dutID string) error {
+	if !c.downloadDUTInfo {
+		return nil
+	}
+	stderr := a.GetErr()
+	r := func(err error) { fmt.Fprintf(stderr, "sanitize dimensions: %s\n", err) }
+	var bi *botInfo
+	var err error
+
+	if ns := c.getNamespace(); ns == ufsUtil.BrowserNamespace {
+		if bi, err = getBrowserBotInfo(ctx, c.ufs, dutID); err != nil {
+			return fmt.Errorf("download info (%q): %w", ns, err)
 		}
 	} else {
-		if bi, err = getOSBotInfo(ctx, ufsClient, args[0], c.byHostname, r); err != nil {
-			return err
+		if bi, err = getOSBotInfo(ctx, c.ufs, dutID, c.byHostname, r); err != nil {
+			return fmt.Errorf("download info (%q): %w", ns, err)
 		}
 	}
 
