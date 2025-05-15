@@ -76,80 +76,56 @@ func Escape(s string) string {
 // RunDUTCommand runs a command on the DUT and returns stdout, stderr, and an error if it failed.
 // CAUTION: The args are concatenated with no quoting, so beware of spaces and shell chars in filenames.
 func RunDUTCommand(ctx context.Context, dut api.DutServiceClient, timeout time.Duration, cmd string, args []string, stdin []byte) (string, string, error) {
-	type execCmdResult struct {
-		response string
-		stderr   string
-		err      error
-	}
-
-	// Channel used to receive the result from ExecCommand function.
-	ch := make(chan execCmdResult, 1)
-
 	// Create a context with the specified timeout.
 	ctxTimeout, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	log.Printf("RunDUTCommand START: %s %s", cmd, args)
 
-	// Start the execCmd function.
-	go func() {
-		req := api.ExecCommandRequest{
-			Command: cmd,
-			Args:    args,
-			Stdout:  api.Output_OUTPUT_PIPE,
-			Stderr:  api.Output_OUTPUT_PIPE,
-			Stdin:   stdin,
-		}
-		stream, err := dut.ExecCommand(ctx, &req)
-		if err != nil {
-			ch <- execCmdResult{err: fmt.Errorf("execution fail: %w", err)}
-			return
-		}
-
-		var stdout strings.Builder
-		var stderr strings.Builder
-		var exitInfo *api.ExecCommandResponse_ExitInfo
-		for {
-			execCmdResponse, err := stream.Recv()
-			if err != nil {
-				if err == io.EOF {
-					break
-				} else {
-					ch <- execCmdResult{
-						response: stdout.String(),
-						stderr:   stderr.String(),
-						err:      fmt.Errorf("<run-dut-command> error: %w", err),
-					}
-					return
-				}
-			}
-			if execCmdResponse.Stdout != nil {
-				stdout.Write(execCmdResponse.Stdout)
-			}
-
-			if execCmdResponse.Stderr != nil {
-				stderr.Write(execCmdResponse.Stderr)
-			}
-
-			if execCmdResponse.ExitInfo != nil {
-				exitInfo = execCmdResponse.ExitInfo
-			}
-		}
-
-		if exitInfo == nil {
-			err = fmt.Errorf("Expected ExitInfo, command status unknown")
-		} else if exitInfo.Status != 0 {
-			err = fmt.Errorf("status:%v message:%v", exitInfo.Status, exitInfo.ErrorMessage)
-		}
-		ch <- execCmdResult{response: stdout.String(), stderr: stderr.String(), err: err}
-	}()
-
-	select {
-	case <-ctxTimeout.Done():
-		return "", "", fmt.Errorf("timeout %s reached", timeout)
-	case result := <-ch:
-		return result.response, result.stderr, result.err
+	req := api.ExecCommandRequest{
+		Command: cmd,
+		Args:    args,
+		Stdout:  api.Output_OUTPUT_PIPE,
+		Stderr:  api.Output_OUTPUT_PIPE,
+		Stdin:   stdin,
 	}
+	stream, err := dut.ExecCommand(ctxTimeout, &req)
+	if err != nil {
+		return "", "", fmt.Errorf("execution fail: %w", err)
+	}
+
+	var stdout strings.Builder
+	var stderr strings.Builder
+	var exitInfo *api.ExecCommandResponse_ExitInfo
+	for {
+		execCmdResponse, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				return stdout.String(), stderr.String(), fmt.Errorf("<run-dut-command> error: %w", err)
+			}
+		}
+		if execCmdResponse.Stdout != nil {
+			stdout.Write(execCmdResponse.Stdout)
+		}
+
+		if execCmdResponse.Stderr != nil {
+			stderr.Write(execCmdResponse.Stderr)
+		}
+
+		if execCmdResponse.ExitInfo != nil {
+			exitInfo = execCmdResponse.ExitInfo
+		}
+	}
+
+	if exitInfo == nil {
+		err = fmt.Errorf("Expected ExitInfo, command status unknown")
+	} else if exitInfo.Status != 0 {
+		err = fmt.Errorf("status:%v message:%v", exitInfo.Status, exitInfo.ErrorMessage)
+	}
+
+	return stdout.String(), stderr.String(), err
 }
 
 // ExtractFile calls the cache server to extract a file to the DUT, and retries on 5xx http errors.
