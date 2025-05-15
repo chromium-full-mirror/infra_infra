@@ -221,8 +221,7 @@ def GenTests(api):
   def _step_data_changed_files(directory, files):
     return api.step_data(
         'check changes.get change list on %s' % directory,
-        api.raw_io.stream_output_text('\n'.join(files)),
-        stream='stdout')
+        api.raw_io.stream_output_text('\n'.join(files)))
 
   yield (api.test('ci') + _ci_build() +
          _step_data_changed_files('client', ['client/foo.py']) +
