@@ -4279,7 +4279,7 @@ plans:
                 - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                   exec_name: dut_is_in_pool
                   exec_args:
-                    - satlab_faft
+                    - keep_dev_mode
                     - mp_firmware_testing
                   docs:
                     - Verify that pools are allowed to stay in DEV mode.
@@ -4665,7 +4665,7 @@ plans:
                 - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                   exec_name: dut_is_in_pool
                   exec_args:
-                    - satlab_faft
+                    - keep_dev_mode
                     - mp_firmware_testing
                   docs:
                     - Verify that pools are allowed to stay in DEV mode.
@@ -5097,6 +5097,7 @@ plans:
                 - faft-experimental
                 - faft-test
                 - satlab_faft
+                - need_healthy_servo
               docs:
                 - List of pools that require a good servo.
         - name: 'Set state: ready (RUN_ONCE)'
