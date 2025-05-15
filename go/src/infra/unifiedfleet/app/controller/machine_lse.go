@@ -811,7 +811,7 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 	return nil
 }
 
-// publishLSEsEvent publishes MachineLSE evnets to a pubsub topic.
+// publishLSEsEvent publishes MachineLSE events to a pubsub topic.
 func publishLSEsEvent(ctx context.Context, experimentName string, lses ...*ufspb.MachineLSE) {
 	if rand.Float32() > config.Get(ctx).GetSendMessagesToPubsubRatio() {
 		return

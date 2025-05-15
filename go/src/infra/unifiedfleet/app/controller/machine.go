@@ -107,29 +107,7 @@ func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Ma
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return nil, errors.Annotate(err, "MachineRegistration").Err()
 	}
-
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming MachineRegistration results.")
-		// Create a new object so we are not accidentally mutating the original struct.
-		pubsubMachine := proto.Clone(machine).(*ufspb.Machine)
-		// Generate the message for Pub/Sub
-		row := apibq.MachineRow{
-			Machine: pubsubMachine,
-			Delete:  false,
-		}
-
-		data, err_ps := json.Marshal(row)
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			return machine, nil
-		}
-		// Publish the message via Pub/Sub.
-		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-		}
-	}
-
+	publishMachinesEvent(ctx, "MachineRegistration", false, machine)
 	return machine, nil
 }
 
@@ -275,28 +253,7 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		setMachine(ctx, machine)
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming UpdateMachine results.")
-		// Create a new object so we are not accidentally mutating the original struct.
-		pubsubMachine := proto.Clone(updatedMachine).(*ufspb.Machine)
-		// Generate the message for Pub/Sub
-		row := apibq.MachineRow{
-			Machine: pubsubMachine,
-			Delete:  false,
-		}
-		data, err_ps := json.Marshal(row)
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			return machine, nil
-		}
-
-		// Publish the message via Pub/Sub.
-		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-		}
-	}
-
+	publishMachinesEvent(ctx, "UpdateMachine", false, updatedMachine)
 	return machine, nil
 }
 
@@ -705,35 +662,7 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 		}
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		// Publish the list to Pub/Sub.
-		if len(machines) > 0 {
-			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming ListMachines results.")
-			// Generate the message for Pub/Sub
-			msgs := [][]byte{}
-			for _, machine := range machines {
-				// Create a new object so we are not accidentally mutating the original struct.
-				pubsubMachine := proto.Clone(machine).(*ufspb.Machine)
-				row := apibq.MachineRow{
-					Machine: pubsubMachine,
-					Delete:  false,
-				}
-				data, err_ps := json.Marshal(row)
-				if err_ps != nil {
-					logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-					return machines, nextPageToken, err
-				}
-				msgs = append(msgs, data)
-			}
-
-			// Publish the message via Pub/Sub.
-			err_ps := publish(ctx, machinePubsubTopicID, msgs)
-			if err_ps != nil {
-				logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			}
-		}
-	}
-
+	publishMachinesEvent(ctx, "ListMachines", false, machines...)
 	return machines, nextPageToken, err
 }
 
@@ -846,28 +775,7 @@ func DeleteMachine(ctx context.Context, id string) error {
 		return errors.Annotate(err, "DeleteMachine").Err()
 	}
 
-	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
-		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming DeleteMachine results.")
-		// Create a new object so we are not accidentally mutating the original struct.
-		pubsubMachine := proto.Clone(existingMachine).(*ufspb.Machine)
-		// Generate the message for Pub/Sub
-		row := apibq.MachineRow{
-			Machine: pubsubMachine,
-			Delete:  true,
-		}
-		data, err_ps := json.Marshal(row)
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-			return nil
-		}
-
-		// Publish the message via Pub/Sub.
-		err_ps = publish(ctx, machinePubsubTopicID, [][]byte{data})
-		if err_ps != nil {
-			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
-		}
-	}
-
+	publishMachinesEvent(ctx, "DeleteMachine", true, existingMachine)
 	return nil
 }
 
@@ -1468,4 +1376,36 @@ func updateDeviceLabelsForMachine(ctx context.Context, machine *ufspb.Machine, m
 		}
 	}
 	return nil
+}
+
+// publishMachinesEvent publishes Machine events to a pubsub topic.
+func publishMachinesEvent(ctx context.Context, experimentName string, del bool, machines ...*ufspb.Machine) {
+	if rand.Float32() > config.Get(ctx).GetSendMessagesToPubsubRatio() {
+		return
+	}
+	if len(machines) == 0 {
+		return
+	}
+	logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming %s results.", experimentName)
+	// Generate the message for Pub/Sub
+	msgs := [][]byte{}
+	for _, machine := range machines {
+		// Create a new object so we are not accidentally mutating the original struct.
+		pubsubMachine := proto.Clone(machine).(*ufspb.Machine)
+		row := &apibq.MachineRow{
+			Machine: pubsubMachine,
+			Delete:  del,
+		}
+		data, err := json.Marshal(row)
+		if err != nil {
+			logging.Warningf(ctx, "pubsub_stream error: %s", err.Error())
+			return
+		}
+		msgs = append(msgs, data)
+	}
+	// Publish the message via Pub/Sub.
+	err := publish(ctx, machinePubsubTopicID, msgs)
+	if err != nil {
+		logging.Warningf(ctx, "pubsub_stream error: %s", err.Error())
+	}
 }
