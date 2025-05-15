@@ -38,8 +38,11 @@ func (s FirmwarePrepareState) Execute(ctx context.Context, log *log.Logger) (*ap
 	}
 
 	// Android doesn't have python3, crosid, or config.yaml
-	// TODO: Rewrite the python3 parts in simple shell.
-	if !s.service.IsAndroid() {
+	if s.service.IsAndroid() {
+		if err := s.service.ReadFRID(ctx); err != nil {
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
+		}
+	} else {
 		_, out, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, 10*time.Second, "which", []string{"python3"}, nil)
 		if err != nil {
 			log.Printf("python3 not found:%s", err)

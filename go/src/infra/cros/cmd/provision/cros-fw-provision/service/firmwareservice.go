@@ -880,6 +880,87 @@ type configData struct {
 	}
 }
 
+// ReadAPFRID reads the AP FRID from the DUT.
+func (fws *FirmwareService) ReadAPFRID(ctx context.Context) (string, error) {
+	// The AP FRID should match this pattern.
+	// See http://crrev.com/c/6483336.
+	re, err := regexp.Compile(`^Google_([^\.]+)`)
+
+	out, err := fws.connection.RunCmd(ctx, "crossystem ro_fwid", nil)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to run crossystem fwid")
+	}
+
+	m := re.FindStringSubmatch(out)
+	if m == nil {
+		return "", fmt.Errorf("Failed to extract firmware name from %q", out)
+	}
+
+	return m[1], nil
+}
+
+// ReadECFRID reads the EC FRID from the DUT.
+func (fws *FirmwareService) ReadECFRID(ctx context.Context) (string, error) {
+	regexes := [...]string{
+		// The EC FRID should match this pattern.
+		// e.g., RO cros fwid:  osiris_16257.0.25_05_07
+		`(?m)^RO cros fwid:\s+(\w+)+_(?:v\d\.|\d+\.)`,
+
+		// Older devices we need to use the version.
+		//
+		// For Example:
+		// RO version:    reef_v1.1.5857-77f6ed7
+		// RO version:    geralt_v3.5.119161-ec:dc7985,os
+		// RO version:    reef-9264.0.0
+		// RO version:    rex-ish-ec-15709.72.0
+		// RO version:    voltorb_v3.3.108574-ec:017e8c,o
+		`(?m)^RO version:\s+([\w -]+)(?:-\d+\.\d+\.\d+|_v\d+\.\d+\.\d+-\S+)`,
+	}
+	out, err := fws.connection.RunCmd(ctx, "ectool version", nil)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to run ectool version")
+	}
+
+	for _, re_str := range regexes {
+		re, err := regexp.Compile(re_str)
+		if err != nil {
+			return "", errors.Wrapf(err, "Failed to compile regex: %s", re_str)
+		}
+		m := re.FindStringSubmatch(out)
+		if m != nil {
+			return m[1], nil
+		}
+	}
+
+	return "", fmt.Errorf("Failed to extract firmware name from %q", out)
+}
+
+// ReadFRID reads the FRID from the DUT to compute the firmware binary names that should be used.
+func (fws *FirmwareService) ReadFRID(ctx context.Context) error {
+	if frid, err := fws.ReadAPFRID(ctx); err == nil {
+		fws.CorebootName = strings.ToLower(frid)
+	} else {
+		return err
+	}
+
+	if frid, err := fws.ReadECFRID(ctx); err == nil {
+		// b/418010995 - `chromeos-zephyr` is using the `image-name` for the target
+		// name. `chromeos-ec` uses the `ec` as the target name. Since this code
+		// is only used for Android and brya is the only non-zephyr board and
+		// brya has `image-name == ec` for all models then we can assume the
+		// LegacyEcName == image-name. We don't actually have the image-name saved
+		// anywhere in the firmware, so we use the coreboot name as a proxy.
+		fws.LegacyECName = fws.CorebootName
+		fws.StandaloneECName = strings.ToLower(frid)
+	} else {
+		return err
+	}
+
+	log.Printf("FRID image names AP: %s, EC(legacy): %s, EC(standalone): %s", fws.CorebootName, fws.LegacyECName, fws.StandaloneECName)
+
+	return nil
+}
+
 // ReadConfigYAML downloads config.yaml from the DUT and find the firmware binary names that should be used.
 func (fws *FirmwareService) ReadConfigYAML(ctx context.Context) error {
 	out, err := fws.connection.RunCmd(ctx, "crosid", nil)
