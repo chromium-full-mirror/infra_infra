@@ -6,7 +6,9 @@ package templates
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -16,6 +18,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 type genericProcessor struct {
@@ -63,6 +66,22 @@ func (p *genericProcessor) Process(request *api.StartTemplatedContainerRequest) 
 	// env.IsCloudBot() is not checked here since both vmlab bot and cloudbot needs this. Just like cros-test.
 	if slices.Contains(envs, "USE_GCE_METADATA=True") {
 		envs = append(envs, gceMetadataEnvVars()...)
+	}
+	if dirs := slices.DeleteFunc(append([]string{}, envs...), func(s string) bool { return !strings.HasPrefix(s, "USE_CLOUDBOT_SSH_CONFIG=") }); len(dirs) != 0 && env.IsCloudBot() {
+		dir := strings.TrimPrefix(dirs[0], "USE_CLOUDBOT_SSH_CONFIG=")
+		hostSshConfig := "/home/chrome-bot/.ssh/config"
+		cntSshConfig := filepath.Join(dir, ".ssh/config")
+		log.Printf("will mount %s to %s.", hostSshConfig, cntSshConfig)
+		if _, err := os.Stat(hostSshConfig); err != nil {
+			log.Printf("warning: cloudbots .ssh/config file does not exist.")
+		} else {
+			volumes = append(volumes, "-v", fmt.Sprintf("%s:%s", hostSshConfig, cntSshConfig))
+			if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
+				volumes = append(volumes, fmt.Sprintf("%s:%s", v, v))
+			} else {
+				log.Printf("warning: no CLOUDBOTS_CA_CERTIFICATE found")
+			}
+		}
 	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,

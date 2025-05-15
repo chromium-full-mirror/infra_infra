@@ -5,11 +5,13 @@
 # ash-chrome-provision will use chromite
 FROM python:3.8-slim-buster
 
+USER root
+
 # zstd for extracting Chrome builder artifacts.
 # openssh-client and rsync for chromite to deploy chrome.
 # curl, ca-certificates, and gnupg for google-cloud-sdk install below.
 RUN apt-get update \
-    && apt-get install -y zstd curl ca-certificates gnupg openssh-client rsync
+    && apt-get install -y zstd curl ca-certificates gnupg openssh-client rsync sudo
 
 # grab gsutil
 RUN echo \
@@ -23,3 +25,8 @@ RUN rm -rf /usr/lib/google-cloud-sdk/bin/anthoscli \
   /usr/lib/google-cloud-sdk/bin/kuberun
 
 COPY ash-chrome-provision /usr/bin/ash-chrome-provision
+
+RUN useradd -m ash-chrome-provision
+RUN echo 'ash-chrome-provision ALL=NOPASSWD:ALL' > /etc/sudoers.d/ash-chrome-provision
+
+USER ash-chrome-provision
