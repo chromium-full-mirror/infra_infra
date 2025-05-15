@@ -650,15 +650,6 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	return nil
 }
 
-func getPartitionHash(ctx context.Context, r components.Runner, timeout time.Duration, partition string) (string, error) {
-	out, err := r(ctx, timeout, fmt.Sprintf("/usr/bin/sha256sum %s", partition))
-	if err != nil {
-		return "", errors.Annotate(err, "get partition hash").Err()
-	}
-	hash, _, _ := strings.Cut(out, " ")
-	return hash, nil
-}
-
 // CheckPartitionHash checks the storage by copying the root partition
 // to an inactive partition with /bin/dd, calculating a sha256 checksum
 // on the partitions, and comparing the hashes. If the test fails,
@@ -667,13 +658,14 @@ func getPartitionHash(ctx context.Context, r components.Runner, timeout time.Dur
 // This is a helper function to encapsulate the logic and intended to be called
 // from the exec, as well as any other place where such a check is required.
 func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.Storage, dut *tlw.Dut, copyTimeout time.Duration, hashTimeout time.Duration) tlw.DutStateReason {
-	activeKernel, nextKernel, diskBlock, err := kernel.GetKernelData(ctx, r)
+	activeKernel, nextKernel, diskBlock, activePartition, err := kernel.GetKernelData(ctx, r)
 	if err != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
 		return tlw.DutStateReasonEmpty
 	}
-	activePartition := fmt.Sprintf("%sp%d", diskBlock, activeKernel.RootPartition)
-	inactivePartition := fmt.Sprintf("%sp%d", diskBlock, nextKernel.RootPartition)
+	diskSuffix := strings.TrimPrefix(activePartition, diskBlock)
+	partitionPrefix := strings.TrimSuffix(diskSuffix, strconv.Itoa(activeKernel.RootPartition))
+	inactivePartition := fmt.Sprintf("%s%s%d", diskBlock, partitionPrefix, nextKernel.RootPartition)
 	_, err = r(ctx, copyTimeout, fmt.Sprintf("/bin/dd if=%s of=%s bs=4M", activePartition, inactivePartition))
 	if err != nil {
 		log.Warningf(ctx, "audit storage partition hash: %w", err)
@@ -706,4 +698,13 @@ func CheckPartitionHash(ctx context.Context, r components.Runner, storage *tlw.S
 	}
 	log.Debugf(ctx, "Partition hashes match. No action needed.")
 	return tlw.DutStateReasonEmpty
+}
+
+func getPartitionHash(ctx context.Context, r components.Runner, timeout time.Duration, partition string) (string, error) {
+	out, err := r(ctx, timeout, fmt.Sprintf("/usr/bin/sha256sum %s", partition))
+	if err != nil {
+		return "", errors.Annotate(err, "get partition hash").Err()
+	}
+	hash, _, _ := strings.Cut(out, " ")
+	return hash, nil
 }

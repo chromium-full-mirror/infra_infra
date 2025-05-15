@@ -35,27 +35,27 @@ var (
 var kernelPriorityChangePattern = regexp.MustCompile(`(\d)`)
 
 // GetKernelData read kernel from the DUT.
-func GetKernelData(ctx context.Context, run components.Runner) (*KernelInfo, *KernelInfo, string, error) {
+func GetKernelData(ctx context.Context, run components.Runner) (*KernelInfo, *KernelInfo, string, string, error) {
 	diskBlock, err := run(ctx, time.Minute, "rootdev -s -d")
 	if err != nil {
-		return nil, nil, "", errors.Annotate(err, "get kernel data").Err()
+		return nil, nil, "", "", errors.Annotate(err, "get kernel data").Err()
 	}
 	log.Debugf(ctx, "Booted disk block: %q.", diskBlock)
 	// Get the name of root partition on the resource.
 	diskRoot, err := run(ctx, time.Minute, "rootdev -s")
 	if err != nil {
-		return nil, nil, "", errors.Annotate(err, "get kernel data").Err()
+		return nil, nil, "", "", errors.Annotate(err, "get kernel data").Err()
 	}
 	log.Debugf(ctx, "Booted root disk: %q.", diskRoot)
 	diskSuffix := strings.TrimPrefix(diskRoot, diskBlock)
 	// Find first number. We expected number 3 or 5.
 	parts := kernelPriorityChangePattern.FindStringSubmatch(diskSuffix)
 	if len(parts) < 2 || parts[1] == "" {
-		return nil, nil, "", errors.Reason("get kernel data: fail to read value from %s", diskSuffix).Err()
+		return nil, nil, "", "", errors.Reason("get kernel data: fail to read value from %s", diskSuffix).Err()
 	}
 	activeRootPartition, err := strconv.ParseInt(parts[1], 10, 32)
 	if err != nil {
-		return nil, nil, "", errors.Annotate(err, "get kernel data: fail extract root partition number for %q", diskSuffix).Err()
+		return nil, nil, "", "", errors.Annotate(err, "get kernel data: fail extract root partition number for %q", diskSuffix).Err()
 	}
 	log.Debugf(ctx, "Booted root partition: %d.", activeRootPartition)
 	var activeKernel, nextKernel *KernelInfo
@@ -64,11 +64,11 @@ func GetKernelData(ctx context.Context, run components.Runner) (*KernelInfo, *Ke
 	} else if kernelB.RootPartition == int(activeRootPartition) {
 		activeKernel, nextKernel = kernelB, kernelA
 	} else {
-		return nil, nil, "", errors.Reason("get kernel data: fail found kernel for root partition %q", diskRoot).Err()
+		return nil, nil, "", "", errors.Reason("get kernel data: fail found kernel for root partition %q", diskRoot).Err()
 	}
 	log.Debugf(ctx, "Active kernel:%s , partition %d.", activeKernel.name, activeKernel.kernelPartition)
 	log.Debugf(ctx, "Next kernel:%s , partition %d.", nextKernel.name, nextKernel.kernelPartition)
-	return activeKernel, nextKernel, diskBlock, nil
+	return activeKernel, nextKernel, diskBlock, diskRoot, nil
 }
 
 // IsKernelPriorityChanged check if kernel priority changed and is waiting for reboot to apply the change.
@@ -76,7 +76,7 @@ func IsKernelPriorityChanged(ctx context.Context, run components.Runner) (bool, 
 	// Determine if we have an update that pending on reboot by check if
 	// the current inactive kernel has priority for the next boot.
 	// Check which partition is set for the next boot. If that is not active Kernel then system expect reboot.
-	activeKernel, _, diskBlock, err := GetKernelData(ctx, run)
+	activeKernel, _, diskBlock, _, err := GetKernelData(ctx, run)
 	if err != nil {
 		return false, errors.Annotate(err, "is kernel priority changed").Err()
 	}
@@ -113,7 +113,7 @@ func IsKernelPriorityChanged(ctx context.Context, run components.Runner) (bool, 
 
 // SwitchKernelPriority updates kernel priority on the DUT, so next boot will be done with new kernel side.
 func SwitchKernelPriority(ctx context.Context, run components.Runner) error {
-	_, nextKernel, diskBlock, err := GetKernelData(ctx, run)
+	_, nextKernel, diskBlock, _, err := GetKernelData(ctx, run)
 	if err != nil {
 		return errors.Annotate(err, "switch kernel priority").Err()
 	}
