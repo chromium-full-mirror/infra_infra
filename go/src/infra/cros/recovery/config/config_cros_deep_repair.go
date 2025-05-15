@@ -13,9 +13,9 @@ func deepRepairCrosPlan() *Plan {
 		CriticalActions: []string{
 			"Mark labstation as servod is in-use",
 			"Mark base on OS-restriction",
+			"Deep-repair Android-based DUT",
 			"Deep-repair ChromeOS-based DUT",
 			"Deep-repair Flex DUT",
-			"Deep-repair Android-based DUT",
 		},
 		Actions: crosRepairActions(),
 	}
@@ -27,7 +27,7 @@ func deepMHRepairCrosPlan() *Plan {
 			"Mark labstation as servod is in-use",
 			"Mark as Android based",
 			"Reset provisioned info",
-			"Deep-repair Android-based DUT",
+			"Update FW and install Android OS from servo USB-drive",
 		},
 		Actions: crosRepairActions(),
 	}
