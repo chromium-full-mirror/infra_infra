@@ -55,6 +55,7 @@ var UpdateHostCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.deleteVlan, "delete-vlan", false, "if deleting the ip assignment for the host")
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the host to")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
+		c.Flags.BoolVar(&c.stateByForce, "force-state", false, "force the state change. UFS may decide the state in some cases, this flag bypasses it. Huamn user only.")
 
 		return c
 	},
@@ -76,6 +77,7 @@ type updateHost struct {
 	deleteVlan       bool
 	ip               string
 	state            string
+	stateByForce     bool
 	prototype        string
 	osVersion        string
 	osImage          string
@@ -169,6 +171,7 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 			"ticket":      "deploymentTicket",
 			"vdc":         "virtualDatacenter",
 		}),
+		ForceStateUpdate: c.stateByForce,
 	})
 	if err != nil {
 		return err
