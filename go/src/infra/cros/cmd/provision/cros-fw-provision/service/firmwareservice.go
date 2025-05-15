@@ -679,7 +679,10 @@ func (fws *FirmwareService) runFutility(ctx context.Context, rwOnly bool, futili
 
 	fws.RestartRequired = true
 	connection := fws.GetConnectionToFlashingDevice()
-	if ecImagePath != "" {
+	// TODO: Android doesn't have python.
+	// We should also see if we can fix futility so it doesn't kill the USB
+	// ports when flashing EC RO.
+	if ecImagePath != "" && !fws.IsAndroid() {
 		// If we are flashing EC, we might lose SSH access, so use nohup to run futility in a temporary python script, and poll for results
 		logFile := path.Join(path.Dir(ecImagePath), "futility.log")
 		startupLogFile := path.Join(path.Dir(ecImagePath), "futility.start")
