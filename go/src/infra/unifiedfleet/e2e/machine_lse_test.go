@@ -45,6 +45,9 @@ func TestShivasHostBasic(t *testing.T) {
 				{"get host -json lse1", `"name": "lse1"`},
 				{"update host -name lse1 -state serving", ""},
 				{"internal-print-bot-info lse1", `\{"Dimensions":\{"dut_state":\["ready"\],"ufs_state":\["ready"\],"ufs_zone":\["ZONE_SFO36_BROWSER"\]\},"State":null\}`},
+				{"internal-sync-dut-info -download-dut-info lse1", `\{"Dimensions":\{"dut_state":\["ready"\],"ufs_state":\["ready"\],"ufs_zone":\["ZONE_SFO36_BROWSER"\]\},"State":null\}`},
+				{"internal-sync-dut-info -upload-health-status unhealthy -download-dut-info lse1", `"dut_state":.*"needs_manual_repair"`},
+				{"internal-sync-dut-info -upload-health-status healthy -download-dut-info lse1", `"dut_state":.*"ready"`},
 			},
 		},
 	}
