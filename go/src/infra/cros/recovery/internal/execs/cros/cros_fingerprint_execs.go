@@ -28,6 +28,8 @@ func checkFingerprintInfo(board, mcu, sensor string) bool {
 		"nocturne_fp":  {"stm32h7x3": "1400"},
 		"helipilot":    {"NPCX99FP": "210"},
 		"buccaneer":    {"NPCX99FP": "4f4f"},
+		"gwendolin":    {"NPCX99FP": "276"},
+		"rosalia":      {"NPCX99FP": "9533"},
 		"None":         {"None": "None"},
 	}
 
