@@ -3669,11 +3669,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "dut_is_in_pool",
 			ExecExtraArgs: []string{
-				"crouton",
-				"faft-test",
-				"faft-test-au",
-				"faft-test-tot",
-				"nyc-meet-lab",
 				"satlab_faft",
 				// Device with MP AP firmware must be in dev mode to boot test OS image
 				"mp_firmware_testing",

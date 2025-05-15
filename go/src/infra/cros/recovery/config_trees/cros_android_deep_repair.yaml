@@ -12154,11 +12154,6 @@ plans:
                 - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                   exec_name: dut_is_in_pool
                   exec_args:
-                    - crouton
-                    - faft-test
-                    - faft-test-au
-                    - faft-test-tot
-                    - nyc-meet-lab
                     - satlab_faft
                     - mp_firmware_testing
                   docs:
@@ -12545,11 +12540,6 @@ plans:
                 - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                   exec_name: dut_is_in_pool
                   exec_args:
-                    - crouton
-                    - faft-test
-                    - faft-test-au
-                    - faft-test-tot
-                    - nyc-meet-lab
                     - satlab_faft
                     - mp_firmware_testing
                   docs:
