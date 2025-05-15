@@ -6,6 +6,7 @@ package firmwareservice
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"path"
@@ -104,16 +105,43 @@ func RunDUTCommand(ctx context.Context, dut api.DutServiceClient, timeout time.D
 			ch <- execCmdResult{err: fmt.Errorf("execution fail: %w", err)}
 			return
 		}
-		// Expecting single stream result
-		execCmdResponse, err := stream.Recv()
-		if err != nil {
-			ch <- execCmdResult{err: fmt.Errorf("execution single stream result: %w", err)}
-			return
+
+		var stdout strings.Builder
+		var stderr strings.Builder
+		var exitInfo *api.ExecCommandResponse_ExitInfo
+		for {
+			execCmdResponse, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					break
+				} else {
+					ch <- execCmdResult{
+						response: stdout.String(),
+						stderr:   stderr.String(),
+						err:      fmt.Errorf("<run-dut-command> error: %w", err),
+					}
+					return
+				}
+			}
+			if execCmdResponse.Stdout != nil {
+				stdout.Write(execCmdResponse.Stdout)
+			}
+
+			if execCmdResponse.Stderr != nil {
+				stderr.Write(execCmdResponse.Stderr)
+			}
+
+			if execCmdResponse.ExitInfo != nil {
+				exitInfo = execCmdResponse.ExitInfo
+			}
 		}
-		if execCmdResponse.ExitInfo.Status != 0 {
-			err = fmt.Errorf("status:%v message:%v", execCmdResponse.ExitInfo.Status, execCmdResponse.ExitInfo.ErrorMessage)
+
+		if exitInfo == nil {
+			err = fmt.Errorf("Expected ExitInfo, command status unknown")
+		} else if exitInfo.Status != 0 {
+			err = fmt.Errorf("status:%v message:%v", exitInfo.Status, exitInfo.ErrorMessage)
 		}
-		ch <- execCmdResult{response: string(execCmdResponse.Stdout), stderr: string(execCmdResponse.Stderr), err: err}
+		ch <- execCmdResult{response: stdout.String(), stderr: stderr.String(), err: err}
 	}()
 
 	select {

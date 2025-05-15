@@ -12,6 +12,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -111,25 +112,56 @@ func (s ServiceAdapter) execCmd(ctx context.Context, cmd string, args []string, 
 		Stdout:  api.Output_OUTPUT_PIPE,
 		Stderr:  api.Output_OUTPUT_PIPE,
 	}
+	var stdout strings.Builder
+	var stderr strings.Builder
+	var exitInfo *api.ExecCommandResponse_ExitInfo
 	stream, err := s.dutClient.ExecCommand(ctx, &req)
 	if err != nil {
 		log.Printf("<cros-provision> Run cmd FAILED: %s\n", err)
 		ch <- execCmdResult{response: "", err: fmt.Errorf("execution fail: %w", err)}
 		return
 	}
-	// Expecting single stream result
-	execCmdResponse, err := stream.Recv()
-	if err != nil {
-		ch <- execCmdResult{response: "", err: fmt.Errorf("execution single stream result: %w", err)}
-		return
+
+	for {
+		execCmdResponse, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				ch <- execCmdResult{
+					response: stdout.String(),
+					err:      fmt.Errorf("<exec-cmd>: %w\n%s", err, stderr.String()),
+				}
+				return
+			}
+		}
+		if execCmdResponse.Stdout != nil {
+			stdout.Write(execCmdResponse.Stdout)
+		}
+
+		if execCmdResponse.Stderr != nil {
+			stderr.Write(execCmdResponse.Stderr)
+		}
+
+		if execCmdResponse.ExitInfo != nil {
+			exitInfo = execCmdResponse.ExitInfo
+		}
 	}
-	if execCmdResponse.ExitInfo.Status != 0 {
-		err = fmt.Errorf("status: %v message: %v STDOUT: %s STDERR :%s", execCmdResponse.ExitInfo.Status, execCmdResponse.ExitInfo.ErrorMessage, string(execCmdResponse.Stdout), string(execCmdResponse.Stderr))
+
+	if exitInfo == nil {
+		err = fmt.Errorf("Expected ExitInfo, command status unknown")
+	} else if exitInfo.Status != 0 {
+		err = fmt.Errorf("status: %v message: %v STDOUT: %s STDERR :%s",
+			exitInfo.Status,
+			exitInfo.ErrorMessage,
+			stdout.String(),
+			stderr.String())
 	}
-	if string(execCmdResponse.Stderr) != "" {
-		log.Printf("<cros-provision> execution finished with stderr: %s\n", string(execCmdResponse.Stderr))
+
+	if stderr.Len() > 0 {
+		log.Printf("<cros-provision> execution finished with stderr: %s\n", stderr.String())
 	}
-	ch <- execCmdResult{response: string(execCmdResponse.Stdout), err: err}
+	ch <- execCmdResult{response: stdout.String(), err: err}
 }
 
 // FetchFile downloads a file from the DUT.
