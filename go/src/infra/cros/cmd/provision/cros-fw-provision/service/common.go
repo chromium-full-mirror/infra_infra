@@ -130,14 +130,18 @@ func RunDUTCommand(ctx context.Context, dut api.DutServiceClient, timeout time.D
 
 // ExtractFile calls the cache server to extract a file to the DUT, and retries on 5xx http errors.
 // Returns false, nil on 404 errors. Returns an error on all other errors.
-func ExtractFile(ctx context.Context, dut api.DutServiceClient, url, destPath string) (bool, error) {
-	err := errors.New("unknown error")
+func ExtractFile(ctx context.Context, dut api.DutServiceClient, cacheServer url.URL, gsURL, filename, destPath string) (bool, error) {
+	url, err := createExtractURL(ctx, gsURL, filename, cacheServer)
+	if err != nil {
+		return false, errors.Wrapf(err, "no url for %q:%s", gsURL, filename)
+	}
+	err = errors.New("unknown error")
 	for i := 1; i <= 5; i++ {
 		var stderr string
-		_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", []string{"-f", "-S", "-o", Escape(destPath), Escape(url)}, nil)
+		_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", []string{"-f", "-S", "-o", Escape(destPath), Escape(url.String())}, nil)
 
 		if err != nil {
-			log.Printf("Failed to download %q: %s", url, string(stderr))
+			log.Printf("Failed to download %q: %s", url.String(), string(stderr))
 			m := curlErrorRe.FindStringSubmatch(stderr)
 			log.Printf("result.stderr: %v", stderr)
 			log.Printf("Regex matched: %v", m)
@@ -149,10 +153,38 @@ func ExtractFile(ctx context.Context, dut api.DutServiceClient, url, destPath st
 				// return false on 404 errors
 				return false, nil
 			}
+			if m != nil && string(m[1]) == "400" {
+				// Error 400 means that the cache server doesn't know how to extract from this tar archive.
+				destDir := path.Dir(destPath)
+				tarfile := path.Join(destDir, path.Base(gsURL))
+				// Did we already download the tar file?
+				_, _, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "test", []string{"-f", Escape(tarfile)}, nil)
+				if err != nil {
+					// If not, then download it
+					url, err := createStaticURL(ctx, gsURL, cacheServer)
+					if err != nil {
+						return false, errors.Wrapf(err, "no static url for %q", gsURL)
+					}
+					_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", []string{"-f", "-S", "-o", Escape(tarfile), Escape(url.String())}, nil)
+					if err != nil {
+						log.Printf("Failed to download %q: %s", url.String(), string(stderr))
+						return false, errors.Wrapf(err, "curl failed: %s", stderr)
+					}
+				} else {
+					log.Printf("Found existing file at %s", tarfile)
+				}
+				// Extract file from tar archive
+				_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "tar", []string{"--extract", "--auto-compress", "--file", Escape(tarfile), "--directory", Escape(destDir), "--to-stdout", Escape(filename), fmt.Sprintf(">%s", Escape(destPath))}, nil)
+				if err != nil {
+					log.Printf("Failed to extract %s from %s: %s", filename, tarfile, string(stderr))
+					return false, errors.Wrapf(err, "tar failed: %s", stderr)
+				}
+				return true, nil
+			}
 			// Fail on all other errors
 			return false, errors.Wrapf(err, "curl failed: %s", stderr)
 		}
-		log.Printf("Extracted %q as %q", url, destPath)
+		log.Printf("Extracted %q as %q", url.String(), destPath)
 		return true, nil
 	}
 	return false, err
@@ -332,11 +364,7 @@ func PickAndExtractMainImage(ctx context.Context, dut api.DutServiceClient, imag
 		log.Printf("Stage of %q success: %s", candidate.GSURL, string(out))
 		for _, filename := range candidate.Filenames {
 			log.Printf("Trying %q", filename)
-			url, err := createExtractURL(ctx, candidate.GSURL, filename, fws.CacheServer)
-			if err != nil {
-				return "", errors.Wrapf(err, "no url for %q", filename)
-			}
-			if ok, err := ExtractFile(ctx, dut, url.String(), destPath); err != nil {
+			if ok, err := ExtractFile(ctx, dut, fws.CacheServer, candidate.GSURL, filename, destPath); err != nil {
 				return "", errors.Wrapf(err, "extract %q", filename)
 			} else if !ok {
 				log.Printf("%q not found", filename)
@@ -382,11 +410,7 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 		log.Printf("Stage of %q success: %s", candidate.GSURL, string(out))
 		for _, filename := range candidate.Filenames {
 			log.Printf("Trying %q", filename)
-			url, err := createExtractURL(ctx, candidate.GSURL, filename, fws.CacheServer)
-			if err != nil {
-				return "", errors.Wrapf(err, "no url for %q", filename)
-			}
-			if ok, err := ExtractFile(ctx, dut, url.String(), destPath); err != nil {
+			if ok, err := ExtractFile(ctx, dut, fws.CacheServer, candidate.GSURL, filename, destPath); err != nil {
 				return "", errors.Wrapf(err, "extract %q", filename)
 			} else if !ok {
 				log.Printf("%q not found", filename)
@@ -395,12 +419,8 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 			// Try to get npcx_monitor.bin also
 			npcxCandidate := strings.Replace(filename, "ec.bin", "npcx_monitor.bin", 1)
 			log.Printf("Trying %q", npcxCandidate)
-			url, err = createExtractURL(ctx, candidate.GSURL, npcxCandidate, fws.CacheServer)
-			if err != nil {
-				return "", errors.Wrapf(err, "no url for %q", npcxCandidate)
-			}
 			npcxPath := fmt.Sprintf("%s/npcx_monitor.bin", imageMetadata.ArchiveDir)
-			if ok, err := ExtractFile(ctx, dut, url.String(), npcxPath); err != nil {
+			if ok, err := ExtractFile(ctx, dut, fws.CacheServer, candidate.GSURL, npcxCandidate, npcxPath); err != nil {
 				return "", errors.Wrapf(err, "extract %q", npcxCandidate)
 			} else if !ok {
 				log.Printf("%q not found", npcxCandidate)
@@ -408,12 +428,8 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 			// Try to get ec.config also
 			ecConfigCandidate := strings.Replace(filename, "ec.bin", "ec.config", 1)
 			log.Printf("Trying %q", ecConfigCandidate)
-			url, err = createExtractURL(ctx, candidate.GSURL, ecConfigCandidate, fws.CacheServer)
-			if err != nil {
-				return "", errors.Wrapf(err, "no url for %q", ecConfigCandidate)
-			}
 			ecConfigPath := fmt.Sprintf("%s/ec.config", imageMetadata.ArchiveDir)
-			if ok, err := ExtractFile(ctx, dut, url.String(), ecConfigPath); err != nil {
+			if ok, err := ExtractFile(ctx, dut, fws.CacheServer, candidate.GSURL, ecConfigCandidate, ecConfigPath); err != nil {
 				return "", errors.Wrapf(err, "extract %q", ecConfigCandidate)
 			} else if !ok {
 				log.Printf("%q not found", ecConfigCandidate)
@@ -448,6 +464,20 @@ func createExtractURL(ctx context.Context, gsPath, fileInArchive string, cacheSe
 	v.Set("file", fileInArchive)
 	extractURL.RawQuery = v.Encode()
 	return extractURL, nil
+}
+
+// createStaticURL returns the URL to download a file from a gsPath. Pass to curl on the DUT.
+func createStaticURL(ctx context.Context, gsPath string, cacheServer url.URL) (url.URL, error) {
+	gsPathURL, err := url.Parse(gsPath)
+	if err != nil {
+		return url.URL{}, errors.Wrapf(err, "failed to parse %q", gsPath)
+	}
+	staticURL := cacheServer
+	staticURL.Path = fmt.Sprintf("/static%s", gsPathURL.Path)
+	v := url.Values{}
+	v.Set("gs_bucket", gsPathURL.Host)
+	staticURL.RawQuery = v.Encode()
+	return staticURL, nil
 }
 
 // SwapECRWImage switches the EC RW in the AP image with the specified image.
