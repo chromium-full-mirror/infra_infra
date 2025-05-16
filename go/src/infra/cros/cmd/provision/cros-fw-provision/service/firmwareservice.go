@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -679,114 +678,16 @@ func (fws *FirmwareService) runFutility(ctx context.Context, rwOnly bool, futili
 
 	fws.RestartRequired = true
 	connection := fws.GetConnectionToFlashingDevice()
-	// TODO: Android doesn't have python.
-	// We should also see if we can fix futility so it doesn't kill the USB
-	// ports when flashing EC RO.
-	if ecImagePath != "" && !fws.IsAndroid() {
-		// If we are flashing EC, we might lose SSH access, so use nohup to run futility in a temporary python script, and poll for results
-		logFile := path.Join(path.Dir(ecImagePath), "futility.log")
-		startupLogFile := path.Join(path.Dir(ecImagePath), "futility.start")
-		pyScript := path.Join(path.Dir(ecImagePath), "futility.py")
-		var scriptBody strings.Builder
-		scriptBody.WriteString(`#!/usr/bin/env python3
+	// ec_partial_recovery should prevent the EC from sysjumping and losing ethernet.
+	if ecImagePath != "" {
+		futilityArgs = append(futilityArgs, "--quirks=ec_partial_recovery")
+	}
+	for i, a := range futilityArgs {
+		futilityArgs[i] = Escape(a)
+	}
 
-import subprocess
-
-with open("`)
-		scriptBody.WriteString(logFile)
-		scriptBody.WriteString(`", "wb", buffering=0) as outFile:
-  rc = subprocess.run(["futility"`)
-		for _, arg := range futilityArgs {
-			scriptBody.WriteString(", '")
-			scriptBody.WriteString(arg)
-			scriptBody.WriteString("'")
-		}
-		scriptBody.WriteString(`], stdout=outFile, stderr=outFile, check=False, bufsize=0)
-  outFile.write(f"EXIT CODE: {rc.returncode}\n".encode("utf-8"))
-  outFile.flush()
-  subprocess.run(["sync", "-d", "/var/tmp", "/usr/local/tmp"])
-  subprocess.run(["reboot"])
-`)
-		_, _, err := RunDUTCommand(ctx, fws.DUTServer, time.Minute, "cat", []string{">", Escape(pyScript)}, []byte(scriptBody.String()))
-		if err != nil {
-			return errors.Wrap(err, "failed to create futility.py")
-		}
-		defer connection.RunCmd(ctx, "rm", []string{"-f", Escape(logFile)})
-
-		_, err = connection.RunCmd(ctx, "bash", []string{"-c", Escape(fmt.Sprintf("nohup python3 '%s' </dev/null >&'%s' & exit", pyScript, startupLogFile))})
-		if err != nil {
-			return errors.Wrap(err, "failed to run nohup")
-		}
-		startTime := time.Now()
-		exitCodeRe := regexp.MustCompile(`EXIT CODE: (-?\d+)`)
-		csmeLockedRe := regexp.MustCompile(`The CSME was already locked`)
-		logfileLen := 0
-		ignoreTimeout := false
-		endTime := startTime.Add(10 * time.Minute)
-
-		// Poll every 10s for the log file to appear and have the "EXIT CODE:" string in it.
-		for time.Now().Before(endTime) {
-			time.Sleep(10 * time.Second)
-			catCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-			defer cancel()
-			buf, err := connection.RunCmd(catCtx, "cat", []string{Escape(logFile)})
-			if err != nil {
-				log.Printf("failed to download %q: %v", logFile, err)
-				catCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-				defer cancel()
-				buf, err = connection.RunCmd(catCtx, "cat", []string{Escape(startupLogFile)})
-				if err != nil {
-					log.Printf("failed to download %q: %v", startupLogFile, err)
-					continue
-				} else if len(buf) > 0 {
-					log.Printf("Futility startup:\n%s", buf)
-					return errors.Errorf("futility failed: %q", buf)
-				}
-			} else {
-				if logfileLen > len(buf) {
-					log.Printf("Logfile shrank! Might be an EC crash. Was %d, now %d", logfileLen, len(buf))
-					ignoreTimeout = true
-					// Wait just a little longer to see if we get an EXIT CODE
-					newTimeout := time.Now().Add(30 * time.Second)
-					if newTimeout.Before(endTime) {
-						endTime = newTimeout
-					}
-
-					log.Printf("Futility output:\n%s", buf)
-					logfileLen = len(buf)
-				} else {
-					log.Printf("Futility output:\n%s", buf[logfileLen:])
-					logfileLen = len(buf)
-				}
-			}
-			m := csmeLockedRe.FindStringSubmatch(buf)
-			if m != nil {
-				log.Printf("Futility output:\n%s", buf)
-				return errors.Errorf("CSME_LOCKED: %q", buf)
-			}
-			m = exitCodeRe.FindStringSubmatch(buf)
-			if m != nil {
-				log.Printf("Futility output:\n%s", buf)
-				if m[1] == "0" {
-					fws.RestartRequired = false
-					return nil
-				}
-				return errors.Errorf("futility failed: %q", buf)
-			}
-		}
-		if ignoreTimeout {
-			log.Printf("Timeout waiting for futility, but logfile was truncated, so hope for the best and check if the versions match.")
-			return nil
-		}
-		return errors.New("Timeout waiting for futility")
-	} else {
-		for i, a := range futilityArgs {
-			futilityArgs[i] = Escape(a)
-		}
-
-		if _, err := connection.RunCmd(ctx, "futility", futilityArgs); err != nil {
-			return err
-		}
+	if _, err := connection.RunCmd(ctx, "futility", futilityArgs); err != nil {
+		return err
 	}
 	return nil
 }
