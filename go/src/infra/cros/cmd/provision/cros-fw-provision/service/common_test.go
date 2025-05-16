@@ -111,7 +111,7 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-brox_ec_ish.bin" /* exists */, "image.bin"},
 				},
 				{
-					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_ec_ish.16080.159.0.tbz2",
+					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_Ec_Ish.16080.159.0.tbz2",
 					Filenames: []string{"image-brox_ec_ish.bin", "image.bin"},
 				},
 				{
@@ -125,7 +125,7 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"ec.bin" /* exists */},
 				},
 				{
-					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_ec_ish_EC.16080.159.0.tbz2",
+					GSURL:     "gs://firmware-image-archive/firmware-brox-16080.B/16080.159.0/Brox_Ec_Ish_EC.16080.159.0.tbz2",
 					Filenames: []string{"ec.bin"},
 				},
 				{
@@ -148,7 +148,7 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"image-brox_ec_ish.bin", "image.bin"},
 				},
 				{
-					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox_ec_ish.16209.5.9.tbz2",
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox_Ec_Ish.16209.5.9.tbz2",
 					Filenames: []string{"image-brox_ec_ish.bin", "image.bin"},
 				},
 				{
@@ -162,7 +162,7 @@ func TestGetCandidateURLs(t *testing.T) {
 					Filenames: []string{"ec.bin" /* exists */},
 				},
 				{
-					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox-ish-ec_EC.16209.5.9.tbz2",
+					GSURL:     "gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.9/Brox-Ish-Ec_EC.16209.5.9.tbz2",
 					Filenames: []string{"ec.bin"},
 				},
 				{
@@ -361,9 +361,45 @@ func TestGetCandidateURLs(t *testing.T) {
 				},
 			},
 		},
+		// A fairly complicated name, which has artifacts, but doesn't appear to be ever used in boxter.
+		{
+			inputGsUrl:       "gs://chromeos-image-archive/firmware-nissa-15217.B-branch/R109-15217.916.0-1-8714961020606258097/nissa/firmware_from_source.tar.bz2",
+			board:            "nissa",
+			model:            "glassway",
+			corebootName:     "glassway_hdmi_ufs",
+			legacyECName:     "glassway_hdmi_ufs",
+			standaloneECName: "glassway",
+			expectedAPCandidates: []ImageCandidate{
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-nissa-15217.B/15217.916.0/glassway_hdmi_ufs.15217.916.0.tar.bz2",
+					Filenames: []string{"image-glassway_hdmi_ufs.bin", "image.bin"},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-nissa-15217.B/15217.916.0/Glassway_Hdmi_Ufs.15217.916.0.tbz2", // exists
+					Filenames: []string{"image-glassway_hdmi_ufs.bin" /* exists */, "image.bin"},
+				},
+				{
+					"gs://chromeos-image-archive/firmware-nissa-15217.B-branch/R109-15217.916.0-1-8714961020606258097/nissa/firmware_from_source.tar.bz2",
+					[]string{"image-glassway_hdmi_ufs.bin", "image-glassway.bin", "image-nissa.bin", "image.bin", "bios.bin"},
+				},
+			},
+			expectedECCandidates: []ImageCandidate{
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-nissa-15217.B/15217.916.0/glassway_hdmi_ufs.EC.15217.916.0.tar.bz2",
+					Filenames: []string{"ec.bin"},
+				},
+				{
+					GSURL:     "gs://firmware-image-archive/firmware-nissa-15217.B/15217.916.0/Glassway_Hdmi_Ufs_EC.15217.916.0.tbz2", // exists
+					Filenames: []string{"ec.bin" /* exists */},
+				},
+				{
+					"gs://chromeos-image-archive/firmware-nissa-15217.B-branch/R109-15217.916.0-1-8714961020606258097/nissa/firmware_from_source.tar.bz2",
+					[]string{"glassway_hdmi_ufs/ec.bin" /* exists */, "glassway/ec.bin" /* exists */, "nissa/ec.bin", "ec.bin"},
+				},
+			},
+		},
 	}
 	for _, testCase := range testCases {
-		t.Logf("Running testCase %+v", testCase)
 		actualCandidates, err := GetAPCandidateURLs(context.Background(), testCase.inputGsUrl, &FirmwareService{
 			board:            testCase.board,
 			model:            testCase.model,
@@ -375,7 +411,7 @@ func TestGetCandidateURLs(t *testing.T) {
 			t.Errorf("GetAPCandidateURLs failed: %v", err)
 			continue
 		}
-		compareCandiates(t, "AP", actualCandidates, testCase.expectedAPCandidates)
+		compareCandiates(t, testCase.inputGsUrl, "AP", actualCandidates, testCase.expectedAPCandidates)
 		actualCandidates, err = GetECCandidateURLs(context.Background(), testCase.inputGsUrl, &FirmwareService{
 			board:            testCase.board,
 			model:            testCase.model,
@@ -387,35 +423,50 @@ func TestGetCandidateURLs(t *testing.T) {
 			t.Errorf("GetECCandidateURLs failed: %v", err)
 			continue
 		}
-		compareCandiates(t, "EC", actualCandidates, testCase.expectedECCandidates)
+		compareCandiates(t, testCase.inputGsUrl, "EC", actualCandidates, testCase.expectedECCandidates)
 	}
 }
 
-func compareCandiates(t *testing.T, imageType string, actualCandidates, expectedCandidates []ImageCandidate) {
+func compareCandiates(t *testing.T, inputUrl, imageType string, actualCandidates, expectedCandidates []ImageCandidate) {
 	for i, expected := range expectedCandidates {
 		if len(actualCandidates) <= i {
-			t.Errorf("[%s %d]: Missing candidate %v", imageType, i, expected)
+			t.Errorf("[%s %s %d]: Missing candidate %v", inputUrl, imageType, i, expected)
 			continue
 		}
 		actual := actualCandidates[i]
 		if expected.GSURL != actual.GSURL {
-			t.Errorf("[%s %d]: Incorrect GSURL, got %q, want %q", imageType, i, actual.GSURL, expected.GSURL)
+			t.Errorf("[%s %s %d]: Incorrect GSURL, got %q, want %q", inputUrl, imageType, i, actual.GSURL, expected.GSURL)
 		}
 		for f, expectedFilename := range expected.Filenames {
 			if len(actual.Filenames) <= f {
-				t.Errorf("[%s %d.%d]: Missing filename %v", imageType, i, f, expectedFilename)
+				t.Errorf("[%s %s %d.%d]: Missing filename %v", inputUrl, imageType, i, f, expectedFilename)
 				continue
 			}
 			actualFilename := actual.Filenames[f]
 			if actualFilename != expectedFilename {
-				t.Errorf("[%s %d.%d]: Incorrect filename, got %q, want %q", imageType, i, f, actualFilename, expectedFilename)
+				t.Errorf("[%s %s %d.%d]: Incorrect filename, got %q, want %q", inputUrl, imageType, i, f, actualFilename, expectedFilename)
 			}
 		}
 		for f := len(expected.Filenames); f < len(actual.Filenames); f += 1 {
-			t.Errorf("[%s %d.%d]: Extra filename %v", imageType, i, f, actual.Filenames[f])
+			t.Errorf("[%s %s %d.%d]: Extra filename %v", inputUrl, imageType, i, f, actual.Filenames[f])
 		}
 	}
 	for i := len(expectedCandidates); i < len(actualCandidates); i += 1 {
-		t.Errorf("[%s %d]: Extra candidate %v", imageType, i, actualCandidates[i])
+		t.Errorf("[%s %s %d]: Extra candidate %v", inputUrl, imageType, i, actualCandidates[i])
+	}
+}
+
+func TestTitleCase(t *testing.T) {
+	for _, ts := range []struct {
+		input, expected string
+	}{
+		{"word", "Word"},
+		{"one_two_three", "One_Two_Three"},
+		{"hello_there_2a_world", "Hello_There_2A_World"},
+	} {
+		titled := TitleCase(ts.input)
+		if titled != ts.expected {
+			t.Errorf("Incorrect title: got %q, want %q", titled, ts.expected)
+		}
 	}
 }

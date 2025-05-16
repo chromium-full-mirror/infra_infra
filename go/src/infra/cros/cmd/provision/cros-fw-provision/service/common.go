@@ -175,6 +175,18 @@ var versionedDirRe = regexp.MustCompile(`^(gs://.*)/((?:R\d+-)?(\d+\.\d+\.\d+)[-
 // gs://firmware-image-archive/firmware-brya-14505.B/14505.846.0/omnigul.14505.846.0.tar.bz2
 // gs://firmware-image-archive/firmware-brya-14505.B/14505.846.0/omnigul.EC.14505.846.0.tar.bz2
 
+var titleCaseRe = regexp.MustCompile(`[a-zA-Z]+`)
+
+func TitleCase(s string) string {
+	idxs := titleCaseRe.FindAllStringIndex(s, -1)
+	fixed := []rune(s)
+
+	for _, r := range idxs {
+		fixed[r[0]] = unicode.ToUpper(fixed[r[0]])
+	}
+	return string(fixed)
+}
+
 // GetAPCandidateURLs returns a list of urls and files to extract. Try them in order.
 func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService) ([]ImageCandidate, error) {
 	candidates := []ImageCandidate{}
@@ -186,10 +198,9 @@ func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tar.bz2", m[1], m[2], m[3], fws.CorebootName),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName), "image.bin"},
 		})
-		capitalCorebootName := []rune(fws.CorebootName)
-		capitalCorebootName[0] = unicode.ToUpper(capitalCorebootName[0])
+		capitalCorebootName := TitleCase(fws.CorebootName)
 		candidates = append(candidates, ImageCandidate{
-			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tbz2", m[1], m[2], m[3], string(capitalCorebootName)),
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tbz2", m[1], m[2], m[3], capitalCorebootName),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName), "image.bin"},
 		})
 		return candidates, nil
@@ -202,10 +213,9 @@ func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tar.bz2", m[1], m[2], fws.CorebootName),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName), "image.bin"},
 		})
-		capitalCorebootName := []rune(fws.CorebootName)
-		capitalCorebootName[0] = unicode.ToUpper(capitalCorebootName[0])
+		capitalCorebootName := TitleCase(fws.CorebootName)
 		candidates = append(candidates, ImageCandidate{
-			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tbz2", m[1], m[2], string(capitalCorebootName)),
+			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tbz2", m[1], m[2], capitalCorebootName),
 			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName), "image.bin"},
 		})
 	}
@@ -247,10 +257,9 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.EC.%[3]s.tar.bz2", m[1], m[2], m[3], ecName),
 			Filenames: []string{"ec.bin"},
 		})
-		capitalECName := []rune(ecName)
-		capitalECName[0] = unicode.ToUpper(capitalECName[0])
+		capitalECName := TitleCase(ecName)
 		candidates = append(candidates, ImageCandidate{
-			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s_EC.%[3]s.tbz2", m[1], m[2], m[3], string(capitalECName)),
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s_EC.%[3]s.tbz2", m[1], m[2], m[3], capitalECName),
 			Filenames: []string{"ec.bin"},
 		})
 		return candidates, nil
@@ -263,10 +272,9 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.EC.%[2]s.tar.bz2", m[1], m[2], ecName),
 			Filenames: []string{"ec.bin"},
 		})
-		capitalECName := []rune(ecName)
-		capitalECName[0] = unicode.ToUpper(capitalECName[0])
+		capitalECName := TitleCase(ecName)
 		candidates = append(candidates, ImageCandidate{
-			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s_EC.%[2]s.tbz2", m[1], m[2], string(capitalECName)),
+			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s_EC.%[2]s.tbz2", m[1], m[2], capitalECName),
 			Filenames: []string{"ec.bin"},
 		})
 	}
