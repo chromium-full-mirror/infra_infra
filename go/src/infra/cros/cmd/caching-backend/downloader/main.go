@@ -602,10 +602,12 @@ func newXZReader(r io.Reader) (io.ReadCloser, error) {
 }
 
 var compressReaderMap = map[string]compressReaderFunc{
-	".gz":  newGZIPReader,
-	".tgz": newGZIPReader,
-	".bz2": newBZ2Reader,
-	".xz":  newXZReader,
+	".gz":   newGZIPReader,
+	".tgz":  newGZIPReader,
+	".bz2":  newBZ2Reader,
+	".tbz2": newBZ2Reader,
+	".xz":   newXZReader,
+	".txz":  newXZReader,
 }
 
 // handleDecompressGET handles decompress GET method.
