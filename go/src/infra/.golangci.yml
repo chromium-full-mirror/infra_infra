@@ -113,9 +113,6 @@ linters:
         # https://staticcheck.dev/docs/checks#ST1012
         # Poorly chosen name for error variable
         - "-ST1012"
-        # https://staticcheck.dev/docs/checks#ST1019
-        # Importing the same package multiple times
-        - "-ST1019"
 
   exclusions:
     # Independently from option `exclude` we use default exclude patterns,
