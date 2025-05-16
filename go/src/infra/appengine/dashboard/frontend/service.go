@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
 	"go.chromium.org/infra/appengine/dashboard/backend"
@@ -26,9 +27,9 @@ func (s *dashboardService) UpdateOpenIncidents(ctx context.Context, req *dashpb.
 		return nil, status.Error(codes.InvalidArgument, "name field in ChopsService was empty")
 	}
 
-	incidentsByID := make(map[string]dashpb.ChopsIncident, len(req.ChopsService.Incidents))
+	incidentsByID := make(map[string]*dashpb.ChopsIncident, len(req.ChopsService.Incidents))
 	for _, incident := range req.ChopsService.Incidents {
-		incidentsByID[incident.Id] = *incident
+		incidentsByID[incident.Id] = proto.Clone(incident).(*dashpb.ChopsIncident)
 	}
 
 	dsIncidents, err := backend.GetServiceIncidents(ctx, serviceName, &backend.QueryOptions{Status: backend.IncidentStatusOpen})
