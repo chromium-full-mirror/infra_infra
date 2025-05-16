@@ -18,7 +18,7 @@ func TempDir(t *testing.T) string {
 	t.Helper()
 	// Subtests have slashes in their name.
 	// https://golang.org/pkg/testing/#hdr-Subtests_and_Sub_benchmarks
-	name := strings.Replace(t.Name(), "/", "_", -1)
+	name := strings.ReplaceAll(t.Name(), "/", "_")
 	td, err := os.MkdirTemp("", "tast_unittest_"+name+".")
 	if err != nil {
 		t.Fatal(err)

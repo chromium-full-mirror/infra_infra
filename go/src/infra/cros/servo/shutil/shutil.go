@@ -28,7 +28,7 @@ func Escape(s string) string {
 	if safeRE.MatchString(s) {
 		return s
 	}
-	return "'" + strings.Replace(s, "'", `'"'"'`, -1) + "'"
+	return "'" + strings.ReplaceAll(s, "'", `'"'"'`) + "'"
 }
 
 // EscapeSlice escapes a slice of strings so each will be treated as a separate

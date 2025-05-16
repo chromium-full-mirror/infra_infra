@@ -75,7 +75,7 @@ func (li *localLoggerImpl) LogCall(l logging.Level, calldepth int, format string
 	// updateStep will access the Step pointer but it is nil
 	if _, ok := fields[StepKey]; ok {
 		text := li.formatWithStepHeaders(format, args)
-		format = strings.Replace(text, "%", "%%", -1)
+		format = strings.ReplaceAll(text, "%", "%%")
 		args = nil
 	}
 	li.l.ExtraCalldepth = (calldepth + 1)

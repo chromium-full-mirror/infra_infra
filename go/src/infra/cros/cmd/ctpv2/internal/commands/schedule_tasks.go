@@ -429,7 +429,7 @@ func formatBotListURL(dims []*buildbucketpb.RequestedDimension) (string, error) 
 
 	for _, dim := range dims {
 		// Replace spaces with the URL safe unicode value.
-		value := strings.Replace(dim.GetValue(), " ", "%20", -1)
+		value := strings.ReplaceAll(dim.GetValue(), " ", "%20")
 
 		baseURL += "&f=" + dim.GetKey() + ":" + value + "&k=" + dim.GetKey()
 	}

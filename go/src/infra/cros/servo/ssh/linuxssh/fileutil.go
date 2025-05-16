@@ -431,7 +431,7 @@ func getLocalSHA1s(paths []string) (map[string]string, error) {
 func tarTransformFlag(s, d string) string {
 	esc := func(s string, bad []string) string {
 		for _, b := range bad {
-			s = strings.Replace(s, b, "\\"+b, -1)
+			s = strings.ReplaceAll(s, b, "\\"+b)
 		}
 		return s
 	}
