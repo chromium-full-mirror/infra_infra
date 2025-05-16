@@ -1081,9 +1081,6 @@ message UpdateMachineLSERequest {
 
   reserved 5;
   reserved "states";
-
-  // UFS may decide the final state, but human users can force a change.
-  bool force_state_update = 6;
 }
 
 message GetMachineLSERequest {

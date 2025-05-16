@@ -34,9 +34,6 @@ func testingContext() context.Context {
 	c = gologger.StdConfig.Use(c)
 	c = logging.SetLevel(c, logging.Error)
 	c = config.Use(c, &config.Config{})
-	c = auth.WithState(c, &authtest.FakeState{
-		Identity: "user:user@example.com",
-	})
 	datastore.GetTestable(c).Consistent(true)
 	return c
 }

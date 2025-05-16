@@ -200,7 +200,7 @@ func createBrowserServer(ctx context.Context, lse *ufspb.MachineLSE, nwOpt *ufsA
 }
 
 // UpdateMachineLSE updates machinelse in datastore.
-func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask, forceStateUpdate bool) (*ufspb.MachineLSE, error) {
+func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) (*ufspb.MachineLSE, error) {
 	// MachineLSEs name and hostname must always be the same
 	// Overwrite the hostname with name as partial updates get only name
 	machinelse.Hostname = machinelse.GetName()
@@ -301,7 +301,6 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			return status.Error(codes.InvalidArgument, "UpdateMachine - cannot update an os host to browser host. Please delete the os host and create a new browser host")
 		}
 
-		originalState := oldMachinelse.GetResourceState()
 		// Partial update by field mask
 		if mask != nil && len(mask.Paths) > 0 {
 			machinelse, err = processMachineLSEUpdateMask(ctx, oldMachinelse, machinelse, mask)
@@ -333,7 +332,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		}
 
 		// Update state
-		if err := hc.stUdt.decideMachineLSEState(ctx, machinelse, originalState, forceStateUpdate); err != nil {
+		if err := hc.stUdt.updateStateHelper(ctx, machinelse.GetResourceState()); err != nil {
 			return errors.Annotate(err, "Fail to update state to host %s", machinelse.GetName()).Err()
 		}
 

@@ -90,7 +90,7 @@ func (fs *FleetServerImpl) UpdateMachineLSE(ctx context.Context, req *ufsAPI.Upd
 		machinelse := req.MachineLSE
 		var err error
 		if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
-			machinelse, err = controller.UpdateMachineLSE(ctx, req.MachineLSE, req.UpdateMask, req.ForceStateUpdate)
+			machinelse, err = controller.UpdateMachineLSE(ctx, req.MachineLSE, req.UpdateMask)
 			if err != nil {
 				return nil, err
 			}
@@ -117,7 +117,7 @@ func (fs *FleetServerImpl) UpdateMachineLSE(ctx context.Context, req *ufsAPI.Upd
 		return machinelse, nil
 	}
 
-	machinelse, err := controller.UpdateMachineLSE(ctx, req.MachineLSE, req.UpdateMask, req.ForceStateUpdate)
+	machinelse, err := controller.UpdateMachineLSE(ctx, req.MachineLSE, req.UpdateMask)
 	if err != nil {
 		return nil, err
 	}
