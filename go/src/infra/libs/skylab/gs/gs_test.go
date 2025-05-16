@@ -16,7 +16,6 @@ import (
 	"google.golang.org/api/googleapi"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/gcloud/gs"
 	gcgs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/retry"
 )
@@ -25,7 +24,7 @@ import (
 // of Google Storage.
 type fakeInnerClient struct{}
 
-// fakeWriter implements gs.Writer interface.
+// fakeWriter implements gcgs.Writer interface.
 type fakeWriter struct {
 	os.File
 }
@@ -35,7 +34,7 @@ func (w *fakeWriter) Count() int64 {
 	return 0
 }
 
-func (c *fakeInnerClient) NewWriter(p gcgs.Path) (gs.Writer, error) {
+func (c *fakeInnerClient) NewWriter(p gcgs.Path) (gcgs.Writer, error) {
 	// This assumes that the incoming path is a valid local path, as opposed to
 	// a GS URL (starting with gs://).
 	l := string(p)
