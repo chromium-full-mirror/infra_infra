@@ -177,6 +177,9 @@ func ExtractFile(ctx context.Context, dut api.DutServiceClient, cacheServer url.
 				_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "tar", []string{"--extract", "--auto-compress", "--file", Escape(tarfile), "--directory", Escape(destDir), "--to-stdout", Escape(filename), fmt.Sprintf(">%s", Escape(destPath))}, nil)
 				if err != nil {
 					log.Printf("Failed to extract %s from %s: %s", filename, tarfile, string(stderr))
+					if strings.Contains(string(stderr), "Not found in archive") {
+						return false, nil
+					}
 					return false, errors.Wrapf(err, "tar failed: %s", stderr)
 				}
 				return true, nil
