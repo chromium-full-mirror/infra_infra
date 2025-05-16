@@ -377,8 +377,7 @@ func PickAndExtractMainImage(ctx context.Context, dut api.DutServiceClient, imag
 		}
 	}
 
-	return "", fmt.Errorf(`could not find an AP image in any of: %v.
-Specifying board and model may help`, candidates)
+	return "", fmt.Errorf("could not find an AP image in any of: %v", candidates)
 }
 
 // PickAndExtractECImage uses provided list of |filesInArchive| to pick an EC
@@ -440,8 +439,7 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 			return destPath, nil
 		}
 	}
-	return "", fmt.Errorf(`could not find an EC image named any of: %v.
-Specifying board and model may help`, candidates)
+	return "", fmt.Errorf("could not find an EC image named any of: %v", candidates)
 }
 
 // createStageURL returns the URL to stage a gsPath. Pass to curl on the DUT.
