@@ -82,8 +82,8 @@ func resolveNewState(ctx context.Context, machineLSE *ufspb.MachineLSE, oldRecor
 	if byForce {
 		return nil, errors.Reason("resolve machine LSE state: non-human user %q cannot force a state change", user).Err()
 	}
-	if !isGoodState(askingState) && askingState != ufspb.State_STATE_DISABLED {
-		return nil, errors.Reason("resolve machine LSE state: non-human user %q cannot change state to %q, only REGISTRATION/READY/SERVING/DISABLED is allowed", user, askingState).Err()
+	if askingState != ufspb.State_STATE_READY && askingState != ufspb.State_STATE_DISABLED {
+		return nil, errors.Reason("resolve machine LSE state: non-human user %q cannot change state to %q, only READY/DISABLED is allowed", user, askingState).Err()
 	}
 	return resolveStateForNonHuman(ctx, oldRecord, askingState), nil
 }
@@ -92,7 +92,7 @@ func resolveNewState(ctx context.Context, machineLSE *ufspb.MachineLSE, oldRecor
 func resolveStateForHuman(ctx context.Context, originalRecord *ufspb.StateRecord, askingState ufspb.State, byForce bool) *ufspb.StateRecord {
 	user := util.CurrentUser(ctx)
 	if byForce {
-		if isGoodState(askingState) {
+		if askingState == ufspb.State_STATE_READY || askingState == ufspb.State_STATE_SERVING {
 			return &ufspb.StateRecord{State: askingState}
 		}
 		return &ufspb.StateRecord{State: askingState, ConcurrentRequesters: map[string]string{user: askingState.String()}}
@@ -102,17 +102,16 @@ func resolveStateForHuman(ctx context.Context, originalRecord *ufspb.StateRecord
 		requesters[k] = v
 	}
 
-	// Set to non-"good" state.
-	// "Good" state refers to either REGISTRATION, READY, or SERVING.
+	// Set to non-ready|serving state.
 	// In this case, we sign up the caller name and set the target state to the
 	// asking state as the human user requests have higher priority.
-	if !isGoodState(askingState) {
+	if askingState != ufspb.State_STATE_READY && askingState != ufspb.State_STATE_SERVING {
 		// The value can be a reason. But for now we only use the asking state as a placeholder.
 		requesters[user] = askingState.String()
 		return &ufspb.StateRecord{State: askingState, ConcurrentRequesters: requesters}
 	}
 
-	// Set to "good" state.
+	// Set to ready|serving state.
 	// Sign off the caller and check if there are non-human users remained to
 	// decide the final state.
 	for r := range requesters {
@@ -150,15 +149,16 @@ func isHuman(email string) (bool, error) {
 	return humanUserDoamins[domain], nil
 }
 
-// resolveStateForNonHuman resolves the MachineLSE state for non-human users.
+// resolveStateForHuman resolves the MachineLSE state for non-human users.
 func resolveStateForNonHuman(ctx context.Context, originalRecord *ufspb.StateRecord, askingState ufspb.State) *ufspb.StateRecord {
+	// for non-human users, the asking state can only be either READY or DISABLED.
 	user := util.CurrentUser(ctx)
 	requesters := map[string]string{}
 	for k, v := range originalRecord.GetConcurrentRequesters() {
 		requesters[k] = v
 	}
 
-	if isGoodState(askingState) {
+	if askingState == ufspb.State_STATE_READY {
 		delete(requesters, user)
 		if len(requesters) == 0 {
 			return &ufspb.StateRecord{State: askingState}
@@ -173,16 +173,6 @@ func resolveStateForNonHuman(ctx context.Context, originalRecord *ufspb.StateRec
 	// Due to lower priority, non-human user requests won't change the state if
 	// there's human users changed the state.
 	return &ufspb.StateRecord{State: originalRecord.GetState(), ConcurrentRequesters: requesters}
-}
-
-// isGoodState checks if the input is a "good" state.
-func isGoodState(s ufspb.State) bool {
-	switch s {
-	case ufspb.State_STATE_REGISTERED, ufspb.State_STATE_READY, ufspb.State_STATE_SERVING:
-		return true
-	default:
-		return false
-	}
 }
 
 // needToUpdateStateRecord checks two StateRecord for changes matter which need
