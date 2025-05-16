@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DefaultCrosFwProvisionSha = "36c32627ae54429d861d0df0fbc4d883170f01d83976ef5be9a0b4e719111aa0"
+	DefaultCrosFwProvisionSha = "d7544cd658b5377f55b5292c76b23919614955209dccf22cb4a08fe9f0900b31"
 	DefaultPostProcessSha     = "e790463305397ba157cdfd836a23fc385d37cf9a72709f511a7e1973f64291c2"
 )
 

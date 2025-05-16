@@ -14,6 +14,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/citest"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -23,6 +24,10 @@ import (
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {
+	// This test reaches out over the network to grab information about filters applied by default.
+	// It is thus an itnegration test.
+	// Run it by setting CROS_TEST_RUNNER_INTEGRATION_TESTS or INTEGRATION_TESTS.
+	citest.IntegrationTest(t, "CROS_TEST_RUNNER_INTEGRATION_TESTS")
 	ftt.Run("Empty CftTestRequest All Skipped", t, func(t *ftt.Test) {
 		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
 			StepsConfig: &tpcommon.CftStepsConfig{
