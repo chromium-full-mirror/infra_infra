@@ -71,7 +71,7 @@ func loc(goFiles []string) int {
 // pat, if pat ends with "/...".
 func patMatch(pat string, pkg string) bool {
 	// TODO: something more advanced. This won't work in every case.
-	prefix := strings.Replace(pat, "/...", "", -1)
+	prefix := strings.ReplaceAll(pat, "/...", "")
 	return strings.HasPrefix(pkg, prefix)
 }
 
