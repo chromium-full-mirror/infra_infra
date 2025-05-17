@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -63,34 +64,43 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 // If the directory of destination path does not exist, this service
 // will also create the directory.
 func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
+	s.logger.Println("Receive PutFile Request")
 	var f *os.File
 	var fn string
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
+			s.logger.Println("get EOF")
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to receive streaming data: %w", err)
+			return s.logError(fmt.Errorf("failed to receive streaming data: %w", err))
 		}
 		switch {
 		case req.GetReqInfo() != nil:
 			info := req.GetReqInfo()
 			fn = info.GetFilename()
+			dir := filepath.Dir(fn)
+			if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+				return s.logError(fmt.Errorf("failed to create directory %s: %w", dir, err))
+			}
 			f, err = os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 			if err != nil {
-				return fmt.Errorf("failed to open file %s: %w", fn, err)
+				return s.logError(fmt.Errorf("failed to open file %s: %w", fn, err))
 			}
 			defer f.Close()
+			s.logger.Println("PutFile Request destination file: ", fn)
 		case req.GetData() != nil:
 			if f == nil {
-				return errors.New("data was send before file name")
+				return s.logError(errors.New("data was send before file name"))
 			}
 			if _, err := f.Write(req.GetData()); err != nil {
-				return fmt.Errorf("failed to write file %s: %w", fn, err)
+				return s.logError(fmt.Errorf("failed to write file %s: %w", fn, err))
 			}
 		}
 	}
+	stream.SendAndClose(&bols.PutFileResponse{})
+	s.logger.Println("Served PutFile Request Successfully")
 	return nil
 }
 
@@ -449,6 +459,12 @@ func (s *service) GetDolosStatus(context.Context, *bols.GetDolosStatusRequest) (
 // FindDolosUART finds the UART of the Dolos.
 func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*bols.FindDolosUARTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindDolosUART not implemented")
+}
+
+// FindDolosUART finds the UART of the Dolos.
+func (s *service) logError(err error) error {
+	s.logger.Println(err)
+	return err
 }
 
 func fstat(path string) (*bols.FileStat, error) {

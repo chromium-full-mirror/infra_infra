@@ -30,11 +30,11 @@ func (s *service) GetFileStat(context.Context, *bols.GetFileStatRequest) (*bols.
 	return nil, status.Errorf(codes.Unimplemented, "method GetFileStat not implemented")
 }
 
-func (s *service) GetFile(*bols.GetFileRequest, bols.BolsService_GetFileServer) error {
+func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetFile not implemented")
 }
 
-func (s *service) PutFile(bols.BolsService_PutFileServer) error {
+func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 	return status.Errorf(codes.Unimplemented, "method PutFile not implemented")
 }
 
