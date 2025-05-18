@@ -135,3 +135,89 @@ func getPoolsForGenericDevice(ctx context.Context, client GetPoolsClient, hostna
 	}
 	return nil, fmt.Errorf("getPoolsForGenericDevice %q: unsupported device type %q", hostname, res.GetResourceType().String())
 }
+
+// DeviceInfo holds base device info.
+type DeviceInfo struct {
+	Name  string
+	ID    string
+	Board string
+	Model string
+	Pools []string
+}
+
+// GetDeviceInfo reads base device info from inventory.
+func GetDeviceInfo(ctx context.Context, client GetPoolsClient, hostname string) (*DeviceInfo, error) {
+	if client == nil {
+		return nil, errors.Reason("get device info: client is nil").Err()
+	}
+	ddrsp, err := client.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
+		Hostname: hostname,
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "get device info: fail to get device data for %q", hostname).Err()
+	}
+	switch ddrsp.GetResourceType() {
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
+		if su := ddrsp.GetSchedulingUnit(); su != nil {
+			return &DeviceInfo{
+				Name:  su.GetName(),
+				ID:    su.GetName(),
+				Pools: su.GetPools(),
+			}, nil
+		} else {
+			return nil, errors.Reason("get device info: scheduling unit %q is empty", hostname).Err()
+		}
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		if d := ddrsp.GetChromeOsDeviceData(); d != nil {
+			if dut := d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
+				return &DeviceInfo{
+					Name:  d.GetLabConfig().GetName(),
+					ID:    d.GetMachine().GetName(),
+					Board: d.GetMachine().GetChromeosMachine().GetBuildTarget(),
+					Model: d.GetMachine().GetChromeosMachine().GetModel(),
+					Pools: dut.GetPools(),
+				}, nil
+			} else if labstation := d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation(); labstation != nil {
+				return &DeviceInfo{
+					Name:  d.GetLabConfig().GetName(),
+					ID:    d.GetMachine().GetName(),
+					Board: d.GetMachine().GetChromeosMachine().GetBuildTarget(),
+					Model: d.GetMachine().GetChromeosMachine().GetModel(),
+					Pools: labstation.GetPools(),
+				}, nil
+			} else if devBoard := d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDevboard(); devBoard != nil {
+				di := &DeviceInfo{
+					Name:  d.GetLabConfig().GetName(),
+					ID:    d.GetMachine().GetName(),
+					Pools: devBoard.GetPools(),
+				}
+				if d.GetMachine().GetDevboard().GetAndreiboard() != nil {
+					di.Board = "andreiboard"
+				} else if d.GetMachine().GetDevboard().GetIcetower() != nil {
+					di.Board = "icetower"
+				} else if d.GetMachine().GetDevboard().GetDragonclaw() != nil {
+					di.Board = "dragonclaw"
+				}
+				di.Model = di.Board
+				return di, nil
+			}
+			return nil, errors.Reason("get device info: type of chromeos %q is not supported", hostname).Err()
+		} else {
+			return nil, errors.Reason("get device info: chromeos %q is empty", hostname).Err()
+		}
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
+		if ad := ddrsp.GetAttachedDeviceData(); ad != nil {
+			return &DeviceInfo{
+				Name:  ad.GetLabConfig().GetHostname(),
+				ID:    ad.GetMachine().GetName(),
+				Board: ad.GetMachine().GetAttachedDevice().GetBuildTarget(),
+				Model: ad.GetMachine().GetAttachedDevice().GetModel(),
+				// Pools are not supported
+			}, nil
+		} else {
+			return nil, errors.Reason("get device info: attached device %q is empty", hostname).Err()
+		}
+	default:
+		return nil, errors.Reason("get device info: unsupported device type %q", hostname).Err()
+	}
+}
