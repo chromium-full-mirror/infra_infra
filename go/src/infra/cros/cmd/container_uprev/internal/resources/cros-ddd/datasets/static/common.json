@@ -19,6 +19,16 @@
                 }
             }
         },
+        "Common:build_variant_kernelnext": {
+            "name": "Common:build_variant_kernelnext",
+            "description": "Class that only matches only the targets that have the kernelnext build variant.",
+            "expression": {
+                "property": {
+                    "propertyPath": "image:variant",
+                    "strEqual": "kernelnext"
+                }
+            }
+        },
         "Common:build_variant_default_or_kernelnext": {
             "name": "Common:build_variant_default_or_kernelnext",
             "description": "Class matches the targets that have the default build variant or the kernelnext variant.",
@@ -109,13 +119,27 @@
                 ]
             }
         },
-        "Common:default_build_variant_or_kernelnext": {
-            "name": "Common:default_build_variant_or_kernelnext",
+        "Common:kernelnext_build_variant": {
+            "name": "Common:kernelnext_build_variant",
             "description": "Category with only a single class that matches the contexts with the default build variant",
             "enumerated": {
                 "classes": [
                     {
-                        "name": "Common:build_variant_default_or_kernelnext"
+                        "name": "Common:build_variant_kernelnext"
+                    }
+                ]
+            }
+        },
+        "Common:default_build_variant_or_kernelnext": {
+            "name": "Common:default_build_variant_or_kernelnext",
+            "description": "Category that unions the classes that match the contexts with the default build or kernelnext variants.",
+            "union": {
+                "subcategories": [
+                    {
+                        "name": "Common:kernelnext_build_variant"
+                    },
+                    {
+                        "name": "Common:default_build_variant"
                     }
                 ]
             }

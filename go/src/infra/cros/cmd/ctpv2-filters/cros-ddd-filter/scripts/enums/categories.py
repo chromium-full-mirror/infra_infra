@@ -59,6 +59,7 @@ class Categories(Enum):
   _COMMON_DEFAULT_BUILD_VARIANT = 'Common:default_build_variant'
   _COMMON_DEFAULT_BUILD_VARIANT_OR_CONNECTIVITY = 'Common:default_build_variant_or_connectivity'
   _COMMON_DEFAULT_BUILD_VARIANT_OR_KERNELNEXT = 'Common:default_build_variant_or_kernelnext'
+  _COMMON_KERNELNEXT_BUILD_VARIANT = 'Common:kernelnext_build_variant'
   _COMMON_LABEL_PHASE_EVT = 'Common:Label_Phase_EVT'
   _COMMON_NOT_RAPTORLAKE_REFRESH_CPU = 'Common:Not_Raptorlake_Refresh_Cpu'
   _COMMON_RAPTORLAKE_REFRESH_CPU = 'Common:Raptorlake_Refresh_Cpu'

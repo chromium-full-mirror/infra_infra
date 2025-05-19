@@ -34,7 +34,7 @@ class SolvedCategory(_message.Message):
     def __init__(self, expression: _Optional[_Union[_syntax_pb2.CategoryExpression, _Mapping]] = ..., classes: _Optional[_Iterable[_Union[SolvedClass, _Mapping]]] = ..., request_id: _Optional[str] = ...) -> None: ...
 
 class SolvedClass(_message.Message):
-    __slots__ = ["dimensions", "expression", "legacy_solutions", "name", "targets"]
+    __slots__ = ["dimensions", "eqc_hash", "expression", "legacy_solutions", "name", "targets"]
     class TargetsEntry(_message.Message):
         __slots__ = ["key", "value"]
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -43,16 +43,18 @@ class SolvedClass(_message.Message):
         value: SolvedTarget
         def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[SolvedTarget, _Mapping]] = ...) -> None: ...
     DIMENSIONS_FIELD_NUMBER: _ClassVar[int]
+    EQC_HASH_FIELD_NUMBER: _ClassVar[int]
     EXPRESSION_FIELD_NUMBER: _ClassVar[int]
     LEGACY_SOLUTIONS_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     TARGETS_FIELD_NUMBER: _ClassVar[int]
     dimensions: _containers.RepeatedCompositeFieldContainer[EqcCategory]
+    eqc_hash: int
     expression: _syntax_pb2.Class
     legacy_solutions: _containers.RepeatedCompositeFieldContainer[LegacyTarget]
     name: str
     targets: _containers.MessageMap[str, SolvedTarget]
-    def __init__(self, expression: _Optional[_Union[_syntax_pb2.Class, _Mapping]] = ..., targets: _Optional[_Mapping[str, SolvedTarget]] = ..., legacy_solutions: _Optional[_Iterable[_Union[LegacyTarget, _Mapping]]] = ..., name: _Optional[str] = ..., dimensions: _Optional[_Iterable[_Union[EqcCategory, _Mapping]]] = ...) -> None: ...
+    def __init__(self, expression: _Optional[_Union[_syntax_pb2.Class, _Mapping]] = ..., targets: _Optional[_Mapping[str, SolvedTarget]] = ..., legacy_solutions: _Optional[_Iterable[_Union[LegacyTarget, _Mapping]]] = ..., name: _Optional[str] = ..., dimensions: _Optional[_Iterable[_Union[EqcCategory, _Mapping]]] = ..., eqc_hash: _Optional[int] = ...) -> None: ...
 
 class SolvedTarget(_message.Message):
     __slots__ = ["device_id", "image_id", "info"]

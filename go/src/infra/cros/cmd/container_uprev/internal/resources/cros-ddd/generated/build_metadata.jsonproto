@@ -176,7 +176,7 @@
           "overlay": "mt8192"
         },
         "kernel": {
-          "version": "5.4"
+          "version": "6.1"
         }
       }
     },
@@ -363,21 +363,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "betty-pvs"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": null
-        },
-        "kernel": {
-          "version": "6.1"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "birman"
         }
       },
@@ -387,6 +372,21 @@
         },
         "kernel": {
           "version": "6.1"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "bluey"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
         }
       }
     },
@@ -558,6 +558,21 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
+          "overlayName": "brya-gki"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adl"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
           "overlayName": "brya-hibernate"
         }
       },
@@ -603,21 +618,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "brya-pvs"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "adl"
-        },
-        "kernel": {
-          "version": "6.6"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "brya-uwb"
         }
       },
@@ -627,21 +627,6 @@
         },
         "kernel": {
           "version": "6.6"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "caroline"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "skl"
-        },
-        "kernel": {
-          "version": "4.19"
         }
       }
     },
@@ -828,36 +813,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "dedede-pvs"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "jsl"
-        },
-        "kernel": {
-          "version": "6.1"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "dedede-pvs-lab"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "jsl"
-        },
-        "kernel": {
-          "version": "6.1"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "drallion"
         }
       },
@@ -896,7 +851,7 @@
           "overlay": null
         },
         "kernel": {
-          "version": "6.1"
+          "version": "6.12"
         }
       }
     },
@@ -934,6 +889,21 @@
       "buildTarget": {
         "portageBuildTarget": {
           "overlayName": "elm-connectivitynext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8173"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "elm64"
         }
       },
       "package_summary": {
@@ -1068,6 +1038,21 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
+          "overlayName": "fatcat"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.12"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
           "overlayName": "ferrochrome"
         }
       },
@@ -1188,6 +1173,21 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
+          "overlayName": "geralt-kernelnext"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8188g"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
           "overlayName": "grunt"
         }
       },
@@ -1227,21 +1227,6 @@
         },
         "kernel": {
           "version": "5.15"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "guado"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "bdw"
-        },
-        "kernel": {
-          "version": "4.14"
         }
       }
     },
@@ -1399,6 +1384,21 @@
       "buildTarget": {
         "portageBuildTarget": {
           "overlayName": "hatch-diskswap"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "cml"
+        },
+        "kernel": {
+          "version": "5.15"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "hatch-gki"
         }
       },
       "package_summary": {
@@ -1743,21 +1743,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "nissa-pvs"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "adln"
-        },
-        "kernel": {
-          "version": "6.6"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "noctis"
         }
       },
@@ -1812,6 +1797,21 @@
         },
         "kernel": {
           "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "ocelot"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.12"
         }
       }
     },
@@ -1886,7 +1886,7 @@
           "overlay": null
         },
         "kernel": {
-          "version": "6.1"
+          "version": "6.12"
         }
       }
     },
@@ -2298,15 +2298,15 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "scarlet"
+          "overlayName": "selphie"
         }
       },
       "package_summary": {
         "chipset": {
-          "overlay": "rk3399"
+          "overlay": "mtl"
         },
         "kernel": {
-          "version": "5.10"
+          "version": "6.6"
         }
       }
     },
@@ -2681,7 +2681,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "5.4"
+          "version": "6.6"
         }
       }
     },
@@ -2696,7 +2696,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "5.4"
+          "version": "6.6"
         }
       }
     },
@@ -2711,7 +2711,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "5.4"
+          "version": "6.6"
         }
       }
     },
@@ -2726,7 +2726,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "5.4"
+          "version": "6.6"
         }
       }
     },

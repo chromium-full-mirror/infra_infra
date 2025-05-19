@@ -26,6 +26,7 @@ message SolvedClass {
   repeated LegacyTarget legacy_solutions = 3;
   string name = 4;
   repeated EqcCategory dimensions = 5;
+  uint64 eqc_hash = 6;
 }
 
 message SolvedTarget {

@@ -190,6 +190,10 @@ func EvalExpression(
 			if err != nil {
 				return &ttcpSolver.SolvedCategory{}, err
 			}
+			eqcHash, err := hashstructure.Hash(exp, hashstructure.FormatV2, nil)
+			if err != nil {
+				log.Println(fmt.Sprintf("error while creating hash for eqc: %s", err))
+			}
 			classes = append(classes,
 				&ttcpSolver.SolvedClass{
 					Expression:      exp,
@@ -197,6 +201,7 @@ func EvalExpression(
 					LegacySolutions: extractBoardModelMap(classSolution),
 					Name:            eqcName,
 					Dimensions:      equivClasses,
+					EqcHash:         eqcHash,
 				},
 			)
 		}

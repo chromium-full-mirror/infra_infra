@@ -2761,6 +2761,26 @@
       "model": "pompom"
     },
     {
+      "device_id": 819,
+      "soc": "Twin Lake",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "kaladin"
+    },
+    {
+      "device_id": 818,
+      "soc": "Twin Lake",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "kelsier"
+    },
+    {
       "device_id": 814,
       "soc": "Twin Lake",
       "form_factor": "CLAMSHELL",
@@ -3041,16 +3061,6 @@
       "model": "woomax"
     },
     {
-      "device_id": 358,
-      "soc": "Tigerlake-UP3",
-      "form_factor": "CLAMSHELL",
-      "soc_vendor": "Intel",
-      "architecture": "X86_64",
-      "device_type": "DEVICE",
-      "build_targets": "NONE",
-      "model": "deltaur"
-    },
-    {
       "device_id": 359,
       "soc": "Tigerlake-UP3",
       "form_factor": "CONVERTIBLE",
@@ -3061,6 +3071,16 @@
       "model": "deltaur360"
     },
     {
+      "device_id": 358,
+      "soc": "Tigerlake-UP3",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Intel",
+      "architecture": "X86_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "deltaur"
+    },
+    {
       "device_id": 807,
       "soc": "Purwa",
       "form_factor": "NONE",
@@ -3069,6 +3089,16 @@
       "device_type": "REFERENCE_BOARD",
       "build_targets": "NONE",
       "model": "bluey"
+    },
+    {
+      "device_id": 820,
+      "soc": "x1p42100",
+      "form_factor": "NONE",
+      "soc_vendor": "Qualcomm",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "quenbi"
     },
     {
       "device_id": 717,
