@@ -170,28 +170,28 @@ var lse = ufspb.MachineLSE{
 								},
 								SmartUsbhub:         true,
 								StarfishSlotMapping: "test-map-key:test-value",
-								PasitHost2: &labapi.PasitHost{
-									Devices: []*labapi.PasitHost_Device{
+								Pasit: &chromeosLab.Pasit{
+									Devices: []*chromeosLab.Pasit_Device{
 										{
-											Type: labapi.PasitHost_Device_CAMERA,
+											Type: chromeosLab.Pasit_Device_CAMERA,
 										},
 										{
-											Type: labapi.PasitHost_Device_UNKNOWN,
+											Type: chromeosLab.Pasit_Device_UNKNOWN,
 										},
 										{
-											Type: labapi.PasitHost_Device_DUT,
+											Type: chromeosLab.Pasit_Device_DUT,
 										},
 										{
-											Type: labapi.PasitHost_Device_MONITOR,
+											Type: chromeosLab.Pasit_Device_MONITOR,
 										},
 										{
-											Type: labapi.PasitHost_Device_MONITOR,
+											Type: chromeosLab.Pasit_Device_MONITOR,
 										},
 										{
-											Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+											Type: chromeosLab.Pasit_Device_SWITCH_FIXTURE,
 										},
 										{
-											Type: labapi.PasitHost_Device_DOCKING_STATION,
+											Type: chromeosLab.Pasit_Device_DOCKING_STATION,
 										},
 									},
 								},

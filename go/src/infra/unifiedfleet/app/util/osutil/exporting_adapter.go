@@ -75,15 +75,15 @@ var appMap = map[string]bool{
 }
 
 // pasitComponentsMap are the components allowed to be included as swarming labels in PASIT testbeds.
-var pasitComponentsMap = map[labapi.PasitHost_Device_Type]bool{
-	labapi.PasitHost_Device_DOCKING_STATION: true,
-	labapi.PasitHost_Device_MONITOR:         true,
-	labapi.PasitHost_Device_CAMERA:          true,
-	labapi.PasitHost_Device_STORAGE:         true,
-	labapi.PasitHost_Device_HID:             true,
-	labapi.PasitHost_Device_NETWORK:         true,
-	labapi.PasitHost_Device_HEADPHONE:       true,
-	labapi.PasitHost_Device_SPEAKER:         true,
+var pasitComponentsMap = map[chromeosLab.Pasit_Device_Type]bool{
+	chromeosLab.Pasit_Device_DOCKING_STATION: true,
+	chromeosLab.Pasit_Device_MONITOR:         true,
+	chromeosLab.Pasit_Device_CAMERA:          true,
+	chromeosLab.Pasit_Device_STORAGE:         true,
+	chromeosLab.Pasit_Device_HID:             true,
+	chromeosLab.Pasit_Device_NETWORK:         true,
+	chromeosLab.Pasit_Device_HEADPHONE:       true,
+	chromeosLab.Pasit_Device_SPEAKER:         true,
 }
 
 type attributes []*inventory.KeyValue
@@ -224,8 +224,8 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 	p.SmartUsbhub = &(d.SmartUsbhub)
 	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
 
-	if h := d.GetPasitHost2(); h != nil {
-		count := make(map[labapi.PasitHost_Device_Type]int)
+	if h := d.GetPasit(); h != nil {
+		count := make(map[chromeosLab.Pasit_Device_Type]int)
 		p.PasitComponents = []string{}
 		for _, dev := range h.GetDevices() {
 			dType := dev.GetType()
