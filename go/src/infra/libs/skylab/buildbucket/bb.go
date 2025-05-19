@@ -28,6 +28,7 @@ const defaultTaskPriority = 4
 // ScheduleLabpackTaskParams includes the parameters necessary to schedule a labpack task.
 type ScheduleLabpackTaskParams struct {
 	UnitName         string
+	UnitID           string
 	ExpectedDUTState string
 	Props            *structbuilder.Struct
 	ExtraTags        []string
@@ -152,6 +153,14 @@ func (c *clientImpl) CreateLabpackTask(ctx context.Context, params *ScheduleLabp
 			fmt.Println("Successfully triggered task via scheduling client, taskID:", t.GetId())
 			return t.GetUrl(), 0, nil
 		}
+	}
+
+	// Fall back to direct scheduling via Buildbucket.
+	if params.UnitID != "" {
+		// Replace the `dut_name` dim to `dut_id`.
+		dims["dut_id"] = params.UnitID
+		delete(dims, "dut_name")
+		bbReq.Dimensions = bbDimensions(dims)
 	}
 
 	build, err := c.client.ScheduleBuild(ctx, bbReq)

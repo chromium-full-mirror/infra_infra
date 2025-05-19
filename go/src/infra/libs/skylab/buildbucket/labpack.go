@@ -28,6 +28,8 @@ type Params struct {
 	// UnitName is the DUT or similar that we are scheduling against.
 	// For example, a DUT hostname is a valid UnitName.
 	UnitName string
+	// UnitID is the ID of the DUT that we are scheduling against.
+	UnitID string
 	// TaskName is used to drive the recovery process, e.g. "labstation_deploy".
 	TaskName string
 	// Whether recovery actions are enabled or not.
@@ -63,6 +65,7 @@ type Params struct {
 func (p *Params) AsMap() map[string]any {
 	return map[string]any{
 		"unit_name":           p.UnitName,
+		"unit_id":             p.UnitID,
 		"task_name":           p.TaskName,
 		"enable_recovery":     p.EnableRecovery,
 		"admin_service":       p.AdminService,
@@ -136,6 +139,7 @@ func CreateTask(ctx context.Context, client Client, sc schedulingapi.TaskSchedul
 		BuilderBucket:    params.BuilderBucket,
 		BuilderProject:   params.BuilderProject,
 		UnitName:         params.UnitName,
+		UnitID:           params.UnitID,
 		ExpectedDUTState: params.ExpectedState,
 		Props:            props,
 		ExtraTags:        extraTags,
