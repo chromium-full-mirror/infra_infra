@@ -144,7 +144,7 @@ func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSP
 	excludePrefixesForiOSPackage := make([]string, len(defaultExcludePrefixes))
 	copy(excludePrefixesForiOSPackage, defaultExcludePrefixes)
 	if !legacyIOSPackage {
-		excludePrefixesForiOSPackage = append(excludePrefixesForiOSPackage, XcodeIOSSimulatorRuntimeRelPath)
+		excludePrefixesForiOSPackage = append(excludePrefixesForiOSPackage, RuntimeTypeToInstallConstants[IosPackageName].simulatorRuntimeRelPath)
 	}
 
 	iosMakePackageArgs := MakePackageArgs{
@@ -300,7 +300,7 @@ type PackageRuntimeAndXcodeArgs struct {
 // Packages runtime & rest of Xcode.
 func packageRuntimeAndXcode(ctx context.Context, args PackageRuntimeAndXcodeArgs) error {
 	if !args.legacyIOSPackage {
-		runtimePath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath, XcodeIOSSimulatorRuntimeFilename)
+		runtimePath := filepath.Join(args.xcodeAppPath, RuntimeTypeToInstallConstants[IosPackageName].simulatorRuntimeRelPath, RuntimeTypeToInstallConstants[IosPackageName].simulatorRuntimeFilename)
 		packageRuntimeArgs := PackageRuntimeArgs{
 			xcodeAppPath:       args.xcodeAppPath,
 			runtimePath:        runtimePath,
@@ -326,6 +326,7 @@ func packageRuntimeAndXcode(ctx context.Context, args PackageRuntimeAndXcodeArgs
 type PackageRuntimeArgs struct {
 	xcodeAppPath       string
 	runtimePath        string
+	runtimeType        string
 	cipdPackagePrefix  string
 	serviceAccountJSON string
 	outputDir          string
@@ -430,10 +431,11 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 	}
 
 	runtimeType := strings.Trim(strings.ToLower(args.runtimeType), " ")
-	runtimeRuntimePackageName, ok := RuntimeTypeToDMGPackageName[runtimeType]
+	installConstants, ok := RuntimeTypeToInstallConstants[runtimeType]
 	if !ok {
-		return errors.Reason("runtime type could be %s, but got %s", strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ","), runtimeType).Err()
+		return errors.Reason("runtime type could be %s, but got %s", strings.Join(maps.Keys(RuntimeTypeToInstallConstants), ","), runtimeType).Err()
 	}
+	runtimeRuntimePackageName := installConstants.dmgPackageName
 
 	// validate files in the runtime dir
 	entries, err := ioutil.ReadDir(runtimeDir)

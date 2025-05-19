@@ -45,15 +45,11 @@ func getXcodeVersion(versionFile string) (cfBundleVersion string, xcodeVersion s
 	return
 }
 
-type iosVersionPlist struct {
-	CFBundleVersion string `plist:"CFBundleVersion"`
-}
-
-// getiOSRuntimeVersion takes the path to the `version.plist` file within Xcode.app
-// Ideally in Contents/Developer/Platforms/iPhoneSimulator.platform/version.plist
+// getRuntimeVersion takes the path to the `version.plist` file within Xcode.app
+// For example in Contents/Developer/Platforms/iPhoneSimulator.platform/version.plist
 // and extracts the iOS runtime version. e.g. 17.0
-func getiOSRuntimeVersion(versionFile string) (cfBundleVersion string, err error) {
-	var vp iosVersionPlist
+func getRuntimeVersion(versionFile string) (cfBundleVersion string, err error) {
+	var vp versionPlist
 	r, err := os.Open(versionFile)
 	if err != nil {
 		err = errors.Annotate(err, "failed to open %s", versionFile).Err()

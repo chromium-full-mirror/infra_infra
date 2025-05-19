@@ -37,12 +37,12 @@ func removeCipdFiles(xcodePackagePath string) error {
 	return nil
 }
 
-func getIOSVersionWithoutPatch(iosVersion string) string {
-	parts := strings.Split(iosVersion, ".")
+func getVersionWithoutPatch(runtimeVersion string) string {
+	parts := strings.Split(runtimeVersion, ".")
 	if len(parts) >= 2 {
 		return parts[0] + "." + parts[1]
 	}
-	return iosVersion
+	return runtimeVersion
 }
 
 func getFileExtension(fileName string) string {
@@ -121,7 +121,7 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 	switch args.kind {
 	case macKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, MacPackageName, args.ref)
-	case iosKind:
+	case iosKind, tvosKind:
 		// TODO(crbug/1420480): on MacOS13+, Xcode is uploaded as one package in mac, so
 		// we only need to download the mac package and there's no difference between
 		// mac and ios kind. Clean up the if conditions below after all bots are upgraded
@@ -136,6 +136,8 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimePackageName, args.ref)
 	case iosRuntimeDMGKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimeDMGPackageName, args.ref)
+	case tvosRuntimeDMGKind:
+		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, TvosRuntimeDMGPackageName, args.ref)
 	case xcodeArchiveKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, XcodeArchivePackageName, args.ref)
 	default:
@@ -280,12 +282,12 @@ func checkDeveloperMode(ctx context.Context) error {
 	return nil
 }
 
-func deleteUnusedIOSRuntime(ctx context.Context, xcodeAppPath string) error {
+func deleteUnusedRuntime(ctx context.Context, xcodeAppPath string) error {
 	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
-		// delete unused runtime after MaxIOSRuntimeKeepDays
+		// delete unused runtime after MaxRuntimeKeepDays
 		// -d is abbreviated flag for --notUsedSinceDays
 		// More info can be found by appending the -help arg
-		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "delete", "-d", MaxIOSRuntimeKeepDays)
+		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "delete", "-d", MaxRuntimeKeepDays)
 		logging.Warningf(ctx, "Unused runtimes delete command output: %s", output)
 		if err != nil {
 			return errors.Annotate(err, "failed when trying to delete unused runtimes.").Err()
@@ -313,6 +315,7 @@ func deleteUnusedIOSRuntime(ctx context.Context, xcodeAppPath string) error {
 
 type ResolveRuntimeDMGRefArgs struct {
 	runtimeVersion     string
+	runtimeType        string
 	xcodeVersion       string
 	packagePath        string
 	serviceAccountJSON string
@@ -337,7 +340,7 @@ func resolveRuntimeDMGRef(ctx context.Context, args ResolveRuntimeDMGRefArgs) (s
 	}
 	for _, searchRef := range searchRefs {
 		if output, err := describeRef(ctx, args.packagePath, searchRef); err == nil {
-			var runtimeVersionRegex = regexp.MustCompile(`ios_runtime_version:(.*)`)
+			var runtimeVersionRegex = regexp.MustCompile(args.runtimeType + `_runtime_version:(.*)`)
 			result := runtimeVersionRegex.FindStringSubmatch(output)
 			if len(result) > 0 {
 				if result[1] == args.runtimeVersion {
@@ -362,6 +365,7 @@ type RuntimeDMGInstallArgs struct {
 	installPath        string
 	cipdPackagePrefix  string
 	serviceAccountJSON string
+	runtimeType        string
 }
 
 // Resolves and installs the suitable runtime dmg.
@@ -370,9 +374,10 @@ func installRuntimeDMG(ctx context.Context, args RuntimeDMGInstallArgs) error {
 		return errors.Annotate(err, "failed to create a folder %s", args.installPath).Err()
 	}
 
-	packagePath := args.cipdPackagePrefix + "/" + IosRuntimeDMGPackageName
+	packagePath := args.cipdPackagePrefix + "/" + RuntimeTypeToInstallConstants[args.runtimeType].dmgPackageName
 	resolveRuntimeDMGRefArgs := ResolveRuntimeDMGRefArgs{
 		runtimeVersion:     args.runtimeVersion,
+		runtimeType:        args.runtimeType,
 		xcodeVersion:       args.xcodeVersion,
 		packagePath:        packagePath,
 		serviceAccountJSON: args.serviceAccountJSON,
@@ -386,7 +391,7 @@ func installRuntimeDMG(ctx context.Context, args RuntimeDMGInstallArgs) error {
 		ref:                ref,
 		rootPath:           args.installPath,
 		cipdPackagePrefix:  args.cipdPackagePrefix,
-		kind:               iosRuntimeDMGKind,
+		kind:               KindType(RuntimeTypeToInstallConstants[args.runtimeType].dmgPackageName),
 		serviceAccountJSON: args.serviceAccountJSON,
 	}
 	if err := installPackages(ctx, installPackagesArgs); err != nil {
@@ -395,7 +400,7 @@ func installRuntimeDMG(ctx context.Context, args RuntimeDMGInstallArgs) error {
 	return nil
 }
 
-func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string) error {
+func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string, runtimeType string) error {
 	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
 		// add runtime dmg to Xcode
 		addOutput, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "add", dmgFilePath)
@@ -409,17 +414,17 @@ func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string)
 		if err != nil {
 			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list -j`").Err()
 		}
-		var runtimes map[string]IOSRuntime
+		var runtimes map[string]PlatformRuntime
 		err = json.Unmarshal([]byte(listOutput), &runtimes)
 		if err != nil {
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
 		}
 		overridingBuild := ""
-		iosVersion := ""
+		runtimeVersion := ""
 		for id, runtime := range runtimes {
 			if strings.Contains(addOutput, id) {
 				overridingBuild = runtime.Build
-				iosVersion = runtime.Version
+				runtimeVersion = runtime.Version
 				break
 			}
 		}
@@ -438,12 +443,12 @@ func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string)
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime match list -j` output").Err()
 		}
 		overriddenBuild := ""
-		// the iphoneSdk key only has the version without patch number
+		// the Sdk key only has the version without patch number
 		// e.g. if the iosVersion is 17.0.1, then the key is 17.0
-		truncatedVersion := getIOSVersionWithoutPatch(iosVersion)
-		iphoneSdk := "iphoneos" + truncatedVersion
+		truncatedVersion := getVersionWithoutPatch(runtimeVersion)
+		runtimeSdk := RuntimeTypeToInstallConstants[runtimeType].runtimeSdkName + truncatedVersion
 		for id, sdkRuntime := range sdkRuntimes {
-			if id == iphoneSdk {
+			if id == runtimeSdk {
 				overriddenBuild = sdkRuntime.SdkBuild
 				break
 			}
@@ -454,13 +459,14 @@ func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string)
 
 		// Override the default runtime build with the desired one
 		logging.Warningf(ctx, "Overriding runtime %s with %s", overriddenBuild, overridingBuild)
-		err = RunCommand(ctx, "xcrun", "simctl", "runtime", "match", "set", iphoneSdk, overridingBuild, "--sdkBuild", overriddenBuild)
+		err = RunCommand(ctx, "xcrun", "simctl", "runtime", "match", "set", runtimeSdk, overridingBuild, "--sdkBuild", overriddenBuild)
 		if err != nil {
 			return errors.Annotate(err, "failed when trying to override runtime %s with %s", overridingBuild, overriddenBuild).Err()
 		}
 		return nil
 	})
 }
+
 func installAndAddRuntimeDMG(ctx context.Context, runtimeDMGInstallArgs RuntimeDMGInstallArgs, xcodeAppPath string) error {
 	// install runtime
 	if err := installRuntimeDMG(ctx, runtimeDMGInstallArgs); err != nil {
@@ -484,7 +490,7 @@ func installAndAddRuntimeDMG(ctx context.Context, runtimeDMGInstallArgs RuntimeD
 		return errors.Reason("Unable to locate dmg file in directory %s", runtimeDMGInstallArgs.installPath).Err()
 	}
 
-	if err = addRuntimeDMG(ctx, xcodeAppPath, dmgFilePath); err != nil {
+	if err = addRuntimeDMG(ctx, xcodeAppPath, dmgFilePath, runtimeDMGInstallArgs.runtimeType); err != nil {
 		return errors.Annotate(err, "failed to add runtime dmg %s to Xcode", dmgFilePath).Err()
 	}
 	return nil
@@ -541,7 +547,7 @@ func shouldReInstallXcode(ctx context.Context, xcodeAppPath, xcodeVersion string
 	return false, nil
 }
 
-type IOSRuntime struct {
+type PlatformRuntime struct {
 	Build   string `json:"build"`
 	Version string `json:"version"`
 }
@@ -550,11 +556,12 @@ type SDKRuntime struct {
 	SdkVersion string `json:"sdkVersion"`
 }
 
-// get the runtime build string from the latest iOS runtime given an iOS version
-func getLatestRuntimeBuild(ctx context.Context, runtimeDMGPackagePath, iosVersion, xcodeVersion string) (string, error) {
-	fullIOSVersion := "ios-" + strings.ReplaceAll(iosVersion, ".", "-")
+// get the runtime build string from the latest runtime given an runtime version
+func getLatestRuntimeBuild(ctx context.Context, runtimeDMGPackagePath, runtimeVersion, xcodeVersion string, runtimeType string) (string, error) {
+	fullRuntimeVersion := runtimeType + "-" + strings.ReplaceAll(runtimeVersion, ".", "-")
 	resolveRuntimeDMGRefArgs := ResolveRuntimeDMGRefArgs{
-		runtimeVersion:     fullIOSVersion,
+		runtimeVersion:     fullRuntimeVersion,
+		runtimeType:        runtimeType,
 		xcodeVersion:       xcodeVersion,
 		packagePath:        runtimeDMGPackagePath,
 		serviceAccountJSON: "",
@@ -565,25 +572,25 @@ func getLatestRuntimeBuild(ctx context.Context, runtimeDMGPackagePath, iosVersio
 	}
 	output, err := describeRef(ctx, runtimeDMGPackagePath, ref)
 	if err != nil {
-		err = errors.Annotate(err, "Error when getting latest ios_runtime_build from cipd").Err()
+		err = errors.Annotate(err, "Error when getting latest %s_runtime_build from cipd", runtimeType).Err()
 		return "", err
 	}
-	var runtimeBuildVersionRegex = regexp.MustCompile(`ios_runtime_build:(.*)`)
+	var runtimeBuildVersionRegex = regexp.MustCompile(runtimeType + `_runtime_build:(.*)`)
 	result := runtimeBuildVersionRegex.FindStringSubmatch(output)
 	if len(result) > 0 {
 		return result[1], nil
 	}
-	return "", errors.Reason("Unable to parse ios_runtime_build from cipd describe output %s", output).Err()
+	return "", errors.Reason("Unable to parse %s_runtime_build from cipd describe output %s", runtimeType, output).Err()
 }
 
-// The function takes in an iosVersion, e.g. 17.0, and check whether it has already existed
+// The function takes in an runtimeVersion, e.g. 17.0, and check whether it has already existed
 // by running `xcrun simctl runtime list`
-func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xcodeVersion, xcodeAppPath string) (bool, error) {
-	shouldInstallRuntime := true
-	runtimeDMGPackagePath := cipdPackagePrefix + "/" + IosRuntimeDMGPackageName
-	runtimeBuildOnCipd, err := getLatestRuntimeBuild(ctx, runtimeDMGPackagePath, iosVersion, xcodeVersion)
+func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, runtimeVersion, xcodeVersion, xcodeAppPath string, runtimeDmgPackageName string, runtimeType string) (bool, error) {
+	shouldInstallRuntimeResult := true
+	runtimeDMGPackagePath := cipdPackagePrefix + "/" + runtimeDmgPackageName
+	runtimeBuildOnCipd, err := getLatestRuntimeBuild(ctx, runtimeDMGPackagePath, runtimeVersion, xcodeVersion, runtimeType)
 	if err != nil {
-		return shouldInstallRuntime, err
+		return shouldInstallRuntimeResult, err
 	}
 	err = RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
 		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "list", "-j")
@@ -591,21 +598,21 @@ func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xc
 			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list -j`").Err()
 		}
 
-		var runtimes map[string]IOSRuntime
+		var runtimes map[string]PlatformRuntime
 		err = json.Unmarshal([]byte(output), &runtimes)
 		if err != nil {
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
 		}
 		for _, runtime := range runtimes {
 			if strings.EqualFold(runtimeBuildOnCipd, runtime.Build) {
-				logging.Warningf(ctx, "Runtime %s Build %s should not be installed because it already exists", iosVersion, runtimeBuildOnCipd)
-				shouldInstallRuntime = false
+				logging.Warningf(ctx, "Runtime %s Build %s should not be installed because it already exists", runtimeVersion, runtimeBuildOnCipd)
+				shouldInstallRuntimeResult = false
 				return nil
 			}
 		}
 		return nil
 	})
-	return shouldInstallRuntime, err
+	return shouldInstallRuntimeResult, err
 }
 
 // Installs Xcode. The default runtime of the Xcode version will be installed
@@ -706,9 +713,12 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		}
 		return errors.Reason("The downloaded Xcode app is possibly corrupted. The app has been deleted. Please retry...").Err()
 	}
-
-	simulatorDirPath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath)
-	simulatorFilePath := filepath.Join(simulatorDirPath, XcodeIOSSimulatorRuntimeFilename)
+	installConstants, ok := getInstallConstantsFromKind(args.kind)
+	if !ok {
+		return errors.Reason("%s is missing runtime constants. This could mean that you are trying to install an unsupported runtime.", args.kind).Err()
+	}
+	simulatorDirPath := filepath.Join(args.xcodeAppPath, installConstants.simulatorRuntimeRelPath)
+	simulatorFilePath := filepath.Join(simulatorDirPath, installConstants.simulatorRuntimeFilename)
 	_, statErr := os.Stat(simulatorFilePath)
 	// Only install the default runtime when |withRuntime| arg is true and the
 	// Xcode package installed doesn't have runtime file (backwards
@@ -716,20 +726,20 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	if args.withRuntime && os.IsNotExist(statErr) {
 		if onMacOS13OrLater {
 			logging.Warningf(ctx, "Deleting unused runtimes (if there are any) to free up disk spaces...")
-			if err := deleteUnusedIOSRuntime(ctx, args.xcodeAppPath); err != nil {
+			if err := deleteUnusedRuntime(ctx, args.xcodeAppPath); err != nil {
 				logging.Warningf(ctx, "error: %s. There are probably no runtimes to delete", err)
 			}
-			cfBundleVersion, err := getiOSRuntimeVersion(filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeVersionRelPath))
+			cfBundleVersion, err := getRuntimeVersion(filepath.Join(args.xcodeAppPath, installConstants.simulatorVersionRelPath))
 			if err != nil {
 				return err
 			}
-			shouldInstallRuntime, err := shouldInstallRuntime(ctx, args.cipdPackagePrefix, cfBundleVersion, args.xcodeVersion, args.xcodeAppPath)
+			shouldInstallRuntime, err := shouldInstallRuntime(ctx, args.cipdPackagePrefix, cfBundleVersion, args.xcodeVersion, args.xcodeAppPath, installConstants.dmgPackageName, installConstants.runtimeType)
 			if err != nil {
 				return err
 			}
 			if shouldInstallRuntime {
-				runtimeVersion := "ios-" + strings.ReplaceAll(cfBundleVersion, ".", "-")
-				// creating a temp dir to install ios runtime dmg. Will be removed later
+				runtimeVersion := installConstants.runtimeType + "-" + strings.ReplaceAll(cfBundleVersion, ".", "-")
+				// creating a temp dir to install runtime dmg. Will be removed later
 				runtimeDMGPath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
 				if tmpDirErr != nil {
 					return tmpDirErr
@@ -741,6 +751,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 					installPath:        runtimeDMGPath,
 					cipdPackagePrefix:  args.cipdPackagePrefix,
 					serviceAccountJSON: args.serviceAccountJSON,
+					runtimeType:        installConstants.runtimeType,
 				}
 				logging.Warningf(ctx, "Installing and adding runtime %s dmg to Xcode...", runtimeVersion)
 				if err := installAndAddRuntimeDMG(ctx, runtimeDMGInstallArgs, args.xcodeAppPath); err != nil {

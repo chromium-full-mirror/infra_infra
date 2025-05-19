@@ -32,14 +32,6 @@ const AcceptedLicensesFile = "/Library/Preferences/com.apple.dt.Xcode.plist"
 // on bots.
 const PackageInstallerOnBots = "/usr/local/bin/xcode_install_wrapper.py"
 
-// Relative path from Xcode.app where simulator runtimes are stored.
-const XcodeIOSSimulatorRuntimeRelPath = "Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes"
-
-// Filename of default simulator runtime in Xcode package.
-const XcodeIOSSimulatorRuntimeFilename = "iOS.simruntime"
-
-const XcodeIOSSimulatorRuntimeVersionRelPath = "Contents/Developer/Platforms/iPhoneOS.platform/version.plist"
-
 // Package name of iOS runtime in CIPD.
 const IosRuntimePackageName = "ios_runtime"
 
@@ -59,17 +51,14 @@ const MacPackageName = "mac"
 // Package name of iOS package in CIPD. The package contains iOS SDK.
 const IosPackageName = "ios"
 
+// Package name of tvOS package in CIPD. The package contains iOS SDK.
+const TvosPackageName = "tvos"
+
 // Maximum number of days to keep an iOS runtime within Xcode since last used.
-const MaxIOSRuntimeKeepDays = "14"
+const MaxRuntimeKeepDays = "14"
 
 // Maximum time to wait for Xcode launch before failing the process.
 const MaxXcodeLaunchWaitTime = 5 * time.Minute
-
-// RuntimeTypeToDMGPackageName maps runtimeType from runtime-type flags to the corresponding DMG package name.
-var RuntimeTypeToDMGPackageName = map[string]string{
-	"ios":  IosRuntimeDMGPackageName,
-	"tvos": TvosRuntimeDMGPackageName,
-}
 
 // KindType is the type for enum values for the -kind argument.
 type KindType string
@@ -79,6 +68,7 @@ var _ flag.Value = (*KindType)(nil)
 const (
 	macKind            = KindType(MacPackageName)
 	iosKind            = KindType(IosPackageName)
+	tvosKind           = KindType(TvosPackageName)
 	iosRuntimeKind     = KindType(IosRuntimePackageName)
 	iosRuntimeDMGKind  = KindType(IosRuntimeDMGPackageName)
 	tvosRuntimeDMGKind = KindType(TvosRuntimeDMGPackageName)
@@ -86,6 +76,68 @@ const (
 	// DefaultKind is the default value for the -kind flag.
 	DefaultKind = macKind
 )
+
+// Struct useful for mapping kinds to useful constants for installation.
+type RuntimeKindConstants struct {
+	// String of the runtime type.
+	runtimeType string
+	// DMG package name of the runtime.
+	dmgPackageName string
+	// Name of the runtime e.g. the 'appletvos' in front of 'appletvos18.2'.
+	runtimeSdkName string
+	// Relative path from Xcode.app where simulator plist file is stored.
+	simulatorVersionRelPath string
+	// Relative path from Xcode.app where simulator runtimes are stored.
+	simulatorRuntimeRelPath string
+	// Filename of default simulator runtime in Xcode package.
+	simulatorRuntimeFilename string
+}
+
+// RuntimeTypeToInstallConstants maps hardcoded values used for installation of runtimes
+// Used only for DMG packages
+var RuntimeTypeToInstallConstants = map[string]RuntimeKindConstants{
+	IosPackageName: {
+		runtimeType:              IosPackageName,
+		dmgPackageName:           IosRuntimeDMGPackageName,
+		runtimeSdkName:           "iphoneos",
+		simulatorVersionRelPath:  "Contents/Developer/Platforms/iPhoneOS.platform/version.plist",
+		simulatorRuntimeRelPath:  "Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes",
+		simulatorRuntimeFilename: "iOS.simruntime",
+	},
+	TvosPackageName: {
+		runtimeType:              TvosPackageName,
+		dmgPackageName:           TvosRuntimeDMGPackageName,
+		runtimeSdkName:           "appletvos",
+		simulatorVersionRelPath:  "Contents/Developer/Platforms/AppleTVOS.platform/version.plist",
+		simulatorRuntimeRelPath:  "Contents/Developer/Platforms/AppleTVOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes",
+		simulatorRuntimeFilename: "tvOS.simruntime",
+	},
+}
+
+func getInstallConstantsFromKind(kind KindType) (RuntimeKindConstants, bool) {
+	// Check if the kind maps to a runtime type that has install constants. Also returns
+	// an is_okay boolean as second return value, which indicates if the kind has a corresponding
+	// RuntimeKindConstants.
+	switch kind {
+	case macKind:
+		// macKind defaults to iosKind for default behavior.
+		return RuntimeTypeToInstallConstants[IosPackageName], true
+	case iosKind:
+		return RuntimeTypeToInstallConstants[IosPackageName], true
+	case tvosKind:
+		return RuntimeTypeToInstallConstants[TvosPackageName], true
+	case iosRuntimeKind:
+		return RuntimeTypeToInstallConstants[IosPackageName], true
+	case iosRuntimeDMGKind:
+		return RuntimeTypeToInstallConstants[IosPackageName], true
+	case tvosRuntimeDMGKind:
+		return RuntimeTypeToInstallConstants[TvosPackageName], true
+	case xcodeArchiveKind:
+		return RuntimeKindConstants{}, false
+	default:
+		return RuntimeKindConstants{}, false
+	}
+}
 
 // KindTypeEnum is the corresponding Enum type for the -kind argument.
 var KindTypeEnum = flagenum.Enum{
@@ -191,6 +243,7 @@ type installRuntimeRun struct {
 type installRuntimeDMGRun struct {
 	commonFlags
 	runtimeVersion     string
+	runtimeType        string
 	xcodeVersion       string
 	outputDir          string
 	serviceAccountJSON string
@@ -576,6 +629,7 @@ func (c *installRuntimeDMGRun) Run(a subcommands.Application, args []string, env
 
 	runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 		runtimeVersion:     c.runtimeVersion,
+		runtimeType:        c.runtimeType,
 		xcodeVersion:       c.xcodeVersion,
 		installPath:        c.outputDir,
 		cipdPackagePrefix:  c.cipdPackagePrefix,
@@ -629,7 +683,7 @@ func uploadRuntimeDMGFlagVars(c *uploadRuntimeDMGRun) {
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
 	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
-	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ", "))
+	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToInstallConstants), ", "))
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "The latest Xcode version \"bundled\" with this runtime. For example, 14c18 for iOS16.2 (required)")
 }
 
@@ -658,7 +712,7 @@ func packageRuntimeDMGFlagVars(c *packageRuntimeDMGRun) {
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
 	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
-	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToDMGPackageName), ", "))
+	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToInstallConstants), ", "))
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. For example, 15A5161b (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }
@@ -674,6 +728,7 @@ func installRuntimeFlagVars(c *installRuntimeRun) {
 func installRuntimeDMGFlagVars(c *installRuntimeDMGRun) {
 	commonFlagVars(&c.commonFlags)
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "iOS runtime version. Format e.g. \"ios-14-4\" (required)")
+	c.Flags.StringVar(&c.runtimeType, "runtime-type", "ios", "The type of runtime to be uploaded. Possible values: "+strings.Join(maps.Keys(RuntimeTypeToInstallConstants), ", "))
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. Format e.g. \"15a5161b\"")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path where to install the runtime DMG (required).")
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")

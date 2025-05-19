@@ -389,7 +389,7 @@ func TestPackageRuntime(t *testing.T) {
 		t.Run("package an Xcode default runtime", func(t *ftt.Test) {
 			packageRuntimeArgs := PackageRuntimeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
-				runtimePath:        filepath.Join("testdata", "Xcode-new.app", XcodeIOSSimulatorRuntimeRelPath, "iOS.simruntime"),
+				runtimePath:        filepath.Join("testdata", "Xcode-new.app", RuntimeTypeToInstallConstants[IosPackageName].simulatorRuntimeRelPath, "iOS.simruntime"),
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
@@ -416,7 +416,7 @@ func TestPackageRuntime(t *testing.T) {
 		t.Run("package an Xcode default runtime without refs & tags", func(t *ftt.Test) {
 			packageRuntimeArgs := PackageRuntimeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
-				runtimePath:        filepath.Join("testdata", "Xcode-new.app", XcodeIOSSimulatorRuntimeRelPath, "iOS.simruntime"),
+				runtimePath:        filepath.Join("testdata", "Xcode-new.app", RuntimeTypeToInstallConstants[IosPackageName].simulatorRuntimeRelPath, "iOS.simruntime"),
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
@@ -500,7 +500,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
-				runtimeType:        "ios",
+				runtimeType:        IosPackageName,
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -545,7 +545,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
-				runtimeType:        "ios",
+				runtimeType:        IosPackageName,
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -570,7 +570,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtimes"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
-				runtimeType:        "ios",
+				runtimeType:        IosPackageName,
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -589,7 +589,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
 				runtimeBuild:       "test-ios-build",
-				runtimeType:        "ios",
+				runtimeType:        IosPackageName,
 				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
@@ -600,7 +600,7 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "ios_runtime_dmg.cipd")))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", RuntimeTypeToInstallConstants[IosPackageName].dmgPackageName+".cipd")))
 
 			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
 			assert.Loosely(t, s.Calls[0].Args, should.Contain("pkg-build"))

@@ -933,6 +933,142 @@ func TestInstallXcode(t *testing.T) {
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 		})
 
+		t.Run("install Xcode with specific runtime dmg when not already exists", func(t *ftt.Test) {
+			s.ReturnOutput = []string{
+				"14.2.1", // MacOS Version
+				"14.2.1", // MacOS Version
+				"gatekeeper check success",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"license accpet",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch",
+				"xcrun simctl list prints a list of all simulators installed",
+				"xcode-select -s prints nothing",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				"xcrun simctl delete -d prints a list of runtime being deleted",
+				"xcrun simctl list prints tvOS 17.0 (21A5248u) - AAAAA (Deleting)",
+				"xcrun simctl list prints nothing",
+				"xcode-select -s prints nothing",
+				"describe tvos_runtime_dmg returns tvos_runtime_version:tvos-16-2",
+				"describe tvos_runtime_dmg returns tvos_runtime_version:tvos-17-0",
+				"tvos_runtime_build:21A5248u",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				ListRuntimeDiffBuildJson,
+				"xcode-select -s prints nothing",
+				"describe tvos_runtime_dmg returns tvos_runtime_version:tvos-16-2",
+				"describe tvos_runtime_dmg returns tvos_runtime_version:tvos-17-0",
+				"cipd dry run",
+				"cipd ensures",
+				"chomod prints nothing",
+			}
+			installArgsForTest := installArgs
+			installArgsForTest.withRuntime = true
+			installArgsForTest.kind = tvosKind
+			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
+			installArgsForTest.xcodeVersion = "TESTBUILDVERSION"
+			err := installXcode(ctx, installArgsForTest)
+			assert.Loosely(t, err, should.NotBeNil)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/gktool"))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcodebuild", "-license", "accept"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcodebuild", "-runFirstLaunch"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "delete", "-d", "14"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"describe", "test/prefix/tvos_runtime_dmg", "-version", "TESTBUILDVERSION",
+			}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"describe", "test/prefix/tvos_runtime_dmg", "-version", "tvos-17-0",
+			}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"describe", "test/prefix/tvos_runtime_dmg", "-version", "tvos-17-0",
+			}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list", "-j"}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
+		})
+
 		t.Run("install Xcode with runtime dmg when already exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.2", // MacOS Version
@@ -1354,6 +1490,7 @@ func TestInstallXcode(t *testing.T) {
 				installPath:        "test/path/to/install/runtimes",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
+				runtimeType:        "ios",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
 			assert.Loosely(t, err, should.BeNil)
@@ -1399,6 +1536,7 @@ func TestInstallXcode(t *testing.T) {
 				installPath:        "test/path/to/install/runtimes",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
+				runtimeType:        "ios",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
 			assert.Loosely(t, err, should.BeNil)
@@ -1431,6 +1569,52 @@ func TestInstallXcode(t *testing.T) {
 			}))
 		})
 
+		t.Run("install specific runtime DMG with xcode-version ref", func(t *ftt.Test) {
+			s.ReturnOutput = []string{
+				"describe tvos_runtime_dmg returns tvos_runtime_version:tvos-test-runtime",
+				"dry run ensure file returns nothing",
+				"ensure file returns nothing",
+				"chmod returns nothing",
+			}
+			runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
+				runtimeVersion:     "tvos-test-runtime",
+				xcodeVersion:       "xcode-test-version",
+				installPath:        "test/path/to/install/runtimes",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				runtimeType:        "tvos",
+			}
+			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(4))
+
+			callCounter := 0
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
+				"describe", "test/prefix/tvos_runtime_dmg", "-version", "xcode-test-version",
+			}))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/tvos_runtime_dmg xcode-test-version\n"))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/tvos_runtime_dmg xcode-test-version\n"))
+
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
+				"-R", "u+w", "test/path/to/install/runtimes",
+			}))
+		})
+
 		t.Run("install runtime DMG with xcode-version ref and mismatched runtime", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"describe ios_runtime_dmg returns ios_runtime_version:mismatched-runtime",
@@ -1445,6 +1629,7 @@ func TestInstallXcode(t *testing.T) {
 				installPath:        "test/path/to/install/runtimes",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
+				runtimeType:        "ios",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
 			assert.Loosely(t, err, should.BeNil)
@@ -1497,7 +1682,7 @@ func TestInstallXcode(t *testing.T) {
 				"xcrun simctl runtime match set returns nothing",
 				"xcode-select -s prints nothing",
 			}
-			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
+			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg", IosPackageName)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(7))
 
@@ -1538,7 +1723,7 @@ func TestInstallXcode(t *testing.T) {
 				ListRuntimeJson,
 				"xcode-select -s prints nothing",
 			}
-			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
+			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg", IosPackageName)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(5))
 
@@ -1598,7 +1783,7 @@ func TestInstallXcode(t *testing.T) {
 	ftt.Run("getIOSVersionWithoutPatch works", t, func(t *ftt.Test) {
 		t.Run("Version without patch number should return original", func(t *ftt.Test) {
 			iosVersion := "17.0"
-			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
+			trunctedVersion := getVersionWithoutPatch(iosVersion)
 
 			// folder is empty but it should still succeed
 			assert.Loosely(t, trunctedVersion, should.Equal(iosVersion))
@@ -1606,7 +1791,7 @@ func TestInstallXcode(t *testing.T) {
 
 		t.Run("Version without patch number should return version without patch", func(t *ftt.Test) {
 			iosVersion := "17.0.1.2"
-			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
+			trunctedVersion := getVersionWithoutPatch(iosVersion)
 
 			// folder is empty but it should still succeed
 			assert.Loosely(t, trunctedVersion, should.Equal("17.0"))
