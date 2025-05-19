@@ -15,7 +15,6 @@ per-file infra_*.py=vadimsh@chromium.org
 # For Python changes.
 per-file infra_*.py=dtu@google.com
 per-file infra_*.py=andrewjc@google.com
-per-file infra_*.py=jojwang@google.com
 per-file infra_*.py=zhangtiff@google.com
 
 per-file lkgr_finder.py=machenbach@chromium.org
