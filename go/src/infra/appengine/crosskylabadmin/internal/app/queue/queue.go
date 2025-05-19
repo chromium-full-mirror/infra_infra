@@ -81,7 +81,7 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	logging.Infof(ufsCtx, "run repair queue handler: found pools for bot %s: %s", botID, di.Pools)
 	// RandFloat is guaranteed to be in the half-open interval [0,1).
 	randFloat := rand.Float64()
-	taskURL, err := frontend.CreateRepairTask(ufsCtx, dutName, expectedState, di.Pools, randFloat, poolCfg)
+	taskURL, err := frontend.CreateRepairTask(ufsCtx, dutName, expectedState, di, randFloat, poolCfg)
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to create repair task for %s in swarming pool %q: %s", swarmingPool, err.Error())
 		return err

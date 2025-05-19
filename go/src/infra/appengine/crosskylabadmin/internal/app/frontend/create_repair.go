@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/infra/appengine/crosskylabadmin/site"
 	"go.chromium.org/infra/cros/recovery/karte"
 	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/libs/fleet/device"
 	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
@@ -131,7 +132,7 @@ func GetPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
-func CreateRepairTask(ctx context.Context, dutName string, expectedState string, pools []string, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
+func CreateRepairTask(ctx context.Context, dutName string, expectedState string, di *device.DeviceInfo, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
 	schedukeRetries := 1
 	var schedukeRetryDelay time.Duration
 	if config.Get(ctx).GetSchedukeConfig().GetEnabled() {
@@ -146,7 +147,7 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 			taskType:      "repair",
 			dutName:       dutName,
 			expectedState: expectedState,
-			pools:         pools,
+			pools:         di.Pools,
 		},
 		randFloat,
 	)
@@ -163,6 +164,7 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 		taskName:          buildbucket.Recovery,
 		taskType:          cipdVersion,
 		dutName:           dutName,
+		dutID:             di.ID,
 		expectedState:     expectedState,
 		builderBucket:     poolCfg.GetBuilderBucket(),
 		builderNameSuffix: poolCfg.GetBuilderNameSuffix(),
@@ -177,7 +179,7 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 	} else {
 		r.taskName = findProperRecoveryTask(ctx, expectedState, dutName, karteC)
 	}
-	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pools[0])
+	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, di.Pools[0])
 	if err != nil {
 		logging.Errorf(ctx, "Create Repair task. Fail to create Scheduke client! %w", err)
 		// That is ok to do nothing if we fail as then we will not use Scheduke and fall to BB.
@@ -266,6 +268,7 @@ type createBuildbucketTaskRequest struct {
 	taskName      buildbucket.TaskName
 	taskType      buildbucket.CIPDVersion
 	dutName       string
+	dutID         string
 	expectedState string
 	// Build bucket to be used to schedule swarming task
 	builderBucket string
@@ -307,6 +310,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 	}
 	p := &buildbucket.Params{
 		UnitName:    params.dutName,
+		UnitID:      params.dutID,
 		TaskName:    params.taskName.String(),
 		BuilderName: getProperBuilderName(params),
 		// Set the build bucket information to the swarming task

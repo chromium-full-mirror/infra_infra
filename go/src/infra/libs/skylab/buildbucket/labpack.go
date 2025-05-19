@@ -63,9 +63,8 @@ type Params struct {
 // Note that some fields, for example "builder_name" and "expected_state" intentionally do NOT
 // end up as properties here.
 func (p *Params) AsMap() map[string]any {
-	return map[string]any{
+	ps := map[string]any{
 		"unit_name":           p.UnitName,
-		"unit_id":             p.UnitID,
 		"task_name":           p.TaskName,
 		"enable_recovery":     p.EnableRecovery,
 		"admin_service":       p.AdminService,
@@ -77,6 +76,11 @@ func (p *Params) AsMap() map[string]any {
 		"inventory_namespace": p.InventoryNamespace,
 		"disable_cft":         p.DisableCft,
 	}
+	if p.UnitID != "" {
+		ps["unit_id"] = p.UnitID
+	}
+
+	return ps
 }
 
 // CIPD version used for scheduling PARIS.
