@@ -28,6 +28,7 @@ import (
 	dssv "go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/git"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	"go.chromium.org/infra/libs/skylab/inventory"
@@ -68,7 +69,7 @@ func (is *ServerImpl) GetRecoveryVersion(ctx context.Context, req *fleet.GetReco
 }
 
 // deviceInfo read device-info from inventory.
-func deviceInfo(ctx context.Context, hostname string) (*ufs.DeviceInfo, error) {
+func deviceInfo(ctx context.Context, hostname string) (*device.DeviceInfo, error) {
 	cfg := config.Get(ctx)
 	httpClient, err := ufs.NewHTTPClient(ctx)
 	if err != nil {
@@ -83,7 +84,7 @@ func deviceInfo(ctx context.Context, hostname string) (*ufs.DeviceInfo, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "device info: fail create ufs client").Err()
 	}
-	return ufs.GetDeviceInfo(ufsCtx, client, hostname)
+	return device.GetDeviceInfo(ufsCtx, client, hostname)
 }
 
 // getVersionImpl finds recovery version for request api.

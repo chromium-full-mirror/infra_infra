@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/libs/fleet/device"
 )
 
 // InstallHandlers installs handlers for queue jobs that are part of this app.
@@ -72,15 +73,15 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 		return errors.Annotate(err, "run repair queue handler").Err()
 	}
 	logging.Infof(ctx, "run repair queue handler: UFS client created successfully")
-	pools, err := GetPoolsForHostname(ufsCtx, ufsClient, dutName)
+	di, err := getDeviceInfo(ufsCtx, ufsClient, dutName)
 	if err != nil {
-		logging.Errorf(ufsCtx, "Fail to get pools for bot %q: %w", botID, err)
+		logging.Errorf(ufsCtx, "Fail to get device info for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run repair queue handler").Err()
 	}
-	logging.Infof(ufsCtx, "run repair queue handler: found pools for bot %s: %s", botID, pools)
+	logging.Infof(ufsCtx, "run repair queue handler: found pools for bot %s: %s", botID, di.Pools)
 	// RandFloat is guaranteed to be in the half-open interval [0,1).
 	randFloat := rand.Float64()
-	taskURL, err := frontend.CreateRepairTask(ufsCtx, dutName, expectedState, pools, randFloat, poolCfg)
+	taskURL, err := frontend.CreateRepairTask(ufsCtx, dutName, expectedState, di.Pools, randFloat, poolCfg)
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to create repair task for %s in swarming pool %q: %s", swarmingPool, err.Error())
 		return err
@@ -113,16 +114,16 @@ func runAuditQueueHandler(c *router.Context) (err error) {
 		return errors.Annotate(err, "run audit queue handler").Err()
 	}
 
-	pools, err := GetPoolsForHostname(ufsCtx, ufsClient, dutName)
+	di, err := getDeviceInfo(ufsCtx, ufsClient, dutName)
 	if err != nil {
-		logging.Errorf(ufsCtx, "Fail to get pools for bot %q: %w", botID, err)
+		logging.Errorf(ufsCtx, "Fail to get device info for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run audit queue handler").Err()
 	}
-	logging.Infof(ufsCtx, "run audit queue handler: found pools for bot %s: %s", botID, pools)
+	logging.Infof(ufsCtx, "run audit queue handler: found pools for bot %s: %s", botID, di.Pools)
 	actions := c.Request.FormValue("actions")
 	taskname := c.Request.FormValue("taskname")
 	randFloat := rand.Float64()
-	taskURL, err := frontend.CreateAuditTask(ufsCtx, dutName, pools[0], taskname, actions, randFloat)
+	taskURL, err := frontend.CreateAuditTask(ufsCtx, dutName, di.Pools[0], taskname, actions, randFloat)
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to create repair task for %q: %w", botID, err)
 		return err
@@ -151,13 +152,13 @@ func createUFSClient(ctx context.Context, ufsHost string) (ufs.Client, error) {
 	return c, nil
 }
 
-func GetPoolsForHostname(ctx context.Context, c ufs.Client, hostname string) ([]string, error) {
-	pools, err := ufs.GetPools(ctx, c, hostname)
+func getDeviceInfo(ctx context.Context, c ufs.Client, hostname string) (*device.DeviceInfo, error) {
+	di, err := device.GetDeviceInfo(ctx, c, hostname)
 	if err != nil {
-		return nil, errors.Annotate(err, "getting pools for hostname %s", hostname).Err()
+		return nil, errors.Annotate(err, "getting device info for hostname %s", hostname).Err()
 	}
-	if len(pools) == 0 {
+	if len(di.Pools) == 0 {
 		return nil, errors.Reason("found no pools for hostname %s", hostname).Err()
 	}
-	return pools, nil
+	return di, nil
 }
