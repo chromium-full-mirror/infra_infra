@@ -544,18 +544,22 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 	}
 
 	r := &run.Run{
-		Suite:         in.GetSuite(),
-		Model:         in.GetModel(),
-		Board:         in.GetBuildTarget(),
-		Milestone:     in.GetMilestone(),
-		Build:         in.GetBuildVersion(),
-		Pool:          in.GetPool(),
-		AddedDims:     parseDims(in.GetDims()),
-		TimeoutMins:   site.MaxIshCTPTimeoutMins,
-		Local:         true,
-		CFT:           in.GetCft(),
-		TRV2:          in.GetTrv2(),
-		UploadToCpcon: in.GetUploadToCpcon(),
+		Suite:            in.GetSuite(),
+		Model:            in.GetModel(),
+		Board:            in.GetBuildTarget(),
+		Milestone:        in.GetMilestone(),
+		Build:            in.GetBuildVersion(),
+		Pool:             in.GetPool(),
+		AddedDims:        parseDims(in.GetDims()),
+		TimeoutMins:      site.MaxIshCTPTimeoutMins,
+		Local:            true,
+		CFT:              in.GetCft(),
+		TRV2:             in.GetTrv2(),
+		UploadToCpcon:    in.GetUploadToCpcon(),
+		TagIncludes:      in.GetTagIncludes(),
+		TagExcludes:      in.GetTagExcludes(),
+		TestNameIncludes: in.GetTestNameIncludes(),
+		TestNameExcludes: in.GetTestNameExcludes(),
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
