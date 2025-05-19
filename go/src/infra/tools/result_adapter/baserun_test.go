@@ -7,6 +7,8 @@ package main
 import (
 	"context"
 	"errors"
+	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -15,6 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/structpb"
 
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -42,7 +45,7 @@ func TestBaseRun(t *testing.T) {
 	}
 
 	t.Run("reportError", func(t *testing.T) {
-		r.reportException(ctx, errors.New("this is an error"))
+		r.reportException(ctx, errors.New("this is an error"), []byte("line 1\nline 2"))
 		// fmt.Println(protojson.Format(s.req))
 		exception, err := structpb.NewStruct(map[string]any{
 			"@type": "type.googleapis.com/build.util.lib.proto.ExceptionOccurrences",
@@ -50,7 +53,7 @@ func TestBaseRun(t *testing.T) {
 				map[string]any{
 					"name":          "this is an error",
 					"occurred_time": "<ANY-STRING-VALUE>",
-					"stacktrace":    []any{"this is an error"},
+					"stacktrace":    []any{"line 1", "line 2", "this is an error"},
 				},
 			},
 		})
@@ -70,5 +73,39 @@ func TestBaseRun(t *testing.T) {
 		}, cmp.Comparer(func(a, b string) bool {
 			return len(a) > 0 && len(b) > 0
 		}))))
+	})
+
+	ftt.Run(`runTestCmd`, t, func(t *ftt.Test) {
+		largeString := strings.Repeat("0123456789", 2000) // Generate a string ~20KB
+
+		tmpfile, err := os.CreateTemp(t.TempDir(), "largeOutput")
+		assert.NoErr(t, err)
+		defer os.Remove(tmpfile.Name()) // Clean up the file
+
+		_, err = tmpfile.WriteString(largeString)
+		assert.NoErr(t, err)
+		err = tmpfile.Close()
+		assert.NoErr(t, err)
+
+		var execArgs []string
+		if runtime.GOOS == "windows" {
+			execArgs = []string{"cmd", "/c", "type", tmpfile.Name()}
+		} else {
+			execArgs = []string{"cat", tmpfile.Name()}
+		}
+
+		t.Run(`with capture output`, func(t *ftt.Test) {
+			r.captureOutput = true
+			out, err := r.runTestCmd(ctx, execArgs)
+			assert.NoErr(t, err)
+			assert.That(t, string(out), should.Equal(largeString))
+		})
+
+		t.Run(`without capture output`, func(t *ftt.Test) {
+			r.captureOutput = false
+			out, err := r.runTestCmd(ctx, execArgs)
+			assert.NoErr(t, err)
+			assert.That(t, string(out), should.Equal(largeString[len(largeString)-10_000:]))
+		})
 	})
 }
