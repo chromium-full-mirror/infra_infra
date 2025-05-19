@@ -17,11 +17,9 @@ import (
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
-	"go.chromium.org/chromiumos/config/go/test/artifact"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
@@ -359,10 +357,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 
 		// Sets up the build info.
-		buildPb := &bbpb.Build{
+		buildPb := &buildbucketpb.Build{
 			Id:     100,
-			Status: bbpb.Status_SUCCESS,
-			Builder: &bbpb.BuilderID{
+			Status: buildbucketpb.Status_SUCCESS,
+			Builder: &buildbucketpb.BuilderID{
 				Project: "chromeos",
 				Bucket:  "test_runner",
 				Builder: "test_runner-dev",
@@ -380,8 +378,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "parent_created_by", Value: parentCreatedBy},
 			},
 			CreateTime: createTime,
-			Infra: &bbpb.BuildInfra{
-				Swarming: &bbpb.BuildInfra_Swarming{
+			Infra: &buildbucketpb.BuildInfra{
+				Swarming: &buildbucketpb.BuildInfra_Swarming{
 					TaskId:      "taskId1",
 					ParentRunId: "parentId1",
 					BotDimensions: []*buildbucketpb.StringPair{
@@ -401,7 +399,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						{Key: "id", Value: "cloudbots-prod-1715342009263-7kz6"},
 					},
 				},
-				Buildbucket: &bbpb.BuildInfra_Buildbucket{
+				Buildbucket: &buildbucketpb.BuildInfra_Buildbucket{
 					RequestedProperties: &structpb.Struct{
 						Fields: map[string]*structpb.Value{
 							"is_al_run": {
@@ -631,10 +629,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 
 		// Sets up the build info.
-		buildPb := &bbpb.Build{
+		buildPb := &buildbucketpb.Build{
 			Id:     100,
-			Status: bbpb.Status_SUCCESS,
-			Builder: &bbpb.BuilderID{
+			Status: buildbucketpb.Status_SUCCESS,
+			Builder: &buildbucketpb.BuilderID{
 				Project: "chromeos",
 				Bucket:  "test_runner",
 				Builder: "test_runner_gce",
@@ -963,10 +961,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 
 		// Sets up the build info.
-		buildPb := &bbpb.Build{
+		buildPb := &buildbucketpb.Build{
 			Id:     100,
-			Status: bbpb.Status_SUCCESS,
-			Builder: &bbpb.BuilderID{
+			Status: buildbucketpb.Status_SUCCESS,
+			Builder: &buildbucketpb.BuilderID{
 				Project: "chromeos",
 				Bucket:  "test_runner",
 				Builder: "test_runner-dev",
@@ -981,7 +979,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "branch-trigger", Value: "DEV"},
 			},
 			CreateTime: createTime,
-			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{
+			Infra: &buildbucketpb.BuildInfra{Swarming: &buildbucketpb.BuildInfra_Swarming{
 				TaskId:      "taskId1",
 				ParentRunId: "parentId1",
 				BotDimensions: []*buildbucketpb.StringPair{
@@ -1186,9 +1184,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 
 		// Sets up the build info.
-		buildPb := &bbpb.Build{
+		buildPb := &buildbucketpb.Build{
 			Id:     100,
-			Status: bbpb.Status_SUCCESS,
+			Status: buildbucketpb.Status_SUCCESS,
 			Tags: []*buildbucketpb.StringPair{
 				{Key: "label-pool", Value: "vmlab"},
 				{Key: "parent_buildbucket_id", Value: "99"},
@@ -1266,7 +1264,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 			},
 			BaseVariant:      wantBaseVariant,
-			TestResultForRdb: &artifact.TestResult{Version: 1234},
+			TestResultForRdb: &artifactpb.TestResult{Version: 1234},
 		}
 
 		// Extract deps first

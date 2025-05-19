@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -95,15 +94,15 @@ func (cmd *TestFinderExecutionCmd) updateLocalTestStateKeeper(
 	sk *data.LocalTestStateKeeper) error {
 
 	if cmd.TestSuites != nil {
-		sk.CftTestRequest.TestSuites = []*api.TestSuite{}
+		sk.CftTestRequest.TestSuites = []*testapi.TestSuite{}
 		for _, testSuite := range cmd.TestSuites {
-			testCaseIds := []*api.TestCase_Id{}
+			testCaseIds := []*testapi.TestCase_Id{}
 			for _, testCase := range testSuite.GetTestCases().TestCases {
 				testCaseIds = append(testCaseIds, testCase.Id)
 			}
-			sk.CftTestRequest.TestSuites = append(sk.CftTestRequest.TestSuites, &api.TestSuite{
-				Spec: &api.TestSuite_TestCaseIds{
-					TestCaseIds: &api.TestCaseIdList{
+			sk.CftTestRequest.TestSuites = append(sk.CftTestRequest.TestSuites, &testapi.TestSuite{
+				Spec: &testapi.TestSuite_TestCaseIds{
+					TestCaseIds: &testapi.TestCaseIdList{
 						TestCaseIds: testCaseIds,
 					},
 				},
