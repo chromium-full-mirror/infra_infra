@@ -299,6 +299,10 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 				Value: "skylab",
 			},
 			{
+				Name:  "is_desktop_run",
+				Value: "true",
+			},
+			{
 				Name:  "postsubmit_failure_status",
 				Value: "info",
 			},
