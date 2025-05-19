@@ -5153,6 +5153,20 @@ wheel: <
 
 * *universal*
 
+## **jsondiff-py3**
+
+### 2.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/jsondiff-py3"
+  version: "version:2.2.1"
+>
+```
+
+
+* *universal*
+
 ## **jsonlines**
 
 ### 1.2.0
