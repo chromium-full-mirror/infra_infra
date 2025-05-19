@@ -113,30 +113,30 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 													},
 												},
 											},
-											PasitHost2: &labapi.PasitHost{
+											Pasit: &lab.Pasit{
 												Hostname: "pasit-host1",
-												Devices: []*labapi.PasitHost_Device{
+												Devices: []*lab.Pasit_Device{
 													{
 														Id:   "1912901",
-														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+														Type: lab.Pasit_Device_SWITCH_FIXTURE,
 													},
 													{
 														Id:   "2001901",
-														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+														Type: lab.Pasit_Device_SWITCH_FIXTURE,
 													},
 													{
 														Id:   "2007902",
-														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+														Type: lab.Pasit_Device_SWITCH_FIXTURE,
 													},
 													{
 														Id:   "J45SW01",
-														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+														Type: lab.Pasit_Device_SWITCH_FIXTURE,
 													},
 													{
 														Id:    "dock_1",
 														Model: "DOCK_XXYY",
-														Type:  labapi.PasitHost_Device_DOCKING_STATION,
-														PowerSupply: &labapi.PasitHost_Device_PowerSupply{
+														Type:  lab.Pasit_Device_DOCKING_STATION,
+														PowerSupply: &lab.Pasit_Device_PowerSupply{
 															Voltage: 1.0,
 															Current: 2.0,
 															Power:   3.0,
@@ -145,22 +145,22 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 													{
 														Id:    "monitor_1",
 														Model: "MONITOR_XXYY",
-														Type:  labapi.PasitHost_Device_MONITOR,
+														Type:  lab.Pasit_Device_MONITOR,
 													},
 													{
 														Id:   "camera_1",
-														Type: labapi.PasitHost_Device_CAMERA,
+														Type: lab.Pasit_Device_CAMERA,
 													},
 													{
 														Id:   "network_1",
-														Type: labapi.PasitHost_Device_NETWORK,
+														Type: lab.Pasit_Device_NETWORK,
 													},
 													{
 														Id:   "chromeosX-rackX-rowY-hostN",
-														Type: labapi.PasitHost_Device_DUT,
+														Type: lab.Pasit_Device_DUT,
 													},
 												},
-												Connections: []*labapi.PasitHost_Connection{
+												Connections: []*lab.Pasit_Connection{
 													{
 														Type:     "USBC",
 														ParentId: "chromeosX-rackX-rowY-hostN",

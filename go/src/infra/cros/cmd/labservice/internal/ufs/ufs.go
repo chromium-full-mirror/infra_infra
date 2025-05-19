@@ -217,7 +217,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				SimInfos:       getSimInfo(d.GetSiminfo()),
 				ModemInfo:      getModemInfo(d.GetModeminfo()),
 				Cellular:       getCellular(p),
-				PasitHost:      p.GetPasitHost2(),
+				PasitHost:      getPasit(p.GetPasit()),
 				Rpm:            getRpm(p.GetRpm()),
 			},
 		},
@@ -226,6 +226,47 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 		},
 		Pools: d.GetPools(),
 	}, nil
+}
+
+func getPasit(in *lab.Pasit) *labapi.PasitHost {
+	if in == nil {
+		return nil
+	}
+
+	out := &labapi.PasitHost{
+		Hostname: in.GetHostname(),
+	}
+
+	for _, d := range in.GetDevices() {
+		newDevice := &labapi.PasitHost_Device{
+			Id:    d.GetId(),
+			Model: d.GetModel(),
+			Type:  labapi.PasitHost_Device_Type(d.GetType()),
+		}
+
+		if d.GetPowerSupply() != nil {
+			newDevice.PowerSupply = &labapi.PasitHost_Device_PowerSupply{
+				Current: d.GetPowerSupply().GetCurrent(),
+				Voltage: d.GetPowerSupply().GetVoltage(),
+				Power:   d.GetPowerSupply().GetPower(),
+			}
+		}
+		out.Devices = append(out.Devices, newDevice)
+	}
+
+	for _, c := range in.GetConnections() {
+		out.Connections = append(out.Connections,
+			&labapi.PasitHost_Connection{
+				ParentPort: c.GetParentPort(),
+				ParentId:   c.GetParentId(),
+				ChildId:    c.GetChildId(),
+				Speed:      c.GetSpeed(),
+				Type:       c.GetType(),
+			},
+		)
+	}
+
+	return out
 }
 
 // makeChromeOsDevboardProto populates DutTopology proto for Devboard device.
