@@ -213,6 +213,14 @@ func resolveSpec(ctx context.Context, spec string, specs *FirmwareSpecs, swarmin
 			board = "icarus"
 		}
 	}
+	if board == "nissa" {
+		// Trulo is still an active program, so this will get out of date.
+		// https://chromeos.google.com/partner/dlm/device/list?q=referenceDesign:trulo
+		switch dutModel.GetModelName() {
+		case "kaladin", "kelsier", "pujjocento", "pujjolo", "pujjoquince", "pujjoteenlo", "uldrenite", "uldrenite360":
+			board = "trulo"
+		}
+	}
 	for _, spec := range strings.Split(spec, ",") {
 		if spec == LatestFirmwareBranch {
 			url, err := firmwareBranchUrl(ctx, specs, board)

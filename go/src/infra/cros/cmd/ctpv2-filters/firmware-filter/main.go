@@ -155,7 +155,10 @@ WHERE
 			if strings.HasPrefix(r.Builder, "firmware-icarus-") {
 				board = "icarus"
 			}
-			if stableBranchRe.MatchString(r.Builder) {
+			// trulo is also a terrible special case, maybe even worse that icarus, since it is on a stabilization branch
+			if strings.HasPrefix(r.Builder, "firmware-trulo-") {
+				board = "trulo"
+			} else if stableBranchRe.MatchString(r.Builder) {
 				log.Printf("Skipping stabilization branch %q\n", r.Builder)
 				continue
 			}
