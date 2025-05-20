@@ -72,7 +72,7 @@ func fillTestCases(ctx context.Context, testPlan *api.InternalTestplan, resp *ap
 }
 
 type TestFinderFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewTestFinderFilter() servertemplate.Filter {

@@ -183,3 +183,10 @@ func NewAuthorizationFragment(md *api.FragmentMetadata, b []byte) *api.Authoriza
 		Metadata: md,
 	}
 }
+
+func NewArgsFragment(md *api.FragmentMetadata, b []byte) *api.FilterArgsFragment {
+	return &api.FilterArgsFragment{
+		Fragment: b,
+		Metadata: md,
+	}
+}

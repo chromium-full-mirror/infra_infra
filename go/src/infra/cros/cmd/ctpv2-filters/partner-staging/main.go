@@ -36,7 +36,7 @@ func main() {
 }
 
 type PartnerStagingFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewPartnerStagingFilter() servertemplate.Filter {

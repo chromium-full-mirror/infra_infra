@@ -24,28 +24,29 @@ const (
 	gceServiceAccountJSONPath          = "/creds/service_accounts/service-account-chromeos.json"
 )
 
-type ALProvisionServerArgs struct {
-	ProvisionPath string
-	ServoPath     string
-}
-
-func (serverArgs *ALProvisionServerArgs) GenerateFilterExecutor() servertemplate.Filter {
+func GenerateFilterExecutor() servertemplate.Filter {
 	return &ALProvisionRequestUpdater{
-		ProvisionPath:       serverArgs.ProvisionPath,
-		ServoPath:           serverArgs.ServoPath,
 		LatestBuildsByBoard: make(map[string]int),
 	}
 }
 
 // ALProvisionRequestUpdater struct stores
 type ALProvisionRequestUpdater struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 
 	ProvisionPath string
 	ServoPath     string
 
 	LatestBuildsByBoard map[string]int
 	AndroidAuthHandler  *android.CloudRunFilterAuthenticator
+}
+
+func (pru *ALProvisionRequestUpdater) Init(args []string) error {
+	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
+	fs.StringVar(&pru.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
+	fs.StringVar(&pru.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
+
+	return fs.Parse(args)
 }
 
 func (pru *ALProvisionRequestUpdater) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
@@ -75,11 +76,7 @@ func (pru *ALProvisionRequestUpdater) Executor(req *api.InternalTestplan, log *l
 }
 
 func main() {
-	serverArgs := &ALProvisionServerArgs{}
-	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
-	fs.StringVar(&serverArgs.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
-	fs.StringVar(&serverArgs.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
-	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "request-updater")
+	err := servertemplate.Server(GenerateFilterExecutor, "request-updater")
 	if err != nil {
 		os.Exit(2)
 	}

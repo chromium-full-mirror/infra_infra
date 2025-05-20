@@ -21,20 +21,8 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
-type ANTSPublishServerArgs struct {
-	PublishPath  string
-	InvocationID string
-	WorkUnitID   string
-	AccountID    string
-}
-
-func (serverArgs *ANTSPublishServerArgs) GenerateFilterExecutor() servertemplate.Filter {
-	return &ANTSPublishUpdater{
-		PublishPath:  serverArgs.PublishPath,
-		InvocationID: serverArgs.InvocationID,
-		WorkUnitID:   serverArgs.WorkUnitID,
-		AccountID:    serverArgs.AccountID,
-	}
+func GenerateFilterExecutor() servertemplate.Filter {
+	return &ANTSPublishUpdater{}
 }
 
 type ANTSPublishUpdater struct {
@@ -44,6 +32,16 @@ type ANTSPublishUpdater struct {
 	InvocationID string
 	WorkUnitID   string
 	AccountID    string
+}
+
+func (apu *ANTSPublishUpdater) Init(args []string) error {
+	fs := flag.NewFlagSet("Run ants publish filter", flag.ExitOnError)
+	fs.StringVar(&apu.PublishPath, "publish-path", "", "SHA256 value for testing publish container")
+	fs.StringVar(&apu.InvocationID, "invocation-id", "", "ants invocation id")
+	fs.StringVar(&apu.WorkUnitID, "workunit-id", "", "parent workunit id")
+	fs.StringVar(&apu.AccountID, "account-id", "", "account id")
+
+	return fs.Parse(args)
 }
 
 func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetadata {
@@ -112,18 +110,8 @@ func (apu *ANTSPublishUpdater) Executor(req *api.InternalTestplan, log *log.Logg
 }
 
 func main() {
-	serverArgs := &ANTSPublishServerArgs{}
-
-	fs := flag.NewFlagSet("Run ants publish filter", flag.ExitOnError)
-	fs.StringVar(&serverArgs.PublishPath, "publish-path", "", "SHA256 value for testing publish container")
-	fs.StringVar(&serverArgs.InvocationID, "invocation-id", "", "ants invocation id")
-	fs.StringVar(&serverArgs.WorkUnitID, "workunit-id", "", "parent workunit id")
-	fs.StringVar(&serverArgs.AccountID, "account-id", "", "account id")
-
-	log.Printf("publishRequestUpdater %+v", serverArgs)
-
 	//  Start the server
-	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "request-updater")
+	err := servertemplate.Server(GenerateFilterExecutor, "request-updater")
 	if err != nil {
 		log.Println(fmt.Errorf("error when running server, %w", err))
 		os.Exit(2)

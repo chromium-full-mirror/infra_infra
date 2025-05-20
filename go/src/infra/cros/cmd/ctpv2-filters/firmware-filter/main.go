@@ -29,33 +29,15 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
-type FirmwareServerArgs struct {
-	Ro   string
-	Rw   string
-	ECRO string
-	ECRW string
-	// SAFile is the path to the cloud credentials file.
-	SAFile string
-	// TestArgReplacements are user requested test args that need resolved to paths.
-	TestArgReplacements map[string]string
-}
-
-func (serverArgs *FirmwareServerArgs) GenerateFilterExecutor() servertemplate.Filter {
-	return &FirmwareSpecs{
-		Ro:                  serverArgs.Ro,
-		Rw:                  serverArgs.Rw,
-		ECRO:                serverArgs.ECRO,
-		ECRW:                serverArgs.ECRW,
-		SAFile:              serverArgs.SAFile,
-		TestArgReplacements: serverArgs.TestArgReplacements,
-	}
+func GenerateFilterExecutor() servertemplate.Filter {
+	return &FirmwareSpecs{}
 }
 
 // FirmwareSpecs contains the flags necessary for the
 // filter to know how to build out the provision request
 // and populate the lookup table.
 type FirmwareSpecs struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 
 	Ro   string
 	Rw   string
@@ -92,6 +74,30 @@ type FirmwareBranchBuild struct {
 }
 
 const saProject = "chromeos-bot"
+
+func (specs *FirmwareSpecs) Init(args []string) error {
+	fs := flag.NewFlagSet("Run firmware-provision-filter", flag.ExitOnError)
+	fs.StringVar(&specs.Ro, "ro", "", "Comma separated list of specs for firmware RO")
+	fs.StringVar(&specs.Rw, "rw", "", "Comma separated list of specs for firmware RW")
+	fs.StringVar(&specs.ECRO, "ec-ro", "", "Comma separated list of specs for EC firmware RO")
+	fs.StringVar(&specs.ECRW, "ec-rw", "", "Comma separated list of specs for EC firmware RW")
+	fs.StringVar(&specs.SAFile, "serviceAccountCred", "/creds/service_accounts/service-account-chromeos.json", "Path to service account credential json file")
+	fs.Func("testarg", "key=SPEC to add to test arguments", func(s string) error {
+		parts := strings.SplitN(s, "=", 2)
+		if len(parts) != 2 {
+			return errors.New("Invalid testarg, use -testarg key=SPEC")
+		}
+		key := parts[0]
+		val := parts[1]
+		if specs.TestArgReplacements == nil {
+			specs.TestArgReplacements = make(map[string]string)
+		}
+		specs.TestArgReplacements[key] = val
+		return nil
+	})
+
+	return fs.Parse(args)
+}
 
 func (specs *FirmwareSpecs) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (ret *api.InternalTestplan, retErr error) {
 	defer func() {
@@ -485,28 +491,7 @@ WHERE
 }
 
 func main() {
-	serverArgs := &FirmwareServerArgs{}
-	fs := flag.NewFlagSet("Run firmware-provision-filter", flag.ExitOnError)
-	fs.StringVar(&serverArgs.Ro, "ro", "", "Comma separated list of specs for firmware RO")
-	fs.StringVar(&serverArgs.Rw, "rw", "", "Comma separated list of specs for firmware RW")
-	fs.StringVar(&serverArgs.ECRO, "ec-ro", "", "Comma separated list of specs for EC firmware RO")
-	fs.StringVar(&serverArgs.ECRW, "ec-rw", "", "Comma separated list of specs for EC firmware RW")
-	fs.StringVar(&serverArgs.SAFile, "serviceAccountCred", "/creds/service_accounts/service-account-chromeos.json", "Path to service account credential json file")
-	fs.Func("testarg", "key=SPEC to add to test arguments", func(s string) error {
-		parts := strings.SplitN(s, "=", 2)
-		if len(parts) != 2 {
-			return errors.New("Invalid testarg, use -testarg key=SPEC")
-		}
-		key := parts[0]
-		val := parts[1]
-		if serverArgs.TestArgReplacements == nil {
-			serverArgs.TestArgReplacements = make(map[string]string)
-		}
-		serverArgs.TestArgReplacements[key] = val
-		return nil
-	})
-
-	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "fw_filter")
+	err := servertemplate.Server(GenerateFilterExecutor, "fw_filter")
 	if err != nil {
 		os.Exit(2)
 	}

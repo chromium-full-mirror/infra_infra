@@ -25,6 +25,7 @@ type ClientCommunicationHandler struct {
 	// From Client Channels.
 	internalTestplanFromClientChannel chan *api.InternalTestplanFragment
 	authorizationFromClientChannel    chan *api.AuthorizationFragment
+	argsFromClientChannel             chan *api.FilterArgsFragment
 
 	// Atomic error broadcast.
 	// To be read by each From Client channel on close during a Get operation.
@@ -42,6 +43,7 @@ func NewClientCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 		authorizationToClientChannel:      make(chan *api.AuthorizationFragment),
 		internalTestplanFromClientChannel: make(chan *api.InternalTestplanFragment),
 		authorizationFromClientChannel:    make(chan *api.AuthorizationFragment),
+		argsFromClientChannel:             make(chan *api.FilterArgsFragment),
 		handlerError:                      atomic.Value{},
 	}
 }
@@ -85,6 +87,8 @@ func (handler *ClientCommunicationHandler) HandleStreamFromClient() {
 			handler.internalTestplanFromClientChannel <- req.InternalTestplanFragment
 		case *api.GenericFilterStreamRequest_AuthFragment:
 			handler.authorizationFromClientChannel <- req.AuthFragment
+		case *api.GenericFilterStreamRequest_FilterArgsFragment:
+			handler.argsFromClientChannel <- req.FilterArgsFragment
 		default:
 			handler.GetLogger().Printf("Unhandled request object: %s", req)
 		}
@@ -93,6 +97,7 @@ func (handler *ClientCommunicationHandler) HandleStreamFromClient() {
 	// Close the channels for `From Client` communication.
 	close(handler.internalTestplanFromClientChannel)
 	close(handler.authorizationFromClientChannel)
+	close(handler.argsFromClientChannel)
 }
 
 // HandlerStreamToClient reads each `To Client` channel and passes it along
@@ -167,6 +172,12 @@ func (handler *ClientCommunicationHandler) GetInternalTestplan() (testplan *api.
 func (handler *ClientCommunicationHandler) GetAuthorizationResponse() (authResponse *api.AuthorizationResponse, err error) {
 	authResponse = &api.AuthorizationResponse{}
 	err = getFromFragments(handler.authorizationFromClientChannel, handler.GetHandlerError, authResponse)
+	return
+}
+
+func (handler *ClientCommunicationHandler) GetArgs() (args *api.FilterArgs, err error) {
+	args = &api.FilterArgs{}
+	err = getFromFragments(handler.argsFromClientChannel, handler.GetHandlerError, args)
 	return
 }
 

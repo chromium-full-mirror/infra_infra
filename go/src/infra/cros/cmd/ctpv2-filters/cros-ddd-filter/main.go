@@ -22,22 +22,24 @@ import (
 
 var categoriesAndClassesCollection *ttcpSyntax.Collection
 
-type Filter3DServerArgs struct {
-	// From argument flags.
-	googleApiCredsPath string
-}
-
-func (serverArgs *Filter3DServerArgs) GenerateFilterExecutor() servertemplate.Filter {
-	return &Filter3D{
-		googleApiCredsPath: serverArgs.googleApiCredsPath,
-	}
+func GenerateFilterExecutor() servertemplate.Filter {
+	return &Filter3D{}
 }
 
 type Filter3D struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 
 	// From argument flags.
 	googleApiCredsPath string
+}
+
+func (ddd *Filter3D) Init(args []string) error {
+	fs := flag.NewFlagSet("3D", flag.ExitOnError)
+	fs.StringVar(&ddd.googleApiCredsPath, "creds", "",
+		"Path to json file with credential for the Google cloud services. "+
+			"If the option is not provided, the service will use the default google api credential finder features.")
+
+	return fs.Parse(args)
 }
 
 func (ddd *Filter3D) Executor(req *ctpApi.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*ctpApi.InternalTestplan, error) {
@@ -173,12 +175,7 @@ func main() {
 
 	preloadExpressions()
 
-	serverArgs := Filter3DServerArgs{}
-	fs := flag.NewFlagSet("3D", flag.ExitOnError)
-	fs.StringVar(&serverArgs.googleApiCredsPath, "creds", "",
-		"Path to json file with credential for the Google cloud services. "+
-			"If the option is not provided, the service will use the default google api credential finder features.")
-	err := servertemplate.ServerWithFlagSet(fs, serverArgs.GenerateFilterExecutor, "solver service")
+	err := servertemplate.Server(GenerateFilterExecutor, "solver service")
 	if err != nil {
 		os.Exit(2)
 	}

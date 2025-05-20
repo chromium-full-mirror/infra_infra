@@ -212,6 +212,8 @@ func (ex *FilterExecutor) ExecuteFilter(
 	go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
 	go serverCommuncationHandler.HandleAuthorizationRequests(ctx)
 
+	err = serverCommuncationHandler.SendArgs(filter.Generic.GetBinaryArgs())
+
 	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
 	if err != nil {
 		logging.Infof(ctx, "Failed to send test plan: %s", err)

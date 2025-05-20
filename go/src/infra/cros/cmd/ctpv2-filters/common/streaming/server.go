@@ -29,6 +29,7 @@ type ServerCommunicationHandler struct {
 	// To Server Channels.
 	internalTestplanToServerChannel chan *api.InternalTestplanFragment
 	authorizationToServerChannel    chan *api.AuthorizationFragment
+	argsToServerChannel             chan *api.FilterArgsFragment
 
 	// From Server Channels.
 	logFromServerChannel              chan *api.LogFragment
@@ -51,6 +52,7 @@ func NewServerCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 		internalTestplanToServerChannel:   make(chan *api.InternalTestplanFragment),
 		authorizationToServerChannel:      make(chan *api.AuthorizationFragment),
 		authorizationFromServerChannel:    make(chan *api.AuthorizationFragment),
+		argsToServerChannel:               make(chan *api.FilterArgsFragment),
 		waitc:                             make(chan struct{}),
 		handlerError:                      atomic.Value{},
 	}
@@ -60,6 +62,7 @@ func NewServerCommunicationHandler(stream api.GenericFilterService_ExecuteWithSt
 func (handler *ServerCommunicationHandler) Close() {
 	close(handler.internalTestplanToServerChannel)
 	close(handler.authorizationToServerChannel)
+	close(handler.argsToServerChannel)
 	handler.stream.CloseSend()
 
 	<-handler.waitc
@@ -107,6 +110,7 @@ func (handler *ServerCommunicationHandler) HandleStreamFromServer() {
 func (handler *ServerCommunicationHandler) HandleStreamToServer() {
 	isInternalTestplanToServerChannelClosed := false
 	isAuthorizationToServerChannelClosed := false
+	isArgsToServerChannelClosed := false
 	for {
 		select {
 		case internalTestplanFragment, ok := <-handler.internalTestplanToServerChannel:
@@ -131,10 +135,22 @@ func (handler *ServerCommunicationHandler) HandleStreamToServer() {
 				})
 				handler.authorizationToServerChannel <- nil
 			}
+		case argsFragment, ok := <-handler.argsToServerChannel:
+			if !ok {
+				isArgsToServerChannelClosed = true
+			} else {
+				handler.stream.Send(&api.GenericFilterStreamRequest{
+					Message: &api.GenericFilterStreamRequest_FilterArgsFragment{
+						FilterArgsFragment: argsFragment,
+					},
+				})
+				handler.argsToServerChannel <- nil
+			}
 		}
 
 		if isInternalTestplanToServerChannelClosed &&
-			isAuthorizationToServerChannelClosed {
+			isAuthorizationToServerChannelClosed &&
+			isArgsToServerChannelClosed {
 			break
 		}
 	}
@@ -198,6 +214,13 @@ func (handler *ServerCommunicationHandler) SendInternalTestplan(internalTestplan
 // SendAuthorizationResponse sends the auth response to the server.
 func (handler *ServerCommunicationHandler) SendAuthorizationResponse(authResponse *api.AuthorizationResponse) error {
 	return sendAsFragments(authResponse, handler.authorizationToServerChannel, NewAuthorizationFragment)
+}
+
+func (handler *ServerCommunicationHandler) SendArgs(args []string) error {
+	filterArgs := &api.FilterArgs{
+		Args: args,
+	}
+	return sendAsFragments(filterArgs, handler.argsToServerChannel, NewArgsFragment)
 }
 
 /* Predefined request handlers */

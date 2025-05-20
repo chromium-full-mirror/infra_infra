@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"runtime/debug"
 	"time"
@@ -33,7 +34,20 @@ type GenericFilterServiceServer struct {
 }
 
 type Filter interface {
+	Init([]string) error
 	Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+}
+
+type FilterBase struct {
+	Filter
+}
+
+func (fb *FilterBase) Init(args []string) error {
+	return nil
+}
+
+func (fb *FilterBase) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+	return req, fmt.Errorf("not implemented")
 }
 
 type ExecutorGeneratorFunc func() Filter
@@ -84,6 +98,10 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 	logger.Printf("Received Request: %s", req)
 
 	executor := s.ExecutionGenerator()
+	err = executor.Init(os.Args[2:])
+	if err != nil {
+		return nil, errors.Annotate(err, "Init: failed to parse args").Err()
+	}
 	rspn, err := executor.Executor(req, logger, s.CommonParams)
 	if err != nil {
 		return nil, errors.Annotate(err, "Executor: failed to run").Err()
@@ -104,6 +122,11 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	logger := clientCommunicationHandler.GetLogger()
 	logger.Println("Client communication established, streaming logs.")
 
+	args, err := clientCommunicationHandler.GetArgs()
+	if err != nil {
+		return err
+	}
+
 	testplan, err := clientCommunicationHandler.GetInternalTestplan()
 	if err != nil {
 		return err
@@ -112,7 +135,7 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 
 	s.CommonParams.AuthHelper = streaming.NewAuthHandler(clientCommunicationHandler)
 
-	testplan, err = s.execute(testplan, logger)
+	testplan, err = s.execute(testplan, logger, args.Args)
 	if err != nil {
 		return errors.Annotate(err, "Executor: failed to run").Err()
 	}
@@ -129,11 +152,15 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	return nil
 }
 
-func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *log.Logger) (resp *api.InternalTestplan, err error) {
+func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *log.Logger, args []string) (resp *api.InternalTestplan, err error) {
 	defer CapturePanic(logger, &err)
 	resp = req
 
 	executor := s.ExecutionGenerator()
+	err = executor.Init(args)
+	if err != nil {
+		return resp, err
+	}
 	resp, err = executor.Executor(req, logger, s.CommonParams)
 	return
 }

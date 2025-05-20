@@ -218,7 +218,7 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 }
 
 type PreProcessFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewPreProcessFilter() servertemplate.Filter {

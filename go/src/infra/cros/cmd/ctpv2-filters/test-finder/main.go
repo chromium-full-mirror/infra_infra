@@ -19,7 +19,7 @@ import (
 var binName = "testFinder"
 
 type TestFinderFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewTestFinderFilter() servertemplate.Filter {

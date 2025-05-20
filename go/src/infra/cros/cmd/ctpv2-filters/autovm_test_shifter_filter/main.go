@@ -144,7 +144,7 @@ func updateSchedulingUnitOptions(req *api.InternalTestplan, board string, versio
 }
 
 type AutoVMTestShifterFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func (*AutoVMTestShifterFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {

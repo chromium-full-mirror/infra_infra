@@ -140,7 +140,7 @@ func tcDepsToSwarmingLabels(tcDeps []string) []string {
 }
 
 type LegacyHWFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewLegacyHWFilter() servertemplate.Filter {

@@ -311,7 +311,7 @@ func updateTestCases(req *api.InternalTestplan, useFlagDict map[string]map[strin
 }
 
 type UseFlagFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewUseFlagFilter() servertemplate.Filter {

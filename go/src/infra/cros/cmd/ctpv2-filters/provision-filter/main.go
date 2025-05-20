@@ -18,7 +18,7 @@ import (
 )
 
 type ProvisionFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewProvisionFilter() servertemplate.Filter {
