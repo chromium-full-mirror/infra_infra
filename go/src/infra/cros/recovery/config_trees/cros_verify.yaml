@@ -2188,8 +2188,6 @@ plans:
                         - Check that the process is not running on Mobile Harness box.
                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                   exec_name: servo_download_provision_image_to_usb
-                  exec_args:
-                    - image_version:v6.1.1
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
                 - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -2368,8 +2366,6 @@ plans:
                         - Check that the process is not running on Mobile Harness box.
                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                   exec_name: servo_download_provision_image_to_usb
-                  exec_args:
-                    - image_version:v6.1.1
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
                 - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
@@ -2955,8 +2951,6 @@ plans:
                         - Check that the process is not running on Mobile Harness box.
                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                   exec_name: servo_download_provision_image_to_usb
-                  exec_args:
-                    - image_version:v6.1.1
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -5356,8 +5350,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -7103,8 +7095,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -8850,8 +8840,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -10597,8 +10585,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -12441,8 +12427,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -14241,8 +14225,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -15554,8 +15536,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -16671,8 +16651,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -17984,8 +17962,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -18627,8 +18603,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -19271,8 +19245,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -19915,8 +19887,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -21119,8 +21089,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -22319,8 +22287,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -23530,8 +23496,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -24843,8 +24807,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -25400,8 +25362,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -25580,8 +25540,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
@@ -28251,8 +28209,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -29564,8 +29520,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -31671,8 +31625,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -32878,8 +32830,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -34191,8 +34141,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -35774,8 +35722,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -37087,8 +37033,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -37805,8 +37749,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -38600,8 +38542,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -39260,8 +39200,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -40423,8 +40361,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -41736,8 +41672,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -42314,8 +42248,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -43516,8 +43448,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -44829,8 +44759,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -45345,8 +45273,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -46007,8 +45933,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -47216,8 +47140,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -49011,8 +48933,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -50807,8 +50727,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -52632,8 +52550,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -54455,8 +54371,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -56291,8 +56205,6 @@ plans:
                                             - Check that the process is not running on Mobile Harness box.
                                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                       exec_name: servo_download_provision_image_to_usb
-                                      exec_args:
-                                        - image_version:v6.1.1
                                       docs:
                                         - This action calls servod to download provision image custom kernel to servo USB-key.
                                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -58116,8 +58028,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -59937,8 +59847,6 @@ plans:
                                             - Check that the process is not running on Mobile Harness box.
                                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                       exec_name: servo_download_provision_image_to_usb
-                                      exec_args:
-                                        - image_version:v6.1.1
                                       docs:
                                         - This action calls servod to download provision image custom kernel to servo USB-key.
                                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -61759,8 +61667,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -63518,8 +63424,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -65326,8 +65230,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -67085,8 +66987,6 @@ plans:
                                             - Check that the process is not running on Mobile Harness box.
                                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                       exec_name: servo_download_provision_image_to_usb
-                                      exec_args:
-                                        - image_version:v6.1.1
                                       docs:
                                         - This action calls servod to download provision image custom kernel to servo USB-key.
                                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -68900,8 +68800,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -70682,8 +70580,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -72434,8 +72330,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -74196,8 +74090,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -76046,8 +75938,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -77359,8 +77249,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -78818,8 +78706,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -80131,8 +80017,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -81812,8 +81696,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -83662,8 +83544,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -84975,8 +84855,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -86312,8 +86190,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -87353,8 +87229,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -89132,8 +89006,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -90445,8 +90317,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -91225,8 +91095,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -91531,8 +91399,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -92587,8 +92453,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -94542,8 +94406,6 @@ plans:
                                 - Check that the process is not running on Mobile Harness box.
                         - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                           exec_name: servo_download_provision_image_to_usb
-                          exec_args:
-                            - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
                         - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -96653,8 +96515,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -98430,8 +98290,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -100177,8 +100035,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -101924,8 +101780,6 @@ plans:
                                     - Check that the process is not running on Mobile Harness box.
                             - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                               exec_name: servo_download_provision_image_to_usb
-                              exec_args:
-                                - image_version:v6.1.1
                               docs:
                                 - This action calls servod to download provision image custom kernel to servo USB-key.
                             - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -103671,8 +103525,6 @@ plans:
                                         - Check that the process is not running on Mobile Harness box.
                                 - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                                   exec_name: servo_download_provision_image_to_usb
-                                  exec_args:
-                                    - image_version:v6.1.1
                                   docs:
                                     - This action calls servod to download provision image custom kernel to servo USB-key.
                                 - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -104878,8 +104730,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -105546,8 +105396,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -106541,8 +106389,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -107325,8 +107171,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -107505,8 +107349,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
@@ -109701,8 +109543,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
@@ -110007,8 +109847,6 @@ plans:
                             - Check that the process is not running on Mobile Harness box.
                     - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
                       exec_name: servo_download_provision_image_to_usb
-                      exec_args:
-                        - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
                     - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')

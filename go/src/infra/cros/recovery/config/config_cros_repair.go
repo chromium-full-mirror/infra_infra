@@ -2696,10 +2696,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"This action calls servod to download provision image custom kernel to servo USB-key.",
 			},
-			ExecName: "servo_download_provision_image_to_usb",
-			ExecExtraArgs: []string{
-				"image_version:v6.1.1",
-			},
+			ExecName:    "servo_download_provision_image_to_usb",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
