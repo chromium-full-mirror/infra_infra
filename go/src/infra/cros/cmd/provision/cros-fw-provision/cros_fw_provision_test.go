@@ -287,9 +287,6 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 		checkStateName(st, state_machine.PrepareStateName)
 
 		// Set mock expectations.
-		dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-			Command: "which", Args: []string{"python3"},
-		}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 		if testCase.configYAML == "" {
 			gomock.InOrder(
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
