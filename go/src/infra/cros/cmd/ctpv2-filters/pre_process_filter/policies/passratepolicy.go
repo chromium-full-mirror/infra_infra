@@ -13,6 +13,7 @@ import (
 	"cloud.google.com/go/bigquery"
 	"golang.org/x/exp/slices"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
@@ -78,7 +79,7 @@ func policyFilterTestConfigsToMap(cfgs []*api.FilterTestConfig, board string) (m
 }
 
 // StabilityFromPolicy returns the stability information computed from the policy given. Uses BQ results directly for test history.
-func StabilityFromPolicy(req *api.FilterFlakyRequest_PassRatePolicy, variant string, milestone string, tcList map[string]struct{}, log *log.Logger) (map[string]structs.SignalFormat, error) {
+func StabilityFromPolicy(req *api.FilterFlakyRequest_PassRatePolicy, variant string, milestone string, tcList map[string]struct{}, log *log.Logger, clientOpts ...option.ClientOption) (map[string]structs.SignalFormat, error) {
 	policy := PassRatePolicy{
 		req:                    req,
 		variant:                variant,
@@ -96,7 +97,7 @@ func StabilityFromPolicy(req *api.FilterFlakyRequest_PassRatePolicy, variant str
 		log:                    log,
 	}
 
-	err := policy.stabilityFromPolicy()
+	err := policy.stabilityFromPolicy(clientOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,13 +132,13 @@ func (q *PassRatePolicy) determineSignalFromQuery(testname string, passRate floa
 	return false, filterRemaining
 }
 
-func (q *PassRatePolicy) stabilityFromPolicy() error {
+func (q *PassRatePolicy) stabilityFromPolicy(clientOpts ...option.ClientOption) error {
 	mileStone, _ := strconv.Atoi(q.milestone)
 	mileStroneRegex := mileStoneRegex(q.numOfMilestones, mileStone)
 	q.forceMapEnable, q.forceMapDisable = policyFilterTestConfigsToMap(q.req.PassRatePolicy.Testconfigs, q.variant)
 
 	// Query using all possible milestones. We will only search for results in the current on the first iterations.
-	bqIter, err := interfaces.QueryForResults(q.variant, mileStroneRegex, q.log)
+	bqIter, err := interfaces.QueryForResults(q.variant, mileStroneRegex, q.log, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("unable to determine stabily: %w", err)
 	}

@@ -97,6 +97,8 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 
 	logger.Printf("Received Request: %s", req)
 
+	s.CommonParams.AuthHelper = streaming.NewLocalAuthHandler()
+
 	executor := s.ExecutionGenerator()
 	err = executor.Init(os.Args[2:])
 	if err != nil {

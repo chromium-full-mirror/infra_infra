@@ -23,13 +23,11 @@ const dataset = "analytics"
 const resultsTable = "FlakeReportTestv2"
 const saProject = "chromeos-bot"
 const tableProject = "chromeos-test-platform-data"
-const saFile = "/creds/service_accounts/service-account-chromeos.json"
 
 // QueryForResults will query the Flake  tables to find the history for tests.
-func QueryForResults(variant string, milestone string, log *log.Logger) (*bigquery.RowIterator, error) {
+func QueryForResults(variant string, milestone string, log *log.Logger, clientOpts ...option.ClientOption) (*bigquery.RowIterator, error) {
 	ctx := context.Background()
-	c, err := bigquery.NewClient(ctx, saProject,
-		option.WithCredentialsFile(saFile))
+	c, err := bigquery.NewClient(ctx, saProject, clientOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("unable to make bq client %w", err)
 	}
@@ -48,10 +46,9 @@ func QueryForResults(variant string, milestone string, log *log.Logger) (*bigque
 }
 
 // insertRows demonstrates inserting data into a table using the streaming insert mechanism.
-func insertRows(filteredTests []*Entry, log *log.Logger) error {
+func insertRows(filteredTests []*Entry, log *log.Logger, clientOpts ...option.ClientOption) error {
 	ctx := context.Background()
-	client, err := bigquery.NewClient(ctx, tableProject,
-		option.WithCredentialsFile(saFile))
+	client, err := bigquery.NewClient(ctx, tableProject, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("bigquery.NewClient: %w", err)
 	}
@@ -140,7 +137,7 @@ func boardData(req *api.FilterFlakyRequest) (string, error) {
 	return "", fmt.Errorf("unknown case from upload boardData")
 }
 
-func uploadData(filteredTests []string, req *api.FilterFlakyRequest, data map[string]structs.SignalFormat, log *log.Logger) (err error) {
+func uploadData(filteredTests []string, req *api.FilterFlakyRequest, data map[string]structs.SignalFormat, log *log.Logger, clientOpts ...option.ClientOption) (err error) {
 	timeFmt := time.Now().Format("2006-01-02_15:04:05")
 	requiredPassRate14Day, requiredSamples14Day, requiredSamples3Day, requiredPassRate3Day, err := policyData(req)
 	if err != nil {
@@ -188,7 +185,7 @@ func uploadData(filteredTests []string, req *api.FilterFlakyRequest, data map[st
 
 		// Bulk upload by 10s. Full size causes table upload issues.
 		if i%10 == 0 {
-			err := insertRows(upload, log)
+			err := insertRows(upload, log, clientOpts...)
 			if err != nil {
 				return err
 			}
@@ -197,15 +194,15 @@ func uploadData(filteredTests []string, req *api.FilterFlakyRequest, data map[st
 		}
 	}
 	if len(upload) != 0 {
-		insertRows(upload, log)
+		insertRows(upload, log, clientOpts...)
 	}
 
 	return err
 }
 
 // WriteResults will publish the filtering results into Bq.
-func WriteResults(filteredTests []string, req *api.FilterFlakyRequest, d map[string]structs.SignalFormat, log *log.Logger) error {
-	err := uploadData(filteredTests, req, d, log)
+func WriteResults(filteredTests []string, req *api.FilterFlakyRequest, d map[string]structs.SignalFormat, log *log.Logger, clientOpts ...option.ClientOption) error {
+	err := uploadData(filteredTests, req, d, log, clientOpts...)
 	if err != nil {
 		return err
 	}

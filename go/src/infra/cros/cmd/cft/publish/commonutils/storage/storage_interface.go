@@ -33,18 +33,8 @@ type StorageClient struct {
 	client *storage.Client
 }
 
-func NewStorageClientWithCredsFile(ctx context.Context, credentialsFile string) (*StorageClient, error) {
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
-	if err != nil {
-		return nil, err
-	}
-	return &StorageClient{
-		client: client,
-	}, nil
-}
-
-func NewStorageClientWithDefaultAccount(ctx context.Context) (*StorageClient, error) {
-	client, err := storage.NewClient(ctx)
+func NewStorageClient(ctx context.Context, clientOpts ...option.ClientOption) (*StorageClient, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}

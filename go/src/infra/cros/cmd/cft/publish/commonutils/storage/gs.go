@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
@@ -55,19 +56,16 @@ func (o GSObject) Extend(addendum string) GSObject {
 	}
 }
 
-func NewGSClient(ctx context.Context, credentialsFile string) (*GSClient, error) {
+func NewGSClient(ctx context.Context, credentialsFile string, clientOpts ...option.ClientOption) (*GSClient, error) {
 	var client *StorageClient
 	var err error
 	if credentialsFile != "" {
-		client, err = NewStorageClientWithCredsFile(ctx, credentialsFile)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		client, err = NewStorageClientWithDefaultAccount(ctx)
-		if err != nil {
-			return nil, err
-		}
+		clientOpts = append(clientOpts, option.WithCredentialsFile(credentialsFile))
+	}
+
+	client, err = NewStorageClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
 	}
 
 	return &GSClient{

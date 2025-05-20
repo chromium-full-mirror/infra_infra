@@ -10,6 +10,8 @@ import (
 	"log"
 	"os"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -21,10 +23,11 @@ import (
 
 const (
 	binName = "flaky_filter"
+	saFile  = "/creds/service_accounts/service-account-chromeos.json"
 )
 
 // getStabilityData gets the flaky tests data BQ FlakeCacheTest.
-func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}, log *log.Logger) (map[string]structs.SignalFormat, error) {
+func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}, log *log.Logger, clientOpts ...option.ClientOption) (map[string]structs.SignalFormat, error) {
 	var data map[string]structs.SignalFormat
 
 	// TODO: this datatype will need to evolve from a board string to something more complex.
@@ -40,7 +43,7 @@ func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}, l
 	// Currently 2 types of policies will be supported. This can be expanded if newer types are added.
 	switch op := req.Policy.(type) {
 	case *api.FilterFlakyRequest_PassRatePolicy:
-		return policies.StabilityFromPolicy(op, variant, req.Milestone, tcList, log)
+		return policies.StabilityFromPolicy(op, variant, req.Milestone, tcList, log, clientOpts...)
 
 	}
 
@@ -117,7 +120,7 @@ func updateTestCases(req *api.InternalTestplan, removeBoardTestMap map[string][]
 }
 
 // flakyTestPerBoard evaluates lists of flaky tests to be removed for a given board.
-func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logger) (*api.FilterFlakyResponse, error) {
+func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logger, clientOpts ...option.ClientOption) (*api.FilterFlakyResponse, error) {
 	filter := Filter{req: req}
 	var err error
 	var filteredSuites []*api.TestSuite
@@ -130,7 +133,7 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 			// Generate a set of tests, these will be used when searching for signal on the tests.
 			testCases := op.TestCases.TestCases
 			tcS := testCasesToSet(testCases)
-			filter.data, err = getStabilityData(filter.req, tcS, log)
+			filter.data, err = getStabilityData(filter.req, tcS, log, clientOpts...)
 			if err != nil {
 				log.Printf("err during stability fetching, will apply rules as possible %s,", err)
 			}
@@ -138,7 +141,7 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 		case *api.TestSuite_TestCasesMetadata:
 			// Generate a set of tests, these will be used when searching for signal on the tests.
 			metadataList := op.TestCasesMetadata.Values
-			filter.data, err = getStabilityData(filter.req, testMDToSet(op), log)
+			filter.data, err = getStabilityData(filter.req, testMDToSet(op), log, clientOpts...)
 			if err != nil {
 				log.Printf("err during stability fetching, will apply rules as possible %s,", err)
 			}
@@ -154,9 +157,9 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 	}
 
 	// log filtering results and write results
-	flakeFilteringLogAndResults(rspn, board, req, &filter, log)
+	flakeFilteringLogAndResults(rspn, board, req, &filter, log, clientOpts...)
 
-	err = interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log)
+	err = interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log, clientOpts...)
 	if err != nil {
 		log.Println("error observed during results bq insertion: ", err)
 	}
@@ -165,7 +168,7 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 	return rspn, nil
 }
 
-func generateFlakyTestMap(boardTestMap map[string]*BoardTestInfo, log *log.Logger) map[string][]string {
+func generateFlakyTestMap(boardTestMap map[string]*BoardTestInfo, log *log.Logger, clientOpts ...option.ClientOption) map[string][]string {
 	// policy driving flaky test identification
 	policy := fetchPolicy()
 
@@ -183,14 +186,14 @@ func generateFlakyTestMap(boardTestMap map[string]*BoardTestInfo, log *log.Logge
 			DefaultEnabled: true,
 			Milestone:      boardTestInfo.milestone,
 		}
-		resp, _ := flakyTestPerBoard(flakeReq, board, log)
+		resp, _ := flakyTestPerBoard(flakeReq, board, log, clientOpts...)
 		removeBoardTestMap[board] = resp.RemovedTests
 	}
 	return removeBoardTestMap
 }
 
 // innerMain evaluates flaky tests to be removed for all boards in the request and then updates the request by removing flaky tests.
-func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan {
+func innerMain(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) *api.InternalTestplan {
 	// If flow is other than CQ, then skip and return the original req
 	if !isCqFlow(req, log) {
 		return req
@@ -205,8 +208,10 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 		log.Printf("Error while creating board-test map %v\n", err)
 	}
 
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{saFile}, common.BigqueryScope)
+
 	// removeBoardTestMap will hold all tests to be removed for a given board
-	removeBoardTestMap := generateFlakyTestMap(boardTestMap, log)
+	removeBoardTestMap := generateFlakyTestMap(boardTestMap, log, option.WithTokenSource(tokenSource))
 	//update/remove flaky tests from each board under internal test plan request
 	err = updateTestCases(req, removeBoardTestMap, log)
 	if err != nil {
@@ -226,7 +231,7 @@ func NewPreProcessFilter() servertemplate.Filter {
 }
 
 func (*PreProcessFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
-	return innerMain(req, log), nil
+	return innerMain(req, log, commonParams), nil
 }
 
 func main() {

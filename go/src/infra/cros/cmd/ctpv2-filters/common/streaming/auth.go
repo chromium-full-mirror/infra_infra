@@ -5,13 +5,17 @@
 package streaming
 
 import (
+	"context"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
 	"golang.org/x/oauth2"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
@@ -92,5 +96,55 @@ func (source *FilterAuthSource) Token() (*oauth2.Token, error) {
 
 	return &oauth2.Token{
 		AccessToken: source.authResponse.GetToken(),
+	}, nil
+}
+
+func NewLocalAuthHandler() *LocalAuthHandler {
+	return &LocalAuthHandler{
+		clientLock: sync.Mutex{},
+	}
+}
+
+type LocalAuthHandler struct {
+	common.FilterAuthInterface
+
+	clientLock sync.Mutex
+}
+
+func (local *LocalAuthHandler) GetTokenSource(credentialPaths []string, scopes ...string) oauth2.TokenSource {
+	return &FilterAuthSource{
+		mu:                   sync.Mutex{},
+		cacheExpiry:          time.Now(),
+		fetchAccessTokenFunc: local.fetchAccessToken,
+		credentialPaths:      credentialPaths,
+		scopes:               scopes,
+	}
+}
+
+func (local *LocalAuthHandler) fetchAccessToken(req *api.AuthorizationRequest) (*api.AuthorizationResponse, error) {
+	local.clientLock.Lock()
+	defer local.clientLock.Unlock()
+
+	authOpts := chromeinfra.DefaultAuthOptions()
+	authOpts.Scopes = append(authOpts.Scopes, req.GetScopes()...)
+
+	// Determine credentials source.
+	allowADC := len(req.GetCredentialPaths()) == 0 || slices.Contains(req.GetCredentialPaths(), "ADC")
+	credentialPath, _ := common.LocateFile(req.GetCredentialPaths())
+	if credentialPath == "" && !allowADC {
+		msg := "Could not find credentials and ADC not enabled"
+		return nil, fmt.Errorf(msg)
+	}
+	authOpts.ServiceAccountJSONPath = credentialPath
+
+	// Fetch Access Token.
+	authenticator := auth.NewAuthenticator(context.Background(), auth.SilentLogin, authOpts)
+	token, err := authenticator.GetAccessToken(time.Minute * 10)
+	if err != nil {
+		return nil, fmt.Errorf("error getting token from source: %s", err)
+	}
+
+	return &api.AuthorizationResponse{
+		Token: token.AccessToken,
 	}, nil
 }

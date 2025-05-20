@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
@@ -83,14 +84,14 @@ func createDirectory(log *log.Logger) (string, error) {
 }
 
 // generateUseFlagDict creates a dictionary for buildTarget and respective use flag list.
-func generateUseFlagDict(ctx context.Context, req *api.InternalTestplan, log *log.Logger) (map[string]map[string]bool, error) {
+func generateUseFlagDict(ctx context.Context, req *api.InternalTestplan, log *log.Logger, authHelper common.FilterAuthInterface) (map[string]map[string]bool, error) {
 
 	buildTargetGSMap, err := createBuildTargetGSMap(req)
 	if err != nil {
 		return nil, fmt.Errorf("Error generating board-gcsPath map: %w", err)
 	}
 
-	gsClient, err := storage.NewGSClient(ctx, "")
+	gsClient, err := storage.NewGSClient(ctx, "", option.WithTokenSource(authHelper.GetTokenSource([]string{"ADC"})))
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +100,7 @@ func generateUseFlagDict(ctx context.Context, req *api.InternalTestplan, log *lo
 	if err != nil {
 		return nil, fmt.Errorf("Error setting up parent directory for downloading files from gs: %w", err)
 	}
+	defer os.RemoveAll(useFlagsDir)
 
 	// useFlagDict will look like below, after collecting use flags for all buildTarget in suite info.
 	// map[
@@ -322,7 +324,7 @@ func (*UseFlagFilter) Executor(req *api.InternalTestplan, log *log.Logger, commo
 	ctx := context.Background()
 
 	// parses the request and generates the use flag set for each board+variant
-	useFlagDict, err := generateUseFlagDict(ctx, req, log)
+	useFlagDict, err := generateUseFlagDict(ctx, req, log, commonParams.AuthHelper)
 	if err != nil {
 		return nil, fmt.Errorf("Error generating board-use flags map: %w", err)
 	}

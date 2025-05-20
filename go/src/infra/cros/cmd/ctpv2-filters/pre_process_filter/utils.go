@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
@@ -173,7 +175,7 @@ func createBoardTestMap(req *api.InternalTestplan, log *log.Logger) (map[string]
 	return boardTestMap, nil
 }
 
-func flakeFilteringLogAndResults(rspn *api.FilterFlakyResponse, board string, req *api.FilterFlakyRequest, filter *Filter, log *log.Logger) {
+func flakeFilteringLogAndResults(rspn *api.FilterFlakyResponse, board string, req *api.FilterFlakyRequest, filter *Filter, log *log.Logger, clientOpts ...option.ClientOption) {
 	log.Printf("***********Flake filtering for board %s start***********\n", board)
 	if len(rspn.RemovedTests) > 0 {
 
@@ -186,7 +188,7 @@ func flakeFilteringLogAndResults(rspn *api.FilterFlakyResponse, board string, re
 	}
 	log.Printf("***********Flake filtering for board %s end***********\n", board)
 
-	err := interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log)
+	err := interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log, clientOpts...)
 	if err != nil {
 
 		log.Println("!!!")

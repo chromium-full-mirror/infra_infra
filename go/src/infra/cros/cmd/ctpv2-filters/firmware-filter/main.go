@@ -113,11 +113,13 @@ func (specs *FirmwareSpecs) Executor(req *api.InternalTestplan, log *log.Logger,
 		return nil, fmt.Errorf("suite_info.suite_metadata is required")
 	}
 
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{specs.SAFile}, common.BigqueryScope)
+
 	if specs.FirmwareBuilds == nil {
 		ctx := context.Background()
 
 		c, err := bigquery.NewClient(ctx, saProject,
-			option.WithCredentialsFile(specs.SAFile))
+			option.WithTokenSource(tokenSource))
 		if err != nil {
 			return nil, fmt.Errorf("unable to make bq client %w", err)
 		}
@@ -187,7 +189,7 @@ WHERE
 	if specs.ECMilestoneBuilds == nil {
 		ctx := context.Background()
 
-		c, err := bigquery.NewClient(ctx, saProject, option.WithCredentialsFile(specs.SAFile))
+		c, err := bigquery.NewClient(ctx, saProject, option.WithTokenSource(tokenSource))
 		if err != nil {
 			return nil, fmt.Errorf("unable to make bq client %w", err)
 		}
@@ -257,7 +259,7 @@ WHERE
 	// version is the desired version, i.e. 14505.102.0
 	// suffix is the path to the file, i.e. brya/firmware_from_source.tar.bz2
 	searchGCS := func(ctx context.Context, bucketName, branchPrefix, release, version, suffix, board string) (string, error) {
-		client, err := storage.NewClient(ctx, option.WithCredentialsFile(specs.SAFile))
+		client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
 		if err != nil {
 			return "", fmt.Errorf("storage.NewClient: %w", err)
 		}
