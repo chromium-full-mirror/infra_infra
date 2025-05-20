@@ -2278,3 +2278,29 @@ func assignRealmFromMachine(machine *ufspb.Machine, lse *ufspb.MachineLSE) error
 	lse.Realm = machine.Realm
 	return nil
 }
+
+// DeleteMachineLSEsWithoutRealm Removes all MachineLSEs without a realm from datastore
+func DeleteMachineLSEsWithoutRealm(ctx context.Context) (err error) {
+
+	machineLSEs, err := inventory.QueryMachineLSEByPropertyName(ctx, "realm", "", false)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Error while retrieving machineLSE without realm: %s", err)
+	}
+	logging.Infof(ctx, "Retrieved %s machineLSE(s) without realm", len(machineLSEs))
+
+	machineLSENames := []string{}
+
+	for _, lse := range machineLSEs {
+		machineLSENames = append(machineLSENames, lse.GetName())
+	}
+
+	opsResults := inventory.DeleteMachineLSEs(ctx, machineLSENames)
+	errs := []error{}
+	for _, op := range opsResults.Failed() {
+		if op.Err != nil {
+			errs = append(errs, op.Err)
+		}
+	}
+
+	return errors.Join(errs...)
+}

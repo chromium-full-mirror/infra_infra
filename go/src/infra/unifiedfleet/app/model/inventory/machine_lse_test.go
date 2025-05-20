@@ -496,6 +496,37 @@ func TestDeleteMachineLSE(t *testing.T) {
 	})
 }
 
+func TestDeleteMachineLSEs(t *testing.T) {
+	t.Parallel()
+	ftt.Run("BatchDeleteMachineLSEs", t, func(t *ftt.Test) {
+		ctx := gaetesting.TestingContextWithAppID("go-test")
+		datastore.GetTestable(ctx).Consistent(true)
+		machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
+		for i := range 4 {
+			machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
+			resp, err := CreateMachineLSE(ctx, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Match(machineLSE1))
+			machineLSEs = append(machineLSEs, resp)
+		}
+		t.Run("BatchDelete all machineLSEs without realm", func(t *ftt.Test) {
+			resp, err := QueryMachineLSEByPropertyName(ctx, "realm", "", false)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Match(machineLSEs))
+
+			_ = DeleteMachineLSEs(ctx, []string{"machineLSE-1", "machineLSE-2"})
+			_, err = GetMachineLSE(ctx, "machineLSE-1")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+
+			lse, err := GetMachineLSE(ctx, "machineLSE-3")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse, should.NotBeNil)
+
+		})
+	})
+}
+
 func TestBatchUpdateMachineLSEs(t *testing.T) {
 	t.Parallel()
 	ftt.Run("BatchUpdateMachineLSEs", t, func(t *ftt.Test) {
@@ -533,11 +564,21 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 		dummymachineLSE := &ufspb.MachineLSE{
 			Name: "machineLSE-1",
 		}
+
+		dummymachineLSE2 := &ufspb.MachineLSE{
+			Name:  "machineLSE-2",
+			Realm: "",
+		}
+		resp2, cerr2 := CreateMachineLSE(ctx, dummymachineLSE2)
+		assert.Loosely(t, cerr2, should.BeNil)
+		assert.Loosely(t, resp2, should.Match(dummymachineLSE2))
+
 		machineLSE1 := &ufspb.MachineLSE{
 			Name:                "machineLSE-1",
 			Machines:            []string{"machine-1", "machine-2"},
 			MachineLsePrototype: "machineLsePrototype-1",
 			LogicalZone:         ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36,
+			Realm:               "realm-1",
 		}
 		resp, cerr := CreateMachineLSE(ctx, machineLSE1)
 		assert.Loosely(t, cerr, should.BeNil)
@@ -572,6 +613,16 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "logical_zone", "LOGICAL_ZONE_DRILLZONE_SFO36", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.Match(machineLSEs))
+		})
+		t.Run("Query By Realm - Valid Realm", func(t *ftt.Test) {
+			resp, err := QueryMachineLSEByPropertyName(ctx, "realm", "realm-1", false)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Match(machineLSEs))
+		})
+		t.Run("Query By Realm - Empty Realm", func(t *ftt.Test) {
+			resp, err := QueryMachineLSEByPropertyName(ctx, "realm", "", false)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Match([]*ufspb.MachineLSE{dummymachineLSE2}))
 		})
 	})
 }
