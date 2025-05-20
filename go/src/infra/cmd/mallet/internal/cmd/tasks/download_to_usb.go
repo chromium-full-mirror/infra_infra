@@ -86,10 +86,11 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 		unit = heuristics.NormalizeBotNameToDeviceName(unit)
 		e := c.envFlags.Env()
 		configuration := b64.StdEncoding.EncodeToString(c.createPlan())
-		pools, err := device.GetPools(ctx, uc, unit)
+		deviceInfo, err := device.GetDeviceInfo(ctx, uc, unit)
 		if err != nil {
-			return errors.Annotate(err, "getting pools for device %s", unit).Err()
+			return errors.Annotate(err, "getting device info for hostname %s", unit).Err()
 		}
+		pools := deviceInfo.Pools
 		if len(pools) == 0 {
 			return fmt.Errorf("found no pool for device %s", unit)
 		}
@@ -105,6 +106,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 			v,
 			&buildbucket.Params{
 				UnitName:         unit,
+				UnitID:           deviceInfo.ID,
 				TaskName:         string(buildbucket.Custom),
 				AdminService:     e.AdminService,
 				InventoryService: e.UFSService,

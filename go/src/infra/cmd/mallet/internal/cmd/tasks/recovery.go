@@ -130,10 +130,11 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			return errors.Reason("Wrong task name %s for host %s", c.taskName, unitName).Err()
 		}
 
-		pools, err := device.GetPools(ctx, ic, unitName)
+		deviceInfo, err := device.GetDeviceInfo(ctx, ic, unitName)
 		if err != nil {
-			return errors.Annotate(err, "getting pools for device %s", unitName).Err()
+			return errors.Annotate(err, "getting device info for hostname %s", unitName).Err()
 		}
+		pools := deviceInfo.Pools
 		if len(pools) == 0 {
 			return fmt.Errorf("found no pool for device %s", unitName)
 		}
@@ -158,6 +159,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			buildbucket.CipdVersion(c.latest),
 			&buildbucket.Params{
 				UnitName:           unitName,
+				UnitID:             deviceInfo.ID,
 				TaskName:           c.getTaskName(),
 				BuilderName:        realBuilderName,
 				BuilderBucket:      c.bbBucket,

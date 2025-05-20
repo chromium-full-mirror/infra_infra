@@ -98,10 +98,11 @@ func (command *provisionBtpeerCommand) innerRun(app subcommands.Application, arg
 	for _, hostName := range args {
 		hostName = heuristics.NormalizeBotNameToDeviceName(hostName)
 		commandEnv := command.envFlags.Env()
-		pools, err := device.GetPools(ctx, uc, hostName)
+		deviceInfo, err := device.GetDeviceInfo(ctx, uc, hostName)
 		if err != nil {
-			return errors.Annotate(err, "getting pools for device %s", hostName).Err()
+			return errors.Annotate(err, "getting device info for hostname %s", hostName).Err()
 		}
+		pools := deviceInfo.Pools
 		if len(pools) == 0 {
 			return fmt.Errorf("found no pool for device %s", hostName)
 		}
@@ -116,6 +117,7 @@ func (command *provisionBtpeerCommand) innerRun(app subcommands.Application, arg
 			buildbucket.CIPDLatest,
 			&buildbucket.Params{
 				UnitName:         hostName,
+				UnitID:           deviceInfo.ID,
 				TaskName:         string(buildbucket.Custom),
 				AdminService:     commandEnv.AdminService,
 				InventoryService: commandEnv.UFSService,
