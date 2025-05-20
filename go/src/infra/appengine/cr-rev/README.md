@@ -24,3 +24,8 @@ To deploy the app onto the development environment, run:
 To deploy the app onto the production environment, run:
 
     make prod
+
+## Shift traffic
+
+Once you deploy the app, you need to shift traffic to the latest instance. See
+http://go/cr-rev-playbook for more details.
