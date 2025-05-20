@@ -363,7 +363,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
 	totalShards := 0
-	retryCount := 0
+	retryCount := int64(-1)
 	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
 	maxInShard := 10
 	dddSuite := false
@@ -385,6 +385,21 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 				testCaseTagCriteria.TestNames = append(testCaseTagCriteria.TestNames, arg.Values...)
 			} else if arg.Key == "test_names_exclude_list" {
 				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
+			} else if arg.Key == "retry_count" {
+				// retry_count should have exactly one value.
+				if len(arg.Values) != 1 {
+					return nil, fmt.Errorf("exactly one value is expected for retry_count, found %d", len(arg.Values))
+				}
+				var err error
+				retryCount, err = strconv.ParseInt(arg.Values[0], 10, 64)
+				if err != nil {
+					return nil, err
+				}
+
+				// Enforce a max of 10 retries
+				if retryCount > int64(10) {
+					retryCount = 10
+				}
 			} else if arg.Key == "max_in_shard" {
 				// max_in_shard should have exactly one value.
 				if len(arg.Values) != 1 {
@@ -422,7 +437,12 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		}
 
 		totalShards = int(testJobMsg.Test.Shards)
-		retryCount = int(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
+
+		// If retry count is still the default -1 use runCount.
+		if retryCount <= 0 {
+			retryCount = int64(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
+		}
+
 	}
 
 	// we want dev and staging tests to pick up latest prod build (through al filter) and hence not providing these intentionally
@@ -473,7 +493,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		MaximumDuration: maxDuration,
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
-		RetryCount:      int64(retryCount)}, nil
+		RetryCount:      retryCount}, nil
 }
 
 func populatePrimaryBuildInfo(build *common.BuildMessage, executionMetadata *api.ExecutionMetadata) {
