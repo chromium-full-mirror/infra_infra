@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -26,7 +27,6 @@ import (
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/testing/citest"
 
 	"go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/cli"
 	firmwareservice "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/service"
@@ -139,7 +139,7 @@ func newFileResponse(pb *api.File) *dutServiceFetchFileClient {
 }
 
 func TestDetailedRequestSSHStates(t *testing.T) {
-	citest.LocalOnlyBecause(t, "b/402551644")
+	t.Logf("Current OS is %s", runtime.GOOS)
 	fakeGSPath := "gs://chromeos-image-archive/board-firmware-branch/R123-12345.0.0/board/firmware_from_source.tar.bz2"
 
 	makeRequest := func(main_rw, main_ro, ec_ro, ec_rw bool) *api.InstallRequest {
@@ -308,7 +308,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 			if err := os.WriteFile(path.Join(td, "config.yaml"), []byte(testCase.configYAML), 0666); err != nil {
 				t.Fatal("Failed to write config.yaml: ", err)
 			}
-			if out, err := exec.Command("tar", "-c", "--mode=a+rw", "--gzip", "-C", td, "-f", path.Join(td, "config.yaml.tar.gz"), "config.yaml").CombinedOutput(); err != nil {
+			if out, err := exec.Command("tar", "-c", "--gzip", "-C", td, "-f", path.Join(td, "config.yaml.tar.gz"), "config.yaml").CombinedOutput(); err != nil {
 				t.Fatalf("Failed to tar -config.yaml: %v\n%s", err, string(out))
 			}
 			yamlTar, err := os.ReadFile(path.Join(td, "config.yaml.tar.gz"))
@@ -465,19 +465,15 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 
 			// Set mock expectations.
 			expectedFutilityArgs := []string{"update", "--mode=recovery"}
-			expectedFutilityPyArgs := "'update', '--mode=recovery'"
 			expectedFutilityImageArgs := []string{}
 			if testCase.ecRo {
 				expectedFutilityImageArgs = append(expectedFutilityImageArgs, "'--ec_image=/var/tmp/some TempDir/ec.bin'")
-				expectedFutilityPyArgs += ", '--ec_image=/var/tmp/some TempDir/ec.bin'"
 			}
 			if testCase.mainRo {
 				expectedFutilityImageArgs = append(expectedFutilityImageArgs, "'--image=/var/tmp/some TempDir/bios.bin'")
-				expectedFutilityPyArgs += ", '--image=/var/tmp/some TempDir/bios.bin'"
 			}
 			expectedFutilityArgs = append(expectedFutilityArgs, expectedFutilityImageArgs...)
 			expectedFutilityArgs = append(expectedFutilityArgs, "--wp=0")
-			expectedFutilityPyArgs += ", '--wp=0'"
 			expectedFutilityManifestArgs := append([]string{"update", "--manifest"}, expectedFutilityImageArgs...)
 			gomock.InOrder(
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
@@ -523,37 +519,14 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				)
 			}
 			if testCase.ecRo {
-				gomock.InOrder(
-					dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-						Command: "cat",
-						Args:    []string{">", "'/var/tmp/some TempDir/futility.py'"},
-						Stdin: []byte(fmt.Sprintf("#!/usr/bin/env python3\n\nimport subprocess\n\n"+
-							"with open(\"/var/tmp/some TempDir/futility.log\", \"wb\", buffering=0) as outFile:\n"+
-							"  rc = subprocess.run([\"futility\", %s], stdout=outFile, stderr=outFile, check=False, bufsize=0)\n"+
-							"  outFile.write(f\"EXIT CODE: {rc.returncode}\\n\".encode(\"utf-8\"))\n  outFile.flush()\n"+
-							"  subprocess.run([\"sync\", \"-d\", \"/var/tmp\", \"/usr/local/tmp\"])\n  subprocess.run([\"reboot\"])\n", expectedFutilityPyArgs)),
-					}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
-					dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-						Command: "bash",
-						Args:    []string{"-c", "'nohup python3 '\"'\"'/var/tmp/some TempDir/futility.py'\"'\"' </dev/null >&'\"'\"'/var/tmp/some TempDir/futility.start'\"'\"' & exit'"},
-					}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
-					dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-						Command: "cat",
-						Args:    []string{"'/var/tmp/some TempDir/futility.log'"},
-					}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("EXIT CODE: 0\n")}), nil),
-					dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-						Command: "rm",
-						Args:    []string{"-f", "'/var/tmp/some TempDir/futility.log'"},
-					}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
-				)
-			} else {
-				gomock.InOrder(
-					dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-						Command: "futility",
-						Args:    expectedFutilityArgs,
-					}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
-				)
+				expectedFutilityArgs = append(expectedFutilityArgs, "--quirks=ec_partial_recovery")
 			}
+			gomock.InOrder(
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "futility",
+					Args:    expectedFutilityArgs,
+				}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
+			)
 
 			// Execute the state and proceed.
 			_, _, err := st.Execute(ctx, log)
@@ -640,17 +613,15 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				Args:    []string{"-rf", "'/var/tmp/some TempDir'"},
 			}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
 		)
-		if !testCase.ecRo || testCase.updateRw {
-			gomock.InOrder(
-				dsc.EXPECT().Restart(gomock.Any(), gomock.Any()).Return(&longrunning.Operation{Done: true}, nil),
-				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-					Command: "true",
-				}}).Return(nil, fmt.Errorf("ssh timeout")),
-				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
-					Command: "true",
-				}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
-			)
-		}
+		gomock.InOrder(
+			dsc.EXPECT().Restart(gomock.Any(), gomock.Any()).Return(&longrunning.Operation{Done: true}, nil),
+			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+				Command: "true",
+			}}).Return(nil, fmt.Errorf("ssh timeout")),
+			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+				Command: "true",
+			}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
+		)
 		if testCase.updateRo && testCase.updateRw {
 			gomock.InOrder(
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
