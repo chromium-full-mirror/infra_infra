@@ -18,8 +18,14 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
 	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/namespace"
 	"go.chromium.org/infra/cros/recovery/tlw"
 	"go.chromium.org/infra/cros/recovery/version"
+)
+
+const (
+	provisionOSImagePath    = "gs://chromeos-throw-away-bucket/kimjae"
+	provisionOSImageVersion = "v7.0.1"
 )
 
 // provisionExec performs provisioning of the device.
@@ -134,9 +140,16 @@ func downloadProvisionImageToUSBExec(ctx context.Context, info *execs.ExecInfo) 
 	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
 	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
-	imageVersion := argsMap.AsString(ctx, "image_version", "v7.0.1")
+	imageVersion := argsMap.AsString(ctx, "image_version", provisionOSImageVersion)
+
+	provisionPath := provisionOSImagePath
+	// For partners we must use provisioning OS from their bucket
+	if namespace.IsPartner(ctx) {
+		provisionPath = fmt.Sprintf("%s/provision_images", gsCrOSImageBucket)
+	}
+
 	// Example: `gs://chromeos-throw-away-bucket/kimjae/brya-provision-v4.bin`
-	imagePath := fmt.Sprintf("gs://chromeos-throw-away-bucket/kimjae/%s-provision-%s.bin", board, imageVersion)
+	imagePath := fmt.Sprintf("%s/%s-provision-%s.bin", provisionPath, board, imageVersion)
 	log.Debugf(ctx, "Used image path: %s", imagePath)
 
 	// Requesting convert GC path to caches service path.
