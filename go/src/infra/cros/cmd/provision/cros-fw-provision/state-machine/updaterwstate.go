@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	firmwareservice "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/service"
@@ -24,7 +26,7 @@ type FirmwareUpdateRwState struct {
 func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*api.FirmwareProvisionResponse, api.InstallResponse_Status, error) {
 	// form futility command args based on the request
 	var futilityImageArgs []string
-	var mainRwPath, ecRwPath string
+	var mainRwPath string
 	var err error
 
 	// Get AP Image
@@ -42,12 +44,19 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 	ecRwMetadata, ok := s.service.GetImageMetadata(s.service.GetEcRwPath())
 	if ok && s.service.GetMainRwPath() != s.service.GetEcRwPath() {
 		log.Printf("[FW Provisioning: Update RW] extracting EC-RW image to flash\n")
-		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
+		ecRwPath := ""
+		apImageForEcRwPath, err := firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			if !errors.Is(err, &firmwareservice.ImageNotFoundError{}) {
+				return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			}
+			ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
+			if err != nil {
+				return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			}
 		}
 
-		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRwPath, ecRwPath)
+		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRwPath, ecRwPath, apImageForEcRwPath)
 		if err != nil {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}

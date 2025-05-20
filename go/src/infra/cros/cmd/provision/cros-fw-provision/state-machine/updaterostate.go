@@ -31,7 +31,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	// form futility command args based on the request
 	var futilityImageArgs []string
 	// Detailed Request
-	var mainRoPath, ecRoPath, ecRwPath string
+	var mainRoPath, ecRoPath string
 	var err error
 	board := s.service.GetBoard()
 	ecRoMetadata, ok := s.service.GetImageMetadata(s.service.GetEcRoPath())
@@ -108,11 +108,18 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	if mainRoPath != "" && s.service.GetMainRwPath() == "" && ok && board != "drallion" && board != "sarien" &&
 		s.service.GetMainRoPath() != s.service.GetEcRwPath() {
 		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash")
-		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
+		ecRwPath := ""
+		apImageForEcRwPath, err := firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			if !errors.Is(err, &firmwareservice.ImageNotFoundError{}) {
+				return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			}
+			ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
+			if err != nil {
+				return nil, api.InstallResponse_STATUS_DOWNLOADING_FIRMWARE_FAILED, err
+			}
 		}
-		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRoPath, ecRwPath)
+		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRoPath, ecRwPath, apImageForEcRwPath)
 		if err != nil {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}

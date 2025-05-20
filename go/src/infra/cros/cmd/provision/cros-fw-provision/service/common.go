@@ -333,6 +333,18 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 	return candidates, nil
 }
 
+type ImageNotFoundError struct {
+	message string
+}
+
+func (e *ImageNotFoundError) Error() string {
+	return e.message
+}
+func (e *ImageNotFoundError) Is(target error) bool {
+	_, ok := target.(*ImageNotFoundError)
+	return ok
+}
+
 // PickAndExtractMainImage uses provided list of |filesInArchive| to pick a main
 // image to use, extracts only it, and returns a path to extracted image.
 // board and model(aka variant) are optional.
@@ -377,7 +389,7 @@ func PickAndExtractMainImage(ctx context.Context, dut api.DutServiceClient, imag
 		}
 	}
 
-	return "", fmt.Errorf("could not find an AP image in any of: %v", candidates)
+	return "", &ImageNotFoundError{fmt.Sprintf("could not find an AP image in any of: %v", candidates)}
 }
 
 // PickAndExtractECImage uses provided list of |filesInArchive| to pick an EC
@@ -439,7 +451,7 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 			return destPath, nil
 		}
 	}
-	return "", fmt.Errorf("could not find an EC image named any of: %v", candidates)
+	return "", &ImageNotFoundError{fmt.Sprintf("could not find an EC image named any of: %v", candidates)}
 }
 
 // createStageURL returns the URL to stage a gsPath. Pass to curl on the DUT.
@@ -484,13 +496,20 @@ func createStaticURL(ctx context.Context, gsPath string, cacheServer url.URL) (u
 // SwapECRWImage switches the EC RW in the AP image with the specified image.
 // If the AP image path is blank, this will read the firmware from the flash.
 // Returns the path to the AP image.
-func SwapECRWImage(ctx context.Context, dut api.DutServiceClient, apImagePath, ecImagePath string) (string, error) {
+func SwapECRWImage(ctx context.Context, dut api.DutServiceClient, apImagePath, ecImagePath, apImageForECRWPath string) (string, error) {
 	if apImagePath == "" {
 		apImagePath = path.Join(path.Dir(ecImagePath), "swapped_bios.bin")
 		stdout, stderr, err := RunDUTCommand(ctx, dut, futilityReadTimeout, "futility", []string{"read", apImagePath}, nil)
 		if err != nil {
 			return "", errors.Wrapf(err, "futility read failed: %s %s", stdout, stderr)
 		}
+	}
+	if apImageForECRWPath != "" {
+		stdout, stderr, err := RunDUTCommand(ctx, dut, swapEcRwTimeout, "/usr/share/vboot/bin/swap_ec_rw", []string{"--image", apImagePath, "--ap_for_ec", apImageForECRWPath}, nil)
+		if err != nil {
+			return "", errors.Wrapf(err, "swap_ec_rw failed: %s %s", stdout, stderr)
+		}
+		return apImagePath, nil
 	}
 	stdout, stderr, err := RunDUTCommand(ctx, dut, swapEcRwTimeout, "/usr/share/vboot/bin/swap_ec_rw", []string{"--image", apImagePath, "--ec", ecImagePath}, nil)
 	if err != nil {
