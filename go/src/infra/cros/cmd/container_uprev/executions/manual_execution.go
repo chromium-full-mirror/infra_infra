@@ -8,6 +8,7 @@ package executions
 import (
 	"context"
 	"log"
+	"sync"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -26,9 +27,8 @@ func ManualExecution(name, firestoreDatabaseName string, containerItem *common.C
 		tag = common.LabelProd
 	}
 
-	containerInfos := map[string]*common.ContainerInfoItem{
-		name: containerItem,
-	}
+	containerInfos := &sync.Map{}
+	containerInfos.Store(name, containerItem)
 
 	if shaErr := UpdateShaStorage(ctx, firestoreDatabaseName, containerInfos, "", tag); shaErr != nil {
 		shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()

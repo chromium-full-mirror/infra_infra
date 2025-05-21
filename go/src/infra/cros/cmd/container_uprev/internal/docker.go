@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"sync"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -135,7 +136,7 @@ func pushImage(ctx context.Context, fullname string) (stdout string, stderr stri
 
 // buildAndPush builds and pushes the docker image to the artifact
 // directory and returns the sha produced.
-func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Repository, dir, name, entrypoint, tag string) (containerInfoItem *common.ContainerInfoItem, err error) {
+func buildAndPush(ctx context.Context, imageCache *sync.Map, repo *Repository, dir, name, entrypoint, tag string) (containerInfoItem *common.ContainerInfoItem, err error) {
 	step, ctx := build.StartStep(ctx, "Build and Push")
 	defer func() { step.End(err) }()
 
@@ -143,13 +144,13 @@ func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Reposito
 	fullname := fmt.Sprintf(ContainerFormat, repo.Hostname, repo.Project, name, tag)
 
 	// Build if not already built.
-	if _, exists := imageCache[localname]; !exists {
+	if _, exists := imageCache.Load(localname); !exists {
 		_, _, err = buildImage(ctx, dir, localname)
 		if err != nil {
 			err = errors.Annotate(err, "failed to build image").Err()
 			return
 		}
-		imageCache[localname] = struct{}{}
+		imageCache.Store(localname, true)
 	}
 
 	// Tag to match repository info.

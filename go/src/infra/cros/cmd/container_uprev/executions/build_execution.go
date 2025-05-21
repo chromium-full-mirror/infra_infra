@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"sync"
 
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -69,7 +70,7 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 
 	if !runAsAdmin {
 		// Do not update the sha storage on local execution.
-		UpdateShaStorage = func(ctx context.Context, _ string, _ map[string]*common.ContainerInfoItem, _, _ string) (_ error) {
+		UpdateShaStorage = func(ctx context.Context, _ string, _ *sync.Map, _, _ string) (_ error) {
 			logging.Infof(ctx, "Local execution, skipping sha storage update")
 			return nil
 		}
@@ -89,7 +90,6 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 // executeContainerUprev steps through the uprev configs, creates a new container,
 // and uploads its sha to the storage.
 func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag, targetConfig string) (err error) {
-	containerInfosByFirestore := map[string]internal.ContainerInfosMap{}
 	configs := internal.GetConfigs()
 
 	configsByRepoHostname := map[string][]*internal.UprevConfig{}
@@ -117,44 +117,58 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 	}
 
 	// Keep track of already built container images.
-	imageCache := map[string]any{}
+	imageCache := &sync.Map{}
+	containerInfosByFirestore := &sync.Map{}
+	wg := &sync.WaitGroup{}
 	for repoHostname, repoConfigs := range configsByRepoHostname {
-		step, ctx := build.StartStep(ctx, fmt.Sprintf("Repository: %s", repoHostname))
-		if err = internal.GcloudAuth(ctx, repoHostname, dockerKeyFile); err != nil {
-			err = errors.Annotate(err, "failed to Gcloud auth").Err()
-			return
-		}
-
-		for _, config := range repoConfigs {
-			logging.Infof(ctx, "Running build for %q", config.Name)
-			// Will have exactly one repository after upstream mapping.
-			repo := config.Repositories[0]
-			containerInfo, uprevErr := internal.UprevContainer(ctx, imageCache, config, cipdLabel, imageTag)
-			if uprevErr != nil {
-				logging.Infof(ctx, "error while upreving: %s", uprevErr)
-				err = errors.Append(err, uprevErr)
-				continue
-			}
-			if _, ok := containerInfosByFirestore[repo.FirestoreHost]; !ok {
-				containerInfosByFirestore[repo.FirestoreHost] = internal.ContainerInfosMap{}
-			}
-			containerInfosByFirestore[repo.FirestoreHost][config.FirestoreName] = containerInfo
-		}
-
-		step.End(err)
+		uprevContainers(ctx, wg, containerInfosByFirestore, repoConfigs, imageCache, repoHostname, dockerKeyFile, cipdLabel, imageTag)
 	}
 
-	for firestoreHost, containerInfos := range containerInfosByFirestore {
+	containerInfosByFirestore.Range(func(key, val any) bool {
+		firestoreHost := key.(string)
+		containerInfos := val.(*sync.Map)
+
 		step, ctx := build.StartStep(ctx, fmt.Sprintf("Firestore: %s", firestoreHost))
+		var err error
+		defer step.End(err)
 
-		if shaErr := UpdateShaStorage(ctx, firestoreHost, containerInfos, dockerKeyFile, imageTag); shaErr != nil {
-			shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()
-			err = errors.Append(err, shaErr)
-			return
-		}
-
-		step.End(err)
-	}
+		err = UpdateShaStorage(ctx, firestoreHost, containerInfos, dockerKeyFile, imageTag)
+		return true
+	})
 
 	return
+}
+
+func uprevContainers(ctx context.Context, wg *sync.WaitGroup, containerInfosByFirestore *sync.Map, repoConfigs []*internal.UprevConfig, imageCache *sync.Map, repoHostname, dockerKeyFile, cipdLabel, imageTag string) {
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Repository: %s", repoHostname))
+	defer step.End(err)
+	if err = internal.GcloudAuth(ctx, repoHostname, dockerKeyFile); err != nil {
+		err = errors.Annotate(err, "failed to Gcloud auth").Err()
+		return
+	}
+
+	for _, config := range repoConfigs {
+		wg.Add(1)
+		logging.Infof(ctx, "Running build for %q", config.Name)
+		go uprevContainer(ctx, wg, containerInfosByFirestore, config, imageCache, cipdLabel, imageTag)
+	}
+
+	wg.Wait()
+}
+
+func uprevContainer(ctx context.Context, wg *sync.WaitGroup, containerInfosByFirestore *sync.Map, config *internal.UprevConfig, imageCache *sync.Map, cipdLabel, imageTag string) {
+	var err error
+	defer wg.Done()
+
+	// Will have exactly one repository after upstream mapping.
+	repo := config.Repositories[0]
+	containerInfo, uprevErr := internal.UprevContainer(ctx, imageCache, config, cipdLabel, imageTag)
+	if uprevErr != nil {
+		logging.Infof(ctx, "error while upreving: %s", uprevErr)
+		err = errors.Append(err, uprevErr)
+		return
+	}
+	containerInfos, _ := containerInfosByFirestore.LoadOrStore(repo.FirestoreHost, &sync.Map{})
+	containerInfos.(*sync.Map).Store(config.FirestoreName, containerInfo)
 }

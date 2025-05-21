@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/common/errors"
@@ -21,7 +22,7 @@ import (
 // UprevContainer performs the logic for upreving a container.
 // This involves creating a temporary directory for the container to
 // modify by writing its Dockerfile and ensuring its CIPD packages.
-func UprevContainer(ctx context.Context, imageCache map[string]any, config *UprevConfig, cipdLabel, imageTag string) (containerInfoItem *common.ContainerInfoItem, err error) {
+func UprevContainer(ctx context.Context, imageCache *sync.Map, config *UprevConfig, cipdLabel, imageTag string) (containerInfoItem *common.ContainerInfoItem, err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Uprev %s", config.Name))
 	defer func() { step.End(err) }()
 

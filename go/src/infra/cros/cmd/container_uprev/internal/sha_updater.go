@@ -6,6 +6,7 @@ package internal
 
 import (
 	"context"
+	"sync"
 
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/option"
@@ -21,7 +22,7 @@ type ContainerInfosMap = map[string]*common.ContainerInfoItem
 
 // UpdateShaStorage connects the the firestore and uploads the SHAs produced
 // during the uprev service.
-func UpdateShaStorage(ctx context.Context, firestoreDatabaseName string, containerInfo ContainerInfosMap, creds, tag string) (err error) {
+func UpdateShaStorage(ctx context.Context, firestoreDatabaseName string, containerInfo *sync.Map, creds, tag string) (err error) {
 	step, ctx := build.StartStep(ctx, "Update SHAs")
 	defer func() { step.End(err) }()
 
@@ -79,16 +80,21 @@ func RevertShas(ctx context.Context, containerNames []string, firestoreDatabaseN
 	return
 }
 
-func addContainerInfoToStorage(ctx context.Context, firestoreClient *firestore.Client, collectionName string, containerInfos map[string]*common.ContainerInfoItem) (err error) {
+func addContainerInfoToStorage(ctx context.Context, firestoreClient *firestore.Client, collectionName string, containerInfos *sync.Map) (err error) {
 	containersCollection := firestoreClient.Collection(collectionName)
 
 	infosMap := map[string][]*common.ContainerInfoItem{}
 	// Add new container info to storage record.
-	for firestoreName, containerInfo := range containerInfos {
+	containerInfos.Range(func(key, value any) bool {
+		firestoreName := key.(string)
+		containerInfo := value.(*common.ContainerInfoItem)
+
 		currentInfos := common.FetchContainerInfoFromFirestoreDoc(ctx, containersCollection.Doc(firestoreName))
 		infos := append([]*common.ContainerInfoItem{containerInfo}, currentInfos...)
 		infosMap[firestoreName] = infos
-	}
+
+		return true
+	})
 
 	err = pushContainerInfoToFirestore(ctx, firestoreClient, collectionName, infosMap)
 	return
