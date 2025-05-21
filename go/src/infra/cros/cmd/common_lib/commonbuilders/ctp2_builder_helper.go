@@ -24,6 +24,8 @@ import (
 
 const (
 	DefaultChromeosBuildGcsBucket = "chromeos-image-archive"
+	AshChromeGcsPath              = "ash_chrome_gcs_path"
+	AshChromeBuildOutputDir       = "ash_chrome_build_output_dir"
 	ChromeosBuild                 = "chromeos_build"
 	ChromeosBuildGcsBucket        = "chromeos_build_gcs_bucket"
 	RoFirmwareBuild               = "ro_firmware_build"
