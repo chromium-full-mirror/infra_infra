@@ -61,7 +61,7 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	expectedState := c.Request.FormValue("expectedState")
 	poolCfg := frontend.GetPoolCfg(ctx, swarmingPool)
 	if poolCfg == nil {
-		return errors.Reason("run repair queue handler: fail to find pool config for bot: %q, by pool: %q", botID, swarmingPool).Err()
+		return errors.Fmt("run repair queue handler: fail to find pool config for bot: %q, by pool: %q", botID, swarmingPool)
 	}
 	dutName := poolCfg.BotIDToDUTName(botID)
 	namespace := poolCfg.UFSCtxNamespace()
@@ -70,13 +70,13 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	ufsClient, err := createUFSClient(ctx, cfg.GetUFS().GetHost())
 	if err != nil {
 		logging.Errorf(ctx, "Fail to create UFS client for bot %q: %w", botID, err)
-		return errors.Annotate(err, "run repair queue handler").Err()
+		return errors.Fmt("run repair queue handler: %w", err)
 	}
 	logging.Infof(ctx, "run repair queue handler: UFS client created successfully")
 	di, err := getDeviceInfo(ufsCtx, ufsClient, dutName)
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to get device info for bot %q: %w", botID, err)
-		return errors.Annotate(err, "run repair queue handler").Err()
+		return errors.Fmt("run repair queue handler: %w", err)
 	}
 	logging.Infof(ufsCtx, "run repair queue handler: found pools for bot %s: %s", botID, di.Pools)
 	// RandFloat is guaranteed to be in the half-open interval [0,1).
@@ -102,7 +102,7 @@ func runAuditQueueHandler(c *router.Context) (err error) {
 	cfg := config.Get(ctx)
 	poolCfg := frontend.GetPoolCfg(ctx, swarmingPool)
 	if poolCfg == nil {
-		return errors.Reason("run audit queue handler: fail to find pool config for bot: %q, by pool: %q", botID, swarmingPool).Err()
+		return errors.Fmt("run audit queue handler: fail to find pool config for bot: %q, by pool: %q", botID, swarmingPool)
 	}
 	dutName := poolCfg.BotIDToDUTName(botID)
 	namespace := poolCfg.UFSCtxNamespace()
@@ -111,13 +111,13 @@ func runAuditQueueHandler(c *router.Context) (err error) {
 	ufsClient, err := createUFSClient(ufsCtx, cfg.GetUFS().GetHost())
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to create UFS client for bot %q: %w", dutName, err)
-		return errors.Annotate(err, "run audit queue handler").Err()
+		return errors.Fmt("run audit queue handler: %w", err)
 	}
 
 	di, err := getDeviceInfo(ufsCtx, ufsClient, dutName)
 	if err != nil {
 		logging.Errorf(ufsCtx, "Fail to get device info for bot %q: %w", botID, err)
-		return errors.Annotate(err, "run audit queue handler").Err()
+		return errors.Fmt("run audit queue handler: %w", err)
 	}
 	logging.Infof(ufsCtx, "run audit queue handler: found pools for bot %s: %s", botID, di.Pools)
 	actions := c.Request.FormValue("actions")
@@ -143,11 +143,11 @@ func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 func createUFSClient(ctx context.Context, ufsHost string) (ufs.Client, error) {
 	hc, err := ufs.NewHTTPClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "creating HTTP client").Err()
+		return nil, errors.Fmt("creating HTTP client: %w", err)
 	}
 	c, err := ufs.NewClient(ctx, hc, ufsHost)
 	if err != nil {
-		return nil, errors.Annotate(err, "creating UFS client").Err()
+		return nil, errors.Fmt("creating UFS client: %w", err)
 	}
 	return c, nil
 }
@@ -155,10 +155,10 @@ func createUFSClient(ctx context.Context, ufsHost string) (ufs.Client, error) {
 func getDeviceInfo(ctx context.Context, c ufs.Client, hostname string) (*device.DeviceInfo, error) {
 	di, err := device.GetDeviceInfo(ctx, c, hostname)
 	if err != nil {
-		return nil, errors.Annotate(err, "getting device info for hostname %s", hostname).Err()
+		return nil, errors.Fmt("getting device info for hostname %s: %w", hostname, err)
 	}
 	if len(di.Pools) == 0 {
-		return nil, errors.Reason("found no pools for hostname %s", hostname).Err()
+		return nil, errors.Fmt("found no pools for hostname %s", hostname)
 	}
 	return di, nil
 }
