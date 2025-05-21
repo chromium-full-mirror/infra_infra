@@ -55,3 +55,30 @@ New CIPD instance id: ${latest_id}
 Change-list:
 ${changelist}
 EOF
+
+# If you have sendgmr utility installed. The email can just be sent from here
+if [[ $(type -P "sendgmr") ]]; then
+
+BODY=$(cat << EOF
+Content:
+Previous CIPD instance id: ${prod_id}
+
+New CIPD instance id: ${latest_id}
+
+Change-list:
+${changelist}
+
+EOF
+)
+
+echo "== Send this email on your behalf [go/sendgmr Need LOAS (gcert)]? [y/n]"
+read -r CONFIRM
+
+if [[ $CONFIRM != "y" ]]; then
+	echo "Aborting the email"
+	exit 0
+fi
+
+echo "$BODY" | sendgmr --subject "Shivas push to prod (${latest_git})" --to=ufs-announce
+
+fi

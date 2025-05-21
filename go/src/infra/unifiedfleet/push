@@ -147,4 +147,20 @@ UFS push ($VER_CHANGE)
 $CONTENT
 
 EOF
+
+# If you have sendgmr utility installed. The email can just be sent from here
+if [[ $(type -P "sendgmr") ]]; then
+
+echo "== Send this email on your behalf [go/sendgmr Need LOAS (gcert)]? [y/n]"
+read -r CONFIRM
+
+if [[ $CONFIRM != "y" ]]; then
+	echo "Aborting the email"
+	exit 0
+fi
+
+echo "$CONTENT" | sendgmr --subject "UFS push ($VER_CHANGE)" --to=ufs-announce
+
+fi
+
 rm -rf "$WORKDIR"
