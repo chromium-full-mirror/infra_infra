@@ -16,17 +16,11 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
-	"go.chromium.org/chromiumos/config/go/test/api/bols"
-
 	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 const (
 	defaultRootPath = "/tmp/test/bols_testing"
-	DefaultLogPath  = "/tmp/filters"
 )
 
 // createLogFile creates a file and its parent directory for logging purpose.
@@ -66,19 +60,9 @@ type args struct {
 	bolsAddr        string
 	servodPort      int
 	servodContainer string
-}
-
-// verify verifies BOLS APIs.
-func verify(ctx context.Context, logger *log.Logger, a *args) error {
-	conn, err := grpc.NewClient(a.bolsAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return fmt.Errorf("failed to create BOLS client at %s: %w", a.bolsAddr, err)
-	}
-	cl := bols.NewBolsServiceClient(conn)
-	if err := verifyFileAPIs(ctx, logger, a, cl); err != nil {
-		return fmt.Errorf("failed to verify file related APIs in BOLS at %s: %w", a.bolsAddr, err)
-	}
-	return nil
+	testServod      bool
+	board           string
+	model           string
 }
 
 // runCLI is the entry point for running cros-test (TestFinderService) in CLI mode.
@@ -93,6 +77,9 @@ func runCLI(ctx context.Context, d []string) int {
 	fs.StringVar(&a.bolsAddr, "bols_addr", "", "The address of BOLS.")
 	fs.StringVar(&a.servodContainer, "servod_container", "", "The container of BOLS.")
 	fs.IntVar(&a.servodPort, "servod_port", 0, "The servod port.")
+	fs.BoolVar(&a.testServod, "test_servod", true, "Test servo related APIs.")
+	fs.StringVar(&a.board, "board", "", "The board of the DUT")
+	fs.StringVar(&a.model, "model", "", "The model of the DUT")
 	fs.Parse(d)
 
 	os.MkdirAll(filepath.Join(a.WorkingDir, "data"), 0755)
