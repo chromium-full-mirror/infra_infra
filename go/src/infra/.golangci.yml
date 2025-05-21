@@ -153,12 +153,6 @@ linters:
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
-      # TODO(gregorynisbet): remove exemptions for these build files.
-      - ^build/gong/gn/resolve/resolve.go$
-      - ^build/gong/gn/setup.go$
-      - ^build/gong/subcmd/clean/clean.go$
-      - ^build/siso/toolsupport/cmdutil/split_posix.go$
-      - ^build/siso/build/ninjabuild/step_def.go$
       # TODO(gregorynisbet): remove this exemption too.
       - ^cros/cmd/cros_test_runner/internal/executors/generic_provision_executor.go$
       # TODO(gregorynisbet): remove this exemption too.
