@@ -323,7 +323,7 @@ func attachLUCIBisectionCompileFailureAnalyses(c context.Context, failures []*me
 
 		// Currently LUCI Bisection only supports "chromium"/"ci" failures
 		// Check here as we don't want to waste an RPC call.
-		if !(builder.Project == "chromium" && builder.Bucket == "ci") {
+		if builder.Project != "chromium" || builder.Bucket != "ci" {
 			bf.LuciBisectionResult = &messages.LuciBisectionResult{
 				IsSupported: false,
 			}
