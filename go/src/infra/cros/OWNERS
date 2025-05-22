@@ -2,6 +2,5 @@ include chromiumos/owners:v1:/infra/OWNERS.ci
 
 guocb@chromium.org
 guocb@google.com
-jaredloucks@google.com
 xixuan@google.com
 xianuowang@chromium.org
