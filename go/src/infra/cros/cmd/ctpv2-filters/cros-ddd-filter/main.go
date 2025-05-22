@@ -76,7 +76,12 @@ func (ddd *Filter3D) Executor(req *ctpApi.InternalTestplan, log *log.Logger, com
 	for _, testCase := range req.TestCases {
 		// For each test case we find the related computed variants and merge the into the test case requirements.
 		testCaseName := testCase.Name
-		result := solutions[testCaseName]
+		result, ok := solutions[testCaseName]
+
+		if !ok {
+			log.Println(fmt.Sprintf("Solution was not found for testCase %s. Skipping SchedulingUnitOption creation.", testCaseName))
+			continue
+		}
 
 		ctpVariants := []*ctpApi.HWRequirements{}
 		newCTPVariants := []*ctpApi.SchedulingUnitOptions{}
