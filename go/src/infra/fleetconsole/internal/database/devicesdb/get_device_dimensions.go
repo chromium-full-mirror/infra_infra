@@ -115,7 +115,7 @@ func GetBaseDimensions(ctx context.Context, dbConn *sql.DB, realms []string) (ma
 				return nil, fmt.Errorf("GetBaseDimensions: %w", err)
 			}
 
-			if value != "" && !(column == PortColumn && value == "0") {
+			if value != "" && (column != PortColumn || value != "0") {
 				values = append(values, value)
 			}
 		}
