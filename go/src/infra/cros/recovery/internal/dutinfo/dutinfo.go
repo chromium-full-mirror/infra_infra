@@ -218,6 +218,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Camera:              createDUTCamera(ds),
 			Fingerprint:         createDUTFingerprint(ds),
 			OsRestriction:       osRestriction,
+			Pasit:               createPasit(p.GetPasit()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -465,6 +466,53 @@ func createDUTBluetooth(ds *ufslab.DutState, rc *ufspb.RecoveryConfig) *tlw.Blue
 		Expected: configHasFeature(rc, "HARDWARE_FEATURE_BLUETOOTH"),
 		State:    convertHardwareState(ds.GetBluetoothState()),
 	}
+}
+
+func createPasit(pasit *ufslab.Pasit) *tlw.Pasit {
+	if pasit == nil {
+		return &tlw.Pasit{}
+	}
+
+	res := &tlw.Pasit{
+		Hostname: pasit.GetHostname(),
+	}
+
+	for _, d := range pasit.GetDevices() {
+		newDevice := &tlw.Pasit_Device{
+			Id:    d.GetId(),
+			Model: d.GetModel(),
+			Type:  tlw.Pasit_Device_Type(d.GetType()),
+		}
+
+		if ps := d.GetPowerSupply(); ps != nil {
+			newDevice.PowerSupply = &tlw.Pasit_Device_PowerSupply{
+				Current: ps.GetCurrent(),
+				Voltage: ps.GetVoltage(),
+				Power:   ps.GetPower(),
+			}
+		}
+
+		if rpm := d.GetRpm(); rpm != nil {
+			newDevice.Rpm = &tlw.RPMOutlet{
+				Hostname: rpm.GetPowerunitName(),
+				Outlet:   rpm.GetPowerunitOutlet(),
+			}
+		}
+		res.Devices = append(res.Devices, newDevice)
+	}
+
+	for _, c := range pasit.GetConnections() {
+		res.Connections = append(res.Connections,
+			&tlw.Pasit_Connection{
+				ParentPort: c.GetParentPort(),
+				ParentId:   c.GetParentId(),
+				ChildId:    c.GetChildId(),
+				Speed:      c.GetSpeed(),
+				Type:       c.GetType(),
+			},
+		)
+	}
+	return res
 }
 
 func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.ModemInfo, siOld []*ufslab.SIMInfo) *tlw.Cellular {
