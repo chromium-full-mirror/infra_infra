@@ -1412,11 +1412,17 @@ func geBuildTargetsFromPrimaryDeviceInfo(trHelper *TrV2ReqHelper) (string, strin
 		}
 	}
 
-	// Defaulting to git_main-al-dev for the cases when branch info is not passed from plugins
-	// right now, plugins don't provide this value so this default value is necessary
-	// TODO (azrahman/navil): update this if default branch changes
+	// Defaulting to git_main-throttled for the cases when branch info is not
+	// passed from plugins. Right now, plugins don't provide this value so this
+	// default value is necessary.
+	// TODO: b/419002009 - Make the fallback logic more robust.
 	if branch == "" {
-		branch = "git_main-al-dev"
+		// TODO: b/406307693 - Remove git_main-al-dev once QA builds are up.
+		if trHelper.envVersion != "prod" {
+			branch = "git_main-al-dev"
+		} else {
+			branch = "git_main-throttled"
+		}
 	}
 
 	if buildID != "" && buildTarget != "" {
