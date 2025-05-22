@@ -581,7 +581,7 @@ func (c *updateDUT) validateDUTFromJSON(dutLse *ufspb.MachineLSE) error {
 	}
 	if servo := dutLse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo(); servo != nil {
 		// Avoid incomplete servo updates.
-		if !(servo.GetServoHostname() != "" && servo.GetServoSerial() != "") {
+		if servo.GetServoHostname() == "" || servo.GetServoSerial() == "" {
 			// Note: ServoPort == int32(0) auto-assigns the port.
 			return cmdlib.NewQuietUsageError(c.Flags, "Incomplete/Invalid servo update in %s", c.newSpecsFile)
 		}

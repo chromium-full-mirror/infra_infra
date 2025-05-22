@@ -394,7 +394,7 @@ func (c addDUT) validateArgs() error {
 				return cmdlib.NewQuietUsageError(c.Flags, "Cannot skip servo serial. Not a servo V3 device.")
 			}
 		} else {
-			if !(ufsUtil.IsChromiumLegacyHost(c.hostname) || ufsUtil.IsChromeLegacyHost(c.hostname)) && (c.servoSerial != "" || c.servoSetupType != "" || c.servoDockerContainerName != "") {
+			if (!ufsUtil.IsChromiumLegacyHost(c.hostname) && !ufsUtil.IsChromeLegacyHost(c.hostname)) && (c.servoSerial != "" || c.servoSetupType != "" || c.servoDockerContainerName != "") {
 				return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nProvided extra servo details when servo hostname is not provided.")
 			}
 		}
@@ -657,7 +657,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		}
 		servoSerial = recMap["servo_serial"]
 		// Check if the host is servo V3. Need servo serial otherwise.
-		if !(ufsUtil.IsChromiumLegacyHost(name) || ufsUtil.IsChromeLegacyHost(name)) && !ufsUtil.ServoV3HostnameRegex.MatchString(servoHost) && servoSerial == "" {
+		if (!ufsUtil.IsChromiumLegacyHost(name) && !ufsUtil.IsChromeLegacyHost(name)) && !ufsUtil.ServoV3HostnameRegex.MatchString(servoHost) && servoSerial == "" {
 			return nil, fmt.Errorf("Not a servo V3 host[%s]. Need servo serial", servoHost)
 		}
 		sst, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(recMap["servo_setup"])]
