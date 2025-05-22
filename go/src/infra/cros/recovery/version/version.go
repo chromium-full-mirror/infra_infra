@@ -30,8 +30,14 @@ func ByDut(ctx context.Context, dut *tlw.Dut) (Data, error) {
 	if dut == nil {
 		return nil, errors.Reason("version by dut: dut is not provided").Err()
 	}
-	// TODO: update version type based on type of detail of the DUT.
 	versionType := UnspecifiedType
+	if dut.GetChromeos().GetIsAndroidBased() {
+		versionType = AndroidOSType
+	} else if dut.GetChromeos().GetOsRestriction() == tlw.ChromeOS_OSR_ANDROID_ONLY {
+		versionType = AndroidOSType
+	} else if dut.GetChromeos().GetOsRestriction() == tlw.ChromeOS_OSR_CHROMEOS_ONLY {
+		versionType = CrOSType
+	}
 	pools := dut.ExtraAttributes[tlw.ExtraAttributePools]
 	v, err := version(ctx, dut.Name, versionType, dut.GetBoard(), dut.GetModel(), pools)
 	return v, errors.Annotate(err, "version by dut").Err()
