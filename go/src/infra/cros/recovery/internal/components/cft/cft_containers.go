@@ -15,6 +15,7 @@ const (
 	ServoNexux    = "servo-nexus"
 	CrosDUT       = "cros-dut"
 	FoilProvision = "foil-provision"
+	Passport      = "cros-passport"
 )
 
 // NetworkName generates predicable name for custom Docker network.
@@ -40,4 +41,14 @@ func CrosDUTName(dut *tlw.Dut) string {
 // FoilProvisionName generates predicable container name for foil-provision container.
 func FoilProvisionName(dut *tlw.Dut) string {
 	return "foil-provision-" + dut.Name
+}
+
+// PassportName generates predicable container name for cros-passport container.
+func PassportName(dut *tlw.Dut) string {
+	return "cros-passport-" + dut.Name
+}
+
+// PassportSwitchName generates the predicable name for cros-passport switch service.
+func PassportSwitchName(dut *tlw.Dut) string {
+	return "cros-passport_switch-" + dut.Name
 }

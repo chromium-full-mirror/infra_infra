@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/lab/api/passport"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/internal/log"
@@ -67,4 +68,9 @@ func ServoClientFromScope(ctx context.Context, dut *tlw.Dut) (api.ServodServiceC
 // FoilProvisionClientFromScope read foil-provision service client from scope.
 func FoilProvisionClientFromScope(ctx context.Context, dut *tlw.Dut) (api.GenericProvisionServiceClient, error) {
 	return ClientFromScope[api.GenericProvisionServiceClient](ctx, dut, FoilProvisionName(dut))
+}
+
+// PassportSwitchClientFromScope fetches the switch service client from the current scope.
+func PassportSwitchClientFromScope(ctx context.Context, dut *tlw.Dut) (passport.SwitchServiceClient, error) {
+	return ClientFromScope[passport.SwitchServiceClient](ctx, dut, PassportSwitchName(dut))
 }

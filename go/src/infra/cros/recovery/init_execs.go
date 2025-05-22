@@ -17,6 +17,7 @@ import (
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/env"
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/human_motion_robot"
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/metrics"
+	_ "go.chromium.org/infra/cros/recovery/internal/execs/pasit"
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/rpm"
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/servo"
 	_ "go.chromium.org/infra/cros/recovery/internal/execs/stableversion"
