@@ -299,7 +299,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 				Value: "skylab",
 			},
 			{
-				Name:  "is_desktop_run",
+				Name:  "is_aluminium_run",
 				Value: "true",
 			},
 			{
