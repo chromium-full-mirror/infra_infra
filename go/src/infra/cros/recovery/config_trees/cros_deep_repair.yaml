@@ -119294,6 +119294,10 @@ plans:
           exec_name: amt_manager_set_state
           exec_args:
             - state:WORKING
+    - name: pasit (Allow to fail)
+      criticalactions:
+        - name: sample_pass
+          exec_name: sample_pass
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail)

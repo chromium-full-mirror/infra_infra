@@ -4741,6 +4741,9 @@ plans:
           conditions:
             - name: Intel AMT is available ('amt_manager_amt_available') (ALWAYS_RUN) (time:'1m31s')
         - name: Set AMT state to WORKING ('amt_manager_set_state')
+    - name: pasit (Allow to fail)
+      criticalactions:
+        - name: sample_pass
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail) ('amt_manager_set_state')

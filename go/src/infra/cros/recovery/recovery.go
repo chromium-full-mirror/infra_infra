@@ -588,7 +588,14 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		if amt := dut.GetChromeos().GetAmtManager(); amt.GetHostname() != "" {
 			return []string{amt.GetHostname()}
 		}
+	case matchPlanName(planName, config.PlanPASIT):
+		if pasit := dut.GetChromeos().GetPasit(); pasit.GetHostname() != "" {
+			// Pasit Hostname can be "host:port" or "host:port:docker:container-name"
+			// Just return hostname portion.
+			return []string{strings.Split(pasit.GetHostname(), ":")[0]}
+		}
 	}
+
 	return nil
 }
 

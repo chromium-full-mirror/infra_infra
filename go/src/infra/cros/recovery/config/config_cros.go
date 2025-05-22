@@ -23,6 +23,7 @@ func CrosRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -35,6 +36,7 @@ func CrosRepairConfig() *Configuration {
 			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:         setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		}}
 }
@@ -68,6 +70,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -83,6 +86,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			PlanHMR:            setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:          setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:            setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:          setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:        setAllowFail(crosClosePlan(), true),
 		}}
 }
@@ -100,6 +104,7 @@ func MHRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -112,6 +117,7 @@ func MHRepairConfig() *Configuration {
 			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:         setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
@@ -146,6 +152,7 @@ func MHRepairWithDeepRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -161,6 +168,7 @@ func MHRepairWithDeepRepairConfig() *Configuration {
 			PlanHMR:            setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:          setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:            setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:          setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:        setAllowFail(crosClosePlan(), true),
 		}}
 }
@@ -180,6 +188,7 @@ func CrosDeployConfig() *Configuration {
 			PlanWifiRouter,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -194,6 +203,7 @@ func CrosDeployConfig() *Configuration {
 			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:         setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
@@ -214,6 +224,7 @@ func MHDeployConfig() *Configuration {
 			PlanWifiRouter,
 			PlanHMR,
 			PlanAMT,
+			PlanPASIT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -228,6 +239,7 @@ func MHDeployConfig() *Configuration {
 			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
 			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanPASIT:         setAllowFail(pasitRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
