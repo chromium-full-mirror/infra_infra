@@ -79,7 +79,7 @@ func startServer(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc,
 
 // Server starts the generic filter server.
 func Server(executorGenerator ExecutorGeneratorFunc, name string) error {
-	fs := flag.NewFlagSet("Run generic-filter server", flag.ExitOnError)
+	fs := flag.NewFlagSet("Run generic-filter server", flag.ContinueOnError)
 	return startServer(fs, executorGenerator, name)
 }
 

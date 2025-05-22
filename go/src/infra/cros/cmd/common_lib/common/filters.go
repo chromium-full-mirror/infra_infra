@@ -43,10 +43,6 @@ var (
 		PreProcessFilterContainerName:        "pre_process_filter",
 		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
 	}
-
-	binaryArgsLookup = map[string][]string{
-		TtcpContainerName: {"-creds", "/creds/service_accounts/service-account-chromeos.json"},
-	}
 )
 
 type FilterAuthInterface interface {
@@ -243,7 +239,6 @@ func binaryName(name string, build int) string {
 
 // CreateContainerRequest creates container request from provided ctp filter.
 func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRequest {
-	defaultBinaryArgs := binaryArgsLookup[requestedFilter.GetContainerInfo().GetContainer().GetName()]
 	imagePath, _ := CreateImagePath(requestedFilter.GetContainerInfo().GetContainer())
 
 	return &api.ContainerRequest{
@@ -257,7 +252,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerReques
 					DockerArtifactDir: "/tmp/filters",
 					BinaryArgs: append([]string{
 						"server", "-port", "0",
-					}, append(defaultBinaryArgs, requestedFilter.GetContainerInfo().GetBinaryArgs()...)...),
+					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
 					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
 					Env:               GceMetadataEnvVars(),
