@@ -74,7 +74,7 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 		if rpm := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm(); rpm != nil {
 			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "")
 			rpmFieldsAllFull := (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() != "")
-			if !(rpmFieldsAllEmpty || rpmFieldsAllFull) {
+			if !rpmFieldsAllEmpty && !rpmFieldsAllFull {
 				return errors.Annotate(err, "Validation error - Must specify RPM host and outlet").Err()
 			}
 		}
