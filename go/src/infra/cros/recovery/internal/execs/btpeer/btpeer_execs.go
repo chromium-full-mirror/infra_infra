@@ -68,7 +68,7 @@ func assertUptimeIsLessThanDurationExec(ctx context.Context, info *execs.ExecInf
 	}
 
 	// Evaluate assertion.
-	if !(*uptime < durationArg) {
+	if *uptime >= durationArg {
 		return errors.Reason("assert uptime is less than duration: device uptime of %s is not less than %s", *uptime, durationArg).Err()
 	}
 	log.Debugf(ctx, "Device uptime of %s is less than %s", *uptime, durationArg)

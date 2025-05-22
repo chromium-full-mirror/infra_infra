@@ -534,7 +534,7 @@ func Test_collectCommonWifiRouterFeatures(t *testing.T) {
 			got := collectCommonWifiRouterFeatures(tt.args.featureSets, tt.args.excludedFeatures)
 			SortWifiRouterFeaturesByName(got)
 			SortWifiRouterFeaturesByName(tt.want)
-			if !(len(tt.want) == 0 && len(got) == 0) && !reflect.DeepEqual(got, tt.want) {
+			if (len(tt.want) != 0 || len(got) != 0) && !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("collectCommonWifiRouterFeatures() = %v, want %v", got, tt.want)
 			}
 		})
@@ -567,7 +567,7 @@ func TestBuildModelName(t *testing.T) {
 			if got != tt.want {
 				t.Errorf("buildModelName() = %v, want %v", got, tt.want)
 			}
-			if !(len(tt.want) == 0 && len(got) == 0) && !reflect.DeepEqual(got, tt.want) {
+			if (len(tt.want) != 0 || len(got) != 0) && !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CollectOverallTestbedWifiRouterFeatures() = %v, want %v", got, tt.want)
 			}
 		})
@@ -786,7 +786,7 @@ func TestCollectOverallTestbedWifiRouterFeatures(t *testing.T) {
 			got := CollectOverallTestbedWifiRouterFeatures(tt.args.routers)
 			SortWifiRouterFeaturesByName(got)
 			SortWifiRouterFeaturesByName(tt.want)
-			if !(len(tt.want) == 0 && len(got) == 0) && !reflect.DeepEqual(got, tt.want) {
+			if (len(tt.want) != 0 || len(got) != 0) && !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CollectOverallTestbedWifiRouterFeatures() = %v, want %v", got, tt.want)
 			}
 		})
