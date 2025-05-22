@@ -59,8 +59,8 @@ func servoVerifyV4p1Exec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf(ctx, "Servo Verify V4p1: could not determine the servo type")
 		return errors.Annotate(err, "servo verify v4p1").Err()
 	}
-	if !sType.IsV4() {
-		log.Debugf(ctx, "Servo Verify V4: servo type is not V4P1.")
+	if !sType.IsV4p1() {
+		log.Debugf(ctx, "Servo Verify V4p1: servo type is not V4P1.")
 		return errors.Reason("servo verify v4p1: servo type %q is not V4p1.", sType).Err()
 	}
 	return nil
