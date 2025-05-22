@@ -33,7 +33,7 @@ type PreTestContainerUpdater struct {
 }
 
 func (gcu *PreTestContainerUpdater) Init(args []string) error {
-	fs := flag.NewFlagSet("Run pretest test container filter", flag.ExitOnError)
+	fs := flag.NewFlagSet("Run pretest test container filter", flag.ContinueOnError)
 	fs.StringVar(&gcu.ContainerPath, "path", "", "SHA256 value for the container")
 	fs.StringVar(&gcu.ContainerName, "name", "", "name of the container to use in firestore")
 	fs.StringVar(&gcu.ContainerRunCmd, "run-cmd", "", "the command to be used when launching the container")

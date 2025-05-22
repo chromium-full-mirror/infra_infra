@@ -34,7 +34,7 @@ type FoilRequestUpdater struct {
 }
 
 func (fu *FoilRequestUpdater) Init(args []string) error {
-	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
+	fs := flag.NewFlagSet("Run foil request-updater", flag.ContinueOnError)
 	fs.StringVar(&fu.TestPath, "test-path", "", "SHA256 value for test container")
 	fs.StringVar(&fu.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
 	fs.StringVar(&fu.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")

@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -187,21 +186,21 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "failed to create filters: ").Err()
 	}
 
-	manuallyUprevedFilters := []string{
-		"cros-test-finder",
-		"pre-process-filter",
-		"cros-ddd-filter",
-		"autovm_test_shifter_filter",
-	}
+	// -- Create container info queue --
+	containerInfoList := list.New()
 	for _, filter := range ctpFilters {
-		// TODO (cdelagarza): remove this custom filter check once they are upreved
-		if !slices.Contains(manuallyUprevedFilters, filter.GetContainerInfo().GetContainer().GetName()) {
-			if cmd.IsAlRun && cmd.IsPartnerRun {
-				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-firestore", firestoreDBName)
-			}
-			filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-env", cmd.Environment)
+		containerInfo := CtpFilterToContainerInfo(filter)
+		// Apply server level args.
+		if cmd.IsAlRun && cmd.IsPartnerRun {
+			containerInfo.Request.Container.GetGeneric().BinaryArgs = append(containerInfo.Request.Container.GetGeneric().GetBinaryArgs(), "-firestore", firestoreDBName)
 		}
+		containerInfo.Request.Container.GetGeneric().BinaryArgs = append(containerInfo.Request.Container.GetGeneric().GetBinaryArgs(), "-env", cmd.Environment)
+		containerInfoList.PushBack(containerInfo)
 	}
+
+	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(containerInfoList)), "Container Info queue")
+
+	cmd.ContainerInfoQueue = containerInfoList
 
 	filterData, err := json.MarshalIndent(ctpFilters, "", "\t")
 	if err != nil {
@@ -213,17 +212,6 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	common.WriteStringToStepLog(ctx, step, string(filterData), "Final Ctp filters list")
 
 	common.WriteStringToStepLog(ctx, step, fmt.Sprintf("%v", build), "CTPv2 Build")
-	// -- Create container info queue --
-
-	containerInfoList := list.New()
-
-	for _, filter := range ctpFilters {
-		containerInfoList.PushBack(CtpFilterToContainerInfo(filter))
-	}
-
-	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(containerInfoList)), "Container Info queue")
-
-	cmd.ContainerInfoQueue = containerInfoList
 
 	return nil
 }
@@ -322,8 +310,9 @@ func CtpFilterToContainerInfo(ctpFilter *testapi.CTPFilter) *data.ContainerInfo 
 	contName := ctpFilter.GetContainerInfo().GetContainer().GetName()
 	// TODO (azrahman): remove this once container creation is more generic.
 	return &data.ContainerInfo{
-		ImageKey:  contName,
-		Request:   common.CreateContainerRequest(ctpFilter),
-		ImageInfo: ctpFilter.GetContainerInfo().GetContainer(),
+		ImageKey:   contName,
+		Request:    common.CreateContainerRequest(ctpFilter),
+		ImageInfo:  ctpFilter.GetContainerInfo().GetContainer(),
+		FilterArgs: ctpFilter.GetContainerInfo().GetBinaryArgs(),
 	}
 }

@@ -21,6 +21,7 @@ type ContainerInfo struct {
 	Request         *api.ContainerRequest
 	ImageInfo       *buildapi.ContainerImageInfo
 	ServiceEndpoint *labapi.IpEndpoint
+	FilterArgs      []string
 }
 
 // GetKey gets the image key.
@@ -43,4 +44,8 @@ func (contInfo *ContainerInfo) GetEndpointString() (string, error) {
 		return "", errors.Reason("cannot get endpoint string for nil service endpoint.").Err()
 	}
 	return fmt.Sprintf("%s:%d", contInfo.ServiceEndpoint.GetAddress(), contInfo.ServiceEndpoint.GetPort()), nil
+}
+
+func (contInfo *ContainerInfo) GetFilterArgs() []string {
+	return contInfo.FilterArgs
 }

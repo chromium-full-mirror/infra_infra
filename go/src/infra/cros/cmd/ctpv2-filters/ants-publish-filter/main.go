@@ -35,7 +35,7 @@ type ANTSPublishUpdater struct {
 }
 
 func (apu *ANTSPublishUpdater) Init(args []string) error {
-	fs := flag.NewFlagSet("Run ants publish filter", flag.ExitOnError)
+	fs := flag.NewFlagSet("Run ants publish filter", flag.ContinueOnError)
 	fs.StringVar(&apu.PublishPath, "publish-path", "", "SHA256 value for testing publish container")
 	fs.StringVar(&apu.InvocationID, "invocation-id", "", "ants invocation id")
 	fs.StringVar(&apu.WorkUnitID, "workunit-id", "", "parent workunit id")

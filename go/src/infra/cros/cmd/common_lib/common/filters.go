@@ -250,9 +250,9 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerReques
 					// So keeping it as comment for now.
 					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
 					DockerArtifactDir: "/tmp/filters",
-					BinaryArgs: append([]string{
+					BinaryArgs: []string{
 						"server", "-port", "0",
-					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
+					},
 					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
 					Env:               GceMetadataEnvVars(),

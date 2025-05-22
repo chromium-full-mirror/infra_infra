@@ -22,7 +22,6 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/streaming"
-	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
 	"go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
 )
 
@@ -31,7 +30,6 @@ type FilterExecutor struct {
 	*interfaces.AbstractExecutor
 
 	FilterServiceClient testapi.GenericFilterServiceClient
-	ContainerInfo       *ctpv2_data.ContainerInfo
 }
 
 func NewFilterExecutor() *FilterExecutor {
@@ -76,10 +74,8 @@ func (ex *FilterExecutor) filterExecutionCommandExecution(
 	ctx context.Context,
 	cmd *commands.FilterExecutionCmd) error {
 
-	ex.ContainerInfo = cmd.ContainerInfo
-
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("Filter execution: %s", ex.ContainerInfo.GetKey()))
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Filter execution: %s", cmd.ContainerInfo.GetKey()))
 	defer func() { step.End(err) }()
 
 	common.WriteProtoToStepLog(ctx, step, cmd.InputTestPlan, "filter request")
@@ -141,7 +137,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if filterReq == nil {
 		return nil, fmt.Errorf("cannot execute filter for nil filter request")
 	}
-	if ex.ContainerInfo == nil {
+	if cmd.ContainerInfo == nil {
 		return nil, fmt.Errorf("cannot execute filter with nil container info")
 	}
 
@@ -182,7 +178,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	}
 	logging.Infof(ctx, "connected with filter service")
 
-	filter := ex.ContainerInfo.Request.GetContainer().GetContainer().(*testapi.Template_Generic)
+	filter := cmd.ContainerInfo.Request.GetContainer().GetContainer().(*testapi.Template_Generic)
 	// Create new client.
 	filterServiceClient := testapi.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
@@ -212,7 +208,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
 	go serverCommuncationHandler.HandleAuthorizationRequests(ctx)
 
-	err = serverCommuncationHandler.SendArgs(filter.Generic.GetBinaryArgs())
+	err = serverCommuncationHandler.SendArgs(cmd.ContainerInfo.FilterArgs)
 
 	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
 	if err != nil {

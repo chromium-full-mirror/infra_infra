@@ -34,7 +34,7 @@ type Filter3D struct {
 }
 
 func (ddd *Filter3D) Init(args []string) error {
-	fs := flag.NewFlagSet("3D", flag.ExitOnError)
+	fs := flag.NewFlagSet("3D", flag.ContinueOnError)
 	fs.StringVar(&ddd.googleApiCredsPath, "creds", "",
 		"Path to json file with credential for the Google cloud services. "+
 			"If the option is not provided, the service will use the default google api credential finder features.")
