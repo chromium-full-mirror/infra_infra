@@ -12,6 +12,7 @@ linters:
     - intrange
     - noctx
     - gomodguard
+    - govet
   disable:
     # There are also many unchecked errors.
     - errcheck
@@ -38,13 +39,6 @@ linters:
         ]
       }
     }
-    # Go vet exposes a disable switch, so we can enable everything and disable stuff in a piecemeal fashion.
-    govet:
-      disable:
-        # Too many cases of copying protos. For example, in tricium and, sadly, UFS.
-        - copylocks
-    # Start the staticcheck config off small and grow it over time as we remove classes of error.
-    # https://golangci-lint.run/usage/linters/#staticcheck
     staticcheck:
       checks:
         - all
@@ -157,6 +151,31 @@ linters:
       - ^qscheduler/service/app/state/batchrunner.go$
       # TODO(gregorynisbet): remove this exemption after https://chromium-review.googlesource.com/c/infra/infra/+/6581399 lands
       - ^cros/cmd/ctpv2/internal/commands/schedule_tasks.go$
+
+      # TODO(gregorynisbet): BEGIN copylock issue files.
+      - appengine/rotation-proxy/rotation_proxy_server.go
+      - cmd/bqexport/test_data/main.go
+      - cros/cmd/cros-tool-runner/internal/v2/templates/placeholder.go
+      - cros/cmd/cros-tool-runner/internal/v2/templates/placeholder_test.go
+      - cros/cmd/cros-tool-runner/internal/v2/templates/template_cros_provision.go
+      - cros/cmd/cros-tool-runner/internal/v2/templates/template_cros_provision_test.go
+      - cros/cmd/ctpv2/internal/commands/middle_out_cmd.go
+      - cros/lib/buildbucket/properties_test.go
+      - libs/fleet/boxster/swarming/convert_test.go
+      - monorail/endpoints_test.go
+      - tools/git/git_test.go
+      - tools/git/main.go
+      - tools/vpython/legacy/vpython2.7/luci/application/application.go
+      - tools/vpython/legacy/vpython2.7/luci/application/subcommand_delete.go
+      - tools/vpython/legacy/vpython2.7/luci/application/subcommand_install.go
+      - tools/vpython/legacy/vpython2.7/luci/run.go
+      - tools/vpython/legacy/vpython2.7/luci/spec/spec_test.go
+      - tools/vpython/legacy/vpython2.7/luci/venv/config.go
+      - tools/vpython/legacy/vpython2.7/luci/venv/venv.go
+      - tools/vpython/legacy/vpython2.7/luci/venv/venv_resources_test.go
+      - tools/vpython/legacy/vpython2.7/luci/venv/venv_test.go
+      # TODO(gregorynisbet): END copylock issue files.
+
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
