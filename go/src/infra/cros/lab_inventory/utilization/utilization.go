@@ -185,7 +185,7 @@ func getStatusForBotInfo(bi *swarmingv2.BotInfo) status {
 }
 
 func isBotHealthy(bi *swarmingv2.BotInfo) bool {
-	return !(bi.Deleted || bi.IsDead || bi.Quarantined)
+	return !bi.Deleted && !bi.IsDead && !bi.Quarantined
 }
 
 func summarizeValues(vs []string) string {
