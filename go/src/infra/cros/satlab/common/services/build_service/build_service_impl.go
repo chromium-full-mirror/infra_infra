@@ -171,6 +171,21 @@ func (b *BuildServiceImpl) findMostStableBuildByBoard(ctx context.Context, board
 	return resp.GetBuild(), nil
 }
 
+func (b *BuildServiceImpl) findStableBuildByBoardAndModel(ctx context.Context, board, model string) (*moblabapipb.Build, error) {
+	path := ParseModelPath(board, model)
+
+	req := &moblabapipb.FindMostStableBuildRequest{
+		Model: path,
+	}
+
+	resp, err := b.client.FindMostStableBuild(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.GetBuild(), nil
+}
+
 func buildToOS(milestone, build string) string {
 	return fmt.Sprintf("R%s-%s", milestone, build)
 }
@@ -194,7 +209,7 @@ func (b *BuildServiceImpl) FindMostStableBuild(ctx context.Context, board string
 
 // FindMostStableBuildByBoardAndModel find the stable recovery version by board and model
 func (b *BuildServiceImpl) FindMostStableBuildByBoardAndModel(ctx context.Context, board, model string) (*models.RecoveryVersion, error) {
-	resp, err := b.findMostStableBuildByBoard(ctx, board)
+	resp, err := b.findStableBuildByBoardAndModel(ctx, board, model)
 	if err != nil {
 		return nil, err
 	}
