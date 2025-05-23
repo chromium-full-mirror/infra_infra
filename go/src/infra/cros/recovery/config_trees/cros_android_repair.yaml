@@ -84,6 +84,12 @@ plans:
         - name: Dolos does not needs reboot
           exec_name: dolos_does_not_need_reboot
           recoveries:
+            - name: Dolos call repair (Allow to fail)
+              exec_name: dolos_call_repair
+              docs:
+                - Call the <doloscmd repair> utility which preforms a sequence of dolos
+                - console commands to attempt to recover the device depending on the problems
+                - the console is reporting.
             - name: Reboot dolos
               exec_name: sample_pass
               docs:

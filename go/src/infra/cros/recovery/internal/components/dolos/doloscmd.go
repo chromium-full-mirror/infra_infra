@@ -17,13 +17,11 @@ import (
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
-const (
-	dolosCmd = "/usr/bin/doloscmd "
-)
-
-// runDolosCommand build the params to run doloscmd.   In most cases the command can be called with either --uartname ( faster )
+// runCommand build the params to run doloscmd.   In most cases the command can be called with either --uartname ( faster )
 // or --serial (slower but works if you do not know uartname)
-func runDolosCommand(ctx context.Context, run components.Runner, dolosSubCommand string, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
+func runCommand(ctx context.Context, run components.Runner, dolosSubCommand string, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
+
+	const dolosCmd = "/usr/bin/doloscmd "
 
 	command := dolosCmd
 

@@ -102,6 +102,7 @@ func dolosRepairPlan() *Plan {
 			"Dolos does not needs reboot": {
 				ExecName: "dolos_does_not_need_reboot",
 				RecoveryActions: []string{
+					"Dolos call repair",
 					"Reboot dolos",
 				},
 			},
@@ -153,6 +154,15 @@ func dolosRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"dolos_update_firmware",
 				},
+				AllowFailAfterRecovery: true,
+			},
+			"Dolos call repair": {
+				Docs: []string{
+					"Call the <doloscmd repair> utility which preforms a sequence of dolos",
+					"console commands to attempt to recover the device depending on the problems",
+					"the console is reporting.",
+				},
+				ExecName:               "dolos_call_repair",
 				AllowFailAfterRecovery: true,
 			},
 		},

@@ -17,16 +17,14 @@ import (
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
-const (
-	dolosSubCmdFindUart = "find-uartname"
-)
-
-// DolosFindUart Call doloscmd find-uartname on the host machine and parse the result text proto if received.
+// FindUart Call doloscmd find-uartname on the host machine and parse the result text proto if received.
 // Knowing the UART allows direct communication with the Dolos, otherwise it is necessary to search for the
 // correct dolos with external serial number.
-func DolosFindUart(ctx context.Context, run components.Runner, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
+func FindUart(ctx context.Context, run components.Runner, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
 
-	output, err := runDolosCommand(ctx, run, dolosSubCmdFindUart, dolosInfo, timeout)
+	const dolosSubCmdFindUart = "find-uartname"
+
+	output, err := runCommand(ctx, run, dolosSubCmdFindUart, dolosInfo, timeout)
 
 	if err != nil {
 		return "", errors.Annotate(err, "unable to get dolos UART").Err()

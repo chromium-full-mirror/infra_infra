@@ -34,7 +34,7 @@ func updateUartNameExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
 	dutRun := info.NewRunner(dolosInfo.GetHostname())
 
-	uartName, err := dolos.DolosFindUart(ctx, dutRun, dolosInfo, info.GetExecTimeout())
+	uartName, err := dolos.FindUart(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		return errors.Annotate(err, "unable to get dolos UART").Err()
 	}
@@ -51,7 +51,7 @@ func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	previousState := dolosInfo.GetState()
 	dolosInfo.State = tlw.Dolos_DOLOS_UNKNOWN
 
-	status, err := dolos.DolosGetStatus(ctx, dutRun, dolosInfo, info.GetExecTimeout())
+	status, err := dolos.GetStatus(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		return errors.Annotate(err, "unable to get dolos status").Err()
 	}
@@ -89,8 +89,8 @@ func setStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("set dolos state: state is %q not found", newState).Err()
 }
 
-// dolosDoesNotNeedsRebootExec look at status and decide if Dolos needs to be rebooted.
-func dolosDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) error {
+// checkDoesNotNeedsRebootExec look at status and decide if Dolos needs to be rebooted.
+func checkDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetChromeos().GetDolos() == nil {
 		return errors.Reason("dolos is not supported").Err()
 	}
@@ -106,7 +106,7 @@ func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error 
 	dolosInfo := info.GetChromeos().GetDolos()
 	dutRun := info.NewRunner(dolosInfo.GetHostname())
 
-	currentVersion, err := dolos.DolosGetVersion(ctx, dutRun, dolosInfo, info.GetExecTimeout())
+	currentVersion, err := dolos.GetVersion(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		log.Infof(ctx, "Unable to determine dolos version, so do not try to upgrade")
 		return nil
@@ -126,20 +126,28 @@ func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
-// determineAndSetStateExec calculate the current Dolos state and update UFS.
-func updateDolosFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
+// updateFirmwareExec update the firmware to the version in UFS if required.
+func updateFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
 	dutRun := info.NewRunner(dolosInfo.GetHostname())
-	return dolos.DolosUpdateFirmware(ctx, dutRun, dolosInfo, info.GetExecTimeout())
+	return dolos.UpdateFirmware(ctx, dutRun, dolosInfo, info.GetExecTimeout())
+}
+
+// repairExec calculate the current Dolos state and update UFS.
+func repairExec(ctx context.Context, info *execs.ExecInfo) error {
+	dolosInfo := info.GetChromeos().GetDolos()
+	dutRun := info.NewRunner(dolosInfo.GetHostname())
+	return dolos.CallRepair(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 }
 
 func init() {
-	execs.Register("dolos_does_not_need_reboot", dolosDoesNotNeedsRebootExec)
+	execs.Register("dolos_does_not_need_reboot", checkDoesNotNeedsRebootExec)
 	execs.Register("dolos_determine_and_set_dolos_state", determineAndSetStateExec)
 	execs.Register("dolos_set_dolos_state", setStateExec)
 	execs.Register("dolos_is_uartname_cached", isUartnameCachedExec)
 	execs.Register("dolos_is_enabled", isEnabledForTestbedExec)
 	execs.Register("dolos_update_uartname_cache", updateUartNameExec)
-	execs.Register("dolos_update_firmware", updateDolosFirmwareExec)
+	execs.Register("dolos_update_firmware", updateFirmwareExec)
 	execs.Register("dolos_check_firmware_up_to_date", checkFirmwareUpToDateExec)
+	execs.Register("dolos_call_repair", repairExec)
 }

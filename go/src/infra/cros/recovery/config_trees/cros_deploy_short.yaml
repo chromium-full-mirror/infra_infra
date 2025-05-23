@@ -145,6 +145,7 @@ plans:
         - name: Update state ('dolos_determine_and_set_dolos_state')
         - name: Dolos does not needs reboot ('dolos_does_not_need_reboot')
           recoveries:
+            - name: Dolos call repair (Allow to fail) ('dolos_call_repair')
             - name: Reboot dolos ('sample_pass')
               dependencies:
                 - name: Set dut RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)

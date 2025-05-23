@@ -16,14 +16,11 @@ import (
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
-const (
-	dolosSubCmdGetStatus = "get-status"
-)
+// GetStatus call doloscmd get-status and parse the results ( if received ) from the output text proto.
+func GetStatus(ctx context.Context, run components.Runner, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
+	const dolosSubCmdGetStatus = "get-status"
 
-// DolosGetStatus call doloscmd get-status and parse the results ( if received ) from the output text proto.
-func DolosGetStatus(ctx context.Context, run components.Runner, dolosInfo *tlw.Dolos, timeout time.Duration) (string, error) {
-
-	output, err := runDolosCommand(ctx, run, dolosSubCmdGetStatus, dolosInfo, timeout)
+	output, err := runCommand(ctx, run, dolosSubCmdGetStatus, dolosInfo, timeout)
 	if err != nil {
 		return "", errors.Annotate(err, "unable to get dolos status").Err()
 	}
