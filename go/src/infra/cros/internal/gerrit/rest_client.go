@@ -41,8 +41,13 @@ func NewProdAPIClient(ctx context.Context, host, gitcookiesPath string) (*ProdAP
 	if err != nil {
 		return nil, err
 	}
-	bareHost := strings.TrimPrefix(host, "http://")
-	bareHost = strings.TrimPrefix(host, "https://")
+	bareHost := host
+	if strings.HasPrefix(host, "http://") {
+		bareHost = strings.TrimPrefix(host, "http://")
+	}
+	if strings.HasPrefix(host, "https://") {
+		bareHost = strings.TrimPrefix(host, "https://")
+	}
 
 	cmdRunner := cmd.RealCommandRunner{}
 	cmd := []string{bareHost, gitcookiesPath}
