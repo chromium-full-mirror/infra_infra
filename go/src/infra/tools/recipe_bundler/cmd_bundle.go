@@ -327,7 +327,7 @@ func (c *cmdBundle) createBundle(ctx context.Context, pkg packageInfo, spec, res
 	logging.Infof(ctx, "fetching: %v", resolvedSpec)
 	if err = repo.git(ctx, "init"); err == nil {
 		// Remove .git/index.lock to solve the file exists error
-		if rmErr := os.Remove(filepath.Join(repo.localPath, ".git", "index.lock")); !(rmErr == nil || os.IsNotExist(rmErr)) {
+		if rmErr := os.Remove(filepath.Join(repo.localPath, ".git", "index.lock")); rmErr != nil && !os.IsNotExist(rmErr) {
 			return errors.Annotate(rmErr, "removing git lockfile").Err()
 		}
 
