@@ -30,7 +30,16 @@ func ParseMCSVFile(specsFile string) ([][]string, error) {
 	}
 	reader := strings.NewReader(text)
 	csvReader := csv.NewReader(reader)
-	return csvReader.ReadAll()
+	ret, err := csvReader.ReadAll()
+	if err != nil {
+		return ret, err
+	}
+	for i := range ret {
+		for j := range ret[i] {
+			ret[i][j] = strings.TrimSpace(ret[i][j])
+		}
+	}
+	return ret, nil
 }
 
 // ValidateSameStringArray validates if 2 strings slice are same
