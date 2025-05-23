@@ -89,9 +89,6 @@ linters:
         # https://staticcheck.dev/docs/checks#SA4010
         # The result of append will never be observed anywhere
         - "-SA4010"
-        # https://staticcheck.dev/docs/checks#SA4017
-        # Discarding the return values of a function without side effects, making the call pointless
-        - "-SA4017"
         # https://staticcheck.dev/docs/checks#SA5001
         # Deferring Close before checking for a possible error
         - "-SA5001"
@@ -158,6 +155,8 @@ linters:
       - ^cros/internal/branch/helper.go$
       # TODO(gregorynisbet): remove this exemption too.
       - ^qscheduler/service/app/state/batchrunner.go$
+      # TODO(gregorynisbet): remove this exemption after https://chromium-review.googlesource.com/c/infra/infra/+/6581399 lands
+      - ^cros/cmd/ctpv2/internal/commands/schedule_tasks.go$
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
