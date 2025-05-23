@@ -163,8 +163,6 @@ linters:
       - cros/lib/buildbucket/properties_test.go
       - libs/fleet/boxster/swarming/convert_test.go
       - monorail/endpoints_test.go
-      - tools/git/git_test.go
-      - tools/git/main.go
       - tools/vpython/legacy/vpython2.7/luci/application/application.go
       - tools/vpython/legacy/vpython2.7/luci/application/subcommand_delete.go
       - tools/vpython/legacy/vpython2.7/luci/application/subcommand_install.go

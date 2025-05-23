@@ -116,7 +116,7 @@ func TestGitCommand(t *testing.T) {
 		var in testAgentRequest
 		var out testAgentResponse
 		gc := GitCommand{
-			State: state.State{
+			State: &state.State{
 				GitPath: executable,
 			},
 			WorkDir: tdir,
@@ -134,7 +134,7 @@ func TestGitCommand(t *testing.T) {
 			}
 		}
 
-		encodeStateENV := func(st state.State) string {
+		encodeStateENV := func(st *state.State) string {
 			return strings.Join([]string{gitWrapperENV, st.ToENV()}, "=")
 		}
 
@@ -569,7 +569,7 @@ func TestGitCommand(t *testing.T) {
 			gitPathPrefix := "cool/path/to/git"
 			gr := &gitRunner{
 				GitCommand: &GitCommand{
-					State: state.State{},
+					State: &state.State{},
 				},
 				testGOOS: "windows",
 			}

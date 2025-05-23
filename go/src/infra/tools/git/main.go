@@ -98,7 +98,7 @@ func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader
 	}
 
 	// Check if we are being passed a wrapper state.
-	var st state.State
+	st := &state.State{}
 	if v, ok := env.Lookup(gitWrapperENV); ok {
 		if err := st.FromENV(v); err != nil {
 			logging.Warningf(c, "Failed to decode "+gitWrapperENV+" [%s]: %s", v, err)

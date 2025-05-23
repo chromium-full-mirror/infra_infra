@@ -41,7 +41,7 @@ type GitCommand struct {
 	// State (required) is the current execution state of the Git wrapper.
 	//
 	// The State's "GitPath" is the path of the Git command to run.
-	State state.State
+	State *state.State
 
 	// LowSpeedLimit, if >0, sets the low speed limit (in bytes) for the Git
 	// process. If Git receives fewer than this many bytes per second, it is
@@ -142,7 +142,7 @@ func (gc *GitCommand) Run(c context.Context, args []string, env environ.Env) (in
 	}
 
 	// Determine if we are running a retry-able subcommand.
-	st := proto.Clone(&gc.State).(*state.State)
+	st := proto.Clone(gc.State).(*state.State)
 	if gitArgs.MayBeRemote() {
 		// If we're already running through a retry wrapper, always run the Git
 		// command directly, rather than wrapping it multiple times. Otherwise,
