@@ -159,9 +159,9 @@ func TestCallServodSet(t *testing.T) {
 	}
 	cl := lsnexus.NewLSNexusServiceClient(conn)
 	rspn, err := cl.CallServod(ctx, &lsnexus.CallServodRequest{
-		Method: lsnexus.CallServodRequest_SET,
+		Method:  lsnexus.CallServodRequest_SET,
+		Control: control,
 		Args: []*bols.ServodValue{
-			{Value: &bols.ServodValue_StringValue{StringValue: control}},
 			{Value: &bols.ServodValue_StringValue{StringValue: value}},
 		},
 	})
@@ -239,8 +239,8 @@ func TestCallServodGet(t *testing.T) {
 	}
 	cl := lsnexus.NewLSNexusServiceClient(conn)
 	rspn, err := cl.CallServod(ctx, &lsnexus.CallServodRequest{
-		Method: lsnexus.CallServodRequest_GET,
-		Args:   []*bols.ServodValue{{Value: &bols.ServodValue_StringValue{StringValue: control}}},
+		Method:  lsnexus.CallServodRequest_GET,
+		Control: control,
 	})
 	if err != nil {
 		t.Fatalf("failed to call CallServod: %v", err)

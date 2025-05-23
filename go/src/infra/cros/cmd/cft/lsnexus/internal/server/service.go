@@ -79,13 +79,7 @@ func (s *service) log(args ...any) {
 }
 
 func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
-	args := req.GetArgs()
-	if len(args) != 1 {
-		err := fmt.Errorf("get servod request has wrong number of arguments: got: %d expected: 1", len(args))
-		s.log(err)
-		return nil, err
-	}
-	if args[0].GetStringValue() == "" {
+	if req.GetControl() == "" {
 		err := errors.New("get servod request needs an non-empty string as control value")
 		s.log(err)
 		return nil, err
@@ -96,7 +90,7 @@ func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodR
 			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
 			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
 		},
-		Control: args[0].GetStringValue(),
+		Control: req.GetControl(),
 	}
 	bolsRspn, err := s.cl.GetServod(ctx, bolsReq)
 	if err != nil {
@@ -114,12 +108,12 @@ func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodR
 
 func (s *service) setServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
 	args := req.GetArgs()
-	if len(args) != 2 {
-		err := fmt.Errorf("set servod request has wrong number of arguments: got: %d expected: 2", len(args))
+	if len(args) != 1 {
+		err := fmt.Errorf("set servod request has wrong number of arguments: got: %d expected: 1", len(args))
 		s.log(err)
 		return nil, err
 	}
-	if args[0].GetStringValue() == "" {
+	if req.GetControl() == "" {
 		err := errors.New("gst servod request needs an non-empty string as control value")
 		s.log(err)
 		return nil, err
@@ -130,8 +124,8 @@ func (s *service) setServodRequest(ctx context.Context, req *lsnexus.CallServodR
 			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
 			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
 		},
-		Control: args[0].GetStringValue(),
-		Value:   args[1],
+		Control: req.GetControl(),
+		Value:   args[0],
 	}
 	if _, err := s.cl.SetServod(ctx, bolsReq); err != nil {
 		err = fmt.Errorf("failed to make SetServod request: %w", err)
