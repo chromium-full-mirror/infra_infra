@@ -790,7 +790,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	if osRestriction != "" {
 		restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(osRestriction)]
 		if !ok {
-			return nil, nil, fmt.Errorf("Invalid os_restruction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
+			return nil, nil, fmt.Errorf("Invalid os_restriction value %s. Valid types are %s", osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
 		}
 		mask.Paths = append(mask.Paths, osRestrictionPath)
 		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
