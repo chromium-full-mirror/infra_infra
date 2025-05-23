@@ -36,13 +36,25 @@ func (r *buildRunner) Run(ctx context.Context, spec *buildSpec, _ runOptions) er
 	// N.B. We ignore the fetchOnly run option becauase the only thing Run does is fetch.
 
 	// Grab a prebuilt toolchain or build one and upload it.
-	return getGo(ctx, spec, "", spec.goroot, spec.goSrc, false)
+	return getGo(ctx, spec, "", spec.goroot, spec.goSrc, getGoOption{})
+}
+
+type getGoOption struct {
+	// RequirePrebuilt controls whether a prebuilt Go toolchain is considered required
+	// by getGo.
+	RequirePrebuilt bool
+
+	// LogDebugOutput controls whether debugging convenience output is logged.
+	//
+	// cmd/internal/metadata may take 5 seconds to run, so callers can arrange for this
+	// information to be logged once per build, even when getGo is called more often.
+	LogDebugOutput bool
 }
 
 // getGo fetches and/or builds a Go toolchain from the provided sourceSpec and installs it at goroot.
 // The fetched and/or built toolchain is constructed according to spec. goName is the display name for
 // this toolchain, and is useful for disambiguating multiple toolchains if multiple are installed.
-func getGo(ctx context.Context, spec *buildSpec, goName, goroot string, goSrc *sourceSpec, requirePrebuilt bool) (err error) {
+func getGo(ctx context.Context, spec *buildSpec, goName, goroot string, goSrc *sourceSpec, opt getGoOption) (err error) {
 	stepName := "get go"
 	if goName != "" {
 		stepName = fmt.Sprintf("get %s go", goName)
@@ -55,8 +67,14 @@ func getGo(ctx context.Context, spec *buildSpec, goName, goroot string, goSrc *s
 			return
 		}
 
-		// Run `go env` on the resulting toolchain for debugging purposes.
-		_ = cmdStepRun(ctx, "go env", goCmd(ctx, goroot, goroot, "env"), true)
+		if opt.LogDebugOutput {
+			// Log cmd/internal/metadata output (like all.bash does) for debugging convenience.
+			_ = cmdStepRun(ctx, "test execution environment", goCmd(ctx, goroot, filepath.Join(goroot, "src", "cmd", "internal", "metadata"), "run", "main.go"), true)
+
+			// Log `go env [-changed]` output on the toolchain for debugging convenience.
+			_ = cmdStepRun(ctx, "go env", goCmd(ctx, goroot, goroot, "env"), true)
+			_ = cmdStepRun(ctx, "go env -changed", goCmd(ctx, goroot, goroot, "env", "-changed"), true)
+		}
 
 		// If requested, reinstall the compiler and linker in race mode.
 		if spec.inputs.CompilerLinkerRaceMode {
@@ -83,7 +101,7 @@ func getGo(ctx context.Context, spec *buildSpec, goName, goroot string, goSrc *s
 			return nil
 		}
 	}
-	if requirePrebuilt {
+	if opt.RequirePrebuilt {
 		return infraErrorf("no prebuilt Go found, but this builder requires it")
 	}
 

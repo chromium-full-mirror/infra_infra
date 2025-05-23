@@ -62,10 +62,15 @@ func newTestRunner(props *golangbuildpb.TestMode, gotShard *golangbuildpb.TestSh
 // Run implements the runner interface for testRunner.
 func (r *testRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
 	// Get a built Go toolchain and require it to be prebuilt if we're not in fetchOnly mode.
-	// In fetchOnly mode, there's likely a human involved, and they could be debugging something
-	// old that doesn't have a prebuilt binary for it anymore. In that case, we want to build it
-	// on behalf of the human involved.
-	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, !opts.fetchOnly()); err != nil {
+	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, getGoOption{
+		// In fetchOnly mode, there's likely a human involved, and they could be debugging something
+		// old that doesn't have a prebuilt binary for it anymore. In that case, we want to build it
+		// on behalf of the human involved.
+		RequirePrebuilt: !opts.fetchOnly(),
+		// All shards should have equivalent test environments, so spend time on computing debug info
+		// in the first shard only.
+		LogDebugOutput: r.shard.shardID == 0,
+	}); err != nil {
 		return err
 	}
 	// Determine what ports to test.
@@ -404,6 +409,10 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 		return err
 	}
 
+	// Log `go env [-changed]` output on modules to be tested for debugging convenience.
+	logGoEnvForModules(ctx, spec, modules, false)
+	logGoEnvForModules(ctx, spec, modules, true)
+
 	// Test modules in this specific subrepo.
 	// If testing any one nested module or port fails, keep going and report all at the end.
 	if spec.inputs.CompileOnly {
@@ -484,6 +493,19 @@ func addGoWasmExecToPath(ctx context.Context, spec *buildSpec, m module) (contex
 		filepath.Join(e.GOROOT, "lib/wasm"), os.PathListSeparator,
 		env.Get("PATH")))
 	return env.SetInCtx(ctx), nil
+}
+
+func logGoEnvForModules(ctx context.Context, spec *buildSpec, modules []module, changed bool) {
+	step, ctx := build.StartStep(ctx, "go env"+map[bool]string{true: " -changed"}[changed])
+	defer step.End(nil)
+	for _, m := range modules {
+		ctx := setupModuleEnv(ctx, m)
+		envCmd := spec.goCmd(ctx, m.RootDir, "env")
+		if changed {
+			envCmd.Args = append(envCmd.Args, "-changed")
+		}
+		_ = cmdStepRun(ctx, m.Path, envCmd, true)
+	}
 }
 
 func logSkippedModule(ctx context.Context, modulePath, skipReason string) {
