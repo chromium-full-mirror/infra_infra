@@ -60,7 +60,7 @@ func NewDataStoreClient(ctx context.Context, cloudProject string) (*DataStoreCli
 // Example 2: dsClient.Get(ctx, &str, "EntityA", 123, "AncestorEntity", 345)
 // Example 3: dsClient.Get(ctx, &str, "EntityA", "k")
 func (c DataStoreClient) Get(ctx context.Context, result any, entityName string, key any, options ...any) error {
-	if !(len(options) == 0 || len(options) == 2) {
+	if len(options) != 0 && len(options) != 2 {
 		return fmt.Errorf("%w: Expected 4 or 6 arguments but got %d", ErrInsufficientArgs, len(options)+4)
 	}
 
