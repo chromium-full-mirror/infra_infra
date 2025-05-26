@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/tsmon/distribution"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/sqldb"
 
@@ -20,6 +21,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
+	"go.chromium.org/infra/fleetconsole/internal/metrics"
 	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 	ufsmodel "go.chromium.org/infra/unifiedfleet/api/v1/models"
@@ -28,6 +30,14 @@ import (
 // The sql library doesn't support more than this number of parameters
 const maxQueryParametersCount = 65535
 const parametersPerDevice = 8
+
+// Metrics
+var (
+	upsertedDevicesN      int64 = 0
+	deletedDevicesN       int64 = 0
+	deviceManagerDevicesN int64 = 0
+	ufsDevicesN           int64 = 0
+)
 
 // RepopulateCache repopulates the AlloyDB cache.
 func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *fleetconsolerpc.RepopulateCacheRequest) (_ *fleetconsolerpc.RepopulateCacheResponse, err error) {
@@ -58,7 +68,28 @@ func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *
 		logging.Warningf(ctx, "Error while deleting old devices", err)
 	}
 
+	publishMetrics(ctx, frontend.cloudProject)
+
 	return &fleetconsolerpc.RepopulateCacheResponse{}, nil
+}
+
+// publishMetrics publishes metrics for this job.
+func publishMetrics(ctx context.Context, project string) {
+	m := distribution.New(metrics.UpdateCacheDevicesPerAction.Bucketer())
+	m.Add(float64(upsertedDevicesN))
+	metrics.UpdateCacheDevicesPerAction.Set(ctx, m, project, "upserted")
+
+	m = distribution.New(metrics.UpdateCacheDevicesPerAction.Bucketer())
+	m.Add(float64(deletedDevicesN))
+	metrics.UpdateCacheDevicesPerAction.Set(ctx, m, project, "deleted")
+
+	m = distribution.New(metrics.UpdateCacheDevicesPerAction.Bucketer())
+	m.Add(float64(deviceManagerDevicesN))
+	metrics.UpdateCacheDevicesPerAction.Set(ctx, m, project, "device_manager_devices_processed")
+
+	m = distribution.New(metrics.UpdateCacheDevicesPerAction.Bucketer())
+	m.Add(float64(ufsDevicesN))
+	metrics.UpdateCacheDevicesPerAction.Set(ctx, m, project, "ufs_devices_processed")
 }
 
 func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient.Client, ufsClient ufsclient.Client) ([]*devicesdb.DeviceDAO, error) {
@@ -73,6 +104,7 @@ func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient
 			dmErr = errInner
 			return
 		}
+		deviceManagerDevicesN = int64(len(devices))
 
 		for _, d := range devices {
 			states[d.Id] = d.State
@@ -85,12 +117,13 @@ func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient
 	var ufsErr error
 	go func() {
 		devicesUfs, ufsErr = ufsclient.GetAllUfsDevices(ctx, ufsClient)
+		ufsDevicesN = int64(len(devicesUfs))
 		wg.Done()
 	}()
 	wg.Wait()
 
 	if dmErr != nil || ufsErr != nil {
-		return nil, fmt.Errorf("Got an error while fetching data, dmErr = %v, ufsErr = %v", dmErr, ufsErr)
+		return nil, fmt.Errorf("Got an error while fetching data, dmErr = %w, ufsErr = %w", dmErr, ufsErr)
 	}
 
 	devices := make([]*devicesdb.DeviceDAO, len(devicesUfs))
@@ -127,12 +160,17 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb
 	for devicesChunk := range slices.Chunk(devices, maxQueryParametersCount/parametersPerDevice) {
 		args := utils.FlatMap(devicesChunk, func(d *devicesdb.DeviceDAO) []any { return d.DeviceAsDBArguments() })
 
-		_, err := dbConnection.ExecContext(ctx,
+		result, err := dbConnection.ExecContext(ctx,
 			fmt.Sprintf(q, queryutils.ValuesString(len(args), parametersPerDevice)),
 			args...)
 		if err != nil {
 			logging.Warningf(ctx, "Failed to write device %v\n", err)
 		}
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			logging.Warningf(ctx, "Failed to write device %v\n", err)
+		}
+		upsertedDevicesN += rowsAffected
 	}
 }
 
@@ -156,6 +194,7 @@ func deleteOtherDevices(ctx context.Context, dbConnection *sql.DB, devices []*de
 	}
 
 	n, err := res.RowsAffected()
+	deletedDevicesN += n
 	logging.Infof(ctx, "Deleted %d devices\n", n)
 	return err
 }
