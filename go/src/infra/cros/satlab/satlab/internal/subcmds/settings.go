@@ -6,13 +6,16 @@
 package subcmds
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/common/cli"
 
+	"go.chromium.org/infra/cros/satlab/common/guard"
 	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 	"go.chromium.org/infra/cros/satlab/satlab/internal/settings"
 )
 
@@ -44,6 +47,11 @@ func (c settingsApp) Name() string {
 
 // Run transfers control to a subcommand.
 func (c *settingsBase) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if err := c.verifyVersion(ctx); err != nil {
+		return 1
+	}
+
 	d := a.(*cli.Application)
 	return subcommands.Run(&settingsApp{*d}, args)
 }
@@ -55,4 +63,16 @@ func (c settingsApp) GetCommands() []*subcommands.Command {
 		settings.GetSettings,
 		settings.SetSetting,
 	}
+}
+
+func (c *settingsBase) verifyVersion(ctx context.Context) error {
+	if err := guard.VerifyOsMilestone(ctx, &executor.ExecCommander{}, 135); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	if err := guard.VerifySatlabVersion(ctx, &executor.ExecCommander{}, "R-5.10.0"); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	return nil
 }
