@@ -309,8 +309,7 @@ func shouldUpdateFirmware(commonConfig *skylab_test_runner.CommonConfig, labelPo
 	}
 	blockList := firmwareConfig.GetBlockList()
 	if blockList != nil {
-		return !(slices.Contains(blockList.GetBoards(), dutModel.GetBuildTarget()) ||
-			slices.Contains(blockList.GetModels(), dutModel.GetModelName()))
+		return !slices.Contains(blockList.GetBoards(), dutModel.GetBuildTarget()) && !slices.Contains(blockList.GetModels(), dutModel.GetModelName())
 	}
 
 	return false
