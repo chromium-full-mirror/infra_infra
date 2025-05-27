@@ -153,10 +153,17 @@ func (*LegacyHWFilter) Executor(req *api.InternalTestplan, log *log.Logger, comm
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()
 	hwTargetsLegacy := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()
 	hwTargetsLegacy2 := hwTargetsFromReq(req)
+	// TODO: (thandakas) Update input with new InternalTestPlan field when available, setting to false to mimic existing behavior
+	ignoreVarCat := false
 
 	// Step 2.  Iterate through the tests, adding the HW to each test
 	// Include the deps from the test metadata into the HW.
 	for _, tc := range req.GetTestCases() {
+		testCaseVarCat := tc.GetMetadata().GetTestCaseInfo().GetVariantCategory().GetValue()
+		// Skip if ignoreVarCat flag is set and variant category is populated
+		if ignoreVarCat && testCaseVarCat != "" {
+			continue
+		}
 		tcDeps := tcDeps(tc)
 		if len(hwTargets) != 0 {
 			log.Println("Hitting new scheduleUnitOptions flow!")
