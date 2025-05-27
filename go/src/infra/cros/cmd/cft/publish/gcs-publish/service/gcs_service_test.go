@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/storage/mock_storage"
 )
 
-func TestArchiveXTSResults(t *testing.T) {
+func TestArchiveXTSREsultsWithChromeOSResult(t *testing.T) {
 	Convey("Test ArchiveXTSResults with ChromeOS result", t, func() {
 		ctx := context.Background()
 		ctx, _ = testclock.UseTime(ctx, testclock.TestTimeUTC)
@@ -33,8 +33,9 @@ func TestArchiveXTSResults(t *testing.T) {
 
 		mockStorage := mock_storage.NewMockStorageClientInterface(mockCtrl)
 		gsClient := storage.NewGSTestClient(mockStorage)
+
 		tempDir := t.TempDir()
-		testCases := []struct {
+		tc := struct {
 			name              string
 			localArtifactPath string
 			resultDir         string
@@ -44,70 +45,66 @@ func TestArchiveXTSResults(t *testing.T) {
 			wantErr           error
 			wantMockCalls     []*gomock.Call
 		}{
-			{
-				name:              "success ChromeOS run",
-				localArtifactPath: tempDir,
-				resultDir:         filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891"),
-				metadata: &api.XtsArchiverMetadata{
-					AlRun:                false,
-					ApfeGcsPrefix:        "gs://apfe-bucket",
-					ResultsGcsPrefix:     "gs://result-bucket",
-					Build:                "brya-release/R100-14543.0.0",
-					Product:              "brya.brya",
-					ParentSwarmingTaskId: "parent_job_id",
-				},
-				createZipFile:    true,
-				createResultFile: true,
-				wantMockCalls: []*gomock.Call{
-					mockStorage.EXPECT().Write(
-						gomock.Any(),
-						filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891.zip"),
-						storage.GSObject{
-							Bucket: "apfe-bucket",
-							Object: "brya.brya-release/R100-14543.0.0/parent_job_id/cheets_CTS_12.android.dpi/tauto_2024.11.17_11.51.17.458_8891/2024.11.17_11.51.17.458_8891.zip",
-						}).Return(nil),
-					mockStorage.EXPECT().Write(
-						gomock.Any(), filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891", "test_result.xml.gz"),
-						storage.GSObject{
-							Bucket: "result-bucket",
-							Object: "cheets_CTS_12.android.dpi/tauto_2024.11.17_11.51.17.458_8891/test_result.xml.gz",
-						}).Return(nil),
-				},
+
+			name:              "success ChromeOS run",
+			localArtifactPath: tempDir,
+			resultDir:         filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891"),
+			metadata: &api.XtsArchiverMetadata{
+				AlRun:                false,
+				ApfeGcsPrefix:        "gs://apfe-bucket",
+				ResultsGcsPrefix:     "gs://result-bucket",
+				Build:                "brya-release/R100-14543.0.0",
+				Product:              "brya.brya",
+				ParentSwarmingTaskId: "parent_job_id",
+			},
+			createZipFile:    true,
+			createResultFile: true,
+			wantMockCalls: []*gomock.Call{
+				mockStorage.EXPECT().Write(
+					gomock.Any(),
+					filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891.zip"),
+					storage.GSObject{
+						Bucket: "apfe-bucket",
+						Object: "brya.brya-release/R100-14543.0.0/parent_job_id/cheets_CTS_12.android.dpi/tauto_2024.11.17_11.51.17.458_8891/2024.11.17_11.51.17.458_8891.zip",
+					}).Return(nil),
+				mockStorage.EXPECT().Write(
+					gomock.Any(), filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tauto", "results-1-cheets_CTS_12.internal.all.android.dpi", "cheets_CTS_12.android.dpi", "results", "cts-results", "2024.11.17_11.51.17.458_8891", "test_result.xml.gz"),
+					storage.GSObject{
+						Bucket: "result-bucket",
+						Object: "cheets_CTS_12.android.dpi/tauto_2024.11.17_11.51.17.458_8891/test_result.xml.gz",
+					}).Return(nil),
 			},
 		}
 
-		for _, tc := range testCases {
-			Convey(tc.name, func() {
-				if tc.createZipFile {
-					zipPath := fmt.Sprintf("%s.zip", tc.resultDir)
-					if err := os.MkdirAll(tc.resultDir, 0755); err != nil {
-						t.Fatalf("failed to create directory structure for file: %v", err)
-					}
-					if _, err := os.Create(zipPath); err != nil {
-						t.Fatalf("failed to create test zip file: %v", err)
-					}
-				}
-				if tc.createResultFile {
-					resultPath := filepath.Join(tc.resultDir, "test_result.xml")
-					createFile(t, resultPath)
-				}
-				defer os.RemoveAll(tc.resultDir)
-
-				gs := &GcsPublishService{
-					Client:                      gsClient,
-					LocalArtifactPath:           tc.localArtifactPath,
-					ServiceAccountCredsFilePath: "/path/to/credentials",
-					XtsArchiverMetadata:         tc.metadata,
-				}
-				err := gs.ArchiveXTSResults(ctx)
-
-				gomock.InOrder(tc.wantMockCalls...)
-				So(err, ShouldResemble, tc.wantErr)
-
-			})
+		if tc.createZipFile {
+			zipPath := fmt.Sprintf("%s.zip", tc.resultDir)
+			if err := os.MkdirAll(tc.resultDir, 0755); err != nil {
+				t.Fatalf("failed to create directory structure for file: %v", err)
+			}
+			if _, err := os.Create(zipPath); err != nil {
+				t.Fatalf("failed to create test zip file: %v", err)
+			}
 		}
-	})
+		if tc.createResultFile {
+			resultPath := filepath.Join(tc.resultDir, "test_result.xml")
+			createFile(t, resultPath)
+		}
+		defer os.RemoveAll(tc.resultDir)
 
+		gs := &GcsPublishService{
+			Client:                      gsClient,
+			LocalArtifactPath:           tc.localArtifactPath,
+			ServiceAccountCredsFilePath: "/path/to/credentials",
+			XtsArchiverMetadata:         tc.metadata,
+		}
+		err := gs.ArchiveXTSResults(ctx)
+
+		gomock.InOrder(tc.wantMockCalls...)
+		So(err, ShouldResemble, tc.wantErr)
+	})
+}
+
+func TestArchiveXTSResultsWithALResult(t *testing.T) {
 	Convey("Test ArchiveXTSResults with AL result", t, func() {
 		ctx := context.Background()
 		ctx, _ = testclock.UseTime(ctx, testclock.TestTimeUTC)
