@@ -541,7 +541,7 @@ func TestParseJobResultsFilePath(t *testing.T) {
 	})
 }
 
-func createTGZFile(t *testing.T, tgzFile, xmlFilename string) {
+func createTGZFile(t testing.TB, tgzFile, xmlFilename string) {
 	file, err := os.Create(tgzFile)
 	if err != nil {
 		t.Fatalf("failed to create test tgz file: %v", err)

@@ -153,7 +153,7 @@ func TestArchiveXTSResults(t *testing.T) {
 	})
 }
 
-func createFile(t *testing.T, path string) {
+func createFile(t testing.TB, path string) {
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		t.Fatalf("failed to create directory structure for file: %v", err)
 	}
