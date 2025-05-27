@@ -107,9 +107,16 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 
 	// Add kernel artifacts to the install request.
 	if getTestType(req) == common.KernelTestType {
-		kernelBuildId, kernelTarget, err := getKernelBuildInfo(req)
+		kernelBranch, kernelBuildId, kernelTarget, err := getKernelBuildInfo(req)
 		if err != nil {
 			return fmt.Errorf("fetching kernel build: %+w", err)
+		}
+		// android15-6.6 produces a partition image named `system_dlkm.img`,
+		// while other branches produce `system_dlkm.erofs.img`.
+		// See http://b/417259537#comment7 for additional context.
+		system_dlkm_img_name := "system_dlkm.erofs.img"
+		if strings.Contains(kernelBranch, "android15-6.6") {
+			system_dlkm_img_name = "system_dlkm.img"
 		}
 		if err := generator.AddModification(
 			&api.KernelPrebuilts{
@@ -120,7 +127,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 					},
 					{
 						PartitionName: "system_dlkm_a",
-						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "system_dlkm.img"),
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, system_dlkm_img_name),
 					},
 					{
 						PartitionName: "vendor_dlkm_a",
@@ -381,25 +388,30 @@ func getTestType(req *api.InternalTestplan) common.TestType {
 	return defaultTestType
 }
 
-// getKernelBuildInfo returns the kernel build ID and build target used for a kernel test.
-func getKernelBuildInfo(req *api.InternalTestplan) (kernelBuildId, kernelTarget string, err error) {
+// getKernelBuildInfo returns the kernel branch, build ID and build target used for a kernel test.
+func getKernelBuildInfo(req *api.InternalTestplan) (kernelBranch, kernelBuildId, kernelTarget string, err error) {
 	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
 	if args == nil {
-		return "", "", fmt.Errorf("InternalTestplan for kernel test did not contain args: %+v", req)
+		return "", "", "", fmt.Errorf("InternalTestplan for kernel test did not contain args: %+v", req)
 	}
 	for _, arg := range args {
 		switch arg.GetFlag() {
+		case "kernel_branch":
+			kernelBranch = arg.GetValue()
 		case "kernel_build":
 			kernelBuildId = arg.GetValue()
 		case "kernel_target":
 			kernelTarget = arg.GetValue()
 		}
 	}
+	if kernelBranch == "" {
+		return "", "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_branch: %+v", args)
+	}
 	if kernelBuildId == "" {
-		return "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_build: %+v", args)
+		return "", "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_build: %+v", args)
 	}
 	if kernelTarget == "" {
-		return "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_target: %+v", args)
+		return "", "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_target: %+v", args)
 	}
 	return
 }
