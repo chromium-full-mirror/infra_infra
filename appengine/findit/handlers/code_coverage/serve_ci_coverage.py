@@ -389,8 +389,8 @@ class ServeCodeCoverageData(BaseHandler):
                                      400)
     bucket = platform_info_map[platform]['bucket']
     builder = platform_info_map[platform]['builder']
-    if test_suite_type == 'unit':
-      builder += '_unit'
+    if test_suite_type != 'any':
+      builder += '_' + test_suite_type
     warning = platform_info_map[platform].get('warning')
 
     if list_reports:
