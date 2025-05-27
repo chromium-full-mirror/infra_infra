@@ -10,21 +10,22 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestNewEQCPublishService(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("NewEQCPublishService", t, func() {
-		Convey("Valid request", func() {
+	ftt.Run("NewEQCPublishService", t, func(t *ftt.Test) {
+		t.Run("Valid request", func(t *ftt.Test) {
 			wantEQCInfos := []*artifact.EqcInfo{
 				{
 					EqcHash: "9073744604696850342",
@@ -56,7 +57,7 @@ func TestNewEQCPublishService(t *testing.T) {
 			}
 
 			validMetadataAny, err := anypb.New(rdbMetadata)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &api.PublishRequest{
 				Metadata: validMetadataAny,
@@ -64,40 +65,40 @@ func TestNewEQCPublishService(t *testing.T) {
 
 			s, err := NewEQCPublishService(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(s, ShouldNotBeNil)
-			So(s.eqcInfos, ShouldResembleProto, wantEQCInfos)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s, should.NotBeNil)
+			assert.Loosely(t, s.eqcInfos, should.Resemble(wantEQCInfos))
 
 			s.Close()
 		})
 
-		Convey("Nil request", func() {
+		t.Run("Nil request", func(t *ftt.Test) {
 			s, err := NewEQCPublishService(ctx, nil)
 
-			So(err, ShouldNotBeNil)
-			So(s, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "request is nil")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, s, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("request is nil"))
 		})
 
-		Convey("Nil metadata", func() {
+		t.Run("Nil metadata", func(t *ftt.Test) {
 			req := &api.PublishRequest{}
 			s, err := NewEQCPublishService(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(s, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "invalid nil source message")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, s, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("invalid nil source message"))
 		})
 
-		Convey("Invalid metadata type", func() {
+		t.Run("Invalid metadata type", func(t *ftt.Test) {
 			req := &api.PublishRequest{
 				Metadata: &anypb.Any{}, // Empty Any proto
 			}
 
 			s, err := NewEQCPublishService(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(s, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "unpacking the metadata")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, s, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unpacking the metadata"))
 		})
 	})
 }
@@ -108,8 +109,8 @@ func TestEQCRowSave(t *testing.T) {
 	eqcHash := "A310930190d11"
 	eqcName := "IntelRaptorLakeKernelNext"
 
-	Convey("EQCRow Save", t, func() {
-		Convey("Valid entry", func() {
+	ftt.Run("EQCRow Save", t, func(t *ftt.Test) {
+		t.Run("Valid entry", func(t *ftt.Test) {
 			entry := &EQCRow{
 				EQCHash: eqcHash,
 				EQCName: eqcName,
@@ -131,10 +132,10 @@ func TestEQCRowSave(t *testing.T) {
 
 			gotValue, gotInsertID, err := entry.Save()
 
-			So(err, ShouldBeNil)
-			So(gotInsertID, ShouldEqual, wantValue["eqc_hash"])
-			So(gotValue["eqc_hash"], ShouldEqual, wantValue["eqc_hash"])
-			So(gotValue["eqc_name"], ShouldEqual, eqcName)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotInsertID, should.Equal(wantValue["eqc_hash"]))
+			assert.Loosely(t, gotValue["eqc_hash"], should.Equal(wantValue["eqc_hash"]))
+			assert.Loosely(t, gotValue["eqc_name"], should.Equal(eqcName))
 
 			// Compare maps, ignoring key order in eqc_category_expression.
 			gotCategoryExpression := gotValue["eqc_category_expression"]
@@ -142,10 +143,10 @@ func TestEQCRowSave(t *testing.T) {
 
 			var gotCategoryExprMap, wantCategoryExprMap map[string]string
 			err = json.Unmarshal([]byte(gotCategoryExpression.(string)), &gotCategoryExprMap)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = json.Unmarshal([]byte(wantCategoryExpression.(string)), &wantCategoryExprMap)
-			So(err, ShouldBeNil)
-			So(gotCategoryExprMap, ShouldResemble, wantCategoryExprMap)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotCategoryExprMap, should.Resemble(wantCategoryExprMap))
 
 			// Compare maps, ignoring key order in eqc_dimensions.
 			gotDimensions := gotValue["eqc_dimensions"]
@@ -153,14 +154,14 @@ func TestEQCRowSave(t *testing.T) {
 
 			var gotDimMap, wantDimMap map[string]string
 			err = json.Unmarshal([]byte(gotDimensions.(string)), &gotDimMap)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = json.Unmarshal([]byte(wantDimensions.(string)), &wantDimMap)
-			So(err, ShouldBeNil)
-			So(gotDimMap, ShouldResemble, wantDimMap)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotDimMap, should.Resemble(wantDimMap))
 
 		})
 
-		Convey("Empty dimensions", func() {
+		t.Run("Empty dimensions", func(t *ftt.Test) {
 			entry := &EQCRow{
 				EQCHash:               eqcHash,
 				EQCName:               eqcName,
@@ -177,11 +178,11 @@ func TestEQCRowSave(t *testing.T) {
 
 			gotValue, _, err := entry.Save()
 
-			So(err, ShouldBeNil)
-			So(gotValue, ShouldResemble, wantValue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotValue, should.Resemble(wantValue))
 		})
 
-		Convey("Nil dimensions", func() {
+		t.Run("Nil dimensions", func(t *ftt.Test) {
 			entry := &EQCRow{
 				EQCHash:               eqcHash,
 				EQCName:               eqcName,
@@ -196,8 +197,8 @@ func TestEQCRowSave(t *testing.T) {
 
 			gotValue, _, err := entry.Save()
 
-			So(err, ShouldBeNil)
-			So(gotValue, ShouldResemble, wantValue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotValue, should.Resemble(wantValue))
 		})
 	})
 }
@@ -206,7 +207,7 @@ func TestEQCRowSave(t *testing.T) {
 func TestEqcInfo(t *testing.T) {
 	t.Parallel()
 
-	Convey("Valid request with EQC info", t, func() {
+	ftt.Run("Valid request with EQC info", t, func(t *ftt.Test) {
 		wantEQCInfos := []*artifact.EqcInfo{
 			{
 				EqcHash: "9073744604696850342",
@@ -261,19 +262,19 @@ func TestEqcInfo(t *testing.T) {
 		}
 
 		validMetadataAny, err := anypb.New(rdbMetadata)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		req := &api.PublishRequest{
 			Metadata: validMetadataAny,
 		}
 		gotEQCInfos, err := EqcInfos(req)
-		So(err, ShouldBeNil)
-		So(gotEQCInfos, ShouldResembleProto, wantEQCInfos)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, gotEQCInfos, should.Resemble(wantEQCInfos))
 	})
 
-	Convey("Valid request without EQC info", t, func() {
+	ftt.Run("Valid request without EQC info", t, func(t *ftt.Test) {
 		validMetadataAny, err := anypb.New(&metadata.PublishRdbMetadata{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		req := &api.PublishRequest{
 			Metadata: validMetadataAny,
@@ -281,25 +282,25 @@ func TestEqcInfo(t *testing.T) {
 		gotEQCInfo, err := EqcInfos(req)
 
 		// Expect an empty EqcInfo
-		So(err, ShouldBeNil)
-		So(gotEQCInfo, ShouldResembleProto, []*artifact.EqcInfo{})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, gotEQCInfo, should.Resemble([]*artifact.EqcInfo{}))
 	})
 
-	Convey("Nil request", t, func() {
+	ftt.Run("Nil request", t, func(t *ftt.Test) {
 		gotEQCInfo, err := EqcInfos(nil)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldContainSubstring, "unpacking the metadata")
-		So(gotEQCInfo, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err.Error(), should.ContainSubstring("unpacking the metadata"))
+		assert.Loosely(t, gotEQCInfo, should.BeNil)
 	})
 
-	Convey("Invalid metadata", t, func() {
+	ftt.Run("Invalid metadata", t, func(t *ftt.Test) {
 		req := &api.PublishRequest{
 			Metadata: &anypb.Any{}, // Empty Any proto
 		}
 		gotEQCInfo, err := EqcInfos(req)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldContainSubstring, "unpacking the metadata")
-		So(gotEQCInfo, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err.Error(), should.ContainSubstring("unpacking the metadata"))
+		assert.Loosely(t, gotEQCInfo, should.BeNil)
 
 	})
 }

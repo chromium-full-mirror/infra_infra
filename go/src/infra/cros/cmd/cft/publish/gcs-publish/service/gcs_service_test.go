@@ -15,17 +15,19 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/storage"
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/storage/mock_storage"
 )
 
 func TestArchiveXTSREsultsWithChromeOSResult(t *testing.T) {
-	Convey("Test ArchiveXTSResults with ChromeOS result", t, func() {
+	ftt.Run("Test ArchiveXTSResults with ChromeOS result", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx, _ = testclock.UseTime(ctx, testclock.TestTimeUTC)
 		mockCtrl := gomock.NewController(t)
@@ -100,12 +102,12 @@ func TestArchiveXTSREsultsWithChromeOSResult(t *testing.T) {
 		err := gs.ArchiveXTSResults(ctx)
 
 		gomock.InOrder(tc.wantMockCalls...)
-		So(err, ShouldResemble, tc.wantErr)
+		assert.Loosely(t, err, should.Resemble(tc.wantErr))
 	})
 }
 
 func TestArchiveXTSResultsWithALResult(t *testing.T) {
-	Convey("Test ArchiveXTSResults with AL result", t, func() {
+	ftt.Run("Test ArchiveXTSResults with AL result", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx, _ = testclock.UseTime(ctx, testclock.TestTimeUTC)
 		mockCtrl := gomock.NewController(t)
@@ -145,7 +147,7 @@ func TestArchiveXTSResultsWithALResult(t *testing.T) {
 
 		err := gs.ArchiveXTSResults(ctx)
 
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		gomock.InOrder(wantMockCalls...)
 	})
 }

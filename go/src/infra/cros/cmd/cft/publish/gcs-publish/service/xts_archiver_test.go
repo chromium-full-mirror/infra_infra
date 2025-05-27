@@ -16,14 +16,15 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestArchiveInfos(t *testing.T) {
-	Convey("Test archive info", t, func() {
+	ftt.Run("Test archive info", t, func(t *ftt.Test) {
 		now := testclock.TestTimeUTC
 		nowStr := now.Format(AL_PACKAGE_TIMESTAMP_FORMAT)
 		tempDir := t.TempDir()
@@ -137,7 +138,7 @@ func TestArchiveInfos(t *testing.T) {
 			},
 		}
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				if tc.createZipFile {
 					zipPath := fmt.Sprintf("%s.zip", tc.resultFileDir)
 					if err := os.MkdirAll(tc.resultFileDir, 0755); err != nil {
@@ -161,10 +162,10 @@ func TestArchiveInfos(t *testing.T) {
 				instr, err := archiveInfo(tc.rootDir, tc.metadata, now)
 
 				if tc.wantErr != nil {
-					So(err, ShouldResemble, tc.wantErr)
+					assert.Loosely(t, err, should.Resemble(tc.wantErr))
 				} else {
-					So(err, ShouldBeNil)
-					So(instr, ShouldResemble, tc.wantInstr)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, instr, should.Resemble(tc.wantInstr))
 				}
 			})
 		}
@@ -172,7 +173,7 @@ func TestArchiveInfos(t *testing.T) {
 }
 
 func TestArchiveInfoForTest(t *testing.T) {
-	Convey("Test archive info for test", t, func() {
+	ftt.Run("Test archive info for test", t, func(t *ftt.Test) {
 		now := testclock.TestTimeUTC
 		nowStr := now.Format(AL_PACKAGE_TIMESTAMP_FORMAT)
 		tempDir := t.TempDir()
@@ -289,7 +290,7 @@ func TestArchiveInfoForTest(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				// Create the zip file for APFE instructions
 				if tc.createZipFile {
 					if err := os.MkdirAll(tc.resultDir, 0755); err != nil {
@@ -316,10 +317,10 @@ func TestArchiveInfoForTest(t *testing.T) {
 				instr, err := archiveInfoForTest(tc.resultDir, []string{tc.resultFilename}, tc.metadata, now)
 
 				if tc.wantError != nil {
-					So(err, ShouldResemble, tc.wantError)
+					assert.Loosely(t, err, should.Resemble(tc.wantError))
 				} else {
-					So(err, ShouldBeNil)
-					So(instr, ShouldResemble, tc.wantInstr)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, instr, should.Resemble(tc.wantInstr))
 				}
 			})
 		}
@@ -327,7 +328,7 @@ func TestArchiveInfoForTest(t *testing.T) {
 }
 
 func TestApfeInfo(t *testing.T) {
-	Convey("Test APFE info", t, func() {
+	ftt.Run("Test APFE info", t, func(t *ftt.Test) {
 		// Create dir1 under test temp dir
 		tempDir := t.TempDir()
 		testDir, err := os.MkdirTemp(tempDir, "dir1")
@@ -388,7 +389,7 @@ func TestApfeInfo(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				if tc.createZipFile {
 					zipFile, err := os.Create(zipFilepath)
 					if err != nil {
@@ -400,10 +401,10 @@ func TestApfeInfo(t *testing.T) {
 				instr, err := apfeInfo(testDir, tc.filePrefix, tc.metadata)
 
 				if tc.wantError != nil {
-					So(err, ShouldResemble, tc.wantError)
+					assert.Loosely(t, err, should.Resemble(tc.wantError))
 				} else {
-					So(err, ShouldBeNil)
-					So(instr, ShouldResemble, tc.wantInstr)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, instr, should.Resemble(tc.wantInstr))
 				}
 			})
 		}
@@ -411,7 +412,7 @@ func TestApfeInfo(t *testing.T) {
 }
 
 func TestResultsInfo(t *testing.T) {
-	Convey("Test result info", t, func() {
+	ftt.Run("Test result info", t, func(t *ftt.Test) {
 		resultDir := t.TempDir()
 		filePrefix := "test_prefix"
 		metadata := &api.XtsArchiverMetadata{
@@ -460,7 +461,7 @@ func TestResultsInfo(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				if tc.createFile {
 					filePath := filepath.Join(resultDir, tc.resultFilename)
 					if filepath.Ext(tc.resultFilename) == ".tgz" {
@@ -474,10 +475,10 @@ func TestResultsInfo(t *testing.T) {
 				instr, err := resultsInfo(resultDir, tc.resultFilename, filePrefix, metadata)
 
 				if tc.wantError != nil {
-					So(err, ShouldResemble, tc.wantError)
+					assert.Loosely(t, err, should.Resemble(tc.wantError))
 				} else {
-					So(err, ShouldBeNil)
-					So(instr, ShouldResemble, tc.wantInstr)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, instr, should.Resemble(tc.wantInstr))
 				}
 			})
 		}
@@ -485,7 +486,7 @@ func TestResultsInfo(t *testing.T) {
 }
 
 func TestParseJobResultsFilePath(t *testing.T) {
-	Convey("Test parse job results filepath", t, func() {
+	ftt.Run("Test parse job results filepath", t, func(t *ftt.Test) {
 		now := testclock.TestTimeUTC
 		testCases := []struct {
 			name        string
@@ -525,16 +526,16 @@ func TestParseJobResultsFilePath(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				harness, packageName, timestamp, err := parseJobResultsFilePath(tc.path, tc.isALRun, now)
 
 				if tc.wantError != nil {
-					So(err, ShouldResemble, tc.wantError)
+					assert.Loosely(t, err, should.Resemble(tc.wantError))
 				} else {
-					So(err, ShouldBeNil)
-					So(harness, ShouldEqual, tc.wantHarness)
-					So(packageName, ShouldEqual, tc.wantPkg)
-					So(timestamp, ShouldEqual, tc.wantTs)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, harness, should.Equal(tc.wantHarness))
+					assert.Loosely(t, packageName, should.Equal(tc.wantPkg))
+					assert.Loosely(t, timestamp, should.Equal(tc.wantTs))
 				}
 			})
 		}
@@ -571,7 +572,7 @@ func createTGZFile(t testing.TB, tgzFile, xmlFilename string) {
 }
 
 func TestIsReleaseBuild(t *testing.T) {
-	Convey("Test isReleaseBuild", t, func() {
+	ftt.Run("Test isReleaseBuild", t, func(t *ftt.Test) {
 		testCases := []struct {
 			build     string
 			isALRun   bool
@@ -640,16 +641,16 @@ func TestIsReleaseBuild(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.build, func() {
+			t.Run(tc.build, func(t *ftt.Test) {
 				gotIsRelease := isReleaseBuild(tc.build, tc.isALRun)
-				So(gotIsRelease, ShouldEqual, tc.isRelease)
+				assert.Loosely(t, gotIsRelease, should.Equal(tc.isRelease))
 			})
 		}
 	})
 }
 
 func TestValidateXTSArchiverMetadata(t *testing.T) {
-	Convey("Test validateXTSArchiverMetadata", t, func() {
+	ftt.Run("Test validateXTSArchiverMetadata", t, func(t *ftt.Test) {
 		testCases := []struct {
 			name     string
 			metadata *api.XtsArchiverMetadata
@@ -691,9 +692,9 @@ func TestValidateXTSArchiverMetadata(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				err := validateXTSArchiverMetadata(tc.metadata)
-				So(err, ShouldResemble, tc.wantErr)
+				assert.Loosely(t, err, should.Resemble(tc.wantErr))
 			})
 		}
 	})

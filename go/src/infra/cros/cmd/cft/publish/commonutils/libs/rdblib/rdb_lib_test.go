@@ -7,10 +7,11 @@ package rdblib
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestBoardModelRealm(t *testing.T) {
@@ -30,7 +31,7 @@ func TestBoardModelRealm(t *testing.T) {
 		"eve-eve": true,
 	}
 
-	Convey("Get board-model realm for a base build", t, func() {
+	ftt.Run("Get board-model realm for a base build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -45,10 +46,10 @@ func TestBoardModelRealm(t *testing.T) {
 			},
 		}
 		realm := boardModelRealm(testResult, validRealms)
-		So(realm, ShouldResemble, "chromeos:eve-eve")
+		assert.Loosely(t, realm, should.Match("chromeos:eve-eve"))
 	})
 
-	Convey("Get board-model realm for an allowlisted variant build", t, func() {
+	ftt.Run("Get board-model realm for an allowlisted variant build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -63,10 +64,10 @@ func TestBoardModelRealm(t *testing.T) {
 			},
 		}
 		realm := boardModelRealm(testResult, validRealms)
-		So(realm, ShouldResemble, "chromeos:eve-eve")
+		assert.Loosely(t, realm, should.Match("chromeos:eve-eve"))
 	})
 
-	Convey("Get board-model realm for a non-allowlisted variant build", t, func() {
+	ftt.Run("Get board-model realm for a non-allowlisted variant build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -81,10 +82,10 @@ func TestBoardModelRealm(t *testing.T) {
 			},
 		}
 		realm := boardModelRealm(testResult, validRealms)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 
-	Convey("Get board-model realm for a multi-DUT test", t, func() {
+	ftt.Run("Get board-model realm for a multi-DUT test", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -110,10 +111,10 @@ func TestBoardModelRealm(t *testing.T) {
 			},
 		}
 		realm := boardModelRealm(testResult, validRealms)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 
-	Convey("Get board-model realm for a test result with missing board, model, or image", t, func() {
+	ftt.Run("Get board-model realm for a test result with missing board, model, or image", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -128,7 +129,7 @@ func TestBoardModelRealm(t *testing.T) {
 			},
 		}
 		realm := boardModelRealm(testResult, validRealms)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 }
 
@@ -137,40 +138,40 @@ func TestIsBuildPartnerVisible(t *testing.T) {
 
 	board := "eve"
 
-	Convey("Is build partner visible for a base build", t, func() {
+	ftt.Run("Is build partner visible for a base build", t, func(t *ftt.Test) {
 		isPartnerVisible := isBuildPartnerVisible(board, "eve-cq/R100.0.0")
-		So(isPartnerVisible, ShouldBeTrue)
+		assert.Loosely(t, isPartnerVisible, should.BeTrue)
 	})
 
-	Convey("Is build partner visible for an allowlisted variant build", t, func() {
+	ftt.Run("Is build partner visible for an allowlisted variant build", t, func(t *ftt.Test) {
 		for variant := range boardVariantAllowlist {
 			boardVariant := board + variant
 			image := boardVariant + "-cq/R100.0.0"
 			isPartnerVisible := isBuildPartnerVisible(board, image)
-			So(isPartnerVisible, ShouldBeTrue)
+			assert.Loosely(t, isPartnerVisible, should.BeTrue)
 		}
 	})
 
-	Convey("Is build partner visible for a non-allowlisted variant build", t, func() {
+	ftt.Run("Is build partner visible for a non-allowlisted variant build", t, func(t *ftt.Test) {
 		isPartnerVisible := isBuildPartnerVisible(board, "eve-foo-cq/R100.0.0")
-		So(isPartnerVisible, ShouldBeFalse)
+		assert.Loosely(t, isPartnerVisible, should.BeFalse)
 	})
 
-	Convey("Is build partner visible for a build with no variant", t, func() {
+	ftt.Run("Is build partner visible for a build with no variant", t, func(t *ftt.Test) {
 		isPartnerVisible := isBuildPartnerVisible(board, "eve-cq/R100.0.0")
-		So(isPartnerVisible, ShouldBeTrue)
+		assert.Loosely(t, isPartnerVisible, should.BeTrue)
 	})
 
-	Convey("Is build partner visible for a build with an invalid image", t, func() {
+	ftt.Run("Is build partner visible for a build with an invalid image", t, func(t *ftt.Test) {
 		isPartnerVisible := isBuildPartnerVisible(board, "eve-cq/R100.0.0-invalid")
-		So(isPartnerVisible, ShouldBeFalse)
+		assert.Loosely(t, isPartnerVisible, should.BeFalse)
 	})
 }
 
 func TestPartnerVMRealm(t *testing.T) {
 	t.Parallel()
 
-	Convey("Get partner vm realm for a base vm build", t, func() {
+	ftt.Run("Get partner vm realm for a base vm build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -189,10 +190,10 @@ func TestPartnerVMRealm(t *testing.T) {
 			},
 		}
 		realm := partnerVMRealm(testResult)
-		So(realm, ShouldResemble, ChromeOSPartnerVMRealm)
+		assert.Loosely(t, realm, should.Resemble(ChromeOSPartnerVMRealm))
 	})
 
-	Convey("Get partner vm realm for an allowlisted vm variant build", t, func() {
+	ftt.Run("Get partner vm realm for an allowlisted vm variant build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -211,10 +212,10 @@ func TestPartnerVMRealm(t *testing.T) {
 			},
 		}
 		realm := partnerVMRealm(testResult)
-		So(realm, ShouldResemble, ChromeOSPartnerVMRealm)
+		assert.Loosely(t, realm, should.Resemble(ChromeOSPartnerVMRealm))
 	})
 
-	Convey("Get partner vm realm for a non-allowlisted vm variant build", t, func() {
+	ftt.Run("Get partner vm realm for a non-allowlisted vm variant build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -234,10 +235,10 @@ func TestPartnerVMRealm(t *testing.T) {
 			},
 		}
 		realm := partnerVMRealm(testResult)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 
-	Convey("Get partner vm realm for a staging vm build", t, func() {
+	ftt.Run("Get partner vm realm for a staging vm build", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -256,10 +257,10 @@ func TestPartnerVMRealm(t *testing.T) {
 			},
 		}
 		realm := partnerVMRealm(testResult)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 
-	Convey("Get partner vm realm for a test result with missing board or image", t, func() {
+	ftt.Run("Get partner vm realm for a test result with missing board or image", t, func(t *ftt.Test) {
 		testResult := &artifact.TestResult{
 			TestInvocation: &artifact.TestInvocation{
 				PrimaryExecutionInfo: &artifact.ExecutionInfo{
@@ -278,6 +279,6 @@ func TestPartnerVMRealm(t *testing.T) {
 			},
 		}
 		realm := partnerVMRealm(testResult)
-		So(realm, ShouldBeEmpty)
+		assert.Loosely(t, realm, should.BeEmpty)
 	})
 }
