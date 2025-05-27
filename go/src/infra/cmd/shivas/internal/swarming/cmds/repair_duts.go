@@ -17,6 +17,7 @@ import (
 
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
@@ -39,7 +40,7 @@ var RepairDutsCmd = &subcommands.Command{
 	UsageLine: "repair-duts",
 	ShortDesc: "Repair the DUT by name",
 	LongDesc: `Repair the DUT by name.
-	./shivas repair <dut_name1> ...
+	./shivas repair-duts <dut_name1> ...
 	Schedule a swarming Repair task to the DUT to try to recover/verify it.`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &repairDuts{}
@@ -93,23 +94,29 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		return errors.Annotate(err, "getting auth opts").Err()
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
-	for _, unitName := range args {
-		hive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+	for _, dutName := range args {
+		hive := ufsUtil.GetHiveForDut(dutName, utils.GetHive(ctx, ic, dutName))
 		builderName, taskName := c.getBuilderAndTaskName()
 		realBuilderName := buildbucket.BuilderNamePerHive(builderName, hive)
-		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
+		adminParams, err := utils.PrepareAdminParams(ctx, dutName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", unitName, err)
+			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", dutName, err)
 			continue
 		}
 
+		di, err := device.GetDeviceInfo(ctx, ic, dutName)
+		if err != nil {
+			fmt.Fprintf(a.GetErr(), "%s: failed to get device info %s\n", dutName, err)
+			continue
+		}
 		url, _, err := buildbucket.CreateTask(
 			ctx,
 			bc,
 			adminParams.SchedukeClient,
 			buildbucket.CipdVersion(c.latestVersion),
 			&buildbucket.Params{
-				UnitName:       unitName,
+				UnitName:       dutName,
+				UnitID:         di.ID,
 				TaskName:       taskName,
 				BuilderName:    realBuilderName,
 				BuilderBucket:  c.bbBucket,
@@ -131,9 +138,9 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		)
 
 		if err != nil {
-			fmt.Fprintf(a.GetOut(), "%s: %s\n", unitName, err.Error())
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", dutName, err.Error())
 		} else {
-			fmt.Fprintf(a.GetOut(), "%s: %s\n", unitName, url)
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", dutName, url)
 		}
 	}
 	utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
