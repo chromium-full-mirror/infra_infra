@@ -75,13 +75,13 @@ DUT_HOSTNAME=192.168.0.0
 D=localhost:2222 # Forwarded ssh port
 ```
 
-Run the cros-dut server from infra repo (outside chroot)
+Run the cros-dut server from infra repo (outside chroot). The cache address is
+required but never used.
 
 ```
-CACHE_SERVER=192.168.100.1
 eval `~/infra/infra/go/env.py` && \
 (cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/dut/cros-dut) && \
-~/infra/infra/go/bin/cros-dut -cache_address ${CACHE_SERVER?}:8082 -dut_address ${D?} -port 8123
+~/infra/infra/go/bin/cros-dut -cache_address 192.168.100.1:8082 -dut_address ${D?} -port 8123
 ```
 
 Run the servo-nexus server from infra repo (outside chroot)
@@ -110,7 +110,7 @@ sudo ufw allow 8082 # Open the port in the linux firewall.
 To find the cache server on a lab machine:
 
 ```
-ssh $DUT_HOSTNAME 'for devserver in 192.168.100.1 100.115.168.190 10.128.176.210 100.115.21.212 100.115.245.199 100.115.245.200 100.115.219.131 100.115.219.132 100.115.219.133 100.115.219.134 100.115.219.137; do if curl -f --connect-timeout 3 "http://${devserver?}:8082/check_health" >/dev/null ; then echo CACHE_SERVER=${devserver?} ; fi; done'
+ssh $DUT_HOSTNAME 'for devserver in 192.168.100.1 100.115.168.190 10.128.176.210 100.115.21.212 100.115.245.199 100.115.245.200 100.115.219.131 100.115.219.132 100.115.219.133 100.115.219.134 100.115.219.137; do if curl -f --connect-timeout 3 "http://${devserver?}:8082/check_health" >/dev/null ; then echo CACHE_SERVER=${devserver?} ; break ; fi; done'
 ```
 
 Run cros-fw-provision outside chroot. The binary package name should match the
@@ -131,11 +131,13 @@ cat >startup.json <<STARTUP
                         },
                         "servo": {
                                 "present": true,
+                                "state":  "WORKING",
                                 "servodAddress": {
-                                        "address": "localhost:${LOCAL_SERVO_SSH_PORT?}",
+                                        "address": "${SERVO_HOSTNAME?}",
                                         "port": ${SERVO_PORT?}
                                 },
-                                "serial": "${SERVO_SERIAL?}"
+                                "serial": "${SERVO_SERIAL?}",
+                                "containerName": "${SATLAB_NAME:+${SERVO_HOSTNAME?}}"
                         }
                 },
                 "cache_server": {
@@ -229,6 +231,17 @@ Run the test with go test:
 eval `~/infra/infra/go/env.py` && \
 (cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... \
 go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/...)
+```
+
+## All in one command for local test and build
+
+```
+eval `~/infra/infra/go/env.py` && \
+( cd ~/infra/infra/go/src/infra && go fmt go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/... ) && \
+( cd ~/infra/infra/go/src/infra && golangci-lint run --fix cros/cmd/cft/provision/cros-fw-provision/... cros/cmd/provision/cros-fw-provision/... ) && \
+( cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/... ) && \
+( cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision) && \
+echo SUCCESS
 ```
 
 ## Production deployment

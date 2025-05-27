@@ -398,10 +398,10 @@ func (fws *FirmwareService) ServodDockerContainerName() string {
 // apImagePath is the path to the AP image.
 // ecImagePath is the path to the EC image.
 //
-// If flashing over ssh, simply calls runFutility().
+// If flashing over ssh, simply calls runFutilityViaSSH().
 // If flashing over servo, also runs pre- and post-flashing dut-controls.
 func (fws *FirmwareService) FlashWithFutility(ctx context.Context, rwOnly bool, futilityImageArgs []string, apImagePath, ecImagePath string) error {
-	err := fws.sshFlash(ctx, rwOnly, futilityImageArgs, ecImagePath)
+	err := fws.runFutilityViaSSH(ctx, rwOnly, futilityImageArgs, ecImagePath)
 	if err != nil && strings.Contains(err.Error(), "CSME_LOCKED") {
 		if fws.servoClient != nil {
 			log.Printf("Attempting to unlock CSME via servo")
@@ -468,7 +468,7 @@ func (fws *FirmwareService) FlashWithFutility(ctx context.Context, rwOnly bool, 
 				return errors.Wrap(err, "DUT not avaliable after CSME unlock")
 			}
 			// Try the ssh flash again
-			return fws.sshFlash(ctx, rwOnly, futilityImageArgs, ecImagePath)
+			return fws.runFutilityViaSSH(ctx, rwOnly, futilityImageArgs, ecImagePath)
 		}
 	}
 	return err
@@ -643,10 +643,6 @@ func (fws *FirmwareService) CompareVersions(ctx context.Context, activeVersion, 
 	return true, nil
 }
 
-func (fws *FirmwareService) sshFlash(ctx context.Context, rwOnly bool, futilityImageArgs []string, ecImagePath string) error {
-	return fws.runFutility(ctx, rwOnly, futilityImageArgs, ecImagePath)
-}
-
 const (
 	// The character class \w is equivalent to [0-9A-Za-z_]. Leading equals sign is unsafe in zsh,
 	// see http://zsh.sourceforge.net/Doc/Release/Expansion.html#g_t_0060_003d_0027-expansion.
@@ -657,8 +653,9 @@ const (
 // safeRE matches an argument that can be literally included in a shell
 // command line without requiring escaping.
 var safeRE = regexp.MustCompile(fmt.Sprintf("^[%s][%s]*$", leadingSafeChars, trailingSafeChars))
+var csmeLockedRe = regexp.MustCompile(`CSME was already locked|The AP RO is locked`)
 
-func (fws *FirmwareService) runFutility(ctx context.Context, rwOnly bool, futilityImageArgs []string, ecImagePath string) error {
+func (fws *FirmwareService) runFutilityViaSSH(ctx context.Context, rwOnly bool, futilityImageArgs []string, ecImagePath string) error {
 	if len(futilityImageArgs) == 0 {
 		return errors.New("unable to flash: no futility Image args provided")
 	}
@@ -677,7 +674,6 @@ func (fws *FirmwareService) runFutility(ctx context.Context, rwOnly bool, futili
 	}
 
 	fws.RestartRequired = true
-	connection := fws.GetConnectionToFlashingDevice()
 	// ec_partial_recovery should prevent the EC from sysjumping and losing ethernet.
 	if ecImagePath != "" {
 		futilityArgs = append(futilityArgs, "--quirks=ec_partial_recovery")
@@ -686,10 +682,19 @@ func (fws *FirmwareService) runFutility(ctx context.Context, rwOnly bool, futili
 		futilityArgs[i] = Escape(a)
 	}
 
-	if _, err := connection.RunCmd(ctx, "futility", futilityArgs); err != nil {
-		return err
+	out, stderr, err := RunDUTCommand(ctx, fws.DUTServer, 20*time.Minute, "futility", futilityArgs, nil)
+	// Before checking for other errors, look for signs that CSME was locked.
+	m := csmeLockedRe.FindStringSubmatch(out)
+	if m != nil {
+		log.Printf("Futility output:\n%s", out)
+		return errors.Errorf("CSME_LOCKED: %q", out)
 	}
-	return nil
+	m = csmeLockedRe.FindStringSubmatch(stderr)
+	if m != nil {
+		log.Printf("Futility stderr:\n%s", stderr)
+		return errors.Errorf("CSME_LOCKED: %q", stderr)
+	}
+	return err
 }
 
 // CheckForCSMESections looks at the image at imagePath, and returns true if csme_unlock is supported.
