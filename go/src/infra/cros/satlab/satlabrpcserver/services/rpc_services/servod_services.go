@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/infra/cros/satlab/common/services/ufs"
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -117,7 +118,9 @@ func (s *SatlabRpcServiceServer) fillDutServoInfo(in *api.StartServodRequest) er
 		in.ServodPort = servo.GetServoPort()
 	}
 	if in.GetAllowDualV4() == "" {
-		in.AllowDualV4 = servo.GetServoSetup().String()
+		if servo.GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
+			in.AllowDualV4 = "1"
+		}
 	}
 	if len(dut.GetMachines()) == 0 {
 		return fmt.Errorf("fillDutServoInfo: fetched DUT %s has no machineId", dutName)

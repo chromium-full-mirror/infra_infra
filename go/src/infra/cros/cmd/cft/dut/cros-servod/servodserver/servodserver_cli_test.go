@@ -73,7 +73,7 @@ func TestServodCLI_StartServodAllParams(t *testing.T) {
 
 	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
 
-	expectedCmd := "start servod PORT=0 BOARD=board MODEL=model SERIAL=serialname DUAL_V4=allowDualV4 CONFIG=config DEBUG=debug REC_MODE=recoveryMode"
+	expectedCmd := "start servod PORT=0 BOARD=board MODEL=model SERIAL=serialname DUAL_V4=1 CONFIG=config DEBUG=debug REC_MODE=recoveryMode"
 
 	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
@@ -106,7 +106,7 @@ func TestServodCLI_StartServodAllParams(t *testing.T) {
 		Board:         "board",
 		Model:         "model",
 		SerialName:    "serialname",
-		AllowDualV4:   "allowDualV4",
+		AllowDualV4:   "1",
 		Config:        "config",
 		Debug:         "debug",
 		RecoveryMode:  "recoveryMode",

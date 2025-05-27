@@ -141,6 +141,11 @@ func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
 	}
 	defer logFile.Close()
 
+	if a.AllowDualV4 != "" && a.AllowDualV4 != "1" {
+		log.Println("The allowed values for -allow_dual_v4 are blank and '1'")
+		return 3
+	}
+
 	logger := newLogger(logFile)
 	commandexecutor := commandexecutor.NewServodCommandExecutor(logger)
 
