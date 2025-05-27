@@ -83,7 +83,7 @@ func TestCopyDataCommand(t *testing.T) {
 		Convey("Execute - undefined stage", func() {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, nil)
 			log, _ := common.SetUpLog(provisionDir)
-			So(cmd.Execute(log), ShouldBeError)
+			So(cmd.Execute(log), ShouldNotBeNil)
 		})
 		Convey("Revert", func() {
 			So(cmd.Revert(), ShouldBeNil)
