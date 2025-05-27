@@ -25,12 +25,12 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
-// passportHasAddressInScopeExec verifies that the container is known to the current scope.
-func passportHasAddressInScopeExec(ctx context.Context, info *execs.ExecInfo) error {
+// passportAddressNotInScopeExec verifies that the container is known to the current scope.
+func passportAddressNotInScopeExec(ctx context.Context, info *execs.ExecInfo) error {
 	if _, err := cft.AddressFromScope(ctx, cft.PassportName(info.GetDut())); err != nil {
-		return errors.Annotate(err, "cros-passport container address in scope").Err()
+		return nil
 	}
-	return nil
+	return errors.Reason("cros-passport container address not in scope: Container address was found in scope").Err()
 }
 
 // passportStartContainerExec starts cros-passport container using ctr.
@@ -137,7 +137,7 @@ func passportResetResetSwitchesExec(ctx context.Context, info *execs.ExecInfo) e
 }
 
 func init() {
-	execs.Register("ctr_passport_address_in_scope", passportHasAddressInScopeExec)
+	execs.Register("ctr_passport_address_not_in_scope", passportAddressNotInScopeExec)
 	execs.Register("ctr_passport_start", passportStartContainerExec)
 	execs.Register("ctr_passport_reset_switches", passportResetResetSwitchesExec)
 	execs.Register("ctr_passport_stop", pasportStopContainerExec)

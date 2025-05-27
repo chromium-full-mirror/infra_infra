@@ -116983,8 +116983,34 @@ plans:
             - state:WORKING
     - name: pasit (Allow to fail)
       criticalactions:
-        - name: sample_pass
-          exec_name: sample_pass
+        - name: Do not run on Mobile Harness box (RUN_ONCE)
+          exec_name: env_is_not_mh_box
+          docs:
+            - Check that the process is not running on Mobile Harness box.
+        - name: Start container (time:'2m0s')
+          exec_name: ctr_passport_start
+          docs:
+            - Starts a PassPort container and opens a client to it.
+          conditions:
+            - name: ctr_passport_address_not_in_scope
+              exec_name: ctr_passport_address_not_in_scope
+            - name: CrosToolRunner is up
+              exec_name: ctr_is_up
+              docs:
+                - 'Verify that cros-tool-runner service is up and running, '
+                - the tool expected to start as part of system preparation.
+        - name: Reset switches (time:'2m0s')
+          exec_name: ctr_passport_reset_switches
+          docs:
+            - Resets all switches connected to the host.
+        - name: Audit switches (Allow to fail)
+          exec_name: pasit_audit_switches
+          docs:
+            - Verifies that the switches reported by passport match those reported by PassPort.
+        - name: Stop container (Allow to fail)
+          exec_name: ctr_passport_stop
+          docs:
+            - Stops the PassPort container (crt only).
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail)
