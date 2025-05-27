@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/citest"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/gsstorage"
@@ -26,7 +28,7 @@ func TestCopyDataCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("CopyDataCommand", t, func() {
+	ftt.Run("CopyDataCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		pkgProto := &api.CIPDPackage{
 			Name: "cipd_path/cipd_package_name",
@@ -59,17 +61,17 @@ func TestCopyDataCommand(t *testing.T) {
 		cmd := NewCopyDataCommand(context.Background(), svc)
 		cmd.gs = mockGsClient
 
-		Convey("Execute - copy package", func() {
+		t.Run("Execute - copy package", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PackageFetch)
 			gomock.InOrder(
 				associatedHost.EXPECT().CopyData(gomock.Any(), "gsPath", "/tmp/instanceId/apkName.apk").Times(1),
 			)
-			So(provisionPkg.APKFile.DutPath, ShouldBeEmpty)
-			So(cmd.Execute(log), ShouldBeNil)
-			So(provisionPkg.APKFile.DutPath, ShouldEqual, "/tmp/instanceId/apkName.apk")
+			assert.Loosely(t, provisionPkg.APKFile.DutPath, should.BeEmpty)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
+			assert.Loosely(t, provisionPkg.APKFile.DutPath, should.Equal("/tmp/instanceId/apkName.apk"))
 		})
-		Convey("Execute - copy os images from folder", func() {
+		t.Run("Execute - copy os images from folder", func(t *ftt.Test) {
 			svc.OS.ImagePath.GsPath = "gs://bucket/folder1/folder2/"
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.OSFetch)
 			log, _ := common.SetUpLog(provisionDir)
@@ -77,22 +79,22 @@ func TestCopyDataCommand(t *testing.T) {
 			associatedHost.EXPECT().CopyData(gomock.Any(), gomock.Any(), gomock.Eq("/mnt/stateful_partition/android_provision/folder1/folder2/bootloader.img")).Times(1)
 			associatedHost.EXPECT().CopyData(gomock.Any(), gomock.Any(), gomock.Eq("/mnt/stateful_partition/android_provision/folder1/folder2/radio.img")).Times(1)
 			associatedHost.EXPECT().CopyData(gomock.Any(), gomock.Any(), gomock.Eq("/mnt/stateful_partition/android_provision/folder1/folder2/smtg-img-2132123.zip")).Times(1)
-			So(cmd.Execute(log), ShouldBeNil)
-			So(svc.OS.ImagePath.Files, ShouldResemble, []string{"bootloader.img", "radio.img", "smtg-img-2132123.zip"})
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
+			assert.Loosely(t, svc.OS.ImagePath.Files, should.Resemble([]string{"bootloader.img", "radio.img", "smtg-img-2132123.zip"}))
 		})
-		Convey("Execute - undefined stage", func() {
+		t.Run("Execute - undefined stage", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, nil)
 			log, _ := common.SetUpLog(provisionDir)
-			So(cmd.Execute(log), ShouldNotBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.NotBeNil)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to copy data")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to copy data"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_GS_DOWNLOAD_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_GS_DOWNLOAD_FAILED))
 		})
 	})
 }

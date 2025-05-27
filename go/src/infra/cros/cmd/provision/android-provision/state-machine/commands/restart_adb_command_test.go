@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -23,7 +25,7 @@ func TestRestartADBCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("RestartADBCommand", t, func() {
+	ftt.Run("RestartADBCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		svc, _ := service.NewAndroidServiceFromExistingConnection(
 			associatedHost,
@@ -36,23 +38,23 @@ func TestRestartADBCommand(t *testing.T) {
 
 		cmd := NewRestartADBCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
 			gomock.InOrder(
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq([]string{"kill-server"})).Return("", nil).Times(1),
 				associatedHost.EXPECT().CreateDirectories(gomock.Any(), gomock.Eq([]string{"/run/arc/adb"})).Return(nil).Times(1),
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("ADB_VENDOR_KEYS=/var/lib/android_keys adb"), gomock.Eq([]string{"start-server"})).Return("", nil),
 			)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to restart ADB service")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to restart ADB service"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION))
 		})
 	})
 }

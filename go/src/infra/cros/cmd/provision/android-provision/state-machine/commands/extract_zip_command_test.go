@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/citest"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/zip"
@@ -26,7 +28,7 @@ func TestExtractZipCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("ExtractZipCommand", t, func() {
+	ftt.Run("ExtractZipCommand", t, func(t *ftt.Test) {
 		pkgProto := &api.CIPDPackage{
 			Name: "cipd_path/cipd_package_name",
 			VersionOneof: &api.CIPDPackage_InstanceId{
@@ -59,28 +61,28 @@ func TestExtractZipCommand(t *testing.T) {
 			}}
 		ctx := context.Background()
 		cmd := NewExtractZipCommand(ctx, svc)
-		Convey("Execute - PackageFetch", func() {
+		t.Run("Execute - PackageFetch", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PackageFetch)
 			mockZipReader := zip.NewMockZipReaderInterface(ctrl)
 			cmd.zip = mockZipReader
 			log, _ := common.SetUpLog(provisionDir)
 
 			mockZipReader.EXPECT().UnzipFile(gomock.Eq("/tmp/instanceId/cipd_package_name.zip"), gomock.Eq(provisionDir+"/instanceId")).Times(1)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Execute - undefined stage", func() {
+		t.Run("Execute - undefined stage", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, nil)
 			log, _ := common.SetUpLog(provisionDir)
-			So(cmd.Execute(log), ShouldNotBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.NotBeNil)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to extract zip file")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to extract zip file"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED))
 		})
 	})
 }

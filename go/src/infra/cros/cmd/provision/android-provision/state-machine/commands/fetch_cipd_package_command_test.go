@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/citest"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/cipd"
@@ -25,7 +27,7 @@ func TestFetchCIPDPackageCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("FetchCIPDPackageCommand", t, func() {
+	ftt.Run("FetchCIPDPackageCommand", t, func(t *ftt.Test) {
 		pkgProto := &api.CIPDPackage{
 			Name: "cipd_path/cipd_package_name",
 			VersionOneof: &api.CIPDPackage_InstanceId{
@@ -57,44 +59,44 @@ func TestFetchCIPDPackageCommand(t *testing.T) {
 
 		cmd := NewFetchCIPDPackageCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			mockCIPDClient := cipd.NewMockCIPDClientInterface(ctrl)
 			cmd.cipd = mockCIPDClient
 			provisionPkg.CIPDPackage.PackageProto.AndroidPackage = api.AndroidPackage_GMS_CORE
-			Convey("New Android Package", func() {
+			t.Run("New Android Package", func(t *ftt.Test) {
 				provisionPkg.AndroidPackage.VersionCode = ""
 				log, _ := common.SetUpLog(provisionDir)
 				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(1)
-				So(cmd.Execute(log), ShouldBeNil)
+				assert.Loosely(t, cmd.Execute(log), should.BeNil)
 			})
-			Convey("Existing Android Package - same version code", func() {
+			t.Run("Existing Android Package - same version code", func(t *ftt.Test) {
 				provisionPkg.AndroidPackage.VersionCode = "1234567890"
 				log, _ := common.SetUpLog(provisionDir)
 				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(0)
-				So(cmd.Execute(log), ShouldBeNil)
+				assert.Loosely(t, cmd.Execute(log), should.BeNil)
 			})
-			Convey("Existing Android Package - different version code", func() {
+			t.Run("Existing Android Package - different version code", func(t *ftt.Test) {
 				provisionPkg.AndroidPackage.VersionCode = "1234567889"
 				log, _ := common.SetUpLog(provisionDir)
 				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(1)
-				So(cmd.Execute(log), ShouldBeNil)
+				assert.Loosely(t, cmd.Execute(log), should.BeNil)
 			})
-			Convey("Unknown Android Package type - returns error", func() {
+			t.Run("Unknown Android Package type - returns error", func(t *ftt.Test) {
 				provisionPkg.AndroidPackage.VersionCode = ""
 				provisionPkg.CIPDPackage.PackageProto.AndroidPackage = api.AndroidPackage_ANDROID_PACKAGE_UNSPECIFIED
 				log, _ := common.SetUpLog(provisionDir)
 				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(0)
-				So(cmd.Execute(log), ShouldNotBeNil)
+				assert.Loosely(t, cmd.Execute(log), should.NotBeNil)
 			})
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to fetch CIPD package")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to fetch CIPD package"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_CIPD_PACKAGE_FETCH_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_CIPD_PACKAGE_FETCH_FAILED))
 		})
 	})
 }

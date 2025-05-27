@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/citest"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -25,7 +27,7 @@ func TestCleanupCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("CleanupCommand", t, func() {
+	ftt.Run("CleanupCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		pkgProto := &api.CIPDPackage{
 			Name: "cipd_path/cipd_package_name",
@@ -53,42 +55,42 @@ func TestCleanupCommand(t *testing.T) {
 		svc.OS.ImagePath.DutAndroidProductOut = "/tmp_DutAndroidProductOut"
 		cmd := NewCleanupCommand(context.Background(), svc)
 
-		Convey("Execute - OSInstall", func() {
+		t.Run("Execute - OSInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.OSInstall)
 			log, _ := common.SetUpLog(provisionDir)
 			associatedHost.EXPECT().DeleteDirectory(gomock.Any(), gomock.Eq("/tmp_DutAndroidProductOut")).Times(1)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Execute - PackageInstall", func() {
+		t.Run("Execute - PackageInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PackageInstall)
 			log, _ := common.SetUpLog(provisionDir)
 			associatedHost.EXPECT().DeleteDirectory(gomock.Any(), gomock.Eq("/tmp/instanceId")).Times(1)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Execute - PostInstall", func() {
+		t.Run("Execute - PostInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PostInstall)
 			log, _ := common.SetUpLog(provisionDir)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 			_, err := os.Stat(svc.ProvisionDir)
-			So(os.IsNotExist(err), ShouldBeTrue)
+			assert.Loosely(t, os.IsNotExist(err), should.BeTrue)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to cleanup temp files")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to cleanup temp files"))
 		})
-		Convey("GetStatus - OSInstall", func() {
+		t.Run("GetStatus - OSInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.OSInstall)
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_PROVISIONING_FAILED)
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_PROVISIONING_FAILED))
 		})
-		Convey("GetStatus - PackageInstall", func() {
+		t.Run("GetStatus - PackageInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PackageInstall)
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_PROVISIONING_FAILED)
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_PROVISIONING_FAILED))
 		})
-		Convey("GetStatus - PostInstall", func() {
+		t.Run("GetStatus - PostInstall", func(t *ftt.Test) {
 			cmd.ctx = context.WithValue(cmd.ctx, common.StageCtxKey, common.PostInstall)
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED)
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED))
 		})
 	})
 }

@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -23,7 +25,7 @@ func TestRestartAppCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("RestartAppCommand", t, func() {
+	ftt.Run("RestartAppCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		svc, _ := service.NewAndroidServiceFromExistingConnection(
 			associatedHost,
@@ -45,29 +47,29 @@ func TestRestartAppCommand(t *testing.T) {
 
 		cmd := NewRestartAppCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			provisionPkg.AndroidPackage.UpdatedVersionCode = "224312037"
 			log, _ := common.SetUpLog(provisionDir)
 			gomock.InOrder(
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq([]string{"-s", "dutSerialNumber", "shell", "am", "force-stop", "com.google.android.gms"})).Return("", nil).Times(1),
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq([]string{"-s", "dutSerialNumber", "shell", "am", "broadcast", "-a", "com.google.android.gms.INITIALIZE"})).Return("", nil).Times(1),
 			)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Execute - nothing installed", func() {
+		t.Run("Execute - nothing installed", func(t *ftt.Test) {
 			provisionPkg.AndroidPackage.UpdatedVersionCode = ""
 			log, _ := common.SetUpLog(provisionDir)
 			associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to restart application")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to restart application"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED))
 		})
 	})
 }

@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -23,7 +25,7 @@ func TestFetchDutInfoCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("FetchDutInfoCommand", t, func() {
+	ftt.Run("FetchDutInfoCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		pkgProto := &api.CIPDPackage{
 			AndroidPackage: api.AndroidPackage_GMS_CORE,
@@ -39,7 +41,7 @@ func TestFetchDutInfoCommand(t *testing.T) {
 
 		cmd := NewFetchDutInfoCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
 			boardArgs := []string{"-s", "dutSerialNumber", "shell", "getprop", "ro.product.board"}
 			buildIdArgs := []string{"-s", "dutSerialNumber", "shell", "getprop", "ro.build.id"}
@@ -63,19 +65,19 @@ func TestFetchDutInfoCommand(t *testing.T) {
 				PackageName: common.GMSCorePackageName,
 				VersionCode: "224312037",
 			}
-			So(cmd.Execute(log), ShouldBeNil)
-			So(svc.DUT.Board, ShouldEqual, expectedBoard)
-			So(svc.OS.BuildInfo, ShouldResemble, expectedBuildInfo)
-			So(svc.ProvisionPackages[0].AndroidPackage, ShouldResemble, expectedAndroidPkg)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
+			assert.Loosely(t, svc.DUT.Board, should.Equal(expectedBoard))
+			assert.Loosely(t, svc.OS.BuildInfo, should.Resemble(expectedBuildInfo))
+			assert.Loosely(t, svc.ProvisionPackages[0].AndroidPackage, should.Resemble(expectedAndroidPkg))
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to read installed package version")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to read installed package version"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION))
 		})
 	})
 }

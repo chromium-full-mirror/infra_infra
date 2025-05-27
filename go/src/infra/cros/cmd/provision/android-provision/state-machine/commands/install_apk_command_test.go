@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -23,7 +25,7 @@ func TestInstallAPKCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("InstallAPKCommand", t, func() {
+	ftt.Run("InstallAPKCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		pkgProto := &api.CIPDPackage{
 			AndroidPackage: api.AndroidPackage_GMS_CORE,
@@ -49,7 +51,7 @@ func TestInstallAPKCommand(t *testing.T) {
 
 		cmd := NewInstallAPKCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
 			installArgs := []string{"-s", "dutSerialNumber", "install", "-r", "-d", "-g", "/tmp/instanceId/apkName.apk"}
 			versionArgs := []string{"-s", "dutSerialNumber", "shell", "dumpsys", "package", common.GMSCorePackageName, "|", "grep", "versionCode", "|", "sort", "-r", "|", "head", "-n", "1"}
@@ -57,17 +59,17 @@ func TestInstallAPKCommand(t *testing.T) {
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq(installArgs)).Return("", nil).Times(1),
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq(versionArgs)).Return("versionCode=9876543210 minSdk=30 targetSdk=33", nil),
 			)
-			So(cmd.Execute(log), ShouldBeNil)
-			So(provisionPkg.AndroidPackage.UpdatedVersionCode, ShouldResemble, "9876543210")
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
+			assert.Loosely(t, provisionPkg.AndroidPackage.UpdatedVersionCode, should.Match("9876543210"))
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to install APK")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to install APK"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_PROVISIONING_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_PROVISIONING_FAILED))
 		})
 	})
 }

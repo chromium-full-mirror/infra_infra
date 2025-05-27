@@ -11,9 +11,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/gsstorage"
@@ -25,7 +27,7 @@ func TestUploadApkToGsCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("UploadApkToGsCommand", t, func() {
+	ftt.Run("UploadApkToGsCommand", t, func(t *ftt.Test) {
 		pkgProto := &api.CIPDPackage{
 			Name: "cipd_path/cipd_package_name",
 			VersionOneof: &api.CIPDPackage_InstanceId{
@@ -70,26 +72,26 @@ func TestUploadApkToGsCommand(t *testing.T) {
 		mockGsClient := gsstorage.NewMockGsClient(ctrl)
 		cmd := NewUploadAPKToGSCommand(context.Background(), svc)
 		cmd.gs = mockGsClient
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
-			Convey("Upload Android package", func() {
+			t.Run("Upload Android package", func(t *ftt.Test) {
 				gsPath := "gs://android-provisioning-apks/instanceId/" + apkName
 				fetchOSReleaseVersionArgs := []string{"-s", "dutSerialNumber", "shell", "getprop", "ro.build.version.release"}
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq(fetchOSReleaseVersionArgs)).Return("12", nil).Times(1)
 				mockGsClient.EXPECT().Upload(gomock.Eq(context.Background()), gomock.Eq(apkPath), gomock.Eq("instanceId/"+apkName)).Return(nil).Times(1)
-				So(cmd.Execute(log), ShouldBeNil)
-				So(provisionPkg.APKFile.Name, ShouldEqual, apkName)
-				So(provisionPkg.APKFile.GsPath, ShouldEqual, gsPath)
+				assert.Loosely(t, cmd.Execute(log), should.BeNil)
+				assert.Loosely(t, provisionPkg.APKFile.Name, should.Equal(apkName))
+				assert.Loosely(t, provisionPkg.APKFile.GsPath, should.Equal(gsPath))
 			})
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to extract APK file")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to extract APK file"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_GS_UPLOAD_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_GS_UPLOAD_FAILED))
 		})
 	})
 }

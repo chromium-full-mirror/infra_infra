@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
 	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
@@ -23,7 +25,7 @@ func TestRebootToBootloaderCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	Convey("RebootToBootloaderCommand", t, func() {
+	ftt.Run("RebootToBootloaderCommand", t, func(t *ftt.Test) {
 		associatedHost := mock_common_utils.NewMockServiceAdapterInterface(ctrl)
 		svc, _ := service.NewAndroidServiceFromExistingConnection(
 			associatedHost,
@@ -36,7 +38,7 @@ func TestRebootToBootloaderCommand(t *testing.T) {
 		log, _ := common.SetUpLog(provisionDir)
 		cmd := NewRebootToBootloaderCommand(context.Background(), svc)
 
-		Convey("Execute", func() {
+		t.Run("Execute", func(t *ftt.Test) {
 			svc.OS = &service.AndroidOS{
 				ImagePath: &service.ImagePath{
 					GsPath: "gs://gs_bucket/folder/image",
@@ -48,23 +50,23 @@ func TestRebootToBootloaderCommand(t *testing.T) {
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Eq(rebootArgs)).Return("", nil).Times(1),
 				associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("fastboot"), gomock.Eq(waitArgs)).Return("fastboot", nil).Times(1),
 			)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Execute - Nothing to provision", func() {
+		t.Run("Execute - Nothing to provision", func(t *ftt.Test) {
 			log, _ := common.SetUpLog(provisionDir)
 			svc.OS = nil
 			associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("adb"), gomock.Any()).Times(0)
 			associatedHost.EXPECT().RunCmd(gomock.Any(), gomock.Eq("fastboot"), gomock.Any()).Times(0)
-			So(cmd.Execute(log), ShouldBeNil)
+			assert.Loosely(t, cmd.Execute(log), should.BeNil)
 		})
-		Convey("Revert", func() {
-			So(cmd.Revert(), ShouldBeNil)
+		t.Run("Revert", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.Revert(), should.BeNil)
 		})
-		Convey("GetErrorMessage", func() {
-			So(cmd.GetErrorMessage(), ShouldEqual, "failed to reboot to bootloader")
+		t.Run("GetErrorMessage", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetErrorMessage(), should.Equal("failed to reboot to bootloader"))
 		})
-		Convey("GetStatus", func() {
-			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_PROVISIONING_FAILED)
+		t.Run("GetStatus", func(t *ftt.Test) {
+			assert.Loosely(t, cmd.GetStatus(), should.Equal(api.InstallResponse_STATUS_PROVISIONING_FAILED))
 		})
 	})
 }
