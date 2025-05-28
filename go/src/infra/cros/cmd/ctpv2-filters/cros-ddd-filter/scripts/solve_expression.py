@@ -85,13 +85,13 @@ def generate_eqc_device_counts_csv(solved_results: SolvedResults,
 
 
 if __name__ == "__main__":
-  pool = Pools._WIFICELL.value
+  pool = Pools._CHAMELEON_AUDIO.value
   ddd_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
   cli = DDDCli(ddd_dir=ddd_dir)
   # exp_gen = ExpressionGenerator()
 
   variant_expression = syntax_pb2.CategoryExpression(
-      name=Categories._WIFIBTCHIPSET_SOC_KERNEL.value)
+      name=Categories._AUDIO_BOARD.value)
 
   # # Example 1
   # variant_expression = syntax_pb2.CategoryExpression(

@@ -263,6 +263,15 @@
                 }
             ]
         },
+        "build_targets": {
+            "categories": [
+                {
+                    "value": {
+                        "property": "dlm:build_targets"
+                    }
+                }
+            ]
+        },
         "form_factors": {
             "categories": [
                 {

@@ -34,7 +34,7 @@
                     }
                 ]
             },
-            "reportCategory": "boards"
+            "reportCategory": "build_targets"
         },
         "Audio_Model": {
             "name": "Audio_Model",
