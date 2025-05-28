@@ -76,14 +76,18 @@ func dolosRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"device_type:dolos",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Set dolos RPM ON": {
 				ExecName: "device_rpm_power_on",
 				ExecExtraArgs: []string{
 					"device_type:dolos",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Set dut RPM OFF": {
 				ExecName: "device_rpm_power_off",

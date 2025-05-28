@@ -419,7 +419,7 @@ plans:
                   exec_name: device_rpm_power_off
                   exec_args:
                     - device_type:dut
-                - name: Set dolos RPM OFF (ALWAYS_RUN)
+                - name: Set dolos RPM OFF (ALWAYS_RUN) (time:'2m0s')
                   exec_name: device_rpm_power_off
                   exec_args:
                     - device_type:dolos
@@ -429,7 +429,7 @@ plans:
                     - sleep:5
                 - name: Power cycle root servo (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_power_cycle_root_servo
-                - name: Set dolos RPM ON (ALWAYS_RUN)
+                - name: Set dolos RPM ON (ALWAYS_RUN) (time:'2m0s')
                   exec_name: device_rpm_power_on
                   exec_args:
                     - device_type:dolos
