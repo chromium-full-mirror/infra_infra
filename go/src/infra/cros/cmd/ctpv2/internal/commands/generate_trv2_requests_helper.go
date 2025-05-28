@@ -1200,6 +1200,14 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 	// // multi-DUTs result reporting purpose.
 	// tags = append(tags, g.multiDutsTags()...)
 
+	for _, tag := range trHelper.build.Build().GetTags() {
+		switch tag.Key {
+		case "satlab-id", "test-type", "test-plan-id":
+			tags = append(tags, fmt.Sprintf("%s:%s", tag.Key, tag.Value))
+
+		}
+	}
+
 	return tags, nil
 }
 
