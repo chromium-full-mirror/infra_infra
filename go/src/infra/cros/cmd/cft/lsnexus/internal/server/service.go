@@ -21,7 +21,7 @@ import (
 func (s *service) StartServod(ctx context.Context, req *lsnexus.StartServodRequest) (*lsnexus.StartServodResponse, error) {
 	s.log("Serving StartServod request")
 	config := ""
-	if pools := s.dutTopology.GetPools(); len(pools) > 0 {
+	if pools := s.pools; len(pools) > 0 {
 		for _, p := range pools {
 			if strings.Contains(p, "faft-cr50") {
 				config = "cr50.xml"
@@ -31,12 +31,12 @@ func (s *service) StartServod(ctx context.Context, req *lsnexus.StartServodReque
 	}
 	bolsReq := &bols.StartServodRequest{
 		StationId: &bols.StationIdentifier{
-			ServodPort:    s.dutTopology.GetChromeos().GetServo().GetServodAddress().GetPort(),
-			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
-			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
+			ServodPort:    int32(s.servodPort),
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
 		},
-		Board:  s.dutTopology.GetChromeos().GetDutModel().GetBuildTarget(),
-		Model:  s.dutTopology.GetChromeos().GetDutModel().GetModelName(),
+		Board:  s.board,
+		Model:  s.model,
 		Config: config,
 	}
 	if _, err := s.cl.StartServod(ctx, bolsReq); err != nil {
@@ -86,9 +86,9 @@ func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodR
 	}
 	bolsReq := &bols.GetServodRequest{
 		StationId: &bols.StationIdentifier{
-			ServodPort:    s.dutTopology.GetChromeos().GetServo().GetServodAddress().GetPort(),
-			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
-			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
+			ServodPort:    int32(s.servodPort),
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
 		},
 		Control: req.GetControl(),
 	}
@@ -120,9 +120,9 @@ func (s *service) setServodRequest(ctx context.Context, req *lsnexus.CallServodR
 	}
 	bolsReq := &bols.SetServodRequest{
 		StationId: &bols.StationIdentifier{
-			ServodPort:    s.dutTopology.GetChromeos().GetServo().GetServodAddress().GetPort(),
-			ServoSerial:   s.dutTopology.GetChromeos().GetServo().GetSerial(),
-			ContainerName: s.dutTopology.GetChromeos().GetServo().GetContainerName(),
+			ServodPort:    int32(s.servodPort),
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
 		},
 		Control: req.GetControl(),
 		Value:   args[0],

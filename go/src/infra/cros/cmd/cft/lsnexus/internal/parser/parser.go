@@ -23,10 +23,11 @@ type Runner interface {
 }
 
 var (
-	ServiceName     = "lsnexus"
-	defaultLogDir   = fmt.Sprintf("/tmp/%s/", ServiceName)
-	defaultPort     = 80
-	helpDescription = `lsnexus tool
+	ServiceName       = "lsnexus"
+	defaultLogDir     = fmt.Sprintf("/tmp/%s/", ServiceName)
+	defaultPort       = 80
+	defaultServodPort = 9999
+	helpDescription   = `lsnexus tool
 The tool is allow to communicate with lsnexus on the host.
 Commands:
   run		Starting server and allow work with server by RPC calls.
@@ -49,15 +50,35 @@ func parseServer(ctx context.Context, d []string) (Runner, error) {
 	var port int
 	var bolsHost string
 	var configFile string
+	var board string
+	var model string
+	var pools []string
+	var servodSerial string
+	var servodContainer string
+	var servodPort int
+	var poolList string
+
 	fs := flag.NewFlagSet("Start server", flag.ExitOnError)
 	fs.StringVar(&logPath, "log-path", defaultLogDir, fmt.Sprintf("Path to record execution logs. Default value is %s", defaultLogDir))
 	fs.IntVar(&port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
-	fs.StringVar(&logPath, "bols_host", "", "The BOLS host address")
+	fs.StringVar(&bolsHost, "bols_host", "", "The BOLS host address")
 	fs.StringVar(&configFile, "dut_topology", "", "A jsonpb file that represents the structure of a DUT Topology.")
+	fs.StringVar(&board, "board", "", "The board of the DUT.")
+	fs.StringVar(&model, "model", "", "The model of the DUT.")
+	fs.StringVar(&poolList, "pools", "", "The comma seperated list of pools of the DUT")
+	fs.StringVar(&servodSerial, "servod_serial", "", "The servod serial.")
+	fs.StringVar(&servodContainer, "servod_container", "", "The servod container.")
+
+	fs.IntVar(&servodPort, "servod_port", defaultServodPort,
+		fmt.Sprintf("Specify the servod port for the server. Default value %d.", defaultServodPort))
+
 	if err := fs.Parse(d); err != nil {
 		return nil, errors.Annotate(err, "parse server args").Err()
 	}
-	return server.New(ctx, bolsHost, configFile, logPath, port)
+	pools = strings.Split(poolList, ",")
+	return server.New(ctx, bolsHost, logPath, port,
+		board, model, pools, servodSerial,
+		servodContainer, servodPort)
 }
 
 // parseRunMode extract run-mode for CLI.

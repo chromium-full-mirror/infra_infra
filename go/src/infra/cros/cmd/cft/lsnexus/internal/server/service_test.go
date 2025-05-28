@@ -308,7 +308,13 @@ func startLSNexusServer(ctx context.Context, bolsAddr, dir string, dut *api.Dut)
 	if err := os.WriteFile(dutTopologyFile, content, 0644); err != nil {
 		return nil, "", fmt.Errorf("failed to write dut topology file: %w", err)
 	}
-	s, err := New(ctx, bolsAddr, dutTopologyFile, "", 8888)
+	s, err := New(ctx, bolsAddr, "", 8888,
+		dut.GetChromeos().GetDutModel().GetBuildTarget(),
+		dut.GetChromeos().GetDutModel().GetModelName(),
+		dut.GetPools(),
+		dut.GetChromeos().GetServo().GetSerial(),
+		dut.GetChromeos().GetServo().GetContainerName(),
+		int(dut.GetChromeos().GetServo().GetServodAddress().GetPort()))
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to create LSNexusServer: %v", err)
 	}
