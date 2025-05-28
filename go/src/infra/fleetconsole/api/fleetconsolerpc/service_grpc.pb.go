@@ -24,19 +24,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FleetConsole_Ping_FullMethodName                  = "/fleetconsole.FleetConsole/Ping"
-	FleetConsole_PingBigQuery_FullMethodName          = "/fleetconsole.FleetConsole/PingBigQuery"
-	FleetConsole_PingDeviceManager_FullMethodName     = "/fleetconsole.FleetConsole/PingDeviceManager"
-	FleetConsole_PingUfs_FullMethodName               = "/fleetconsole.FleetConsole/PingUfs"
-	FleetConsole_ListDevices_FullMethodName           = "/fleetconsole.FleetConsole/ListDevices"
-	FleetConsole_GetDeviceDimensions_FullMethodName   = "/fleetconsole.FleetConsole/GetDeviceDimensions"
-	FleetConsole_CountDevices_FullMethodName          = "/fleetconsole.FleetConsole/CountDevices"
-	FleetConsole_RepopulateCache_FullMethodName       = "/fleetconsole.FleetConsole/RepopulateCache"
-	FleetConsole_PingDB_FullMethodName                = "/fleetconsole.FleetConsole/PingDB"
-	FleetConsole_CleanExit_FullMethodName             = "/fleetconsole.FleetConsole/CleanExit"
-	FleetConsole_ExportDevicesToCSV_FullMethodName    = "/fleetconsole.FleetConsole/ExportDevicesToCSV"
-	FleetConsole_ListResourceRequests_FullMethodName  = "/fleetconsole.FleetConsole/ListResourceRequests"
-	FleetConsole_CountResourceRequests_FullMethodName = "/fleetconsole.FleetConsole/CountResourceRequests"
+	FleetConsole_Ping_FullMethodName                                       = "/fleetconsole.FleetConsole/Ping"
+	FleetConsole_PingBigQuery_FullMethodName                               = "/fleetconsole.FleetConsole/PingBigQuery"
+	FleetConsole_PingDeviceManager_FullMethodName                          = "/fleetconsole.FleetConsole/PingDeviceManager"
+	FleetConsole_PingUfs_FullMethodName                                    = "/fleetconsole.FleetConsole/PingUfs"
+	FleetConsole_ListDevices_FullMethodName                                = "/fleetconsole.FleetConsole/ListDevices"
+	FleetConsole_GetDeviceDimensions_FullMethodName                        = "/fleetconsole.FleetConsole/GetDeviceDimensions"
+	FleetConsole_CountDevices_FullMethodName                               = "/fleetconsole.FleetConsole/CountDevices"
+	FleetConsole_RepopulateCache_FullMethodName                            = "/fleetconsole.FleetConsole/RepopulateCache"
+	FleetConsole_PingDB_FullMethodName                                     = "/fleetconsole.FleetConsole/PingDB"
+	FleetConsole_CleanExit_FullMethodName                                  = "/fleetconsole.FleetConsole/CleanExit"
+	FleetConsole_ExportDevicesToCSV_FullMethodName                         = "/fleetconsole.FleetConsole/ExportDevicesToCSV"
+	FleetConsole_ListResourceRequests_FullMethodName                       = "/fleetconsole.FleetConsole/ListResourceRequests"
+	FleetConsole_CountResourceRequests_FullMethodName                      = "/fleetconsole.FleetConsole/CountResourceRequests"
+	FleetConsole_GetResourceRequestsMultiselectFilterValues_FullMethodName = "/fleetconsole.FleetConsole/GetResourceRequestsMultiselectFilterValues"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -69,6 +70,8 @@ type FleetConsoleClient interface {
 	ListResourceRequests(ctx context.Context, in *ListResourceRequestsRequest, opts ...grpc.CallOption) (*ListResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
 	CountResourceRequests(ctx context.Context, in *CountResourceRequestsRequest, opts ...grpc.CallOption) (*CountResourceRequestsResponse, error)
+	// CountResourceRequests provides counts for RRI summary header
+	GetResourceRequestsMultiselectFilterValues(ctx context.Context, in *GetResourceRequestsMultiselectFilterValuesRequest, opts ...grpc.CallOption) (*GetResourceRequestsMultiselectFilterValuesResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -209,6 +212,16 @@ func (c *fleetConsoleClient) CountResourceRequests(ctx context.Context, in *Coun
 	return out, nil
 }
 
+func (c *fleetConsoleClient) GetResourceRequestsMultiselectFilterValues(ctx context.Context, in *GetResourceRequestsMultiselectFilterValuesRequest, opts ...grpc.CallOption) (*GetResourceRequestsMultiselectFilterValuesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetResourceRequestsMultiselectFilterValuesResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_GetResourceRequestsMultiselectFilterValues_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -239,6 +252,8 @@ type FleetConsoleServer interface {
 	ListResourceRequests(context.Context, *ListResourceRequestsRequest) (*ListResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
 	CountResourceRequests(context.Context, *CountResourceRequestsRequest) (*CountResourceRequestsResponse, error)
+	// CountResourceRequests provides counts for RRI summary header
+	GetResourceRequestsMultiselectFilterValues(context.Context, *GetResourceRequestsMultiselectFilterValuesRequest) (*GetResourceRequestsMultiselectFilterValuesResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -287,6 +302,9 @@ func (UnimplementedFleetConsoleServer) ListResourceRequests(context.Context, *Li
 }
 func (UnimplementedFleetConsoleServer) CountResourceRequests(context.Context, *CountResourceRequestsRequest) (*CountResourceRequestsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CountResourceRequests not implemented")
+}
+func (UnimplementedFleetConsoleServer) GetResourceRequestsMultiselectFilterValues(context.Context, *GetResourceRequestsMultiselectFilterValuesRequest) (*GetResourceRequestsMultiselectFilterValuesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResourceRequestsMultiselectFilterValues not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -543,6 +561,24 @@ func _FleetConsole_CountResourceRequests_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_GetResourceRequestsMultiselectFilterValues_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetResourceRequestsMultiselectFilterValuesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).GetResourceRequestsMultiselectFilterValues(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_GetResourceRequestsMultiselectFilterValues_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).GetResourceRequestsMultiselectFilterValues(ctx, req.(*GetResourceRequestsMultiselectFilterValuesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -601,6 +637,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CountResourceRequests",
 			Handler:    _FleetConsole_CountResourceRequests_Handler,
+		},
+		{
+			MethodName: "GetResourceRequestsMultiselectFilterValues",
+			Handler:    _FleetConsole_GetResourceRequestsMultiselectFilterValues_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

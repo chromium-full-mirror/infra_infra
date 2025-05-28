@@ -52,6 +52,9 @@ service FleetConsole {
 
   // CountResourceRequests provides counts for RRI summary header
   rpc CountResourceRequests(CountResourceRequestsRequest) returns (CountResourceRequestsResponse) {};
+
+  // CountResourceRequests provides counts for RRI summary header
+  rpc GetResourceRequestsMultiselectFilterValues(GetResourceRequestsMultiselectFilterValuesRequest) returns (GetResourceRequestsMultiselectFilterValuesResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -317,4 +320,12 @@ message CountResourceRequestsResponse {
   int32 build = 5;
   int32 qa = 6;
   int32 config = 7;
+}
+
+message GetResourceRequestsMultiselectFilterValuesRequest {
+}
+
+message GetResourceRequestsMultiselectFilterValuesResponse {
+  repeated string rr_ids = 1;
+  repeated string resource_details = 2;
 }

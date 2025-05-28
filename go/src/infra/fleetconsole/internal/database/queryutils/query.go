@@ -96,6 +96,15 @@ func (q *QueryBuilder) WithSelectClause(distinct bool, columns ...*Column) *Quer
 
 // WithCustomSelectClause adds a select clause object to the query
 func (q *QueryBuilder) WithCustomSelectClause(fieldSelectClauses ...*FieldSelectClause) *QueryBuilder {
+	return q.withCustomSelectClauseInternal(false, fieldSelectClauses...)
+}
+
+// WithCustomSelectDistinctClause adds a select distinct clause object to the query
+func (q *QueryBuilder) WithCustomSelectDistinctClause(fieldSelectClauses ...*FieldSelectClause) *QueryBuilder {
+	return q.withCustomSelectClauseInternal(true, fieldSelectClauses...)
+}
+
+func (q *QueryBuilder) withCustomSelectClauseInternal(distinct bool, fieldSelectClauses ...*FieldSelectClause) *QueryBuilder {
 	var selectClauses []string
 	var bindings = map[string]*any{}
 	for i, builder := range fieldSelectClauses {
@@ -106,8 +115,13 @@ func (q *QueryBuilder) WithCustomSelectClause(fieldSelectClauses ...*FieldSelect
 		selectClauses = append(selectClauses, boundClause)
 	}
 
+	selectClause := "SELECT "
+	if distinct {
+		selectClause += "DISTINCT "
+	}
+
 	q.selectClause = &SelectClause{
-		selectClause: "SELECT " + strings.Join(selectClauses, ", "),
+		selectClause: selectClause + strings.Join(selectClauses, ", "),
 		bindings:     bindings,
 	}
 
