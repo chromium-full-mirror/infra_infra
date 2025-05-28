@@ -46,7 +46,7 @@ func TestServodCLI_StartServodSuccess(t *testing.T) {
 	)
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -94,7 +94,7 @@ func TestServodCLI_StartServodAllParams(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -127,7 +127,7 @@ func TestServodCLI_StartServodWithoutBoard(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -159,7 +159,7 @@ func TestServodCLI_StartServodWithoutModel(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -190,7 +190,7 @@ func TestServodCLI_StartServodWithoutSerialName(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -233,7 +233,7 @@ func TestServodCLI_StopServodSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -278,7 +278,7 @@ func TestServodCLI_ExecCmdSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -323,7 +323,7 @@ func TestServodCLI_ExecCmdDockerizedSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -369,7 +369,7 @@ func TestServodCLI_CallServodDocSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -416,7 +416,7 @@ func TestServodCLI_CallServodDockerizedDocSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -464,7 +464,7 @@ func TestServodCLI_CallServodGetSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -511,7 +511,7 @@ func TestServodCLI_CallServodDockerizedGetSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -559,7 +559,7 @@ func TestServodCLI_CallServodSetSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)
@@ -606,7 +606,7 @@ func TestServodCLI_CallServodDockerizedSetSuccess(t *testing.T) {
 
 	ctx := context.Background()
 	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
+	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce, "satlabrpc:1234", "tcp://1.2.3.4:5678")
 	defer destructor()
 	if err != nil {
 		t.Fatalf("Failed to create new ServodService: %v", err)

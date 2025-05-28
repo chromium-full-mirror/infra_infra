@@ -28,9 +28,7 @@ import (
 )
 
 const (
-	SatlabRPCServer = "satlab_rpcserver:6003"
-	dockerHost      = "tcp://192.168.231.1:2375"
-	satlab          = "satlab"
+	satlab = "satlab"
 )
 
 func (s *ServodService) getDockerClient() (*dc.Client, error) {
@@ -48,7 +46,7 @@ func (s *ServodService) getDockerClient() (*dc.Client, error) {
 		}).DialContext,
 	}
 	c := http.Client{Transport: transport}
-	return dc.NewClientWithOpts(dc.WithHost(dockerHost), dc.WithHTTPClient(&c), dc.WithAPIVersionNegotiation())
+	return dc.NewClientWithOpts(dc.WithHost(s.dockerHost), dc.WithHTTPClient(&c), dc.WithAPIVersionNegotiation())
 }
 
 func (s *ServodService) stopServodOnSatlab(ctx context.Context, servodDockerContainerName string) error {
@@ -117,18 +115,16 @@ func (s *ServodService) startServodOnSatlab(servodDockerContainerName string) er
 		return errors.New(jobRunning)
 	}
 	s.logger.Println("Starting servod container on Satlab.")
-	conn, err := grpc.Dial(SatlabRPCServer, grpc.WithInsecure())
+	conn, err := grpc.Dial(s.satlabRPCServer, grpc.WithInsecure())
 	if err != nil {
-		return fmt.Errorf("failed to initiate communication to satlab RPC %w Error %v", err, SatlabRPCServer)
+		return fmt.Errorf("failed to initiate communication to satlab RPC %w Error %v", err, s.satlabRPCServer)
 	}
 	satlabClient := satlabrpcserver.NewSatlabRpcServiceClient(conn)
 	req := &api.StartServodRequest{ServodDockerContainerName: servodDockerContainerName}
-	if _, err := satlabClient.StartServod(context.Background(), req); err != nil {
+	if resp, err := satlabClient.StartServod(context.Background(), req); err != nil {
 		return fmt.Errorf("SatlabRPCServer's startServo failed: %w", err)
-	}
-	_, err = s.getSatlabServodContainerIP(context.Background(), servodDockerContainerName)
-	if err != nil {
-		return fmt.Errorf("could not get ip address of servod container on satlab")
+	} else {
+		s.logger.Println("Servod container started: ", resp.String())
 	}
 	s.logger.Println("Servod container started via satlabrpc.")
 	return nil

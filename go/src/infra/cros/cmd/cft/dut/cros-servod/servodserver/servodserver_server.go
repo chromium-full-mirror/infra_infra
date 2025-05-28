@@ -9,6 +9,7 @@ import (
 	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -34,6 +35,7 @@ func (s *ServodService) StartServer(port int32) error {
 	}
 	server := grpc.NewServer()
 
+	reflection.Register(server)
 	api.RegisterServodServiceServer(server, s)
 	longrunning.RegisterOperationsServer(server, s.manager)
 

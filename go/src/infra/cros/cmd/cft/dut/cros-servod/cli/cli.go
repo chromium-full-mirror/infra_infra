@@ -82,9 +82,11 @@ Commands:
   --version Prints the version.
 
   --help    Prints the help.`
-	defaultLogDirectory = "/tmp/servod/"
-	defaultServerPort   = 80
-	defaultServodPort   = 9999
+	defaultLogDirectory    = "/tmp/servod/"
+	defaultServerPort      = 80
+	defaultServodPort      = 9999
+	defaultSatlabRPCServer = "satlab_rpcserver:6003"
+	defaultDockerHost      = "tcp://192.168.231.1:2375"
 )
 
 // createLogFile creates a file and its parent directory for logging purpose.
@@ -131,6 +133,10 @@ func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
 	fs.StringVar(&a.Command, "command", "", "The command to execute inside the servod Docker container.")
 	fs.StringVar(&a.Method, "method", "", "The method to call. Accepted values are doc, get, and set.")
 	fs.StringVar(&a.Args, "args", "", "The arguments to pass to the method.")
+	var satlabRPCServer string
+	fs.StringVar(&satlabRPCServer, "satlab_rpc_server", defaultSatlabRPCServer, fmt.Sprintf("The host:port for the satlab GRPC server. The default value is %s.", defaultSatlabRPCServer))
+	var dockerHost string
+	fs.StringVar(&dockerHost, "docker_host", defaultDockerHost, fmt.Sprintf("The url for the docker host. The default value is %s.", defaultDockerHost))
 	fs.Parse(d)
 	a.ServodPort = int32(servodPort)
 
@@ -149,7 +155,7 @@ func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
 	logger := newLogger(logFile)
 	commandexecutor := commandexecutor.NewServodCommandExecutor(logger)
 
-	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor)
+	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor, satlabRPCServer, dockerHost)
 	defer destructor()
 	if err != nil {
 		logger.Println("Failed to create servod service: ", err)
@@ -169,6 +175,10 @@ func startServer(ctx context.Context, d []string) int {
 	fs.StringVar(&a.LogPath, "log_path", defaultLogDirectory, fmt.Sprintf("The path to record execution logs. The default value is %s", defaultLogDirectory))
 	var serverPort int
 	fs.IntVar(&serverPort, "server_port", defaultServerPort, fmt.Sprintf("The port for the servod GRPC server. The default value is %d.", defaultServerPort))
+	var satlabRPCServer string
+	fs.StringVar(&satlabRPCServer, "satlab_rpc_server", defaultSatlabRPCServer, fmt.Sprintf("The host:port for the satlab GRPC server. The default value is %s.", defaultSatlabRPCServer))
+	var dockerHost string
+	fs.StringVar(&dockerHost, "docker_host", defaultDockerHost, fmt.Sprintf("The url for the docker host. The default value is %s.", defaultDockerHost))
 	fs.Parse(d)
 	a.ServerPort = int32(serverPort)
 
@@ -182,7 +192,7 @@ func startServer(ctx context.Context, d []string) int {
 	logger := newLogger(logFile)
 	commandexecutor := commandexecutor.NewServodCommandExecutor(logger)
 
-	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor)
+	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor, satlabRPCServer, dockerHost)
 	defer destructor()
 	if err != nil {
 		logger.Println("Failed to create servod service: ", err)

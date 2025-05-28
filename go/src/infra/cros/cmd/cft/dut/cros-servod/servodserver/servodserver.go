@@ -43,10 +43,12 @@ type ServodService struct {
 	sshPool         *ssh.Pool
 	servodPool      *servod.Pool
 	dockerClient    *dc.Client
+	satlabRPCServer string
+	dockerHost      string
 }
 
 // NewServodService creates a new servod service.
-func NewServodService(ctx context.Context, logger *log.Logger, commandexecutor commandexecutor.CommandExecutorInterface) (*ServodService, func(), error) {
+func NewServodService(ctx context.Context, logger *log.Logger, commandexecutor commandexecutor.CommandExecutorInterface, satlabRPCServer, dockerHost string) (*ServodService, func(), error) {
 	config, err := ssh.NewDefaultConfig()
 	if err != nil {
 		return nil, nil, err
@@ -62,6 +64,8 @@ func NewServodService(ctx context.Context, logger *log.Logger, commandexecutor c
 		commandexecutor: commandexecutor,
 		sshPool:         ssh.New(config),
 		servodPool:      servod.NewPool(),
+		satlabRPCServer: satlabRPCServer,
+		dockerHost:      dockerHost,
 	}
 
 	destructor := func() {
