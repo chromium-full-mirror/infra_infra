@@ -8,11 +8,13 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	libapi "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
@@ -24,7 +26,7 @@ import (
 
 func TestGeneric(t *testing.T) {
 	dynamicUpdates := []*api.UserDefinedDynamicUpdate{}
-	Convey("Generic Generation", t, func() {
+	ftt.Run("Generic Generation", t, func(t *ftt.Test) {
 		generator := generators.NewGenericTaskGenerator(
 			common.NewTaskIdentifier("generic-task").Id,
 			"user-container-id",
@@ -60,31 +62,31 @@ func TestGeneric(t *testing.T) {
 
 		err := libapi.AppendUserDefinedDynamicUpdates(&dynamicUpdates, generator.Generate)
 
-		So(err, ShouldBeNil)
-		So(dynamicUpdates, ShouldHaveLength, 2)
-		So(reflect.TypeOf(dynamicUpdates[0].FocalTaskFinder.Finder), ShouldEqual, reflect.TypeOf((*api.FocalTaskFinder_First_)(nil)))
-		So(dynamicUpdates[0].FocalTaskFinder.GetFirst().TaskType, ShouldEqual, api.FocalTaskFinder_PROVISION)
-		So(reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), ShouldEqual, reflect.TypeOf((*api.UpdateAction_Insert_)(nil)))
-		So(dynamicUpdates[0].UpdateAction.GetInsert().InsertType, ShouldEqual, api.UpdateAction_Insert_PREPEND)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task, ShouldNotBeNil)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().StartRequest, ShouldNotBeNil)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().RunRequest, ShouldNotBeNil)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().StopRequest, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(2))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[0].FocalTaskFinder.Finder), should.Equal(reflect.TypeOf((*api.FocalTaskFinder_First_)(nil))))
+		assert.Loosely(t, dynamicUpdates[0].FocalTaskFinder.GetFirst().TaskType, should.Equal(api.FocalTaskFinder_PROVISION))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), should.Equal(reflect.TypeOf((*api.UpdateAction_Insert_)(nil))))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().InsertType, should.Equal(api.UpdateAction_Insert_PREPEND))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().StartRequest, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().RunRequest, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task.GetGeneric().StopRequest, should.BeNil)
 
-		So(reflect.TypeOf(dynamicUpdates[1].FocalTaskFinder.Finder), ShouldEqual, reflect.TypeOf((*api.FocalTaskFinder_First_)(nil)))
-		So(dynamicUpdates[1].FocalTaskFinder.GetFirst().TaskType, ShouldEqual, api.FocalTaskFinder_PROVISION)
-		So(reflect.TypeOf(dynamicUpdates[1].UpdateAction.Action), ShouldEqual, reflect.TypeOf((*api.UpdateAction_Insert_)(nil)))
-		So(dynamicUpdates[1].UpdateAction.GetInsert().InsertType, ShouldEqual, api.UpdateAction_Insert_APPEND)
-		So(dynamicUpdates[1].UpdateAction.GetInsert().Task, ShouldNotBeNil)
-		So(dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().StartRequest, ShouldBeNil)
-		So(dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().RunRequest, ShouldBeNil)
-		So(dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().StopRequest, ShouldNotBeNil)
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[1].FocalTaskFinder.Finder), should.Equal(reflect.TypeOf((*api.FocalTaskFinder_First_)(nil))))
+		assert.Loosely(t, dynamicUpdates[1].FocalTaskFinder.GetFirst().TaskType, should.Equal(api.FocalTaskFinder_PROVISION))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[1].UpdateAction.Action), should.Equal(reflect.TypeOf((*api.UpdateAction_Insert_)(nil))))
+		assert.Loosely(t, dynamicUpdates[1].UpdateAction.GetInsert().InsertType, should.Equal(api.UpdateAction_Insert_APPEND))
+		assert.Loosely(t, dynamicUpdates[1].UpdateAction.GetInsert().Task, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().StartRequest, should.BeNil)
+		assert.Loosely(t, dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().RunRequest, should.BeNil)
+		assert.Loosely(t, dynamicUpdates[1].UpdateAction.GetInsert().Task.GetGeneric().StopRequest, should.NotBeNil)
 	})
 }
 
 func TestProvision(t *testing.T) {
 	dynamicUpdates := []*api.UserDefinedDynamicUpdate{}
-	Convey("Provision Generation", t, func() {
+	ftt.Run("Provision Generation", t, func(t *ftt.Test) {
 		generator := generators.NewProvisionTaskGenerator(
 			common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(common.NewPrimaryDeviceIdentifier()).Id,
 			"provision-container-id",
@@ -107,31 +109,31 @@ func TestProvision(t *testing.T) {
 		)
 		err := libapi.AppendUserDefinedDynamicUpdates(&dynamicUpdates, generator.Generate)
 
-		So(err, ShouldBeNil)
-		So(dynamicUpdates, ShouldHaveLength, 1)
-		So(reflect.TypeOf(dynamicUpdates[0].FocalTaskFinder.Finder), ShouldEqual, reflect.TypeOf((*api.FocalTaskFinder_First_)(nil)))
-		So(dynamicUpdates[0].FocalTaskFinder.GetFirst().TaskType, ShouldEqual, api.FocalTaskFinder_PROVISION)
-		So(reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), ShouldEqual, reflect.TypeOf((*api.UpdateAction_Insert_)(nil)))
-		So(dynamicUpdates[0].UpdateAction.GetInsert().InsertType, ShouldEqual, api.UpdateAction_Insert_REPLACE)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task, ShouldNotBeNil)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task.GetProvision().StartupRequest, ShouldNotBeNil)
-		So(dynamicUpdates[0].UpdateAction.GetInsert().Task.GetProvision().InstallRequest, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(1))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[0].FocalTaskFinder.Finder), should.Equal(reflect.TypeOf((*api.FocalTaskFinder_First_)(nil))))
+		assert.Loosely(t, dynamicUpdates[0].FocalTaskFinder.GetFirst().TaskType, should.Equal(api.FocalTaskFinder_PROVISION))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), should.Equal(reflect.TypeOf((*api.UpdateAction_Insert_)(nil))))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().InsertType, should.Equal(api.UpdateAction_Insert_REPLACE))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task.GetProvision().StartupRequest, should.NotBeNil)
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetInsert().Task.GetProvision().InstallRequest, should.NotBeNil)
 	})
 }
 
 func TestModify(t *testing.T) {
 	dynamicUpdates := []*api.UserDefinedDynamicUpdate{}
-	Convey("Modify Generation", t, func() {
+	ftt.Run("Modify Generation", t, func(t *ftt.Test) {
 		generator := generators.NewModifyGenerator(
 			common.FindFirst(api.FocalTaskFinder_TEST),
 		)
-		So(generator.AddModification(
+		assert.Loosely(t, generator.AddModification(
 			structpb.NewStringValue("cros-test-cq-light"),
 			map[string]string{
 				"orderedContainerRequests.0.containerImageKey": "value",
 			},
-		), ShouldBeNil)
-		So(generator.AddModification(
+		), should.BeNil)
+		assert.Loosely(t, generator.AddModification(
 			&labapi.IpEndpoint{
 				Address: "devboard-address",
 				Port:    12345,
@@ -139,24 +141,24 @@ func TestModify(t *testing.T) {
 			map[string]string{
 				"test.testRequest.primary.devboardServer": "",
 			},
-		), ShouldBeNil)
+		), should.BeNil)
 
 		err := libapi.AppendUserDefinedDynamicUpdates(&dynamicUpdates, generator.Generate)
 
-		So(err, ShouldBeNil)
-		So(dynamicUpdates, ShouldHaveLength, 1)
-		So(reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), ShouldEqual, reflect.TypeOf((*api.UpdateAction_Modify_)(nil)))
-		So(dynamicUpdates[0].UpdateAction.GetModify().Modifications, ShouldHaveLength, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(1))
+		assert.Loosely(t, reflect.TypeOf(dynamicUpdates[0].UpdateAction.Action), should.Equal(reflect.TypeOf((*api.UpdateAction_Modify_)(nil))))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetModify().Modifications, should.HaveLength(2))
 		stringValue := &structpb.Value{}
 		err = dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[0].GetPayload().UnmarshalTo(stringValue)
-		So(err, ShouldBeNil)
-		So(stringValue.GetStringValue(), ShouldEqual, "cros-test-cq-light")
-		So(dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[0].GetInstructions()["orderedContainerRequests.0.containerImageKey"], ShouldEqual, "value")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, stringValue.GetStringValue(), should.Equal("cros-test-cq-light"))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[0].GetInstructions()["orderedContainerRequests.0.containerImageKey"], should.Equal("value"))
 		ipEndpoint := &labapi.IpEndpoint{}
 		err = dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[1].GetPayload().UnmarshalTo(ipEndpoint)
-		So(err, ShouldBeNil)
-		So(ipEndpoint.GetAddress(), ShouldEqual, "devboard-address")
-		So(ipEndpoint.GetPort(), ShouldEqual, 12345)
-		So(dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[1].GetInstructions()["test.testRequest.primary.devboardServer"], ShouldEqual, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ipEndpoint.GetAddress(), should.Equal("devboard-address"))
+		assert.Loosely(t, ipEndpoint.GetPort(), should.Equal(12345))
+		assert.Loosely(t, dynamicUpdates[0].UpdateAction.GetModify().GetModifications()[1].GetInstructions()["test.testRequest.primary.devboardServer"], should.BeEmpty)
 	})
 }

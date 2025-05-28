@@ -134,10 +134,6 @@ linters:
       - linters:
         - noctx
         path: ^(appengine|build|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
-      # TODO(gregorynisbet): Reduce this by removing goconvey (for real this time™)
-      - linters:
-        - gomodguard
-        path: ^(cros/cmd/provision|cros/cmd/cft/publish|cros/cmd/ctpv2-filters/common/dynamic_updates/generators/generate_test.go)
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
