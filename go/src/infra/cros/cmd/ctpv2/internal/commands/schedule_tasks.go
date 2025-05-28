@@ -492,8 +492,17 @@ func cancelRunningTask(ctx context.Context, scheduledBuild *buildbucketpb.Build,
 func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, buildsMapLen int, bbClient buildbucketpb.BuildsClient) {
 	defer wg.Done()
 	var err error
-	defer func(err error) {
-		cmd.ExecutionError = err
+
+	// Assign through mainErrPtr to unambiguously set the main error.
+	// This variable is a major hack, see the patchset below (it is the first patchset) for more information.
+	// https://chromium-review.googlesource.com/c/infra/infra/+/6581399/1
+	// That patchset is more principled in some ways, but it has a bug on line 524 with errors not propagating properly.
+	// This suggests to me that the right thing to do is to have a light-touch way to unambiguously assign to the main error
+	// until this function can be refactored.
+	mainErrPtr := &err
+
+	defer func(e error) {
+		cmd.ExecutionError = e
 	}(err)
 
 	suiteName := suiteName(buildReq.SuiteInfo)
@@ -806,7 +815,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		logging.Infof(ctx, "bb status: %s", buildInfo.GetStatus())
 		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
 			// setting this for the step to fail
-			err = fmt.Errorf("test_runner failed")
+			*mainErrPtr = fmt.Errorf("test_runner failed")
 		}
 
 		// If we are in an AL run then update the attempt with the results of
