@@ -1122,7 +1122,7 @@ func (b *uploadDebugSymbols) validate() error {
 	if !strings.HasPrefix(b.gsPath, "gs://") {
 		return fmt.Errorf("error: -gs-path must point to a google storage location. E.g. gs://some-bucket/debug.tgz")
 	}
-	if b.dataType != "splitdebug" && (!(strings.HasSuffix(b.gsPath, ".tgz") || strings.HasSuffix(b.gsPath, ".tar.xz"))) {
+	if b.dataType != "splitdebug" && (!strings.HasSuffix(b.gsPath, ".tgz") && !strings.HasSuffix(b.gsPath, ".tar.xz")) {
 		return fmt.Errorf("error: -gs-path must point to a compressed tar file. %s", b.gsPath)
 	}
 	if b.workerCount <= 0 {

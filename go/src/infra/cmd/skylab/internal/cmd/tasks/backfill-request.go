@@ -146,7 +146,7 @@ func (c *backfillRequestRun) validateArgs() error {
 	switch {
 	case c.isBuildIDSet() && c.isBuildTagsSet():
 		return cmdlib.NewUsageError(c.Flags, "use only one of -id and -tag")
-	case !(c.isBuildIDSet() || c.isBuildTagsSet()):
+	case !c.isBuildIDSet() && !c.isBuildTagsSet():
 		return cmdlib.NewUsageError(c.Flags, "must use one of -id or -tag")
 	}
 	return nil

@@ -98,7 +98,7 @@ func createPublicBuildspec(gsClient gs.Client, gerritClient gerrit.Client, build
 
 	// Verify that the default is not a private remote.
 	defaultRemote := buildspec.Default.RemoteName
-	if public, ok := publicRemote[defaultRemote]; !(ok && public) {
+	if public, ok := publicRemote[defaultRemote]; !ok || !public {
 		return fmt.Errorf("default remote is private")
 	}
 

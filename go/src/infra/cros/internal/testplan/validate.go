@@ -447,8 +447,7 @@ func (v *validator) validateTagCriteriaTemplateParameters(
 		return fmt.Errorf("failed downloading file %q", file)
 	}
 
-	if !(strings.Contains(starlarkContent, "testplan.get_suite_name()") ||
-		strings.Contains(starlarkContent, "testplan.get_tag_criteria()")) {
+	if !strings.Contains(starlarkContent, "testplan.get_suite_name()") && !strings.Contains(starlarkContent, "testplan.get_tag_criteria()") {
 		return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
 	}
 
