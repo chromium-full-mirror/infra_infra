@@ -145,9 +145,14 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device
 	if latestVersion {
 		v = buildbucket.CIPDLatest
 	}
+	di, err := device.GetDeviceInfo(ctx, gpc, host)
+	if err != nil {
+		return "", errors.Annotate(err, "schedule audit builder for %q", host).Err()
+	}
 	p := &buildbucket.Params{
 		BuilderName:    tn.BuilderName(),
 		UnitName:       host,
+		UnitID:         di.ID,
 		TaskName:       tn.String(),
 		EnableRecovery: true,
 		AdminService:   e.AdminService,
