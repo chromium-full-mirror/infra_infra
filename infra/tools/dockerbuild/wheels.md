@@ -5447,6 +5447,20 @@ wheel: <
 
 * *universal*
 
+## **macholib-py3**
+
+### 1.16.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/macholib-py3"
+  version: "version:1.16.3"
+>
+```
+
+
+* *universal*
+
 ## **markdown-it-py-py3**
 
 ### 2.1.0
