@@ -93,6 +93,10 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	if strings.Contains(droneName, "satlab") {
 		volumes = append(volumes, "/dev:/dev")
 	}
+	// Add Satlab's servod container label (b/417843455)
+	if value, present := os.LookupEnv("SERVOD_CONTAINER_LABEL"); present {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", "SERVOD_CONTAINER_LABEL", value))
+	}
 
 	// Get GCE Metadata Server env vars
 	envVars = append(envVars, gceMetadataEnvVars()...)
