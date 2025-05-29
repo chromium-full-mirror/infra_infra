@@ -31,6 +31,7 @@ func mhRepairPlan() *Plan {
 			"ADB Connect DUT",
 			"Android is accessible",
 			"ADB set Android as always awake",
+			"Android: Collect logs",
 			"Read bootId",
 			"Device Uptime",
 			"Android: Has repair-request for re-provision",

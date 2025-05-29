@@ -19,6 +19,7 @@ func androidActions(actions map[string]*Action) {
 				"ADB reconnect",
 				"Android is accessible",
 				"ADB set Android as always awake",
+				"Android: Collect logs",
 				"Read bootId",
 				"Device Uptime",
 				"Has repair-request for re-provision",
@@ -358,6 +359,37 @@ func androidActions(actions map[string]*Action) {
 			},
 			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Android: Collect logs": {
+			Docs: []string{
+				"We collect any pre-existing logs from before deletes such logs ",
+				"on the DUT. Any logs collection are not critical, and we marks ",
+				"that action attempt to perform to avoid repeating it.",
+			},
+			Conditions: []string{
+				"Android:Device is pingable",
+				"Android is accessible",
+				"Confirm log collection info does not exist",
+			},
+			Dependencies: []string{
+				"Create log collection info",
+				"Android: Collect dmesg logs from DUT",
+			},
+			ExecName:               "sample_pass",
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Android: Collect dmesg logs from DUT": {
+			Docs: []string{
+				"Collect the entire output of dmesg",
+			},
+			ExecName: "cros_dmesg",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+				"human_readable:false",
+			},
+			AllowFailAfterRecovery: true,
 		},
 	}
 	for k, v := range am {

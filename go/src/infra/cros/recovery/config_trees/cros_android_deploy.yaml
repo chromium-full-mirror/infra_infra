@@ -13013,6 +13013,57 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+        - name: 'Android: Collect logs (Allow to fail) (RUN_ONCE)'
+          exec_name: sample_pass
+          docs:
+            - 'We collect any pre-existing logs from before deletes such logs '
+            - 'on the DUT. Any logs collection are not critical, and we marks '
+            - that action attempt to perform to avoid repeating it.
+          conditions:
+            - name: Android:Device is pingable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ping
+              docs:
+                - Verify that device is pingable.
+                - Limited to 15 seconds.
+                - Only for Mobile Harness box execution.
+            - name: Android is accessible (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_access
+              docs:
+                - Validate is Andoid OS is accessible by reading data from the host.
+            - name: Confirm log collection info does not exist
+              exec_name: cros_confirm_file_not_exists
+              exec_args:
+                - target_file:log_collection_info
+              docs:
+                - 'We need to check whether the log collection info file already '
+                - 'exists in the file system. A pre-existing file indicates that '
+                - 'the collection of any pre-existing logs has already been '
+                - tried to be collected.
+          dependencies:
+            - name: Create log collection info (RUN_ONCE)
+              exec_name: cros_create_log_collection_info
+              exec_args:
+                - info_file:log_collection_info
+              docs:
+                - 'When the log collection completes, we create an info file that '
+                - indicates the successful completion of the collection process.
+              conditions:
+                - name: Confirm log collection info does not exist
+                  exec_name: cros_confirm_file_not_exists
+                  exec_args:
+                    - target_file:log_collection_info
+                  docs:
+                    - 'We need to check whether the log collection info file already '
+                    - 'exists in the file system. A pre-existing file indicates that '
+                    - 'the collection of any pre-existing logs has already been '
+                    - tried to be collected.
+            - name: 'Android: Collect dmesg logs from DUT (Allow to fail)'
+              exec_name: cros_dmesg
+              exec_args:
+                - device_type:dut
+                - human_readable:false
+              docs:
+                - Collect the entire output of dmesg
         - name: Read bootId
           exec_name: cros_read_bootid
           exec_args:

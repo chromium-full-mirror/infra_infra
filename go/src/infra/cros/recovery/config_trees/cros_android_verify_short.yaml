@@ -1000,6 +1000,16 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: 'Android: Collect logs (Allow to fail) (''sample_pass'') (RUN_ONCE)'
+          conditions:
+            - name: Android:Device is pingable ('cros_ping') (ALWAYS_RUN) (time:'15s')
+            - name: Android is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+            - name: Confirm log collection info does not exist ('cros_confirm_file_not_exists')
+          dependencies:
+            - name: Create log collection info ('cros_create_log_collection_info') (RUN_ONCE)
+              conditions:
+                - name: Confirm log collection info does not exist ('cros_confirm_file_not_exists')
+            - name: 'Android: Collect dmesg logs from DUT (Allow to fail) (''cros_dmesg'')'
         - name: Read bootId ('cros_read_bootid')
           recoveries:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
