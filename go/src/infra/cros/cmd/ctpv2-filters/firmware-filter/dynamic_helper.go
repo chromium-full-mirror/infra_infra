@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/interfaces"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/test_plan"
 )
 
 const (
@@ -87,9 +88,17 @@ func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.Inte
 		deviceID = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
 	}
 	taskID := common.NewTaskIdentifier(CrosFwProvision).AddDeviceId(deviceID)
-	containerBuilders := []*builders.ContainerBuilder{
-		newFirmwareProvisionContainer(taskID),
+	containerBuilders := []*builders.ContainerBuilder{}
+
+	// cros-dut isn't started when provisioning an AlOS device. The al-provision-filter
+	// replaces the entire list of containers to start and cros-dut gets dropped.
+	// cros-fw-provision requires cros-dut, so we add the container when
+	// targeting Android.
+	if test_plan.IsAlRun(req) {
+		containerBuilders = append(containerBuilders, helpers.NewCrosDutContainer(deviceID))
 	}
+
+	containerBuilders = append(containerBuilders, newFirmwareProvisionContainer(taskID))
 
 	return helpers.GenerateProvisionRequest(
 		req, taskID, deviceID,

@@ -48,6 +48,11 @@ func TestGoldenFile(t *testing.T) {
 		FirmwareByBoard: "nissa/firmware_from_source.tar.bz2",
 		ArtifactLink:    "gs://chromeos-image-archive/firmware-nissa-15217.B-branch/R109-15217.894.0-1-8717312278391894769",
 	}
+	firmwareBuilds["brya"] = FirmwareBranchBuild{
+		Builder:         "firmware-brya-14505.B-branch",
+		FirmwareByBoard: "brya/firmware_from_source.tar.bz2",
+		ArtifactLink:    "gs://chromeos-image-archive/firmware-brya-14505.B-branch-firmware/R100-14505.682.0",
+	}
 	ecMilestoneBuilds := make(map[string]map[int]FirmwareBranchBuild)
 	ecMilestoneBuilds["rex"] = make(map[int]FirmwareBranchBuild)
 	ecMilestoneBuilds["rex"][134] = FirmwareBranchBuild{
@@ -69,6 +74,9 @@ func TestGoldenFile(t *testing.T) {
 		}
 		if bucket == "chromeos-image-archive" && branchPrefix == "firmware-nissa-15217." && release == "R109-" && version == "15217.608.0" && suffix == "nissa/firmware_from_source.tar.bz2" && board == "nissa" {
 			return "gs://chromeos-image-archive/firmware-nissa-15217.B-branch-firmware/R109-15217.608.0/nissa/firmware_from_source.tar.bz2", nil
+		}
+		if bucket == "chromeos-image-archive" && branchPrefix == "firmware-brya-14505." && release == "R100-" && version == "14505.682.0" && suffix == "brya/firmware_from_source.tar.bz2" && board == "brya" {
+			return "gs://chromeos-image-archive/firmware-brya-14505.B-branch-firmware/R100-14505.682.0/brya/firmware_from_source.tar.bz2", nil
 		}
 		return "", fmt.Errorf("Unexpected args bucket=%q branchPrefix=%q release=%q, version=%q suffix=%q board=%q", bucket, branchPrefix, release, version, suffix, board)
 	}
@@ -108,6 +116,14 @@ func TestGoldenFile(t *testing.T) {
 				"new_bios_rw": "15217.608.0",
 				"new_ec":      "15217.608.0",
 			},
+			FirmwareBuilds: firmwareBuilds,
+		}},
+		// [5] AL FAFT FW Qual request
+		{"testdata/al_input1.textpb", "testdata/al_output1.textpb", &FirmwareSpecs{
+			Ro:             "14505.682.0",
+			ECRO:           "14505.682.0",
+			Rw:             "gs://chromeos-image-archive/firmware-android-brya-14505.782.B-branch-firmware/R100-14505.782.212/brya/firmware_from_source.tar.bz2",
+			ECRW:           "gs://chromeos-image-archive/firmware-android-brya-14505.782.B-branch-firmware/R100-14505.782.212/brya/firmware_from_source.tar.bz2",
 			FirmwareBuilds: firmwareBuilds,
 		}},
 	} {

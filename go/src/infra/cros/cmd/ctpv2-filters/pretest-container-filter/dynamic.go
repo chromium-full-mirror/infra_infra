@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -17,33 +16,8 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
 	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/test_plan"
 )
-
-const (
-	alRunKey = "is_al_run"
-)
-
-func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) string {
-	for _, arg := range req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs() {
-		if strings.EqualFold(arg.GetFlag(), flag) {
-			return arg.GetValue()
-		}
-	}
-	return ""
-}
-
-func isAlRun(req *api.InternalTestplan) bool {
-	alRunValue := suiteExecutionMetadataArgValue(req, alRunKey)
-	if alRunValue == "" {
-		return false
-	}
-	alRun, err := strconv.ParseBool(alRunValue)
-	if err != nil {
-		log.Printf("Unable to get value of %s due to: %q, defaulting to false", alRunKey, err)
-		return false
-	}
-	return alRun
-}
 
 // InsertContainer appends the task to launch the container.
 func InsertContainer(req *api.InternalTestplan, gcu *PreTestContainerUpdater, log *log.Logger) error {
@@ -61,7 +35,7 @@ func InsertContainer(req *api.InternalTestplan, gcu *PreTestContainerUpdater, lo
 	}
 
 	// If using AL, then switch network to adb.
-	if isAlRun(req) {
+	if test_plan.IsAlRun(req) {
 		log.Printf("AL run detected")
 		containerBuilder.Network = "adb-network"
 	}
@@ -102,7 +76,7 @@ func AddContainerArg(req *api.InternalTestplan, gcu *PreTestContainerUpdater, lo
 
 	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.CrosTest))
 
-	if isAlRun(req) {
+	if test_plan.IsAlRun(req) {
 		// If using AL, then we need to pass the argument as a "param"
 		// We also need to pass host/port separately as args are expected to be
 		// delimited by :.
