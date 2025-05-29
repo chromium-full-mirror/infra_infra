@@ -130,3 +130,36 @@ func TestGetTestPlanIterations(t *testing.T) {
 		t.Fatal("Testplan iterations field was expected to be empty, the field was populated")
 	}
 }
+
+func TestGetTestPlanIgnoreVariantCategory(t *testing.T) {
+	type IgnoreVariantCategoryTest struct {
+		name           string
+		input          *suschpb.SchedulerConfig
+		expectedResult bool
+	}
+	ignoreVcTests := []IgnoreVariantCategoryTest{
+		{
+			name:           "Flag True",
+			input:          &suschpb.SchedulerConfig{RunOptions: &suschpb.SchedulerConfig_RunOptions{IgnoreVariantCategory: true}},
+			expectedResult: true,
+		},
+		{
+			name:           "Flag False",
+			input:          &suschpb.SchedulerConfig{RunOptions: &suschpb.SchedulerConfig_RunOptions{IgnoreVariantCategory: false}},
+			expectedResult: false,
+		},
+		{
+			name:           "Empty Flag",
+			input:          &suschpb.SchedulerConfig{RunOptions: &suschpb.SchedulerConfig_RunOptions{}},
+			expectedResult: false,
+		},
+	}
+
+	for _, test := range ignoreVcTests {
+		testPlan := getTestPlan(test.input)
+		actual := testPlan.GetIgnoreVariantCategory()
+		if testPlan.GetIgnoreVariantCategory() != test.expectedResult {
+			t.Fatalf("Test %s: EXPECTED - %t , ACTUAL -  %t", test.name, test.expectedResult, actual)
+		}
+	}
+}

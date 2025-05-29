@@ -153,8 +153,7 @@ func (*LegacyHWFilter) Executor(req *api.InternalTestplan, log *log.Logger, comm
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()
 	hwTargetsLegacy := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()
 	hwTargetsLegacy2 := hwTargetsFromReq(req)
-	// TODO: (thandakas) Update input with new InternalTestPlan field when available, setting to false to mimic existing behavior
-	ignoreVarCat := false
+	ignoreVarCat := req.GetSuiteInfo().GetSuiteRequest().GetIgnoreVariantCategory()
 
 	// Step 2.  Iterate through the tests, adding the HW to each test
 	// Include the deps from the test metadata into the HW.
@@ -162,6 +161,7 @@ func (*LegacyHWFilter) Executor(req *api.InternalTestplan, log *log.Logger, comm
 		testCaseVarCat := tc.GetMetadata().GetTestCaseInfo().GetVariantCategory().GetValue()
 		// Skip if ignoreVarCat flag is set and variant category is populated
 		if ignoreVarCat && testCaseVarCat != "" {
+			log.Printf("IgnoreVariantCategory: Skipping test %s with variantCategory %s", tc.Name, testCaseVarCat)
 			continue
 		}
 		tcDeps := tcDeps(tc)

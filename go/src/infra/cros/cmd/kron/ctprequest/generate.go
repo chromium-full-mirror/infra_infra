@@ -146,6 +146,7 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 		},
 		EnableAutotestSharding: config.GetEnableAutotestSharding(),
 		TagCriteria:            config.GetRunOptions().GetTagCriteria(),
+		IgnoreVariantCategory:  config.GetRunOptions().GetIgnoreVariantCategory(),
 	}
 
 	if config.GetRunOptions().GetMaxInShard() > 0 {

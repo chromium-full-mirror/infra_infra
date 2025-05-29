@@ -323,13 +323,14 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		SuiteRequest: &testapi.SuiteRequest_TestSuite{
 			TestSuite: buildTestSuite(v1),
 		},
-		MaximumDuration: v1.GetParams().GetTime().GetMaximumDuration(),
-		TestArgs:        getTestArgs(v1),
-		AnalyticsName:   getAnalyticsName(v1),
-		MaxInShard:      v1.GetTestPlan().GetMaxInShard(),
-		DddSuite:        IsDDDSuite(v1),
-		RetryCount:      GetRetryCount(v1),
-		Iterations:      v1.GetTestPlan().GetIterations(),
+		MaximumDuration:       v1.GetParams().GetTime().GetMaximumDuration(),
+		TestArgs:              getTestArgs(v1),
+		AnalyticsName:         getAnalyticsName(v1),
+		MaxInShard:            v1.GetTestPlan().GetMaxInShard(),
+		DddSuite:              IsDDDSuite(v1),
+		RetryCount:            GetRetryCount(v1),
+		Iterations:            v1.GetTestPlan().GetIterations(),
+		IgnoreVariantCategory: v1.GetTestPlan().GetIgnoreVariantCategory(),
 	}
 }
 
