@@ -32,6 +32,7 @@ type ContainerBuilder struct {
 	ContainerTemplate *api.Template
 	DynamicDeps       []*api.DynamicDep
 	AdditionalVolumes []string
+	Envs              []string
 	Network           string
 }
 
@@ -87,6 +88,7 @@ func (builder *ContainerBuilder) Build() *api.ContainerRequest {
 					BinaryArgs:        binaryArgs,
 					DockerArtifactDir: builder.ContainerArtifactDir,
 					AdditionalVolumes: append(builder.AdditionalVolumes, CommonContainerVolumes()...),
+					Env:               builder.Envs,
 				},
 			},
 		}

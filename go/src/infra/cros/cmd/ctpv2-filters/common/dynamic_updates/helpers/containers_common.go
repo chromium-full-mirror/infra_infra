@@ -38,6 +38,9 @@ func NewServoNexusContainer(deviceId *common.DeviceIdentifier) *builders.Contain
 	)
 	servoContainerBuilder.Network = "adbnet"
 
+	tlsVars := []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
+	servoContainerBuilder.Envs = tlsVars
+
 	return servoContainerBuilder
 }
 
