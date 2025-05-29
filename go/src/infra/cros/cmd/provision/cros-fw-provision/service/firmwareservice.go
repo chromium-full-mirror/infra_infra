@@ -107,7 +107,7 @@ type versionJSON struct {
 // NewFirmwareService initializes a FirmwareService.
 func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	servoClient api.ServodServiceClient, cacheServer url.URL, board, model string,
-	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo, isAndroid bool) (*FirmwareService, api.InstallResponse_Status, error) {
+	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo) (*FirmwareService, api.InstallResponse_Status, error) {
 	metadata := new(api.FirmwareProvisionInstallMetadata)
 	if req.GetMetadata().MessageIs(metadata) {
 		if err := req.GetMetadata().UnmarshalTo(metadata); err != nil {
@@ -118,6 +118,11 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	}
 	detailedRequest := metadata.FirmwareConfig
 	dutAdapter := commonutils.NewServiceAdapter(dutServer, false /*noReboot*/)
+
+	isAndroid := false
+	if metadata.GetOs() == api.FirmwareProvisionInstallMetadata_ANDROID {
+		isAndroid = true
+	}
 
 	durableTmpDir := "/var/tmp"
 	if isAndroid {

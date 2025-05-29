@@ -48,9 +48,8 @@ type FWProvisionServer struct {
 
 	cacheServer url.URL
 
-	board     string
-	model     string
-	isAndroid bool
+	board string
+	model string
 }
 
 // NewFWProvisionServer returns a new FWProvisionServer, a closer function, and an error.
@@ -111,12 +110,9 @@ func (ps *FWProvisionServer) StartUp(ctx context.Context, req *api.ProvisionStar
 	case *labapi.Dut_Chromeos:
 		dutModel = dutType.Chromeos.DutModel
 		servoConfig = dutType.Chromeos.GetServo()
-		ps.isAndroid = false
-
 	case *labapi.Dut_Android_:
 		dutModel = dutType.Android.DutModel
 		servoConfig = dutType.Android.GetServo()
-		ps.isAndroid = true
 	default:
 		return nil, errors.New("StartUp: dut.chromeos or dut.android is required")
 	}
@@ -234,7 +230,7 @@ func (ps *FWProvisionServer) doProvision(ctx context.Context, req *api.InstallRe
 	}()
 
 	fwService, status, err := firmwareservice.NewFirmwareService(ctx, ps.dutServer, ps.servoClient, ps.cacheServer,
-		ps.board, ps.model, false, req, ps.servoConfig, ps.isAndroid)
+		ps.board, ps.model, false, req, ps.servoConfig)
 	if err != nil {
 		ps.log.Printf("Failed to initialize Firmware Service: %v", err)
 		response.Status = status
