@@ -60,6 +60,18 @@ func (c *testRun) Run(a subcommands.Application, args []string, env subcommands.
 }
 
 func (c *testRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	if _, ok := c.testCommonFlags.addedDims["dut_name"]; ok {
+		c.printer.WriteTextStderr(`#################################################################
+# NOTE: You can schedule your test on a specific device 	#
+# If you go that route, all other dims will be ignored. While   #
+# this allows you to force run on a given DUT, but it may also 	#
+# result in running on DUT even if dut_state is not ready.	#
+#								#
+# Instead, use -dims to tell crosfleet what kind of DUTs your	#
+# task needs. This allows crosfleet much better shot at finding	#
+# the first available DUT that's compatible with your use case.	#
+#################################################################`)
+	}
 	bbService := c.envFlags.Env().BuildbucketService
 	ctx := cli.GetContext(a, c, env)
 	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, args, testCmdName, bbService, c.authFlags, c.printer); err != nil {

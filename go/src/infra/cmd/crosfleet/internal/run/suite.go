@@ -103,6 +103,18 @@ func (c *suiteRun) Run(a subcommands.Application, args []string, env subcommands
 }
 
 func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx context.Context, ctpBBClient buildbucket.Client, ufsClient ufs.Client) error {
+	if _, ok := c.testCommonFlags.addedDims["dut_name"]; ok {
+		c.printer.WriteTextStderr(`#################################################################
+# NOTE: You can schedule your suite on a specific device 	#
+# If you go that route, all other dims will be ignored. While   #
+# this allows you to force run on a given DUT, but it may also 	#
+# result in running on DUT even if dut_state is not ready.	#
+#								#
+# Instead, use -dims to tell crosfleet what kind of DUTs your	#
+# task needs. This allows crosfleet much better shot at finding	#
+# the first available DUT that's compatible with your use case.	#
+#################################################################`)
+	}
 	bbService := c.envFlags.Env().BuildbucketService
 	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, args, suiteCmdName, bbService, c.authFlags, c.printer); err != nil {
 		return err
