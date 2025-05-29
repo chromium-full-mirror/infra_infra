@@ -1181,6 +1181,7 @@ suite_info {
                       ec_ro_payload { firmware_image_path { host_type: GS path: "${ecFwRo}" } }
                       ec_rw_payload { firmware_image_path { host_type: GS path: "${ecFwRw}" } }
                     }
+                    os: CHROMEOS
                   }
                 }
               }

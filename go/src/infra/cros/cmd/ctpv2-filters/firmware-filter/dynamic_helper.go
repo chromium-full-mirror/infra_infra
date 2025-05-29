@@ -103,13 +103,13 @@ func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.Inte
 	return helpers.GenerateProvisionRequest(
 		req, taskID, deviceID,
 		containerBuilders,
-		DH.newFirmwareInstallRequest(),
+		DH.newFirmwareInstallRequest(test_plan.IsAlRun(req)),
 	)
 }
 
 // newFirmwareInstallRequest creates placeholder firmware configs
 // based on the provided firmware specs.
-func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest() *interfaces.ProvisionTaskInstallRequest {
+func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest(isAndroid bool) *interfaces.ProvisionTaskInstallRequest {
 	var ro *gobuildapi.FirmwarePayload
 	var rw *gobuildapi.FirmwarePayload
 	var ecro *gobuildapi.FirmwarePayload
@@ -133,6 +133,11 @@ func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest() *interface
 		ecrw = newFirmwarePayload(FirmwareECRW.WithIndex(DH.count).AsPlaceholder())
 	}
 
+	var os = api.FirmwareProvisionInstallMetadata_CHROMEOS
+	if isAndroid {
+		os = api.FirmwareProvisionInstallMetadata_ANDROID
+	}
+
 	fwProvisionMetadata, _ := anypb.New(&api.FirmwareProvisionInstallMetadata{
 		FirmwareConfig: &gobuildapi.FirmwareConfig{
 			MainRoPayload: ro,
@@ -140,6 +145,7 @@ func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest() *interface
 			MainRwPayload: rw,
 			EcRwPayload:   ecrw,
 		},
+		Os: os,
 	})
 	return &interfaces.ProvisionTaskInstallRequest{
 		StaticMetadata: fwProvisionMetadata,

@@ -2316,6 +2316,7 @@ suite_info {
                       main_ro_payload { firmware_image_path { host_type: GS path: "${apFwRo}" } }
                       ec_ro_payload { firmware_image_path { host_type: GS path: "${apFwRo}" } }
                     }
+                    os: CHROMEOS
                   }
                 }
               }

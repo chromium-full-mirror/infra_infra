@@ -437,6 +437,7 @@ suite_info {
                         }
                       }
                     }
+                    os: ANDROID
                   }
                 }
               }
