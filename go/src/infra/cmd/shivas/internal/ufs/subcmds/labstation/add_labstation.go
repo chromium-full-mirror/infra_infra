@@ -24,6 +24,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
@@ -194,12 +195,17 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
 
 		// Trigger Deployment Job
-		unitName := params.Labstation.GetHostname()
-		deployBuilderHive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+		labstationName := params.Labstation.GetHostname()
+		deployBuilderHive := ufsUtil.GetHiveForDut(labstationName, utils.GetHive(ctx, ic, labstationName))
 		realBuilderName := buildbucket.BuilderNamePerHive(utils.DeploymentBuilderName, deployBuilderHive)
-		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
+		adminParams, err := utils.PrepareAdminParams(ctx, labstationName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
+		di, err := device.GetDeviceInfo(ctx, ic, labstationName)
+		if err != nil {
+			fmt.Fprintf(a.GetErr(), "%s: failed to get device info %s\n", labstationName, err)
+			continue
 		}
 
 		_, _, dErr := buildbucket.CreateTask(
@@ -208,7 +214,8 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 			adminParams.SchedukeClient,
 			buildbucket.CipdVersion(c.latestVersion),
 			&buildbucket.Params{
-				UnitName:       unitName,
+				UnitName:       labstationName,
+				UnitID:         di.ID,
 				TaskName:       string(buildbucket.Deploy),
 				BuilderName:    realBuilderName,
 				BuilderBucket:  c.deployBBBucket,
@@ -229,7 +236,7 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 			},
 			"shivas",
 		)
-		resTable.RecordResult(swarmingOp, unitName, dErr)
+		resTable.RecordResult(swarmingOp, labstationName, dErr)
 	}
 	// Print session URL if atleast one of the tasks was deployed.
 	if resTable.IsSuccessForAny(swarmingOp) {

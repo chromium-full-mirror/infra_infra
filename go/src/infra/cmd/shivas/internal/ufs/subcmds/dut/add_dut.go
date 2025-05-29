@@ -26,6 +26,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	swarming "go.chromium.org/infra/libs/swarming"
@@ -331,6 +332,11 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduling client").Err()
 		}
+		di, err := device.GetDeviceInfo(ctx, ic, unitName)
+		if err != nil {
+			fmt.Fprintf(a.GetErr(), "%s: failed to get device info %s\n", unitName, err)
+			continue
+		}
 
 		url, _, err := buildbucket.CreateTask(
 			ctx,
@@ -339,6 +345,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			buildbucket.CipdVersion(c.latestVersion),
 			&buildbucket.Params{
 				UnitName:           unitName,
+				UnitID:             di.ID,
 				TaskName:           string(buildbucket.Deploy),
 				BuilderName:        realBuilderName,
 				BuilderBucket:      c.deployBBBucket,
