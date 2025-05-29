@@ -23,8 +23,9 @@ import (
 )
 
 var (
+	// TODO(b/406307693): Switch al-dev to throttled.
 	DefaultBranch = "git_main-al-dev"
-	PDKBranch     = "partner-brya-temp-main-al-dev-fs"
+	PDKBranch     = "partner-brya-temp-main-throttled-fs"
 )
 
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
