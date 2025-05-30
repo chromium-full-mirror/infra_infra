@@ -11,10 +11,12 @@ import (
 	"log"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/finder"
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
@@ -24,8 +26,9 @@ type G3MoblyFinder struct {
 	*common.AbstractFinder
 }
 
-func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
-	src, err := GetSourceData(context.Background(), "mobly_priv_artifacts/out")
+func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger, commonParams *commonlib.CommonFilterParams) ([]*api.TestCaseMetadata, error) {
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{}, commonlib.AllPurposeCloudScope)
+	src, err := GetSourceData(context.Background(), "mobly_priv_artifacts/out", option.WithTokenSource(tokenSource))
 	if err != nil {
 		log.Println("Unable to fetch data from GCS: ", err)
 	}
@@ -36,13 +39,13 @@ func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger) ([]*api.
 	return finder.MatchedTestsForSuites(metadata, testSuites)
 }
 
-func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
+func (ex *G3MoblyFinder) FindTestsAB(commonParams *commonlib.CommonFilterParams) (*api.InternalTestplan, error) {
 	suites, err := TPtoSuite(ex.Testplan)
 	if err != nil {
 		ex.Logger.Println("unable to convert testplan to suite: ", err)
 		return nil, err
 	}
-	matchingTests, err := matchTestsforG3Mobly(suites, ex.Logger)
+	matchingTests, err := matchTestsforG3Mobly(suites, ex.Logger, commonParams)
 	if err != nil {
 		ex.Logger.Println("unable to match test:", err)
 	}
@@ -59,8 +62,8 @@ func NewG3MoblyFinder(ctx context.Context, req *api.InternalTestplan, log *log.L
 	return &G3MoblyFinder{AbstractFinder: absExec}
 }
 
-func GetSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
-	client, err := storage.NewClient(ctx)
+func GetSourceData(ctx context.Context, gcsBasePath string, clientOpts ...option.ClientOption) ([][]byte, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}

@@ -28,7 +28,7 @@ import (
 var UpdateShaStorage = internal.UpdateShaStorage
 
 // LuciBuildExecution represents build executions.
-func LuciBuildExecution(targetConfigs []string) {
+func LuciBuildExecution() {
 	build.RegisterInputProperty[*struct{}]("")
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
@@ -44,7 +44,7 @@ func LuciBuildExecution(targetConfigs []string) {
 			if isProd {
 				label = common.LabelProd
 			}
-			err := executeContainerUprev(ctx, dockerKeyFile, label, label, targetConfigs)
+			err := executeContainerUprev(ctx, dockerKeyFile, label, label, []string{})
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())

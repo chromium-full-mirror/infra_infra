@@ -10,6 +10,8 @@ import (
 	"log"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 type FinderHarness string
@@ -20,7 +22,7 @@ type FinderInterface interface {
 	GetFinderHarness() FinderHarness
 
 	// ExecuteCommand executes the provided command via current executor.
-	FindTestsAB() (*api.InternalTestplan, error)
+	FindTestsAB(*common.CommonFilterParams) (*api.InternalTestplan, error)
 }
 
 // AbstractFinder satisfies the executor requirement that is common to all.

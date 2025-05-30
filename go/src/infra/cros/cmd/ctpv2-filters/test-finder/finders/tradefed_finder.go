@@ -11,10 +11,12 @@ import (
 	"log"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/finder"
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
@@ -24,8 +26,9 @@ type TradefedFinder struct {
 	*common.AbstractFinder
 }
 
-func matchTestsForTradefed(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
-	src, err := GetTFSourceData(context.Background(), "cros-xts-metadata")
+func matchTestsForTradefed(testSuites []*api.TestSuite, log *log.Logger, commonParams *commonlib.CommonFilterParams) ([]*api.TestCaseMetadata, error) {
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{}, commonlib.AllPurposeCloudScope)
+	src, err := GetTFSourceData(context.Background(), "cros-xts-metadata", option.WithTokenSource(tokenSource))
 	if err != nil {
 		log.Println("Unable to fetch data from GCS: ", err)
 	}
@@ -37,14 +40,14 @@ func matchTestsForTradefed(testSuites []*api.TestSuite, log *log.Logger) ([]*api
 	return finder.MatchedTestsForSuites(metadata, testSuites)
 }
 
-func (ex *TradefedFinder) FindTestsAB() (*api.InternalTestplan, error) {
+func (ex *TradefedFinder) FindTestsAB(commonParams *commonlib.CommonFilterParams) (*api.InternalTestplan, error) {
 	ex.Logger.Println("Looking for TF Tests!")
 	suites, err := TPtoSuite(ex.Testplan)
 	if err != nil {
 		ex.Logger.Println("unable to convert testplan to suite: ", err)
 		return nil, err
 	}
-	matchingTests, err := matchTestsForTradefed(suites, ex.Logger)
+	matchingTests, err := matchTestsForTradefed(suites, ex.Logger, commonParams)
 	if err != nil {
 		ex.Logger.Println("unable to match test:", err)
 	}
@@ -65,8 +68,8 @@ func NewTradefedFinder(ctx context.Context, req *api.InternalTestplan, log *log.
 	return &TradefedFinder{AbstractFinder: absExec}
 }
 
-func GetTFSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
-	client, err := storage.NewClient(ctx)
+func GetTFSourceData(ctx context.Context, gcsBasePath string, clientOpts ...option.ClientOption) ([][]byte, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}

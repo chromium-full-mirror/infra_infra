@@ -66,13 +66,16 @@ func (cc *CLICommand) Run() error {
 	}
 	log.Printf("Using container tag: %q", tag)
 	log.Printf("Using CIPD tag: %q", cc.args.cipdLabel)
-	if n := cc.args.targetConfig; n != "" {
-		log.Printf("Target to build only %q config.", n)
-	}
 	if cc.args.runAsAdmin {
 		log.Printf("Run command as Admin!")
 	}
-	targets := strings.Split(cc.args.targetConfig, ",")
+	targets := []string{}
+	if cc.args.targetConfig == "all" {
+		log.Printf("Building all configs.")
+	} else if cc.args.targetConfig != "" {
+		targets = strings.Split(cc.args.targetConfig, ",")
+		log.Printf("Building provided configs: %s", targets)
+	}
 	executions.LocalBuildExecution(cc.args.cipdLabel, tag, targets, cc.args.runAsAdmin)
 	return nil
 }

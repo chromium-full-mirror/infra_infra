@@ -29,7 +29,7 @@ func NewTestFinderFilter() servertemplate.Filter {
 func (*TestFinderFilter) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
-	err := service.FindTests(ctx, req, log)
+	err := service.FindTests(ctx, req, log, commonParams)
 	if err != nil {
 		return nil, err
 	}

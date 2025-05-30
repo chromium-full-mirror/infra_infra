@@ -361,7 +361,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 		resp, err = ex.executeFilterCloudRun(ctx, cmd, step, filterReq, serviceName, serviceTag, cmd.IsPartnerRun)
 		// If no error found, return. Else will retry with the local container.
 		if err == nil {
-			return nil, err
+			return resp, err
 		}
 		logging.Infof(ctx, "Found Error: %s", err)
 

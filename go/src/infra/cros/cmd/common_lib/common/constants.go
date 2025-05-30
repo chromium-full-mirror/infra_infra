@@ -120,9 +120,10 @@ const (
 
 // Auth Scopes
 const (
-	DatastoreScope = "https://www.googleapis.com/auth/datastore"
-	BigqueryScope  = "https://www.googleapis.com/auth/bigquery"
-	MoblabScope    = "https://www.googleapis.com/auth/moblabapi"
+	AllPurposeCloudScope = "https://www.googleapis.com/auth/cloud-platform"
+	DatastoreScope       = "https://www.googleapis.com/auth/datastore"
+	BigqueryScope        = "https://www.googleapis.com/auth/bigquery"
+	MoblabScope          = "https://www.googleapis.com/auth/moblabapi"
 )
 
 // AL related constants

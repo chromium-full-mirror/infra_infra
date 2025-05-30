@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -23,8 +24,8 @@ import (
 )
 
 // GetAndroidBuildMoblySourceData pulls test metadata for Android build mobly tests.
-func GetAndroidBuildMoblySourceData(ctx context.Context, log *log.Logger, gcsBasePath string, dir string) ([]*api.TestCaseMetadata, error) {
-	client, err := storage.NewClient(ctx)
+func GetAndroidBuildMoblySourceData(ctx context.Context, log *log.Logger, gcsBasePath string, dir string, clientOpts ...option.ClientOption) ([]*api.TestCaseMetadata, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}
@@ -63,8 +64,8 @@ func GetAndroidBuildMoblySourceData(ctx context.Context, log *log.Logger, gcsBas
 // file which points at the default path.
 //
 // If object is empty, then "latest" is already returned.
-func PathOrLatest(ctx context.Context, gcsBasePath string, object string) (string, bool, error) {
-	client, err := storage.NewClient(ctx)
+func PathOrLatest(ctx context.Context, gcsBasePath string, object string, clientOpts ...option.ClientOption) (string, bool, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return "", false, fmt.Errorf("storage.NewClient: %w", err)
 	}

@@ -10,9 +10,12 @@ import (
 	"fmt"
 	"log"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/finder"
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
@@ -30,9 +33,9 @@ func NewAndroidBuildMoblyFinder(ctx context.Context, req *api.InternalTestplan, 
 	return &AndroidBuildMoblyFinder{AbstractFinder: absExec}
 }
 
-func (ex *AndroidBuildMoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
+func (ex *AndroidBuildMoblyFinder) FindTestsAB(commonParams *commonlib.CommonFilterParams) (*api.InternalTestplan, error) {
 	ex.Logger.Println("Searching for Android Build Mobly Tests...")
-	matchingTests, err := matchTestsforAndroidBuildMobly(context.Background(), ex.Testplan, ex.Logger)
+	matchingTests, err := matchTestsforAndroidBuildMobly(context.Background(), ex.Testplan, ex.Logger, commonParams)
 	if err != nil {
 		ex.Logger.Println("unable to match test:", err)
 	}
@@ -45,18 +48,19 @@ func (ex *AndroidBuildMoblyFinder) FindTestsAB() (*api.InternalTestplan, error) 
 	return ex.Testplan, nil
 }
 
-func matchTestsforAndroidBuildMobly(ctx context.Context, tp *api.InternalTestplan, log *log.Logger) ([]*api.TestCaseMetadata, error) {
+func matchTestsforAndroidBuildMobly(ctx context.Context, tp *api.InternalTestplan, log *log.Logger, commonParams *commonlib.CommonFilterParams) ([]*api.TestCaseMetadata, error) {
 	suites, err := common.TestSuiteFromTestplan(tp)
 	if err != nil {
 		return nil, fmt.Errorf("unable to convert testplan to suite: %w", err)
 	}
 
-	dir, err := fetchBuildDirectory(ctx, tp, log, abGCSDir)
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{}, commonlib.AllPurposeCloudScope)
+	dir, err := fetchBuildDirectory(ctx, tp, log, abGCSDir, option.WithTokenSource(tokenSource))
 	if err != nil {
 		return nil, fmt.Errorf("unable to fetch artifact directory: %w", err)
 	}
 
-	metadata, err := GetAndroidBuildMoblySourceData(context.Background(), log, abGCSDir, dir)
+	metadata, err := GetAndroidBuildMoblySourceData(context.Background(), log, abGCSDir, dir, option.WithTokenSource(tokenSource))
 	if err != nil {
 		return nil, fmt.Errorf("unable to fetch data from GCS: %w", err)
 	}
@@ -65,7 +69,7 @@ func matchTestsforAndroidBuildMobly(ctx context.Context, tp *api.InternalTestpla
 	return finder.MatchedTestsForSuites(metadata, suites)
 }
 
-func fetchBuildDirectory(ctx context.Context, tp *api.InternalTestplan, log *log.Logger, gcsBasePath string) (string, error) {
+func fetchBuildDirectory(ctx context.Context, tp *api.InternalTestplan, log *log.Logger, gcsBasePath string, clientOpts ...option.ClientOption) (string, error) {
 	buildID, err := common.AndroidBuildIDFromTestplan(tp)
 	if err != nil {
 		// Build ID not available for Kron scheduled tests.
@@ -74,7 +78,7 @@ func fetchBuildDirectory(ctx context.Context, tp *api.InternalTestplan, log *log
 		buildID = ""
 	}
 
-	dir, exists, err := PathOrLatest(ctx, gcsBasePath, buildID)
+	dir, exists, err := PathOrLatest(ctx, gcsBasePath, buildID, clientOpts...)
 	if err != nil {
 		return "", err
 	}

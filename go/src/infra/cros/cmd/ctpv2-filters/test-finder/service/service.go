@@ -11,16 +11,17 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/finders"
 )
 
-func FindTests(ctx context.Context, req *api.InternalTestplan, log *log.Logger) error {
+func FindTests(ctx context.Context, req *api.InternalTestplan, log *log.Logger, commonParams *commonlib.CommonFilterParams) error {
 	finders := getFindersFromRequest(ctx, req, log)
 	log.Println("In Find tests.")
 	allResults := []*api.InternalTestplan{}
 	for _, finder := range finders {
-		rspn, err := finder.FindTestsAB()
+		rspn, err := finder.FindTestsAB(commonParams)
 		if err != nil {
 			// TBD on if we want 1 finder to stop all, or isolate them.
 			return err
