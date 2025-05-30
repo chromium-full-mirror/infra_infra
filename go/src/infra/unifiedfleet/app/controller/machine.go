@@ -1367,10 +1367,10 @@ func updateDeviceLabelsForMachine(ctx context.Context, machine *ufspb.Machine, m
 		if err != nil {
 			logging.Infof(ctx, "fail to get hosts for machine %s", machineId)
 		} else if len(machinelses) != 0 {
-			if err = updateChromeOSDeviceLabels(ctx, hc, machinelses[0], machine, true); err != nil {
+			if err = updateChromeOSDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelses[0], Machine: machine}, true); err != nil {
 				return errors.Annotate(err, "Error updating device labels").Err()
 			}
-			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelses[0], true); err != nil {
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelses[0], Machine: machine}, true); err != nil {
 				return errors.Annotate(err, "Error updating device labels").Err()
 			}
 		}

@@ -348,7 +348,8 @@ func validateLSEsShareHive(ctx context.Context, lseNames []string) error {
 
 // updateSchedulingUnitDeviceLabels updates the DeviceLabels for a SchedulingUnit that references the given ChromeOS device
 // This function must be called in a transaction
-func updateSchedulingUnitDeviceLabels(ctx context.Context, hc *HistoryClient, lse *ufspb.MachineLSE, update bool) error {
+func updateSchedulingUnitDeviceLabels(ctx context.Context, hc *HistoryClient, updateData *ufspb.ChromeOSDeviceData, update bool) error {
+	lse := updateData.GetLabConfig()
 	if lse == nil {
 		return errors.New("updateSchedulingUnitDeviceLabels - MachineLSE is nil")
 	}
@@ -369,7 +370,7 @@ func updateSchedulingUnitDeviceLabels(ctx context.Context, hc *HistoryClient, ls
 			logging.Infof(ctx, "updateSchedulingUnitDeviceLabels - Could not find existing device labels. Continuing with update")
 		}
 	}
-	newDeviceLabels, err = GetSchedulingUnitLabels(ctx, su, []*ufspb.MachineLSE{lse})
+	newDeviceLabels, err = GetSchedulingUnitLabels(ctx, su, []*ufspb.ChromeOSDeviceData{updateData})
 	if err != nil {
 		return errors.Annotate(err, "updateSchedulingUnitDeviceLabels - Error generating device labels").Err()
 	}

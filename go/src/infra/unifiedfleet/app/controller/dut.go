@@ -138,7 +138,7 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 		hc.LogMachineLSEChanges(nil, machinelse)
 
 		// Create corresponding device labels
-		if err = updateChromeOSDeviceLabels(ctx, hc, machinelse, machine, false); err != nil {
+		if err = updateChromeOSDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelse, Machine: machine}, false); err != nil {
 			return errors.Annotate(err, "Error creating device labels").Err()
 		}
 
@@ -347,10 +347,10 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 		hc.LogMachineLSEChanges(oldMachinelse, machinelse)
 
 		// Update corresponding device labels
-		if err = updateChromeOSDeviceLabels(ctx, hc, machinelse, machine, true); err != nil {
+		if err = updateChromeOSDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelse}, true); err != nil {
 			return errors.Annotate(err, "Error updating device labels").Err()
 		}
-		if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelse, true); err != nil {
+		if err = updateSchedulingUnitDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelse}, true); err != nil {
 			return errors.Annotate(err, "Error updating device labels").Err()
 		}
 
@@ -1030,12 +1030,14 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 			LabConfig: lse,
 		}, nil
 	}
-	return getChromeOSDeviceDataWithLSEOrMachine(ctx, lse, machine)
+	return getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse, Machine: machine})
 }
 
 // getChromeOSDeviceDataWithLSEOrMachine returns ChromeOSDeviceData using the provided lse/machine
 // Succeeds if at least one of lse and machine are non-nil
-func getChromeOSDeviceDataWithLSEOrMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.ChromeOSDeviceData, error) {
+func getChromeOSDeviceDataWithLSEOrMachine(ctx context.Context, updateData *ufspb.ChromeOSDeviceData) (*ufspb.ChromeOSDeviceData, error) {
+	lse := updateData.GetLabConfig()
+	machine := updateData.GetMachine()
 	if lse == nil && machine == nil {
 		return nil, fmt.Errorf("both the MachineLSE and Machine are nil")
 	}
@@ -1327,7 +1329,7 @@ func renameDUT(ctx context.Context, oldName, newName string, lse *ufspb.MachineL
 		return nil, err
 	}
 	// Update corresponding device labels
-	if err := updateChromeOSDeviceLabels(ctx, hc, newLse, machine, false); err != nil {
+	if err := updateChromeOSDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: newLse, Machine: machine}, false); err != nil {
 		return nil, errors.Annotate(err, "Error creating device labels").Err()
 	}
 
@@ -1483,7 +1485,8 @@ func validateUpdateTestData(ctx context.Context, hostname string) error {
 
 // updateChromeOSDeviceLabels updates the DeviceLabels for a DUT
 // This function must be called in a transaction
-func updateChromeOSDeviceLabels(ctx context.Context, hc *HistoryClient, lse *ufspb.MachineLSE, machine *ufspb.Machine, update bool) error {
+func updateChromeOSDeviceLabels(ctx context.Context, hc *HistoryClient, updateData *ufspb.ChromeOSDeviceData, update bool) error {
+	lse := updateData.GetLabConfig()
 	if lse == nil {
 		return errors.New("updateChromeOSDeviceLabels - MachineLSE is nil")
 	}
@@ -1500,7 +1503,7 @@ func updateChromeOSDeviceLabels(ctx context.Context, hc *HistoryClient, lse *ufs
 			logging.Infof(ctx, "updateChromeOSDeviceLabels - Could not find existing device labels for DUT %s. Continuing with update", lse.GetName())
 		}
 	}
-	newDeviceLabels, err = getChromeOSDeviceLabelsWithLSEAndMachine(ctx, lse, machine)
+	newDeviceLabels, err = getChromeOSDeviceLabelsWithExistingData(ctx, updateData)
 	if err != nil {
 		return errors.Annotate(err, "updateChromeOSDeviceLabels - Error generating device labels").Err()
 	}

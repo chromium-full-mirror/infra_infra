@@ -245,7 +245,7 @@ func GetMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Dev
 	if lse.GetChromeBrowserMachineLse() != nil {
 		return getBrowserHostLabels(lse), nil
 	} else if lse.GetChromeosMachineLse() != nil {
-		device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, lse, nil)
+		device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse})
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to get chromeos device data").Err()
 		}
@@ -262,13 +262,13 @@ func GetMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Dev
 	return nil, nil
 }
 
-func getChromeOSDeviceLabelsWithLSEAndMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.DeviceLabels, error) {
-	if lse.GetChromeosMachineLse() == nil {
+func getChromeOSDeviceLabelsWithExistingData(ctx context.Context, updateData *ufspb.ChromeOSDeviceData) (*ufspb.DeviceLabels, error) {
+	if updateData.GetLabConfig().GetChromeosMachineLse() == nil {
 		// Ignore other LSEs (eg. labstation)
 		return nil, nil
 	}
 
-	deviceData, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, lse, machine)
+	deviceData, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, updateData)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get chromeos device data").Err()
 	}
@@ -305,8 +305,8 @@ func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
 	}
 }
 
-func GetSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
-	dims, err := getSchedulingUnitSwarmingDimensions(ctx, su, lses)
+func GetSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, updateData []*ufspb.ChromeOSDeviceData) (*ufspb.DeviceLabels, error) {
+	dims, err := getSchedulingUnitSwarmingDimensions(ctx, su, updateData)
 	if err != nil {
 		return nil, err
 	}
@@ -314,32 +314,32 @@ func GetSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses
 	deviceLabels.Name = util.AddPrefix(util.SchedulingUnitCollection, su.GetName())
 	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT
 
-	if len(lses) > 0 {
-		deviceLabels.Realm = lses[0].GetRealm()
+	if len(updateData) > 0 {
+		deviceLabels.Realm = updateData[0].GetLabConfig().GetRealm()
 	}
 
 	return deviceLabels, nil
 }
 
-func getSchedulingUnitSwarmingDimensions(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*swarming.Dimensions, error) {
+func getSchedulingUnitSwarmingDimensions(ctx context.Context, su *ufspb.SchedulingUnit, updateData []*ufspb.ChromeOSDeviceData) (*swarming.Dimensions, error) {
 	var dutsDims []swarming.Dimensions
 	var botDimensions swarming.Dimensions
 	var lse *ufspb.MachineLSE
 	var err error
 	for _, hostname := range su.GetMachineLSEs() {
-		i := slices.IndexFunc(lses, func(l *ufspb.MachineLSE) bool { return l.GetName() == hostname })
+		i := slices.IndexFunc(updateData, func(d *ufspb.ChromeOSDeviceData) bool { return d.GetLabConfig().GetName() == hostname })
 		if i == -1 {
 			lse, err = GetMachineLSE(ctx, hostname)
 			if err != nil {
 				return nil, err
 			}
 		} else {
-			lse = lses[i]
+			lse = updateData[i].GetLabConfig()
 		}
 
 		// Get data based on device type
 		if lse.GetChromeosMachineLse() != nil {
-			device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, lse, nil)
+			device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse})
 			if err != nil {
 				return nil, errors.Annotate(err, "getSchedulingUnitSwarmingDimensions: failed to get chromeos device data").Err()
 			}

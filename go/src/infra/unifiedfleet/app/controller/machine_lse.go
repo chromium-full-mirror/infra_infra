@@ -360,7 +360,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			}
 			hc.LogDeviceLabelsChanges(oldDeviceLabels, deviceLabels)
 
-			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelse, true); err != nil {
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, &ufspb.ChromeOSDeviceData{LabConfig: machinelse}, true); err != nil {
 				return errors.Annotate(err, "Error updating device labels").Err()
 			}
 		}
