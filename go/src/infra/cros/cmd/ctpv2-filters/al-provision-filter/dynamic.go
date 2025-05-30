@@ -23,17 +23,19 @@ import (
 )
 
 var (
-	// TODO(b/406307693): Switch al-dev to throttled.
-	DefaultBranch = "git_main-al-dev"
-	PDKBranch     = "partner-brya-temp-main-throttled-fs"
+	DefaultBranch = "git_main-throttled"
+	// TODO: b/406307693 - Remove staging special casing once QA builds on
+	// git_main-throttled have been created.
+	DefaultStagingBranch = "git_main-al-dev"
+	PDKBranch            = "partner-brya-temp-main-throttled-fs"
 )
 
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
-func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
+func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger, commonParams *common.CommonFilterParams) error {
 	if err := modifyProvisionRequest(req, updater, log); err != nil {
 		return err
 	}
-	if err := updateProvisionInstallPath(req, updater, log); err != nil {
+	if err := updateProvisionInstallPath(req, updater, log, commonParams); err != nil {
 		return err
 	}
 	return nil
@@ -186,7 +188,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 }
 
 // updateProvisionInstallPath sets the install path that will be used for scheduling.
-func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
+func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger, commonParams *common.CommonFilterParams) error {
 	log.Printf("Updating provision install path...")
 
 	suiteInfo := req.GetSuiteInfo()
@@ -199,7 +201,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	}
 
 	for _, schedulingUnit := range getAllSchedulingUnits(suiteMetadata) {
-		if err := updateSchedulingUnit(schedulingUnit, req, updater, log); err != nil {
+		if err := updateSchedulingUnit(schedulingUnit, req, updater, log, commonParams); err != nil {
 			return err
 		}
 	}
@@ -223,7 +225,7 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 }
 
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
-func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
+func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger, commonParams *common.CommonFilterParams) error {
 	var buildId, buildTarget, installPath, branch string
 	var err error
 	// Look up board information. Exit early if not found.
@@ -242,7 +244,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 		}
 		log.Printf("Got branch %s from android api for build number: %s\n", branch, buildId)
 	} else {
-		branch = getBranch(su, log)
+		branch = getBranch(su, log, commonParams)
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
@@ -349,7 +351,7 @@ func buildGetReq(board string, branch string, buildID string) androidapi.BuildGe
 }
 
 // getBranch returns the branch used by a SchedulingUnit.
-func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
+func getBranch(su *api.SchedulingUnit, log *log.Logger, commonParams *common.CommonFilterParams) string {
 	kvs := su.GetPrimaryTarget().GetSwReq().GetKeyValues()
 	if kvs == nil {
 		log.Printf("KeyValues found nil")
@@ -359,7 +361,10 @@ func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
 			return PDKBranch
 		}
 	}
-	return DefaultBranch
+	if commonParams.Environment == common.LabelProd || commonParams.Environment == common.Prod.String() {
+		return DefaultBranch
+	}
+	return DefaultStagingBranch
 }
 
 // getTestType returns the test-type argument from the test request's ExecutionMetadata.

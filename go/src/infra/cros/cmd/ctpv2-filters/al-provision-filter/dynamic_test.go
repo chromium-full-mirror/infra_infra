@@ -339,6 +339,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	latestBuild := 98765
 	expectedBuildId := strconv.Itoa(latestBuild)
 	expectedBuildTarget := board + "-trunk_staging-userdebug"
+	expectedBusytownBranch := "git_main-al-dev"
 	expectedCalculatedInstallPath := common.GetABOTAPath(expectedBuildId, expectedBuildTarget, board)
 
 	su := newTestSchedulingUnit(originalGcsPath, nil)
@@ -351,8 +352,9 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 		},
 	}
 	logger := log.Default() // Use default logger
+	commonParams := &common.CommonFilterParams{}
 
-	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger)
+	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger, commonParams)
 
 	// Check DynamicUpdateLookupTable
 	if val, ok := su.DynamicUpdateLookupTable["buildNumber"]; !ok || val != expectedBuildId {
@@ -366,7 +368,59 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	expectedKeyValues := []*api.KeyValue{
 		{Key: "al_build_id", Value: expectedBuildId},
 		{Key: "al_build_target", Value: expectedBuildTarget},
-		{Key: "al_build_branch", Value: "git_main-al-dev"},
+		{Key: "al_build_branch", Value: expectedBusytownBranch},
+	}
+	actualKeyValues := su.PrimaryTarget.SwReq.KeyValues
+	// Handle nil vs empty slice for comparison
+	if len(actualKeyValues) == 0 && len(expectedKeyValues) == 0 {
+		// ok
+	} else if !reflect.DeepEqual(actualKeyValues, expectedKeyValues) {
+		t.Errorf("PrimaryTarget.SwReq.KeyValues = %v, want %v", actualKeyValues, expectedKeyValues)
+	}
+
+	// Check GcsPath WAS modified in this case to the calculated path
+	if su.PrimaryTarget.SwReq.GcsPath != expectedCalculatedInstallPath {
+		t.Errorf("PrimaryTarget.SwReq.GcsPath = %q, want calculated %q", su.PrimaryTarget.SwReq.GcsPath, expectedCalculatedInstallPath)
+	}
+}
+
+// TODO: b/406307693 - Remove this once we get QA builds for git_main-throttled.
+func TestUpdateSchedulingUnit_LatestGreenBuildProd(t *testing.T) {
+	originalGcsPath := "some-other-prefix/board/build/path.zip" // Does not start with android-build
+	board := "test-board"
+	latestBuild := 98765
+	expectedBuildId := strconv.Itoa(latestBuild)
+	expectedBuildTarget := board + "-trunk_staging-userdebug"
+	expectedBusytownBranch := "git_main-throttled"
+	expectedCalculatedInstallPath := common.GetABOTAPath(expectedBuildId, expectedBuildTarget, board)
+
+	su := newTestSchedulingUnit(originalGcsPath, nil)
+	su.DynamicUpdateLookupTable["board"] = board
+
+	// Mock the latest build lookup
+	updater := &ALProvisionRequestUpdater{
+		LatestBuildsByBoard: map[string]int{
+			board: latestBuild,
+		},
+	}
+	logger := log.Default() // Use default logger
+	commonParams := &common.CommonFilterParams{Environment: common.LabelProd}
+
+	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger, commonParams)
+
+	// Check DynamicUpdateLookupTable
+	if val, ok := su.DynamicUpdateLookupTable["buildNumber"]; !ok || val != expectedBuildId {
+		t.Errorf("DynamicUpdateLookupTable['buildNumber'] = %q, want %q", val, expectedBuildId)
+	}
+	if val, ok := su.DynamicUpdateLookupTable["installPath"]; !ok || val != expectedCalculatedInstallPath {
+		t.Errorf("DynamicUpdateLookupTable['installPath'] = %q, want %q", val, expectedCalculatedInstallPath)
+	}
+
+	// Check KeyValues were added by applyBuildInfoToTarget
+	expectedKeyValues := []*api.KeyValue{
+		{Key: "al_build_id", Value: expectedBuildId},
+		{Key: "al_build_target", Value: expectedBuildTarget},
+		{Key: "al_build_branch", Value: expectedBusytownBranch},
 	}
 	actualKeyValues := su.PrimaryTarget.SwReq.KeyValues
 	// Handle nil vs empty slice for comparison
@@ -414,6 +468,7 @@ func TestUpdateSchedulingUnit_ExplicitAndroidBuildPath(t *testing.T) {
 	defer ctrl.Finish()
 
 	logger := log.Default() // Use default logger
+	commonParams := &common.CommonFilterParams{}
 
 	mockBuilds := mockandroidapi.NewMockAndroidBuildClient(ctrl)
 	// Override the global factory function to return the mock
@@ -501,7 +556,7 @@ func TestUpdateSchedulingUnit_ExplicitAndroidBuildPath(t *testing.T) {
 			// Mock the latest build lookup
 			tt.mockBuildsFunc(mockBuilds)
 			updater := &ALProvisionRequestUpdater{}
-			err := updateSchedulingUnit(tt.su, tt.req, updater, logger)
+			err := updateSchedulingUnit(tt.su, tt.req, updater, logger, commonParams)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("updateSchedulingUnit() error = %v, wantErr %v", err, tt.wantErr)
 			}

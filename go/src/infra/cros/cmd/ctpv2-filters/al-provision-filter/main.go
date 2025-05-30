@@ -64,7 +64,7 @@ func (pru *ALProvisionRequestUpdater) Executor(req *api.InternalTestplan, log *l
 		return req, err
 	}
 
-	if err := GenerateDynamicProvisionUpdates(req, pru, log); err != nil {
+	if err := GenerateDynamicProvisionUpdates(req, pru, log, commonParams); err != nil {
 		log.Printf("Error while generating dynamic updates, %s", err)
 		return req, err
 	}
