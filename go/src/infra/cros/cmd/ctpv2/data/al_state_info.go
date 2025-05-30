@@ -221,7 +221,7 @@ func (a *AlStateInfo) CloseWUTree(ctx context.Context, service *androidapi.Servi
 	// Update the status of each WU.
 	wuErr := updateAllNodes(ctx, service, tree.Head, errorMsg, errorName)
 	if wuErr != nil {
-		logging.Warningf(ctx, "Failed updating nodes: %v", err)
+		logging.Warningf(ctx, "Failed updating nodes: %v", wuErr)
 	}
 
 	// If we generated the invocation and the starting ATP WorkUnit then close
@@ -233,7 +233,7 @@ func (a *AlStateInfo) CloseWUTree(ctx context.Context, service *androidapi.Servi
 	if a.ATPWorkUnit != nil {
 		sealInvErr = a.sealInvocation(ctx, tree, service)
 		if sealInvErr != nil {
-			logging.Warningf(ctx, "Failed to seal invocation: %v", err)
+			logging.Warningf(ctx, "Failed to seal invocation: %v", sealInvErr)
 		}
 	}
 
