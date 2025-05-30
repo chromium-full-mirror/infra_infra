@@ -51,12 +51,12 @@ func DeployFilterToCloudRun(ctx context.Context, digest, tag string, config *Upr
 	if tag == common.LabelProd {
 		projectTarget = common.LabelProd
 		staleRevisionExpiration = StaleRevisionExpirationProd
-		if repo.Project == common.PartnerDockerProject {
-			projectTarget = common.LabelPartner
-		}
 	} else {
 		projectTarget = common.LabelStaging
-		if repo.Project == common.PartnerDockerProject {
+	}
+	if repo.Project == common.PartnerDockerProject {
+		projectTarget = common.LabelPartner
+		if tag == common.LabelStaging {
 			return nil
 		}
 	}

@@ -8,11 +8,16 @@ package executors
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
+	"cloud.google.com/go/civil"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -44,8 +49,8 @@ func (ex *FilterExecutor) ExecuteCommand(
 	switch cmd := cmdInterface.(type) {
 	case *commands.FilterExecutionCmd:
 		key := ""
-		if cmd.ContainerInfo != nil && cmd.BQClient != nil {
-			key = fmt.Sprintf("%s-execute", cmd.ContainerInfo.GetKey())
+		if cmd.Filter != nil && cmd.BQClient != nil {
+			key = fmt.Sprintf("%s-execute", cmd.Filter.GetContainerInfo().GetContainer().GetName())
 			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: analytics.Start}, cmd.InputTestPlan, cmd.BuildState)
 		}
 		start := time.Now()
@@ -75,7 +80,7 @@ func (ex *FilterExecutor) filterExecutionCommandExecution(
 	cmd *commands.FilterExecutionCmd) error {
 
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("Filter execution: %s", cmd.ContainerInfo.GetKey()))
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Filter execution: %s", cmd.Filter.GetContainerInfo().GetContainer().GetName()))
 	defer func() { step.End(err) }()
 
 	common.WriteProtoToStepLog(ctx, step, cmd.InputTestPlan, "filter request")
@@ -127,65 +132,110 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 	return filterReq, nil
 }
 
-// ExecuteFilter invokes the run tests endpoint of cros-test.
-func (ex *FilterExecutor) ExecuteFilter(
-	ctx context.Context,
-	step *build.Step,
-	cmd *commands.FilterExecutionCmd,
-	filterReq *testapi.InternalTestplan) (resp *testapi.InternalTestplan, err error) {
-
-	if filterReq == nil {
-		return nil, fmt.Errorf("cannot execute filter for nil filter request")
-	}
-	if cmd.ContainerInfo == nil {
-		return nil, fmt.Errorf("cannot execute filter with nil container info")
+func CtpFilterToContainerRequest(ctx context.Context, cmd *commands.FilterExecutionCmd) (*testapi.ContainerRequest, error) {
+	var containerRequest *testapi.ContainerRequest
+	var err error
+	// If Filter is already populated, don't fetch anything, just create the container Request.
+	if cmd.Filter.GetContainerInfo().GetContainer().GetRepository().GetHostname() != "" {
+		if cmd.Filter.GetContainerInfo().GetBinaryName() == "" {
+			cmd.Filter.GetContainerInfo().BinaryName = cmd.Filter.GetContainerInfo().GetContainer().GetName()
+		}
+		containerRequest = common.CreateContainerRequest(cmd.Filter)
+		return containerRequest, err
 	}
 
+	var filter *testapi.CTPFilter
+	filterName := cmd.Filter.GetContainerInfo().GetContainer().GetName()
+	// Special logic for cros-test-finder. Continue to pull down from the container MD.
+	if filterName == common.TestFinderContainerName {
+		filter, err = FetchCrosTestFinder(ctx, cmd)
+		if err != nil {
+			return containerRequest, err
+		}
+	} else {
+		// Fetch the container info from firestore.
+		filter, err = common.FetchFilterFromFirestore(ctx, cmd.FirestoreDB, cmd.CTPversion, filterName, option.WithCredentialsFile(cmd.Creds))
+		if err != nil {
+			return containerRequest, err
+		}
+	}
+
+	containerRequest = common.CreateContainerRequest(filter)
+	return containerRequest, err
+}
+
+func FetchCrosTestFinder(ctx context.Context, cmd *commands.FilterExecutionCmd) (*testapi.CTPFilter, error) {
+	board, gcsPath, err := common.GcsInfo(cmd.CtpReq)
+	if err != nil {
+		return nil, err
+	}
+
+	buildContainerMetadata, err := common.FetchImageData(ctx, board, gcsPath)
+	if err != nil {
+		logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))
+		return nil, errors.Annotate(err, "failed to fetch container image data: ").Err()
+	}
+
+	tf, ok := buildContainerMetadata[common.TestFinderContainerName]
+	if !ok {
+		return nil, fmt.Errorf("could not find %s in build container metadata", common.TestFinderContainerName)
+	}
+
+	return &testapi.CTPFilter{
+		ContainerInfo: &testapi.ContainerInfo{
+			Container: &buildapi.ContainerImageInfo{
+				Name:       tf.GetName(),
+				Repository: tf.GetRepository(),
+				Digest:     tf.GetDigest(),
+				Tags:       tf.GetTags(),
+			},
+			BinaryName: tf.GetName(),
+			BinaryArgs: []string{},
+		},
+	}, nil
+}
+
+func (ex *FilterExecutor) getContainer(ctx context.Context, cmd *commands.FilterExecutionCmd) (*commontypes.ContainerManagementResponse, func(), error) {
+	container, err := CtpFilterToContainerRequest(ctx, cmd)
+	if err != nil {
+		return nil, nil, err
+	}
 	responseChannel := make(chan *commontypes.ContainerManagementResponse)
 	containerRequest := commontypes.ContainerManagementRequest{
-		Container:            cmd.ContainerInfo.Request,
+		Container:            container,
 		ContainerInstruction: commontypes.ProvideContainer,
 		ResponseChannel:      responseChannel,
 	}
 	cmd.ContainerRequestChannel <- containerRequest
 	response := <-responseChannel
 	if response == nil || response.Address == nil {
-		return nil, fmt.Errorf("error while getting filter endpoint, found nil")
+		return nil, nil, fmt.Errorf("error while getting filter endpoint, found nil")
 	}
 	go func() {
 		cmd.ContainerLogsChannel <- &commontypes.ContainerLogInfo{
-			Name:        cmd.ContainerInfo.Request.DynamicIdentifier,
+			Name:        container.DynamicIdentifier,
 			LogLocation: response.LogLocation,
 		}
 	}()
 
-	filterEndpointStr := fmt.Sprintf("%s:%d", response.Address.GetAddress(), response.Address.GetPort())
-	defer func() {
+	return response, func() {
 		containerRequest.ContainerInstruction = commontypes.FinishedUsingContainer
 		cmd.ContainerRequestChannel <- containerRequest
 		<-responseChannel
-	}()
+	}, nil
+}
 
-	// Connect with the filter service.
-	conn, err := common.ConnectWithService(ctx, filterEndpointStr)
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during connecting with filter server at %s: %s",
-			filterEndpointStr,
-			err.Error())
-		return nil, err
-	}
-	logging.Infof(ctx, "connected with filter service")
-
-	filter := cmd.ContainerInfo.Request.GetContainer().GetContainer().(*testapi.Template_Generic)
+func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterExecutionCmd, conn *grpc.ClientConn, step *build.Step, filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
+	var resp *testapi.InternalTestplan
+	var err error
 	// Create new client.
 	filterServiceClient := testapi.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
-		return nil, fmt.Errorf("filterServiceClient is nil")
+		err = fmt.Errorf("filterServiceClient is nil")
+		return nil, err
 	}
 	defer func() {
-		if err != nil && filter.Generic.GetBinaryName() == "cros-test-finder" {
+		if err != nil && cmd.Filter.GetContainerInfo().GetContainer().GetName() == common.TestFinderContainerName {
 			logging.Infof(ctx, "Encountered error when executing cros-test-finder. Falling back to adaptor execution.")
 			resp, err = executeTestFinderAdaptor(ctx, conn, filterReq)
 			if err != nil {
@@ -198,7 +248,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if streamErr != nil {
 		err = streamErr
 		logging.Infof(ctx, "ExecuteWithStream returned error: %s", err)
-		return
+		return nil, err
 	}
 
 	serverCommuncationHandler := streaming.NewServerCommunicationHandler(stream)
@@ -208,16 +258,154 @@ func (ex *FilterExecutor) ExecuteFilter(
 	go serverCommuncationHandler.StreamLogsToWriter(step.Log("Filter Logs"))
 	go serverCommuncationHandler.HandleAuthorizationRequests(ctx)
 
-	err = serverCommuncationHandler.SendArgs(cmd.ContainerInfo.FilterArgs)
+	err = serverCommuncationHandler.SendArgs(cmd.Filter.GetContainerInfo().GetBinaryArgs())
 
 	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
 	if err != nil {
 		logging.Infof(ctx, "Failed to send test plan: %s", err)
-		return
+		return nil, err
 	}
 	resp, err = serverCommuncationHandler.GetInternalTestplan()
 	// Send empty testplan as ack that client is done.
 	serverCommuncationHandler.SendInternalTestplan(&testapi.InternalTestplan{})
 
-	return
+	return resp, err
+}
+
+func (ex *FilterExecutor) executeFilterCloudRun(ctx context.Context, cmd *commands.FilterExecutionCmd, step *build.Step, filterReq *testapi.InternalTestplan, serviceName, serviceTag string, isPartnerRun bool) (*testapi.InternalTestplan, error) {
+	var resp *testapi.InternalTestplan
+	var err error
+	// Cloud run disallows underscores. Replace with dashes.
+	serviceName = strings.ReplaceAll(serviceName, "_", "-")
+	// Tagged revisions use a specific endpoint found on the staging project.
+	filterEndpointStr := fmt.Sprintf("%s---%s%s", serviceTag, serviceName, common.TaggedFilterEndpointSuffix)
+	audienceEndpointStr := common.StagingFilterEndpointSuffix
+	if isPartnerRun {
+		filterEndpointStr = fmt.Sprintf("%s---%s%s", serviceTag, serviceName, common.PartnerTaggedFilterEndpointSuffix)
+		audienceEndpointStr = common.PartnerFilterEndpointSuffix
+	}
+	switch serviceTag {
+	case common.LabelProd:
+		filterEndpointStr = fmt.Sprintf("%s%s", serviceName, common.ProdFilterEndpointSuffix)
+		audienceEndpointStr = common.ProdFilterEndpointSuffix
+	case common.LabelStaging:
+		filterEndpointStr = fmt.Sprintf("%s%s", serviceName, common.StagingFilterEndpointSuffix)
+	case common.LabelPartner:
+		filterEndpointStr = fmt.Sprintf("%s%s", serviceName, common.PartnerFilterEndpointSuffix)
+		audienceEndpointStr = common.PartnerFilterEndpointSuffix
+	}
+	// Audience must point at base service endpoint, even for tagged revisions.
+	audience := fmt.Sprintf("https://%s%s", serviceName, audienceEndpointStr)
+	conn, err := common.ConnectWithCloudService(ctx, &labapi.IpEndpoint{
+		Address: filterEndpointStr,
+		Port:    common.FilterCloudRunPortInt,
+	}, audience)
+	if err != nil {
+		logging.Infof(ctx, "error during connecting with filter server at %s: %s", filterEndpointStr, err.Error())
+		return nil, err
+	}
+	logging.Infof(ctx, "connected with filter service")
+	resp, err = ex.callExecute(ctx, cmd, conn, step, filterReq)
+	return resp, err
+}
+
+// ExecuteFilter invokes the run tests endpoint of cros-test.
+func (ex *FilterExecutor) ExecuteFilter(
+	ctx context.Context,
+	step *build.Step,
+	cmd *commands.FilterExecutionCmd,
+	filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
+
+	var resp *testapi.InternalTestplan
+	var err error
+
+	if filterReq == nil {
+		return nil, fmt.Errorf("cannot execute filter for nil filter request")
+	}
+	if cmd.Filter == nil {
+		return nil, fmt.Errorf("cannot execute filter with nil filter info")
+	}
+
+	startTime := time.Now()
+	serviceName := cmd.Filter.GetContainerInfo().GetContainer().GetName()
+	disallowCloudRun := false
+	usedFallback := false
+	defer func() {
+		filterDuration := time.Since(startTime)
+		success := err == nil
+		ObserveFilterData(ctx, cmd, serviceName, filterDuration.Seconds(), !disallowCloudRun, usedFallback, success)
+	}()
+
+	// Disallow cros-test-finder.
+	if serviceName == common.TestFinderContainerName {
+		disallowCloudRun = true
+	}
+	// Disallow filters with info needed for local container execution.
+	if cmd.Filter.GetContainerInfo().GetContainer().GetRepository().GetHostname() != "" {
+		disallowCloudRun = true
+	}
+	if !disallowCloudRun && cmd.CloudRunEnabled {
+		serviceTag := common.LabelStaging
+		if cmd.CTPversion == common.LabelProd {
+			serviceTag = common.LabelProd
+		}
+		if cmd.IsPartnerRun {
+			serviceTag = common.LabelPartner
+		}
+		// If image info contains tags, hit the tagged revision in cloud run.
+		tags := cmd.Filter.GetContainerInfo().GetContainer().GetTags()
+		if len(tags) == 1 {
+			serviceTag = tags[0]
+		}
+		// Try to execute with the cloud run instance.
+		resp, err = ex.executeFilterCloudRun(ctx, cmd, step, filterReq, serviceName, serviceTag, cmd.IsPartnerRun)
+		// If no error found, return. Else will retry with the local container.
+		if err == nil {
+			return nil, err
+		}
+		logging.Infof(ctx, "Found Error: %s", err)
+
+		// TODO(cdelagarza): Once rollout experiment for cloud run is finished,
+		// remove the fallback option.
+		logging.Infof(ctx, "Falling back to local execution")
+		usedFallback = true
+	}
+
+	response, closer, err := ex.getContainer(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	defer closer()
+	filterEndpointStr := fmt.Sprintf("%s:%d", response.Address.GetAddress(), response.Address.GetPort())
+	// Connect with the filter service.
+	conn, err := common.ConnectWithService(ctx, filterEndpointStr)
+	if err != nil {
+		logging.Infof(
+			ctx,
+			"error during connecting with filter server at %s: %s",
+			filterEndpointStr,
+			err.Error())
+		return nil, err
+	}
+	logging.Infof(ctx, "connected with filter service")
+
+	resp, err = ex.callExecute(ctx, cmd, conn, step, filterReq)
+
+	return resp, err
+}
+
+// ObserveFilterData writes analytics data about the filter execution.
+//
+// TODO(cdelagarza): Remove once cloud run experiment has concluded.
+func ObserveFilterData(ctx context.Context, cmd *commands.FilterExecutionCmd, filterName string, duration float64, expirementEnabled, usedFallback, success bool) {
+	data := &analytics.CloudRunExperimentData{
+		Date:              civil.DateTimeOf(time.Now()),
+		ExperimentEnabled: expirementEnabled,
+		FilterName:        filterName,
+		Duration:          duration,
+		SuiteName:         cmd.InputTestPlan.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName(),
+		UsedFallback:      usedFallback,
+		Success:           success,
+	}
+	analytics.SoftInsertCloudRunExperimentFilterData(ctx, cmd.BQClient, data, cmd.BuildState)
 }

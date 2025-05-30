@@ -9,10 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 
-	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -36,8 +33,7 @@ type PrepareFilterContainersInfoCmd struct {
 	IsAlRun      bool
 	IsPartnerRun bool
 	// Updates
-	ContainerInfoQueue   *list.List
-	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
+	FiltersQueue *list.List
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -100,25 +96,11 @@ func (cmd *PrepareFilterContainersInfoCmd) updateLocalTestStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
-	if cmd.ContainerInfoQueue != nil {
-		sk.ContainerInfoQueue = cmd.ContainerInfoQueue
-	}
-
-	if cmd.ContainerMetadataMap != nil {
-		sk.ContainerMetadataMap = cmd.ContainerMetadataMap
+	if cmd.FiltersQueue != nil {
+		sk.FiltersQueue = cmd.FiltersQueue
 	}
 
 	return nil
-}
-
-func getBuildFromGCSPath(gcsPath string) int {
-	g := strings.Split(gcsPath, "/")
-	R := g[len(g)-1]
-	Major := strings.Split(R, "-")
-	RN := Major[1]
-
-	build, _ := strconv.Atoi(strings.Split(RN, ".")[0])
-	return build
 }
 
 // Execute executes the command.
@@ -127,80 +109,30 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Prepare containers for filters")
 	defer func() { step.End(err) }()
 
-	// -- Create final container metadata map --
-
-	// TODO (dbeckett): currently there is a bit of a race between getting the metadata to run test-finder, and the boards provided
-	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
-	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
-	// get the container MD from, but this will need to be solved long term.
-	var buildContainerMetadata map[string]*buildapi.ContainerImageInfo
-	build := 0
-	if cmd.IsAlRun || cmd.IsPartnerRun {
-		step.SetSummaryMarkdown("skipping building container metadata from GCS path for exempted runs")
-	} else {
-		board, gcsPath, err := gcsInfo(cmd.CtpReq)
-		if err != nil {
-			return err
-		}
-
-		build = getBuildFromGCSPath(gcsPath)
-
-		buildContainerMetadata, err = common.FetchImageData(ctx, board, gcsPath)
-		if err != nil {
-			logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))
-			step.SetSummaryMarkdown("container metadata download failed: perhaps metadata doesn't exist")
-			return errors.Annotate(err, "failed to fetch container image data: ").Err()
-		}
-	}
-
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 
-	// Grab correct firestore db name to be used
-	firestoreDBName := common.TestPlatformFireStore
-	if cmd.IsAlRun && cmd.IsPartnerRun {
-		firestoreDBName = common.PartnerTestPlatformFireStore
-	}
+	defaultFilters := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments, cmd.IsPartnerRun, cmd.IsAlRun)
 
-	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments, cmd.IsPartnerRun, cmd.IsAlRun)
-	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion, defK, build, firestoreDBName)
-	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
-
-	cmd.ContainerMetadataMap = finalMetadataMap
-
-	// Write to log
-	mapData, err := json.MarshalIndent(finalMetadataMap, "", "\t")
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during writing container metadata map to log: %s",
-			err.Error())
-	}
-
-	common.WriteStringToStepLog(ctx, step, string(mapData), "Final container metadata map")
-	// -- Create ctp filters from default and input filters --
-
-	ctpFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, append(cmd.CtpReq.GetKarbonFilters(), cmd.CtpReq.GetKoffeeFilters()...), build)
-	if err != nil {
-		logging.Infof(ctx, "Err in ctpFilters.")
-
-		return errors.Annotate(err, "failed to create filters: ").Err()
-	}
+	ctpFilters := common.ConstructCtpFilters(ctx, defaultFilters, cmd.CtpReq.GetKarbonFilters())
 
 	// -- Create container info queue --
-	containerInfoList := list.New()
+	filtersQueue := list.New()
+
+	firestoreDB := common.TestPlatformFireStore
+	if cmd.IsAlRun && cmd.IsPartnerRun {
+		firestoreDB = common.PartnerTestPlatformFireStore
+	}
 	for _, filter := range ctpFilters {
-		containerInfo := CtpFilterToContainerInfo(filter)
-		// Apply server level args.
 		if cmd.IsAlRun && cmd.IsPartnerRun {
-			containerInfo.Request.Container.GetGeneric().BinaryArgs = append(containerInfo.Request.Container.GetGeneric().GetBinaryArgs(), "-firestore", firestoreDBName)
+			filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-firestore", firestoreDB)
 		}
-		containerInfo.Request.Container.GetGeneric().BinaryArgs = append(containerInfo.Request.Container.GetGeneric().GetBinaryArgs(), "-env", cmd.Environment)
-		containerInfoList.PushBack(containerInfo)
+		filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-env", cmd.Environment)
+		filtersQueue.PushBack(filter)
 	}
 
-	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(containerInfoList)), "Container Info queue")
+	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(filtersQueue)), "Filters Queue")
 
-	cmd.ContainerInfoQueue = containerInfoList
+	cmd.FiltersQueue = filtersQueue
 
 	filterData, err := json.MarshalIndent(ctpFilters, "", "\t")
 	if err != nil {
@@ -211,8 +143,6 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	}
 	common.WriteStringToStepLog(ctx, step, string(filterData), "Final Ctp filters list")
 
-	common.WriteStringToStepLog(ctx, step, fmt.Sprintf("%v", build), "CTPv2 Build")
-
 	return nil
 }
 
@@ -220,99 +150,4 @@ func NewPrepareFilterContainersInfoCmd() *PrepareFilterContainersInfoCmd {
 	abstractCmd := interfaces.NewAbstractCmd(PrepareFilterContainersCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &PrepareFilterContainersInfoCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
-}
-
-func gcsInfo(req *testapi.CTPRequest) (string, string, error) {
-	board := getFirstBoardFromLegacy(req.GetScheduleTargets())
-	if board == "" {
-		return "", "", errors.New("no board provided in legacy request")
-	}
-
-	gcsPath := getFirstGcsPathFromLegacy(req.GetScheduleTargets())
-	if gcsPath == "" {
-		return "", "", errors.New("no gcsPath provided in legacy request")
-	}
-
-	return board, gcsPath, nil
-}
-
-func getFirstBoardFromLegacy(targs []*testapi.ScheduleTargets) string {
-	board := ""
-	variant := ""
-
-	if len(targs) == 0 || len(targs[0].GetTargets()) == 0 {
-		return board
-	}
-
-	// TODO (azrahman): add support for multi-dut.
-	currentTarg := targs[0].GetTargets()[0]
-
-	switch hw := currentTarg.HwTarget.Target.(type) {
-	case *testapi.HWTarget_LegacyHw:
-		board = hw.LegacyHw.Board
-		variant = hw.LegacyHw.GetVariant()
-	}
-
-	if variant != "" {
-		return fmt.Sprintf("%s-%s", board, variant)
-	}
-
-	return board
-}
-
-func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
-	targs := schedTargs[0].GetTargets()
-	if len(targs) == 0 {
-		return ""
-	}
-
-	switch sw := targs[0].SwTarget.SwTarget.(type) {
-	case *testapi.SWTarget_LegacySw:
-		return sw.LegacySw.GetGcsPath()
-	default:
-		return ""
-	}
-}
-
-func createContainerImagesInfoMap(
-	ctx context.Context,
-	req *testapi.CTPRequest,
-	buildContMetadata map[string]*buildapi.ContainerImageInfo,
-	creds, ctpVersion string,
-	defaultFilterNames []string,
-	build int,
-	firestoreDBName string) (bcm map[string]*buildapi.ContainerImageInfo) {
-	// In case of any overlap of container metadata between input and build metadata,
-	// the input metadata will be prioritized.
-	bcm = make(map[string]*buildapi.ContainerImageInfo)
-	for k, v := range buildContMetadata {
-		bcm[k] = v
-	}
-
-	// Write in the default filter's container image info.
-	// Overwrite any of the build's metadata.
-	defaultFilters := common.GetDefaultFilterContainerImageInfosMap(ctx, creds, ctpVersion, defaultFilterNames, buildContMetadata, build, firestoreDBName)
-	for defaultFilterName, defaultFilter := range defaultFilters {
-		bcm[defaultFilterName] = defaultFilter
-	}
-
-	for _, filter := range req.GetKarbonFilters() {
-		container := filter.GetContainerInfo().GetContainer()
-		filterName := container.GetName()
-		bcm[filterName] = container
-	}
-
-	return
-}
-
-// CtpFilterToContainerInfo creates container info from provided ctp filter.
-func CtpFilterToContainerInfo(ctpFilter *testapi.CTPFilter) *data.ContainerInfo {
-	contName := ctpFilter.GetContainerInfo().GetContainer().GetName()
-	// TODO (azrahman): remove this once container creation is more generic.
-	return &data.ContainerInfo{
-		ImageKey:   contName,
-		Request:    common.CreateContainerRequest(ctpFilter),
-		ImageInfo:  ctpFilter.GetContainerInfo().GetContainer(),
-		FilterArgs: ctpFilter.GetContainerInfo().GetBinaryArgs(),
-	}
 }

@@ -26,20 +26,23 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
-const dataset = "analytics"
-const resultsTable = "CTPV2Metrics"
-const taskResultsTable = "CTPV2TaskMetrics"
+const (
+	dataset                 = "analytics"
+	resultsTable            = "CTPV2Metrics"
+	taskResultsTable        = "CTPV2TaskMetrics"
+	cloudRunExperimentTable = "CloudRunExperimentAnalytics"
 
-const saProject = "chromeos-test-platform-data"
+	saProject = "chromeos-test-platform-data"
 
-const cacheTable = "DurationCache"
-const minDuration = 1
-const saFile = "/creds/service_accounts/service-account-chromeos.json"
+	cacheTable  = "DurationCache"
+	minDuration = 1
+	saFile      = "/creds/service_accounts/service-account-chromeos.json"
 
-const Start = "START"
-const Success = "SUCCESS"
-const Fail = "FAIL"
-const Panic = "PANIC"
+	Start   = "START"
+	Success = "SUCCESS"
+	Fail    = "FAIL"
+	Panic   = "PANIC"
+)
 
 type BqData struct {
 	SuiteName     string
@@ -92,6 +95,47 @@ func InsertCTPMetrics(c *bigquery.Client, data []*BqData) error {
 		return err
 	}
 	return nil
+}
+
+// TODO(cdelagarza): Remove experiment data and analytics gathering
+// when experiment is concluded.
+type CloudRunExperimentData struct {
+	Date civil.DateTime
+	// ExperimentEnabled distinguishes analytics before and after the cloud run experiment.
+	ExperimentEnabled bool
+	// FilterName is the main key to look at analytics for.
+	// We want to know how much time we save calling filters when hitting cloud run.
+	FilterName string
+	Duration   float64
+	// BBID will allow for overall CTP performance.
+	BBID string
+	// SuiteName allows for direct comparison between suites on performance speeds.
+	SuiteName string
+	// UsedFallback indicates if the cloud run experiment needed to fallback at all.
+	UsedFallback bool
+	// Success indicates if the filter call did not fail for any reason. Includes success
+	// on fallback. Should help indicate stability of the cloud run experiment.
+	Success bool
+}
+
+func InsertCloudRunExperimentData(c *bigquery.Client, data *CloudRunExperimentData) error {
+	ctx := context.Background()
+	inserter := c.Dataset(dataset).Table(cloudRunExperimentTable).Inserter()
+	if err := inserter.Put(ctx, data); err != nil {
+		return err
+	}
+	return nil
+}
+
+func SoftInsertCloudRunExperimentFilterData(ctx context.Context, BQClient *bigquery.Client, data *CloudRunExperimentData, build *build.State) {
+	data.BBID = getBBID(build)
+	if BQClient != nil {
+		err := InsertCloudRunExperimentData(BQClient, data)
+		if err != nil {
+			logging.Infof(ctx, "Error During CloudRunExperiment BQ write: %s", err)
+		}
+		logging.Infof(ctx, "Successful write")
+	}
 }
 
 type resSchema struct {

@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/protobuf/proto"
@@ -27,9 +28,19 @@ type FilterExecutionCmd struct {
 
 	// Deps
 	InputTestPlan           *testapi.InternalTestplan
-	ContainerInfo           *data.ContainerInfo
+	CtpReq                  *testapi.CTPRequest
+	Filter                  *testapi.CTPFilter
 	ContainerRequestChannel chan commontypes.ContainerManagementRequest
 	ContainerLogsChannel    chan *commontypes.ContainerLogInfo
+	CTPversion              string
+	Environment             string
+	IsPartnerRun            bool
+	IsAlRun                 bool
+	Creds                   string
+	FirestoreDB             string
+
+	// Exeriments
+	CloudRunEnabled bool
 
 	// Updates
 	OutputTestPlan *testapi.InternalTestplan
@@ -85,11 +96,11 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
-	if sk.ContainerInfoQueue.Len() < 1 {
+	if sk.FiltersQueue.Len() < 1 {
 		return fmt.Errorf("cmd %q missing dependency: ContainerInfo", cmd.GetCommandType())
 	}
 
-	cmd.ContainerInfo = sk.ContainerInfoQueue.Remove(sk.ContainerInfoQueue.Front()).(*data.ContainerInfo)
+	cmd.Filter = sk.FiltersQueue.Remove(sk.FiltersQueue.Front()).(*testapi.CTPFilter)
 
 	if len(sk.TestPlanStates) == 0 {
 		if sk.InitialInternalTestPlan != nil {
@@ -112,6 +123,18 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 
 	cmd.ContainerRequestChannel = sk.ContainerRequestChannel
 	cmd.ContainerLogsChannel = sk.ContainerLogsChannel
+	cmd.CTPversion = sk.CTPversion
+	cmd.Environment = sk.Environment
+	cmd.IsPartnerRun = sk.IsPartnerRun
+	cmd.IsAlRun = sk.IsAlRun
+	cmd.CloudRunEnabled = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), common.CloudRunExperiment)
+	cmd.Creds = sk.DockerKeyFile
+	cmd.CtpReq = sk.CtpReq
+	cmd.FirestoreDB = common.TestPlatformFireStore
+	if sk.IsAlRun && sk.IsPartnerRun {
+		cmd.FirestoreDB = common.PartnerTestPlatformFireStore
+	}
+
 	// TODO (azrahman): remove these custom test plans call once ttcp filter stablized.
 	// Only to be used to test ttcp filter through led.
 	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {

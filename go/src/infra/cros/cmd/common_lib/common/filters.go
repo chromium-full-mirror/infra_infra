@@ -10,13 +10,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
 
@@ -25,6 +23,7 @@ var (
 	LegacyHWContainerName                = "cros-legacy-hw-filter"
 	ProvisionContainerName               = "provision-filter"
 	TestFinderContainerName              = "cros-test-finder"
+	ALTestFinderName                     = "test-finder"
 	UseFlagFilterContainerName           = "use_flag_filter"
 	PreProcessFilterContainerName        = "pre_process_filter"
 	AutoVMTestShifterFilterContainerName = "autovm_test_shifter_filter"
@@ -33,16 +32,6 @@ var (
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
 	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
-
-	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
-	// Deprecated: Falls under KarbonFilters.
-	DefaultKoffeeFilterNames = []string{}
-
-	binaryLookup = map[string]string{
-		TestFinderContainerName:              "test_finder_filter",
-		PreProcessFilterContainerName:        "pre_process_filter",
-		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
-	}
 )
 
 type FilterAuthInterface interface {
@@ -83,7 +72,7 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 }
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
-func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string, isPartner, isAlRun bool) []string {
+func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string, isPartner, isAlRun bool) []*api.CTPFilter {
 	hwFilter := ""
 	if suiteReq.GetDddSuite() {
 		hwFilter = TtcpContainerName
@@ -110,131 +99,47 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experim
 		filters = append(filters, UseFlagFilterContainerName, PreProcessFilterContainerName)
 	}
 
-	return filters
-}
-
-// GetDefaultFilters constructs ctp filters for provided default filters.
-func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) ([]*api.CTPFilter, error) {
-	defaultFilters := make([]*api.CTPFilter, 0)
-	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
-	for _, filterName := range defaultFilterNames {
-		var ctpFilter *api.CTPFilter
-		var err error
-
-		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
-		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, false)
-		if err == nil {
-			defaultFilters = append(defaultFilters, ctpFilter)
-			continue
-		}
-
-		logging.Infof(ctx, "Inside backwards compat check.")
-		// Test-Finder must always come from the contMetadataMap. Thus if we do not have the "filter" version,
-		// We will setup to run the legacy test-finder.
-		if filterName == TestFinderContainerName {
-			TFFilter, err := CreateCTPFilterWithContainerName(ctx, TestFinderContainerName, contMetadataMap, build, false)
-			if err != nil {
-				return nil, errors.Annotate(err, "failed to create test-finder default filter").Err()
-			}
-			defaultFilters = append(defaultFilters, TFFilter)
-			continue
-		}
-		return nil, errors.Annotate(err, "failed to create default filter: ").Err()
+	ctpFilters := []*api.CTPFilter{}
+	for _, filter := range filters {
+		ctpFilters = append(ctpFilters, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: filter,
+				},
+			},
+		})
 	}
-
-	return defaultFilters, nil
-}
-
-func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*api.CTPFilter, error) {
-	c := CreateTestServicesContainer(name, digest)
-
-	binaryName := binaryName(name, build)
-
-	return &api.CTPFilter{ContainerInfo: &api.ContainerInfo{Container: c, BinaryName: binaryName}}, nil
-}
-
-func defaultName(ctx context.Context, name string) bool {
-	logging.Infof(ctx, "checking name: ", name)
-	for fn, defName := range binaryLookup {
-		if name == defName || name == fn {
-			return true
-		}
-	}
-	return false
-}
-
-// CreateCTPFilterWithContainerName creates ctp filter for provided container name through provided container metadata.
-func CreateCTPFilterWithContainerName(ctx context.Context, name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, buildCheck bool) (*api.CTPFilter, error) {
-	// This error will be caught and pushed into the default prod container flow.
-	if defaultName(ctx, name) && buildCheck && needBackwardsCompatibility(build) {
-		return nil, fmt.Errorf("incompatible metadata build for name: %s, build: %d", name, build)
-	}
-	if _, ok := contMetadataMap[name]; !ok {
-		return nil, errors.Reason("could not find container image info for %s in provided map", name).Err()
-	}
-	binaryName := binaryName(name, build)
-	return &api.CTPFilter{ContainerInfo: &api.ContainerInfo{Container: contMetadataMap[name], BinaryName: binaryName}}, nil
+	return ctpFilters
 }
 
 // ConstructCtpFilters constructs default and non-default ctp filters.
-func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, filtersToAdd []*api.CTPFilter, build int) ([]*api.CTPFilter, error) {
+func ConstructCtpFilters(ctx context.Context, defaultFilter []*api.CTPFilter, filtersToAdd []*api.CTPFilter) []*api.CTPFilter {
 	filters := make([]*api.CTPFilter, 0)
 
 	// Add default filters
-	logging.Infof(ctx, "Inside ConstructCtpFilters.")
-
-	defFilters, err := GetDefaultFilters(ctx, defaultFilterNames, contMetadataMap, build)
-	if err != nil {
-		return filters, errors.Annotate(err, "failed to get default filters: ").Err()
-	}
-	logging.Infof(ctx, "After GetDefaultFilters. %s", defFilters)
-
 	defFiltersIndexMap := map[string]int{}
-	for i, defFilter := range defFilters {
-		defFiltersIndexMap[defFilter.GetContainerInfo().GetContainer().GetName()] = i
+	for i, defaultFilter := range defaultFilter {
+		defFiltersIndexMap[defaultFilter.GetContainerInfo().GetContainer().GetName()] = i
 	}
 
-	nonDefFilters := []*api.CTPFilter{}
+	nonDefaultFilters := []*api.CTPFilter{}
 	for _, filter := range filtersToAdd {
 		filterName := filter.GetContainerInfo().GetContainer().GetName()
-		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, false)
-		if err != nil {
-			logging.Infof(ctx, "failed to create ctp filter for %s", filterName)
-			return filters, errors.Annotate(err, "failed to create ctp filter for %s, %s", filterName, err).Err()
+		// Special logic for swapping out cros-test-finder with the test-finder filter.
+		if filterName == ALTestFinderName {
+			filterName = TestFinderContainerName
 		}
-		// BinaryName is assumed to be same as FilterName.
-		// If this is not the case, it can be resolved by the input.
-		if filter.GetContainerInfo().GetBinaryName() != "" {
-			ctpFilter.ContainerInfo.BinaryName = filter.GetContainerInfo().GetBinaryName()
-		}
-		ctpFilter.ContainerInfo.BinaryArgs = filter.GetContainerInfo().GetBinaryArgs()
-		// Overwrite the default filter with the user defined filter.
-		if slices.Contains(defaultFilterNames, filterName) {
-			defFilters[defFiltersIndexMap[filterName]] = ctpFilter
+		if i, ok := defFiltersIndexMap[filterName]; ok {
+			defaultFilter[i] = filter
 		} else {
-			nonDefFilters = append(nonDefFilters, ctpFilter)
+			nonDefaultFilters = append(nonDefaultFilters, filter)
 		}
 	}
 
 	// Default filters run first, then non default filters.
-	filters = append(defFilters, nonDefFilters...)
+	filters = append(defaultFilter, nonDefaultFilters...)
 
-	return filters, nil
-}
-
-func binaryName(name string, build int) string {
-	if name == TestFinderContainerName && needBackwardsCompatibility(build) {
-		return "cros-test-finder"
-	}
-
-	binName, ok := binaryLookup[name]
-	// If no name is found, then assume the container name is the same as the binary.
-	// TODO expose the binary name and connect it from the input request.
-	if !ok {
-		return name
-	}
-	return binName
+	return filters
 }
 
 // CreateContainerRequest creates container request from provided ctp filter.
@@ -264,12 +169,6 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerReques
 		ContainerImagePath: imagePath,
 		Network:            "host",
 	}
-}
-
-func needBackwardsCompatibility(build int) bool {
-	// TODO (dbeckett/azrahamn): set this to the proper build # once the compatibility
-	// changes land in the OS src tree and have assigned build #s.
-	return build < 20000
 }
 
 // ListToJSON creates json bytes from provided list.

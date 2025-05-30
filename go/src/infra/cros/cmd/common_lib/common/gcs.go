@@ -23,6 +23,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -203,11 +204,28 @@ func Read(ctx context.Context, client *storage.Client, gsObject GSObject, destFi
 	return nil
 }
 
+var (
+	// Add image data cache.
+	// Type: map[string]map[string]*api.ContainerImageInfo
+	ImageCache = sync.Map{}
+	// Lock the image data cache by the gcsPath being pulled from.
+	// Type: map[string]*sync.Mutex]
+	ImageCacheLocksByGcsPath = sync.Map{}
+)
+
 // FetchImageData fetches container image metadata from provided gcs path
 func FetchImageData(ctx context.Context, board string, gcsPath string) (map[string]*api.ContainerImageInfo, error) {
 	if !strings.HasSuffix(gcsPath, ContainerMetadataPath) {
 		gcsPath = gcsPath + ContainerMetadataPath
 		logging.Infof(ctx, "container metadata path created: %s", gcsPath)
+	}
+
+	lock, _ := ImageCacheLocksByGcsPath.LoadOrStore(gcsPath, &sync.Mutex{})
+	lock.(*sync.Mutex).Lock()
+	defer lock.(*sync.Mutex).Unlock()
+	imageData, ok := ImageCache.Load(gcsPath)
+	if ok {
+		return imageData.(map[string]*api.ContainerImageInfo), nil
 	}
 
 	// fix for b/375974548. Parallel execution call this fucntion, causing bot to get stuck and eventually die.
@@ -249,6 +267,8 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 			Tags:       image.Tags,
 		}
 	}
+
+	ImageCache.Store(gcsPath, Containers)
 
 	return Containers, nil
 }
@@ -334,4 +354,56 @@ func GetMajorBuildFromGCSPath(gcsPath string) string {
 
 func IsAndroidURL(gsURL string) bool {
 	return strings.HasPrefix(gsURL, "android-build")
+}
+
+func GcsInfo(req *testapi.CTPRequest) (string, string, error) {
+	board := getFirstBoardFromLegacy(req.GetScheduleTargets())
+	if board == "" {
+		return "", "", errors.New("no board provided in legacy request")
+	}
+
+	gcsPath := getFirstGcsPathFromLegacy(req.GetScheduleTargets())
+	if gcsPath == "" {
+		return "", "", errors.New("no gcsPath provided in legacy request")
+	}
+
+	return board, gcsPath, nil
+}
+
+func getFirstBoardFromLegacy(targs []*testapi.ScheduleTargets) string {
+	board := ""
+	variant := ""
+
+	if len(targs) == 0 || len(targs[0].GetTargets()) == 0 {
+		return board
+	}
+
+	// TODO (azrahman): add support for multi-dut.
+	currentTarg := targs[0].GetTargets()[0]
+
+	switch hw := currentTarg.HwTarget.Target.(type) {
+	case *testapi.HWTarget_LegacyHw:
+		board = hw.LegacyHw.Board
+		variant = hw.LegacyHw.GetVariant()
+	}
+
+	if variant != "" {
+		return fmt.Sprintf("%s-%s", board, variant)
+	}
+
+	return board
+}
+
+func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
+	targs := schedTargs[0].GetTargets()
+	if len(targs) == 0 {
+		return ""
+	}
+
+	switch sw := targs[0].SwTarget.SwTarget.(type) {
+	case *testapi.SWTarget_LegacySw:
+		return sw.LegacySw.GetGcsPath()
+	default:
+		return ""
+	}
 }

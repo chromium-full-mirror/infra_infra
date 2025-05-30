@@ -48,7 +48,7 @@ type FilterStateKeeper struct {
 	BuildState *build.State
 
 	// Container info queue
-	ContainerInfoQueue      *list.List
+	FiltersQueue            *list.List
 	ContainerRequestChannel chan commontypes.ContainerManagementRequest
 	ContainerLogsChannel    chan *commontypes.ContainerLogInfo
 

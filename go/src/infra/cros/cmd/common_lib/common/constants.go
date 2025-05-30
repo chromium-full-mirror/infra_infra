@@ -81,6 +81,12 @@ const (
 	GeminiApiKey                           = "gemini-api-key"
 	GeminiApiKeyProject                    = "cros-registry"
 	FilterCloudRunPort                     = "443"
+	FilterCloudRunPortInt                  = 443
+	TaggedFilterEndpointSuffix             = "-xxs6mpc42a-uc.a.run.app"
+	StagingFilterEndpointSuffix            = "-114509166396.us-central1.run.app"
+	ProdFilterEndpointSuffix               = "-771356732494.us-central1.run.app"
+	PartnerFilterEndpointSuffix            = "-986313285412.us-central1.run.app"
+	PartnerTaggedFilterEndpointSuffix      = "-2nx7zyup7q-uc.a.run.app"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.
@@ -96,7 +102,8 @@ const (
 	FilePermission = 0644
 
 	// Experiments
-	DynamicExperiment = "chromeos.cros_infra_config.dynamic_trv2"
+	DynamicExperiment  = "chromeos.cros_infra_config.dynamic_trv2"
+	CloudRunExperiment = "chromeos.cros_infra_config.cloudrun_enabled"
 
 	// Data Sizes
 	KB = 1024
@@ -106,6 +113,9 @@ const (
 	// message that the publish gRPC can receive is 4000MB.
 	// TODO: Remove once streaming is implemented.
 	MaxPublishMsgSize = 4000 * MB
+	// MaxFilterMsgSize establishes the max size of the request
+	// being sent to the CTP filters.
+	MaxFilterMsgSize = 32 * MB
 )
 
 // Auth Scopes

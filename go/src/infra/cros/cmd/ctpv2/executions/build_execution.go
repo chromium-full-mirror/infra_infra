@@ -20,7 +20,6 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/pubsub"
-	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -353,7 +352,7 @@ func executeFiltersInLuciBuild(
 	sk := &data.FilterStateKeeper{
 		CtpReq:                  req,
 		Ctr:                     ctr,
-		ContainerInfoQueue:      list.New(),
+		FiltersQueue:            list.New(),
 		BuildState:              buildState,
 		Scheduler:               req.GetSchedulerInfo().GetScheduler(),
 		BQClient:                BQClient,
@@ -371,8 +370,7 @@ func executeFiltersInLuciBuild(
 		ContainerLogsChannel:    make(chan *commontypes.ContainerLogInfo),
 	}
 
-	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)
-	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments, isPartnerRun, req.IsAlRun), common.DefaultKoffeeFilterNames)
+	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments, isPartnerRun, req.IsAlRun))
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
@@ -449,25 +447,21 @@ func fetchGeminiAPIKey(ctx context.Context) (string, error) {
 	return string(output), nil
 }
 
-func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
+func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultFilters []*api.CTPFilter) int {
 	filterSet := map[string]bool{}
-	logging.Infof(ctx, "n defaultKarbonFilterNames: %s", len(defaultKarbonFilterNames))
-	logging.Infof(ctx, "Given Karbon: %s And Koffee: %s", defaultKarbonFilterNames, defaultKoffeeFilterNames)
+	logging.Infof(ctx, "n defaultKarbonFilterNames: %s", len(defaultFilters))
 
-	for _, filterName := range defaultKarbonFilterNames {
-		filterSet[filterName] = true
-	}
-
-	for _, filterName := range defaultKoffeeFilterNames {
+	for _, defaultFilter := range defaultFilters {
+		filterName := defaultFilter.GetContainerInfo().GetContainer().GetName()
 		filterSet[filterName] = true
 	}
 
 	for _, filter := range req.GetKarbonFilters() {
-		filterSet[filter.GetContainerInfo().GetContainer().GetName()] = true
-	}
-
-	for _, filter := range req.GetKoffeeFilters() {
-		filterSet[filter.GetContainerInfo().GetContainer().GetName()] = true
+		filterName := filter.GetContainerInfo().GetContainer().GetName()
+		if filterName == common.ALTestFinderName {
+			filterName = common.TestFinderContainerName
+		}
+		filterSet[filterName] = true
 	}
 
 	return len(filterSet)
@@ -475,42 +469,6 @@ func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilt
 
 func isReqFromATP(req *api.CTPRequest) bool {
 	return req.IsAlRun && req.EncodedAtpTestJobMsg != ""
-}
-
-func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, ctpVersion string, isPartnerRun bool) {
-	updatedFilters := []*api.CTPFilter{}
-	for _, filter := range req.GetKarbonFilters() {
-		container := filter.GetContainerInfo().GetContainer()
-		filterName := container.GetName()
-		// Overwrite container image info if present within filter input.
-		// Else, check if map already contains image info for the filter.
-		if hasValidDigest(container.Digest) || len(container.Tags) > 0 {
-			updatedFilters = append(updatedFilters, filter)
-			continue
-		}
-
-		fireStoreDB := common.TestPlatformFireStore
-		if isPartnerRun {
-			fireStoreDB = common.PartnerTestPlatformFireStore
-		}
-		// Fetch the filter from the firestore.
-		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, fireStoreDB, ctpVersion, filterName, option.WithCredentialsFile(creds)); err == nil && containerInfo != nil {
-			logging.Infof(ctx, "Found filter inside the firestore for %s", filterName)
-			if containerInfo.GetContainer().GetName() == "" {
-				containerInfo.Container.Name = filterName
-			}
-			if binName := filter.GetContainerInfo().GetBinaryName(); binName != "" {
-				containerInfo.BinaryName = binName
-			}
-			containerInfo.BinaryArgs = filter.GetContainerInfo().GetBinaryArgs()
-			updatedFilters = append(updatedFilters, &api.CTPFilter{
-				ContainerInfo: containerInfo,
-			})
-			continue
-		}
-	}
-
-	req.KarbonFilters = updatedFilters
 }
 
 // hasValidDigest ensures the digest starts with `sha256:` and
