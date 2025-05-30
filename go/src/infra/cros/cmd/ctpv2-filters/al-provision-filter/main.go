@@ -41,8 +41,7 @@ type ALProvisionRequestUpdater struct {
 	AndroidAuthHandler  *android.CloudRunFilterAuthenticator
 }
 
-func (pru *ALProvisionRequestUpdater) Init(args []string) error {
-	fs := flag.NewFlagSet("Run Al provision filter", flag.ContinueOnError)
+func (pru *ALProvisionRequestUpdater) Init(fs *flag.FlagSet, args []string) error {
 	fs.StringVar(&pru.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
 	fs.StringVar(&pru.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
 

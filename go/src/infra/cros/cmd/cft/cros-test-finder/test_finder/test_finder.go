@@ -290,12 +290,9 @@ func runCLI(ctx context.Context, d []string) int {
 // startServer is the entry point for running cros-test-finder (TestFinderService) in server mode.
 func startServer(flagSet *flag.FlagSet, executorGenerator servertemplate.ExecutorGeneratorFunc, name string) error {
 	a := args{}
-	commonParams := common.CommonFilterParams{}
 	t := time.Now()
 	flagSet.StringVar(&a.logPath, "log", DefaultLogPath, fmt.Sprintf("Base path to record logs. Default value is %s", DefaultLogPath))
 	flagSet.IntVar(&a.port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
-	flagSet.StringVar(&commonParams.FirestoreDatabaseName, "firestore", common.TestPlatformFireStore, fmt.Sprintf("Firestore database name to pull from. Default value is %s", common.TestPlatformFireStore))
-	flagSet.StringVar(&commonParams.Environment, "env", "prod", "Environment of the run. Default value is prod")
 
 	flagSet.Parse(os.Args[2:])
 
@@ -317,7 +314,7 @@ func startServer(flagSet *flag.FlagSet, executorGenerator servertemplate.Executo
 	if err != nil {
 		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
-	server := NewServer(logger, a.logPath, name, &commonParams, executorGenerator)
+	server := NewServer(logger, a.logPath, name, executorGenerator)
 
 	err = server.Serve(l)
 	if err != nil {

@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -25,13 +24,12 @@ type TestFinderServiceServer struct {
 }
 
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executorGenerator servertemplate.ExecutorGeneratorFunc) *grpc.Server {
+func NewServer(logger *log.Logger, logPath, name string, executorGenerator servertemplate.ExecutorGeneratorFunc) *grpc.Server {
 	s := &TestFinderServiceServer{
 		GenericFilterServiceServer: &servertemplate.GenericFilterServiceServer{
 			LogPath:            logPath,
 			Name:               name,
 			ServerLogger:       logger,
-			CommonParams:       commonParams,
 			ExecutionGenerator: executorGenerator,
 		},
 	}

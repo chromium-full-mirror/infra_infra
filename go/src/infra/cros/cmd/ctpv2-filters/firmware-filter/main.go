@@ -75,8 +75,7 @@ type FirmwareBranchBuild struct {
 
 const saProject = "chromeos-bot"
 
-func (specs *FirmwareSpecs) Init(args []string) error {
-	fs := flag.NewFlagSet("Run firmware-provision-filter", flag.ContinueOnError)
+func (specs *FirmwareSpecs) Init(fs *flag.FlagSet, args []string) error {
 	fs.StringVar(&specs.Ro, "ro", "", "Comma separated list of specs for firmware RO")
 	fs.StringVar(&specs.Rw, "rw", "", "Comma separated list of specs for firmware RW")
 	fs.StringVar(&specs.ECRO, "ec-ro", "", "Comma separated list of specs for EC firmware RO")

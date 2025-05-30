@@ -38,12 +38,9 @@ type args struct {
 // startServer is the entry point for running post-process (TestFinderService) in server mode.
 func startServer(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc, name string) error {
 	a := args{}
-	commonParams := common.CommonFilterParams{}
 	t := time.Now()
 	flagSet.StringVar(&a.logPath, "log", DefaultLogPath, fmt.Sprintf("Base path to record logs. Default value is %s", DefaultLogPath))
 	flagSet.IntVar(&a.port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
-	flagSet.StringVar(&commonParams.FirestoreDatabaseName, "firestore", TestPlatformFireStore, fmt.Sprintf("Firestore database name to pull from. Default value is %s", TestPlatformFireStore))
-	flagSet.StringVar(&commonParams.Environment, "env", "prod", "Environment of the run. Default value is prod")
 
 	flagSet.Parse(os.Args[2:])
 
@@ -65,7 +62,7 @@ func startServer(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc,
 	if err != nil {
 		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
-	server, closer := NewServer(logger, a.logPath, name, &commonParams, executorGenerator)
+	server, closer := NewServer(logger, a.logPath, name, executorGenerator)
 	defer closer()
 
 	err = server.Serve(l)

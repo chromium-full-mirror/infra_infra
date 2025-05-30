@@ -6,6 +6,7 @@ package servertemplate
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -29,12 +30,11 @@ type GenericFilterServiceServer struct {
 	LogPath            string
 	Name               string
 	ServerLogger       *log.Logger
-	CommonParams       *common.CommonFilterParams
 	ExecutionGenerator ExecutorGeneratorFunc
 }
 
 type Filter interface {
-	Init([]string) error
+	Init(*flag.FlagSet, []string) error
 	Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
 }
 
@@ -42,8 +42,8 @@ type FilterBase struct {
 	Filter
 }
 
-func (fb *FilterBase) Init(args []string) error {
-	return nil
+func (fb *FilterBase) Init(fs *flag.FlagSet, args []string) error {
+	return fs.Parse(args)
 }
 
 func (fb *FilterBase) Executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
@@ -53,12 +53,11 @@ func (fb *FilterBase) Executor(req *api.InternalTestplan, log *log.Logger, commo
 type ExecutorGeneratorFunc func() Filter
 
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executorGenerator ExecutorGeneratorFunc) (*grpc.Server, func()) {
+func NewServer(logger *log.Logger, logPath, name string, executorGenerator ExecutorGeneratorFunc) (*grpc.Server, func()) {
 	s := &GenericFilterServiceServer{
 		LogPath:            logPath,
 		Name:               name,
 		ServerLogger:       logger,
-		CommonParams:       commonParams,
 		ExecutionGenerator: executorGenerator,
 	}
 
@@ -97,14 +96,18 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 
 	logger.Printf("Received Request: %s", req)
 
-	s.CommonParams.AuthHelper = streaming.NewLocalAuthHandler()
-
+	commonParams := &common.CommonFilterParams{
+		AuthHelper: streaming.NewLocalAuthHandler(),
+	}
+	commonFlagset := flag.NewFlagSet("filter flags", flag.ContinueOnError)
+	commonFlagset.StringVar(&commonParams.FirestoreDatabaseName, "firestore", TestPlatformFireStore, fmt.Sprintf("Firestore database name to pull from. Default value is %s", TestPlatformFireStore))
+	commonFlagset.StringVar(&commonParams.Environment, "env", "prod", "Environment of the run. Default value is prod")
 	executor := s.ExecutionGenerator()
-	err = executor.Init(os.Args[2:])
+	err = executor.Init(commonFlagset, os.Args[2:])
 	if err != nil {
 		return nil, errors.Annotate(err, "Init: failed to parse args").Err()
 	}
-	rspn, err := executor.Executor(req, logger, s.CommonParams)
+	rspn, err := executor.Executor(req, logger, commonParams)
 	if err != nil {
 		return nil, errors.Annotate(err, "Executor: failed to run").Err()
 	}
@@ -135,9 +138,11 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	}
 	logger.Printf("Received InternalTestplan: %s", testplan)
 
-	s.CommonParams.AuthHelper = streaming.NewAuthHandler(clientCommunicationHandler)
+	commonParams := &common.CommonFilterParams{
+		AuthHelper: streaming.NewAuthHandler(clientCommunicationHandler),
+	}
 
-	testplan, err = s.execute(testplan, logger, args.Args)
+	testplan, err = s.execute(testplan, logger, args.Args, commonParams)
 	if err != nil {
 		return errors.Annotate(err, "Executor: failed to run").Err()
 	}
@@ -154,16 +159,20 @@ func (s *GenericFilterServiceServer) ExecuteWithStream(stream api.GenericFilterS
 	return nil
 }
 
-func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *log.Logger, args []string) (resp *api.InternalTestplan, err error) {
+func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *log.Logger, args []string, commonParams *common.CommonFilterParams) (resp *api.InternalTestplan, err error) {
 	defer CapturePanic(logger, &err)
 	resp = req
 
 	executor := s.ExecutionGenerator()
-	err = executor.Init(args)
+
+	commonFlagset := flag.NewFlagSet("filter flags", flag.ContinueOnError)
+	commonFlagset.StringVar(&commonParams.FirestoreDatabaseName, "firestore", TestPlatformFireStore, fmt.Sprintf("Firestore database name to pull from. Default value is %s", TestPlatformFireStore))
+	commonFlagset.StringVar(&commonParams.Environment, "env", "prod", "Environment of the run. Default value is prod")
+	err = executor.Init(commonFlagset, args)
 	if err != nil {
 		return resp, err
 	}
-	resp, err = executor.Executor(req, logger, s.CommonParams)
+	resp, err = executor.Executor(req, logger, commonParams)
 	return
 }
 

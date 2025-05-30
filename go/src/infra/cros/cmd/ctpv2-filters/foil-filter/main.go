@@ -33,8 +33,7 @@ type FoilRequestUpdater struct {
 	EnableXtsArchiver bool
 }
 
-func (fu *FoilRequestUpdater) Init(args []string) error {
-	fs := flag.NewFlagSet("Run foil request-updater", flag.ContinueOnError)
+func (fu *FoilRequestUpdater) Init(fs *flag.FlagSet, args []string) error {
 	fs.StringVar(&fu.TestPath, "test-path", "", "SHA256 value for test container")
 	fs.StringVar(&fu.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
 	fs.StringVar(&fu.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
