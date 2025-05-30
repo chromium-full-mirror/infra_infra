@@ -6,6 +6,7 @@ package dutssh
 
 import (
 	"context"
+	"log"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -16,6 +17,7 @@ import (
 func NewClientInterface(ctx context.Context, identifier string, ssh *ssh.Client) (ClientInterface, error) {
 	serverVersion := string(ssh.ServerVersion())
 	// TODO: Remove SSH-2.0-Go once sshforwarder prebuilt has been updated.
+	log.Print("SSH Server Version: ", serverVersion)
 	if serverVersion == "SSH-2.0-ADB-Proxy" || serverVersion == "SSH-2.0-Go" {
 		return NewADBOverSSHClient(identifier, ssh)
 	}
