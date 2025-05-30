@@ -69,6 +69,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs
 	mainConfigs = append(mainConfigs, MiddleOutNoExecutor)
 
 	// Schedule tasks
+	mainConfigs = append(mainConfigs, AlStatusUpdateNoExecutor)
 	mainConfigs = append(mainConfigs, GenerateTrv2ReqsNoExecutor)
 	mainConfigs = append(mainConfigs, AlStatusUpdateNoExecutor)
 	mainConfigs = append(mainConfigs, ScheduleTasksNoExecutor)

@@ -33,7 +33,8 @@ type AlStatusUpdateCmd struct {
 	BuildsMap map[string]*data.BuildRequest
 
 	// Deps
-	AlStateInfo *data.AlStateInfo
+	AlStateInfo   *data.AlStateInfo
+	MiddleOutResp *data.MiddleOutResponse
 
 	// CTPRequest
 	CtpRequest *testapi.CTPRequest
@@ -117,6 +118,7 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildState = sk.BuildState
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.CtpRequest = sk.CtpReq
+	cmd.MiddleOutResp = sk.MiddledOutResp
 
 	cmd.ExecutionError = sk.ExecutionError
 
@@ -202,32 +204,23 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 // invocation.
 func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string, string) {
 	var buildID, buildTarget, runTarget, buildBranch string
-	for _, item := range cmd.BuildsMap {
-		// Avoid nil pointer in the loop.
-		if item.SuiteInfo == nil {
-			break
-		}
-
-		// Exit if we've found our results
-		if buildID != "" && buildTarget != "" && buildBranch != "" {
-			break
-		}
-
-		for _, schedUnitOption := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions() {
-			for _, unit := range schedUnitOption.GetSchedulingUnits() {
-				buildID, buildTarget, runTarget, buildBranch = cmd.fetchInvocationInfo(unit)
-				if buildID != "" && buildTarget != "" && buildBranch != "" {
-					break
-				}
-			}
-		}
-
-		// TODO (oldProto-azrahman): remove after new proto change rolls in
-		for _, unit := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+	if cmd.MiddleOutResp == nil {
+		return "", "", "", ""
+	}
+	for _, schedUnitOption := range cmd.MiddleOutResp.SuiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions() {
+		for _, unit := range schedUnitOption.GetSchedulingUnits() {
 			buildID, buildTarget, runTarget, buildBranch = cmd.fetchInvocationInfo(unit)
 			if buildID != "" && buildTarget != "" && buildBranch != "" {
 				break
 			}
+		}
+	}
+
+	// TODO (oldProto-azrahman): remove after new proto change rolls in
+	for _, unit := range cmd.MiddleOutResp.SuiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+		buildID, buildTarget, runTarget, buildBranch = cmd.fetchInvocationInfo(unit)
+		if buildID != "" && buildTarget != "" && buildBranch != "" {
+			break
 		}
 	}
 

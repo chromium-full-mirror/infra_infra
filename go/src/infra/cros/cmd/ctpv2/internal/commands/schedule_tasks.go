@@ -1012,6 +1012,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		envVersion:           cmd.EnvVersion,
 		firestoreDBName:      cmd.FirestoreDBName,
 		is3DRun:              cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetDddSuite(),
+		alStateInfo:          cmd.AlStateInfo,
 		publishKeys:          publishKeys,
 	}
 

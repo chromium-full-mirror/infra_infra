@@ -124,25 +124,29 @@ func TestALInvocationInformation(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := &AlStatusUpdateCmd{
-				BuildsMap: map[string]*data.BuildRequest{
-					"foo": {
-						SuiteInfo: &api.SuiteInfo{
-							SuiteMetadata: &api.SuiteMetadata{
-								SchedulingUnits: []*api.SchedulingUnit{
-									{
-										PrimaryTarget: &api.Target{
-											SwReq: &api.LegacySW{
-												KeyValues: tc.swReqKeyValues,
-											},
-											SwarmingDef: &api.SwarmingDefinition{
-												DutInfo: tc.dutInfo,
-											},
-										},
-									},
+			suiteInfo := &api.SuiteInfo{
+				SuiteMetadata: &api.SuiteMetadata{
+					SchedulingUnits: []*api.SchedulingUnit{
+						{
+							PrimaryTarget: &api.Target{
+								SwReq: &api.LegacySW{
+									KeyValues: tc.swReqKeyValues,
+								},
+								SwarmingDef: &api.SwarmingDefinition{
+									DutInfo: tc.dutInfo,
 								},
 							},
 						},
+					},
+				},
+			}
+			cmd := &AlStatusUpdateCmd{
+				MiddleOutResp: &data.MiddleOutResponse{
+					SuiteInfo: suiteInfo,
+				},
+				BuildsMap: map[string]*data.BuildRequest{
+					"foo": {
+						SuiteInfo: suiteInfo,
 					},
 				},
 			}

@@ -73,6 +73,7 @@ type TrV2ReqHelper struct {
 	schedUnitMetadataMap map[string][]*testapi.SchedulingUnit
 	config               *config.Config
 	credentialsFile      string
+	alStateInfo          *data.AlStateInfo
 	// envVersion denotes whether the environment
 	// is prod or something else.
 	envVersion      string
@@ -1350,6 +1351,9 @@ func getExecutionMetadata(trHelper *TrV2ReqHelper) *testapi.ExecutionMetadata {
 	extraBuildIDFromATP := ""
 	extraBuildTargetFromATP := ""
 
+	antsInvocationId := ""
+	antsWorkUnitId := ""
+
 	for _, arg := range suiteExecMetadata.GetArgs() {
 		if arg.GetFlag() == "branch" {
 			branchFromATP = arg.GetValue()
@@ -1363,6 +1367,10 @@ func getExecutionMetadata(trHelper *TrV2ReqHelper) *testapi.ExecutionMetadata {
 			extraBuildIDFromATP = arg.GetValue()
 		} else if arg.GetFlag() == "extra_build_flavor" {
 			extraBuildTargetFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "ants_invocation_id" {
+			antsInvocationId = arg.GetValue()
+		} else if arg.GetFlag() == "ants_work_unit_id" {
+			antsWorkUnitId = arg.GetValue()
 		}
 	}
 
@@ -1385,6 +1393,12 @@ func getExecutionMetadata(trHelper *TrV2ReqHelper) *testapi.ExecutionMetadata {
 	}
 	if extraBuildTargetFromATP == "" {
 		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "extra_build_flavor", Value: secondaryBuildTarget})
+	}
+	if antsInvocationId == "" && trHelper.alStateInfo.ATPInvocation != nil {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "ants_invocation_id", Value: trHelper.alStateInfo.ATPInvocation.InvocationId})
+	}
+	if antsWorkUnitId == "" && trHelper.alStateInfo.ATPWorkUnit != nil {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "ants_work_unit_id", Value: trHelper.alStateInfo.ATPWorkUnit.Id})
 	}
 
 	return suiteExecMetadata

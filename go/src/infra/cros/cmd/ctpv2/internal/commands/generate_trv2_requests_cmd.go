@@ -354,6 +354,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		envVersion:           cmd.EnvVersion,
 		firestoreDBName:      cmd.FirestoreDBName,
 		is3DRun:              cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetDddSuite(),
+		alStateInfo:          cmd.AlStateInfo,
 		publishKeys:          publishKeys,
 	}
 
