@@ -26,7 +26,7 @@ const (
 
 func extractBuildInfo(test *api.TestCase, metadata *api.ExecutionMetadata, board string, plan string, logger *log.Logger) (branch string, target string, build string) {
 	branch, target, build = extractTestInfoFromExecutionMetadata(metadata)
-	if !(len(branch) > 0 && len(target) > 0 && len(build) > 0) {
+	if len(branch) <= 0 || len(target) <= 0 || len(build) <= 0 {
 		// As no direct way to return error, we continue with what we have and let Tradefed error out if it doesn't have enough information.
 		// Print log to make it clear what is missing.
 		logger.Println("Missing required info branch/target/build, got: ", branch, "/", target, "/", build)

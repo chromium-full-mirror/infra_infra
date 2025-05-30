@@ -194,7 +194,7 @@ func (h *handler) processPSMessage(msg *cloudPubsub.Message) error {
 	}
 
 	// Check for a successful release build. Ignore all types of reports.
-	if !(buildReport.Type == buildpb.BuildReport_BUILD_TYPE_RELEASE && buildReport.Status.Value.String() == "SUCCESS") {
+	if buildReport.Type != buildpb.BuildReport_BUILD_TYPE_RELEASE || buildReport.Status.Value.String() != "SUCCESS" {
 		msg.Ack()
 		return nil
 	}

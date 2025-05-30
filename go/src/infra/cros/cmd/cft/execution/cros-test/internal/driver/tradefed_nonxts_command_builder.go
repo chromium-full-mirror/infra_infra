@@ -75,7 +75,7 @@ func BuildNonXtsTestCommand(logger *log.Logger, testType string, tests []*api.Te
 	// To support ATP runs, the priority is given to the "extra" metadata
 	// which is pointing to the location of test and Tradefed ZIP packages.
 	branch, target, build = extractTestInfoFromExecutionMetadata(metadata)
-	if !(len(branch) > 0 && len(target) > 0 && len(build) > 0) {
+	if len(branch) <= 0 || len(target) <= 0 || len(build) <= 0 {
 		branch, target, build = extractBuildInfoFromExecutionMetadata(metadata)
 	}
 	if len(branch) > 0 && len(target) > 0 && len(build) > 0 {
