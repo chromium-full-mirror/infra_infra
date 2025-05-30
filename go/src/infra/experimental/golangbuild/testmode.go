@@ -67,9 +67,7 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) 
 		// old that doesn't have a prebuilt binary for it anymore. In that case, we want to build it
 		// on behalf of the human involved.
 		RequirePrebuilt: !opts.fetchOnly(),
-		// All shards should have equivalent test environments, so spend time on computing debug info
-		// in the first shard only.
-		LogDebugOutput: r.shard.shardID == 0,
+		LogDebugOutput:  true,
 	}); err != nil {
 		return err
 	}
