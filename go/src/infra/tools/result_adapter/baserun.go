@@ -52,8 +52,17 @@ type baseRun struct {
 	invocationLinkArtifact          string
 	enableInvocationArtifactsUpload bool
 
-	sinkCtx       *lucictx.ResultSink
-	sinkC         sinkpb.SinkClient
+	sinkCtx *lucictx.ResultSink
+	sinkC   sinkpb.SinkClient
+
+	// captureOutput indicates whether we should capture the complete output of the
+	// test command we execute. If true, the data passed to the converter function
+	// is guaranteed to contain the complete output of the test command, otherwise
+	// it may contain only truncated subset, usable only for diagnostics. This option
+	// is used by subcommands whose test commands do not write their results to a
+	// file, like `go test`.
+	//
+	// This option is set by subcommands that embed baseRun.
 	captureOutput bool
 }
 
@@ -129,7 +138,11 @@ func (r *baseRun) runTestCmd(ctx context.Context, args []string) (output []byte,
 	}
 	cmd := exec.CommandContext(cmdCtx, args[0], args[1:]...)
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = io.MultiWriter(stdoutBuf, os.Stdout)
+	if r.captureOutput {
+		cmd.Stdout = stdoutBuf
+	} else {
+		cmd.Stdout = io.MultiWriter(stdoutBuf, os.Stdout)
+	}
 	cmd.Stderr = os.Stderr
 
 	// Launch the command w/o the result_sink section in lucictx, in case the test

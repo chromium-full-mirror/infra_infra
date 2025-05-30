@@ -52,6 +52,7 @@ func cmdGo() *subcommands.Command {
 			r.Flags.StringVar(&r.DumpJSONFile, "dump-json", r.DumpJSONFile, text.Doc(`
 				Flag to dump raw Go test JSON to a file.
 			`))
+			// Capture output. All known Go test commands produce test results solely to stdout.
 			r.captureOutput = true
 			// Ignore global flags, go tests are expected to only produce
 			// standard output.
