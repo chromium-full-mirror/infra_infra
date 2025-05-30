@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"slices"
 	"sync"
 
 	"go.chromium.org/luci/auth"
@@ -27,7 +28,7 @@ import (
 var UpdateShaStorage = internal.UpdateShaStorage
 
 // LuciBuildExecution represents build executions.
-func LuciBuildExecution(targetConfig string) {
+func LuciBuildExecution(targetConfigs []string) {
 	build.RegisterInputProperty[*struct{}]("")
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
@@ -43,7 +44,7 @@ func LuciBuildExecution(targetConfig string) {
 			if isProd {
 				label = common.LabelProd
 			}
-			err := executeContainerUprev(ctx, dockerKeyFile, label, label, targetConfig)
+			err := executeContainerUprev(ctx, dockerKeyFile, label, label, targetConfigs)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -54,7 +55,7 @@ func LuciBuildExecution(targetConfig string) {
 }
 
 // LocalBuildExecution performs local building of the images.
-func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bool) {
+func LocalBuildExecution(cipdLabel, imageTag string, targetConfigs []string, runAsAdmin bool) {
 	execPath, _ := os.Executable()
 	logDir, _ := os.MkdirTemp(path.Dir(execPath), "generated/uprev")
 	emptyBuild := &buildbucketpb.Build{}
@@ -81,7 +82,7 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 		}
 	}
 
-	err = executeContainerUprev(ctx, "", cipdLabel, imageTag, targetConfig)
+	err = executeContainerUprev(ctx, "", cipdLabel, imageTag, targetConfigs)
 	if err != nil {
 		logging.Infof(ctx, "%s", err)
 	}
@@ -89,12 +90,13 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 
 // executeContainerUprev steps through the uprev configs, creates a new container,
 // and uploads its sha to the storage.
-func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag, targetConfig string) (err error) {
+func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag string, targetConfigs []string) error {
+	var err error
 	configs := internal.GetConfigs()
 
 	configsByRepoHostname := map[string][]*internal.UprevConfig{}
 	for _, config := range configs {
-		if targetConfig != "" && config.Name != targetConfig {
+		if len(targetConfigs) > 0 && !slices.Contains(targetConfigs, config.Name) {
 			logging.Infof(ctx, "Skipping build of %q", config.Name)
 			continue
 		}
@@ -136,7 +138,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 		return true
 	})
 
-	return
+	return err
 }
 
 func uprevContainers(ctx context.Context, wg *sync.WaitGroup, containerInfosByFirestore *sync.Map, repoConfigs []*internal.UprevConfig, imageCache *sync.Map, repoHostname, dockerKeyFile, cipdLabel, imageTag string) {

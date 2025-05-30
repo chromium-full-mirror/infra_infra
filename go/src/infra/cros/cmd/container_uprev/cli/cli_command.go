@@ -72,6 +72,7 @@ func (cc *CLICommand) Run() error {
 	if cc.args.runAsAdmin {
 		log.Printf("Run command as Admin!")
 	}
-	executions.LocalBuildExecution(cc.args.cipdLabel, tag, cc.args.targetConfig, cc.args.runAsAdmin)
+	targets := strings.Split(cc.args.targetConfig, ",")
+	executions.LocalBuildExecution(cc.args.cipdLabel, tag, targets, cc.args.runAsAdmin)
 	return nil
 }

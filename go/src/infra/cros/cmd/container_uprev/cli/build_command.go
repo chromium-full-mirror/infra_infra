@@ -8,6 +8,7 @@ package cli
 import (
 	"flag"
 	"log"
+	"strings"
 
 	"go.chromium.org/infra/cros/cmd/container_uprev/executions"
 )
@@ -59,8 +60,9 @@ func (cc *BuildCommand) Run() error {
 		log.Printf("Target to build only %q config.", n)
 	}
 
+	targets := strings.Split(cc.args.targetConfig, ",")
 	// execute hw tests.
-	executions.LuciBuildExecution(cc.args.targetConfig)
+	executions.LuciBuildExecution(targets)
 
 	return nil
 }

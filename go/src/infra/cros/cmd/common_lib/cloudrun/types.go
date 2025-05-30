@@ -7,12 +7,18 @@ package cloudrun
 
 import "strings"
 
+const (
+	DefaultCPU = "4"
+	DefaultMEM = "2Gi"
+)
+
 type Config struct {
-	// CPU defaults to "1".
+	// CPU defaults to "4".
 	// Can be 1, 2, 4, or 8.
 	// For valid minimum CPU per memory see
 	// https://cloud.google.com/run/docs/configuring/services/memory-limits#cpu-minimum
 	CPU string
+	// Memory defaults to "2Gi"
 	// Memory Limit. Ex: 1024Mi, 4Gi.
 	// For valid minimum memory per CPU see
 	// https://cloud.google.com/run/docs/configuring/services/cpu#cpu-memory
@@ -23,13 +29,14 @@ func (config *Config) ToArgs() []string {
 	args := []string{}
 
 	if config.CPU == "" {
-		config.CPU = "1"
+		config.CPU = DefaultCPU
 	}
 	args = append(args, "--cpu", config.CPU)
 
-	if config.Memory != "" {
-		args = append(args, "--memory", config.Memory)
+	if config.Memory == "" {
+		config.Memory = DefaultMEM
 	}
+	args = append(args, "--memory", config.Memory)
 
 	return args
 }
