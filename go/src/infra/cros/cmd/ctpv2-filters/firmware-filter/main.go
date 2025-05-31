@@ -482,7 +482,7 @@ WHERE
 		return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 	}
 
-	if err := GenerateDynamicInfo(ctx, req, specs, log, searchGCS); err != nil {
+	if err := GenerateDynamicInfo(ctx, commonParams, req, specs, log, searchGCS); err != nil {
 		log.Printf("Error while generating dynamic info, %s", err)
 		return req, err
 	}

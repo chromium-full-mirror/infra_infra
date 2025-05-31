@@ -15,6 +15,8 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 type TWriter struct {
@@ -153,7 +155,7 @@ func TestGoldenFile(t *testing.T) {
 			continue
 		}
 
-		err = GenerateDynamicInfo(context.Background(), req, tc.specs, log.New(&TWriter{t: t}, "", log.Lshortfile), fakeMatcher)
+		err = GenerateDynamicInfo(context.Background(), &common.CommonFilterParams{}, req, tc.specs, log.New(&TWriter{t: t}, "", log.Lshortfile), fakeMatcher)
 		if err != nil {
 			t.Errorf("[%d]GenerateDynamicInfo failed: %+v", tcIndex, err)
 			continue

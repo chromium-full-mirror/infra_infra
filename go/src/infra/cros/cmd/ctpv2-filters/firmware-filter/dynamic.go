@@ -22,7 +22,7 @@ import (
 // GenerateDynamicInfo creates dynamic updates for provision
 // requests, and adds their relevant information to each
 // scheduling unit's dynamic lookup table.
-func GenerateDynamicInfo(ctx context.Context, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
+func GenerateDynamicInfo(ctx context.Context, commonParams *common.CommonFilterParams, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
 	// Fix cros-provision settings to avoid flashing the firmware twice
 	if specs.Ro != "" || specs.Rw != "" || specs.ECRO != "" || specs.ECRW != "" {
 		for _, du := range req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates() {
@@ -35,7 +35,7 @@ func GenerateDynamicInfo(ctx context.Context, req *api.InternalTestplan, specs *
 			}
 		}
 		// Create Dynamic Updates.
-		if err := generateProvisionRequests(req, specs, log); err != nil {
+		if err := generateProvisionRequests(ctx, commonParams, req, specs, log); err != nil {
 			return fmt.Errorf("generateProvisionRequests failed: %w", err)
 		}
 	}
@@ -90,11 +90,11 @@ func GenerateDynamicInfo(ctx context.Context, req *api.InternalTestplan, specs *
 
 // generateProvisionRequests loops through each swarming definition and
 // builds out the firmware provision request.
-func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
+func generateProvisionRequests(ctx context.Context, commonParams *common.CommonFilterParams, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
 	dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
 
 	// Add container request
-	return dynamicHelper.GenerateProvisionRequest(req, log)
+	return dynamicHelper.GenerateProvisionRequest(ctx, commonParams, req, log)
 }
 
 // generateDynamicUpdateLookupTables populates the lookup table for the primary

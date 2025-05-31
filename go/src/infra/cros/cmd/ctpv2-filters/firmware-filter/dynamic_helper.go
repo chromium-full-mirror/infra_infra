@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -14,6 +15,7 @@ import (
 	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
@@ -82,7 +84,7 @@ func (DH *DynamicFirmwareProvisionHelper) ApplyFirmwareProvisionToLookup(lookupT
 }
 
 // GenerateProvisionRequest creates a dynamic firmware request for chromeos devices.
-func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.InternalTestplan, log *log.Logger) error {
+func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(ctx context.Context, commonParams *commonlib.CommonFilterParams, req *api.InternalTestplan, log *log.Logger) error {
 	deviceID := common.NewPrimaryDeviceIdentifier()
 	if DH.count > 0 {
 		deviceID = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
@@ -95,10 +97,33 @@ func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.Inte
 	// cros-fw-provision requires cros-dut, so we add the container when
 	// targeting Android.
 	if test_plan.IsAlRun(req) {
-		containerBuilders = append(containerBuilders, helpers.NewCrosDutContainer(deviceID))
-	}
+		// The containerMetadata isn't populated for AL runs, so the filter needs
+		// to manually look up the path to each container.
+		var crosDutPath, crosFwProvisionPath string
+		// We don't have an easy way to mock out commonlib.ProcessContainerPath, so
+		// just skip testing this.
+		if commonParams.AuthHelper != nil {
+			var e error
+			crosDutPath, e = commonlib.ProcessContainerPath(ctx, commonParams, "", "cros-dut")
+			if e != nil {
+				return fmt.Errorf("Error looking up cros-dut container path: %w", e)
+			}
 
-	containerBuilders = append(containerBuilders, newFirmwareProvisionContainer(taskID))
+			crosFwProvisionPath, e = commonlib.ProcessContainerPath(ctx, commonParams, "", "cros-fw-provision")
+			if e != nil {
+				return fmt.Errorf("Error looking up cros-fw-provision container path: %w", e)
+			}
+		}
+		crosDutContainer := helpers.NewCrosDutContainer(deviceID)
+		crosDutContainer.ContainerImagePath = crosDutPath
+		containerBuilders = append(containerBuilders, crosDutContainer)
+
+		crosFwProvisionContainer := newFirmwareProvisionContainer(taskID)
+		crosFwProvisionContainer.ContainerImagePath = crosFwProvisionPath
+		containerBuilders = append(containerBuilders, crosFwProvisionContainer)
+	} else {
+		containerBuilders = append(containerBuilders, newFirmwareProvisionContainer(taskID))
+	}
 
 	return helpers.GenerateProvisionRequest(
 		req, taskID, deviceID,
