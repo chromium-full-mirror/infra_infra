@@ -225,14 +225,12 @@ func (ex *FilterExecutor) getContainer(ctx context.Context, cmd *commands.Filter
 	}, nil
 }
 
-func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterExecutionCmd, conn *grpc.ClientConn, step *build.Step, filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
-	var resp *testapi.InternalTestplan
-	var err error
+func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterExecutionCmd, conn *grpc.ClientConn, step *build.Step, filterReq *testapi.InternalTestplan) (resp *testapi.InternalTestplan, err error) {
 	// Create new client.
 	filterServiceClient := testapi.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
 		err = fmt.Errorf("filterServiceClient is nil")
-		return nil, err
+		return
 	}
 	defer func() {
 		if err != nil && cmd.Filter.GetContainerInfo().GetContainer().GetName() == common.TestFinderContainerName {
@@ -240,6 +238,7 @@ func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterE
 			resp, err = executeTestFinderAdaptor(ctx, conn, filterReq)
 			if err != nil {
 				err = errors.Annotate(err, "test finder adaptor filter err: ").Err()
+				return
 			}
 			logging.Infof(ctx, "Filter Adaptor Success")
 		}
@@ -248,7 +247,7 @@ func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterE
 	if streamErr != nil {
 		err = streamErr
 		logging.Infof(ctx, "ExecuteWithStream returned error: %s", err)
-		return nil, err
+		return
 	}
 
 	serverCommuncationHandler := streaming.NewServerCommunicationHandler(stream)
@@ -259,17 +258,21 @@ func (ex *FilterExecutor) callExecute(ctx context.Context, cmd *commands.FilterE
 	go serverCommuncationHandler.HandleAuthorizationRequests(ctx)
 
 	err = serverCommuncationHandler.SendArgs(cmd.Filter.GetContainerInfo().GetBinaryArgs())
+	if err != nil {
+		logging.Infof(ctx, "Failed to send arguments: %s", err)
+		return
+	}
 
 	err = serverCommuncationHandler.SendInternalTestplan(filterReq)
 	if err != nil {
 		logging.Infof(ctx, "Failed to send test plan: %s", err)
-		return nil, err
+		return
 	}
 	resp, err = serverCommuncationHandler.GetInternalTestplan()
 	// Send empty testplan as ack that client is done.
 	serverCommuncationHandler.SendInternalTestplan(&testapi.InternalTestplan{})
 
-	return resp, err
+	return
 }
 
 func (ex *FilterExecutor) executeFilterCloudRun(ctx context.Context, cmd *commands.FilterExecutionCmd, step *build.Step, filterReq *testapi.InternalTestplan, serviceName, serviceTag string, isPartnerRun bool) (*testapi.InternalTestplan, error) {

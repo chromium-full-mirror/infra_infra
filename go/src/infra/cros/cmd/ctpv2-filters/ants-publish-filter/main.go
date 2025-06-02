@@ -26,7 +26,7 @@ func GenerateFilterExecutor() servertemplate.Filter {
 }
 
 type ANTSPublishUpdater struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 
 	PublishPath  string
 	InvocationID string

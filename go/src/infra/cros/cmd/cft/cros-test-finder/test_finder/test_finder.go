@@ -359,7 +359,7 @@ func getRunMode() (runMode, error) {
 }
 
 type TestFinderFilter struct {
-	servertemplate.Filter
+	servertemplate.FilterBase
 }
 
 func NewTestFinderFilter() servertemplate.Filter {
