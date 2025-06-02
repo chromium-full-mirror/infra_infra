@@ -10,6 +10,7 @@ const (
 	basePlanTypeRepair basePlanType = "repair"
 	basePlanTypeDeploy basePlanType = "deploy"
 	basePlanTypeAudit  basePlanType = "audit"
+	basePlanTypeVerify basePlanType = "verify"
 )
 
 // crosBasePlan creates a plan that must always be pass.
@@ -21,7 +22,7 @@ func crosBasePlan(pt basePlanType) *Plan {
 		ca = append(ca, "Set state: repair_failed")
 	case basePlanTypeDeploy:
 		ca = append(ca, "Set state: needs_deploy")
-	case basePlanTypeAudit:
+	case basePlanTypeAudit, basePlanTypeVerify:
 		ca = append(ca, "Set state: needs_repair")
 	}
 	ca = append(ca,

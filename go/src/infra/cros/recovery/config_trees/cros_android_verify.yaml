@@ -1,12 +1,12 @@
 plans:
     - name: cros_base
       criticalactions:
-        - name: 'Set state: repair_failed'
+        - name: 'Set state: needs_repair'
           exec_name: dut_set_state
           exec_args:
-            - state:repair_failed
+            - state:needs_repair
           docs:
-            - The action set devices with state means that repair tsk did not success to recover the devices.
+            - The action set devices with state means that DUT requires repair.
         - name: Start ADB-base (time:'2m0s')
           exec_name: ctr_start_adb_container
           docs:

@@ -46,6 +46,7 @@ func CrosVerifyConfig() *Configuration {
 	plans := CrosRepairConfig().GetPlans()
 	// remove closing plan as it will be added by default.
 	delete(plans, PlanClosing)
+	plans[PlanCrOSBase] = setAllowFail(crosBasePlan(basePlanTypeVerify), false)
 	return &Configuration{
 		PlanNames: []string{
 			PlanCrOSBase,
@@ -128,6 +129,7 @@ func MHVerifyConfig() *Configuration {
 	plans := MHRepairConfig().GetPlans()
 	// remove closing plan as it will be added by default.
 	delete(plans, PlanClosing)
+	plans[PlanCrOSBase] = setAllowFail(crosBasePlan(basePlanTypeVerify), false)
 	return &Configuration{
 		PlanNames: []string{
 			PlanCrOSBase,
