@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/infra/libs/fleet/device/schedulingunit"
 	"go.chromium.org/infra/libs/skylab/inventory/swarming"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/util"
@@ -325,6 +326,7 @@ func getSchedulingUnitSwarmingDimensions(ctx context.Context, su *ufspb.Scheduli
 	var dutsDims []swarming.Dimensions
 	var botDimensions swarming.Dimensions
 	var lse *ufspb.MachineLSE
+	var dutState *chromeosLab.DutState
 	var err error
 	for _, hostname := range su.GetMachineLSEs() {
 		i := slices.IndexFunc(updateData, func(d *ufspb.ChromeOSDeviceData) bool { return d.GetLabConfig().GetName() == hostname })
@@ -333,13 +335,15 @@ func getSchedulingUnitSwarmingDimensions(ctx context.Context, su *ufspb.Scheduli
 			if err != nil {
 				return nil, err
 			}
+			dutState = nil
 		} else {
 			lse = updateData[i].GetLabConfig()
+			dutState = updateData[i].GetDutState()
 		}
 
 		// Get data based on device type
 		if lse.GetChromeosMachineLse() != nil {
-			device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse})
+			device, err := getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse, DutState: dutState})
 			if err != nil {
 				return nil, errors.Annotate(err, "getSchedulingUnitSwarmingDimensions: failed to get chromeos device data").Err()
 			}

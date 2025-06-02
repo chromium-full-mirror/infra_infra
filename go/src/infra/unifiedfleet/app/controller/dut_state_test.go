@@ -14,6 +14,7 @@ import (
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/unifiedfleet/app/external"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
@@ -125,9 +126,9 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 	ctx := testingContext()
 	ctx, _ = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	ctx = withAuthorizedAtlUser(ctx)
+	ctx = external.WithTestingContext(ctx)
 	ftt.Run("UpdateDutState with DeviceLabels", t, func(t *ftt.Test) {
 		t.Run("Update dut state with device labels happy path", func(t *ftt.Test) {
-			ds1 := mockDutState("update-dutstate-devicelabels-1", "update-dutstate-devicelabels-hostname1")
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: "update-dutstate-devicelabels-machine1",
 			})
@@ -136,7 +137,20 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 				Name:     "update-dutstate-devicelabels-hostname1",
 				Hostname: "update-dutstate-devicelabels-hostname1",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
-					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{},
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hostname: "update-dutstate-devicelabels-hostname1",
+										Peripherals: &chromeosLab.Peripherals{
+											Dolos: &chromeosLab.Dolos{},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 				Machines: []string{"update-dutstate-devicelabels-machine1"},
 				Realm:    util.AtlLabAdminRealm,
@@ -149,6 +163,8 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 			_, err = inventory.CreateSchedulingUnit(ctx, su1)
 			assert.NoErr(t, err)
 
+			ds1 := mockDutState("update-dutstate-devicelabels-1", "update-dutstate-devicelabels-hostname1")
+			ds1.DolosState = chromeosLab.PeripheralState_DOLOS_NO_POWER_SUPPLIED
 			_, err = UpdateDutState(ctx, ds1)
 			assert.NoErr(t, err)
 
@@ -158,6 +174,10 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal("machineLSEs/update-dutstate-devicelabels-hostname1"))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels["dolos_state"], should.NotBeNil)
+			assert.Loosely(t, labels["dolos_state"].GetLabelValues(), should.NotBeEmpty)
+			assert.Loosely(t, labels["dolos_state"].GetLabelValues()[0], should.Equal(chromeosLab.PeripheralState_DOLOS_NO_POWER_SUPPLIED.String()))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/update-dutstate-devicelabels-hostname1")
 			assert.NoErr(t, err)
 			assert.Loosely(t, changes, should.HaveLength(1))

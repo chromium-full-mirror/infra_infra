@@ -1033,16 +1033,17 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	return getChromeOSDeviceDataWithLSEOrMachine(ctx, &ufspb.ChromeOSDeviceData{LabConfig: lse, Machine: machine})
 }
 
-// getChromeOSDeviceDataWithLSEOrMachine returns ChromeOSDeviceData using the provided lse/machine
+// getChromeOSDeviceDataWithLSEOrMachine returns ChromeOSDeviceData using the provided lse/machine/dutstate
 // Succeeds if at least one of lse and machine are non-nil
 func getChromeOSDeviceDataWithLSEOrMachine(ctx context.Context, updateData *ufspb.ChromeOSDeviceData) (*ufspb.ChromeOSDeviceData, error) {
 	lse := updateData.GetLabConfig()
 	machine := updateData.GetMachine()
+	dutState := updateData.GetDutState()
 	if lse == nil && machine == nil {
 		return nil, fmt.Errorf("both the MachineLSE and Machine are nil")
 	}
 
-	// We only fetch lse and machine if they're nil.
+	// We only fetch lse, machine, and dutstate if they're nil.
 	// Otherwise, we use the provided values
 	// If lse is nil, fetch lse based on machine data
 	if lse == nil {
@@ -1071,9 +1072,12 @@ func getChromeOSDeviceDataWithLSEOrMachine(ctx context.Context, updateData *ufsp
 	}
 
 	id := machine.GetName()
-	dutState, err := state.GetDutState(ctx, id)
-	if err != nil {
-		logging.Warningf(ctx, "DutState for %s not found. Error: %s", id, err)
+	if dutState == nil {
+		var err error
+		dutState, err = state.GetDutState(ctx, id)
+		if err != nil {
+			logging.Warningf(ctx, "DutState for %s not found. Error: %s", id, err)
+		}
 	}
 	devCfgClient, err := GetDeviceConfigClient(ctx)
 	if err != nil {
