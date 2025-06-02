@@ -469,6 +469,8 @@ func populateRequestQueues(sk *data.HwTestStateKeeper, req *api.CrosTestRunnerDy
 				sk.PostTestQueue.PushBack(typedRequest.PostTest)
 			case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 				sk.PublishQueue.PushBack(typedRequest.Publish)
+			case *api.CrosTestRunnerDynamicRequest_Task_Generic:
+				sk.GenericQueue.PushBack(typedRequest.Generic)
 			default:
 			}
 		}

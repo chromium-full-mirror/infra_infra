@@ -6,29 +6,22 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
-	"go.chromium.org/infra/cros/cmd/cft/lsnexus/internal/parser"
+	"go.chromium.org/infra/cros/cmd/cft/lsnexus/internal/server"
+)
+
+const (
+	Name        = "lsnexus"
+	ArtifactDir = "/tmp/lsnexus"
 )
 
 func main() {
-	ctx := context.Background()
-	r, err := parser.ParseArgs(ctx, os.Args)
+	err := server.StartServer(Name, ArtifactDir)
 	if err != nil {
 		log.Println(err.Error())
 		os.Exit(1)
-		return
-	}
-	if r == nil {
-		os.Exit(0)
-		return
-	}
-	if err := r.Run(ctx); err != nil {
-		log.Println(err.Error())
-		os.Exit(1)
-		return
 	}
 	os.Exit(0)
 }

@@ -8,20 +8,23 @@ package server
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
 	"go.chromium.org/chromiumos/config/go/test/api/lsnexus"
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 func TestStartServod(t *testing.T) {
@@ -30,24 +33,6 @@ func TestStartServod(t *testing.T) {
 	containerName := "container"
 	board := "board"
 	model := "model"
-	dut := &api.Dut{
-		Id: &api.Dut_Id{Value: "id"},
-		DutType: &api.Dut_Chromeos{
-			Chromeos: &api.Dut_ChromeOS{
-				DutModel: &api.DutModel{
-					BuildTarget: board,
-					ModelName:   model,
-				},
-				Servo: &api.Servo{
-					ServodAddress: &api.IpEndpoint{
-						Port: port,
-					},
-					Serial:        serial,
-					ContainerName: containerName,
-				},
-			},
-		},
-	}
 	handler := func(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
 			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
@@ -76,7 +61,7 @@ func TestStartServod(t *testing.T) {
 	}
 	defer stopBols()
 	ctx := context.Background()
-	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, bolsAddr, t.TempDir(), dut)
+	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, t.TempDir())
 	if err != nil {
 		t.Fatalf("failed to start LSNexus server: %v", err)
 	}
@@ -86,6 +71,23 @@ func TestStartServod(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create LSNexus client: %v", err)
 	}
+
+	genericClient := testapi.NewGenericServiceClient(conn)
+	startRequest, err := createGenericStartRequest(map[string]proto.Message{
+		"bols_addr":        structpb.NewStringValue(bolsAddr),
+		"board":            structpb.NewStringValue(board),
+		"model":            structpb.NewStringValue(model),
+		"servod_serial":    structpb.NewStringValue(serial),
+		"servod_container": structpb.NewStringValue(containerName),
+		"servod_port":      structpb.NewNumberValue(float64(port)),
+	})
+	if err != nil {
+		t.Fatalf("failed to create generic start request: %v", err)
+	}
+	if _, err := genericClient.Start(ctx, startRequest); err != nil {
+		t.Fatalf("Failed to call Start: %v", err)
+	}
+
 	cl := lsnexus.NewLSNexusServiceClient(conn)
 	if _, err := cl.StartServod(ctx, &lsnexus.StartServodRequest{}); err != nil {
 		t.Fatalf("failed to call StartServod: %v", err)
@@ -100,24 +102,6 @@ func TestCallServodSet(t *testing.T) {
 	model := "model"
 	control := "control"
 	value := "value"
-	dut := &api.Dut{
-		Id: &api.Dut_Id{Value: "id"},
-		DutType: &api.Dut_Chromeos{
-			Chromeos: &api.Dut_ChromeOS{
-				DutModel: &api.DutModel{
-					BuildTarget: board,
-					ModelName:   model,
-				},
-				Servo: &api.Servo{
-					ServodAddress: &api.IpEndpoint{
-						Port: port,
-					},
-					Serial:        serial,
-					ContainerName: containerName,
-				},
-			},
-		},
-	}
 	handler := func(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
 			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
@@ -147,7 +131,7 @@ func TestCallServodSet(t *testing.T) {
 	}
 	defer stopBols()
 	ctx := context.Background()
-	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, bolsAddr, t.TempDir(), dut)
+	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, t.TempDir())
 	if err != nil {
 		t.Fatalf("failed to start LSNexus server: %v", err)
 	}
@@ -157,6 +141,23 @@ func TestCallServodSet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create LSNexus client: %v", err)
 	}
+
+	genericClient := testapi.NewGenericServiceClient(conn)
+	startRequest, err := createGenericStartRequest(map[string]proto.Message{
+		"bols_addr":        structpb.NewStringValue(bolsAddr),
+		"board":            structpb.NewStringValue(board),
+		"model":            structpb.NewStringValue(model),
+		"servod_serial":    structpb.NewStringValue(serial),
+		"servod_container": structpb.NewStringValue(containerName),
+		"servod_port":      structpb.NewNumberValue(float64(port)),
+	})
+	if err != nil {
+		t.Fatalf("failed to create generic start request: %v", err)
+	}
+	if _, err := genericClient.Start(ctx, startRequest); err != nil {
+		t.Fatalf("Failed to call Start: %v", err)
+	}
+
 	cl := lsnexus.NewLSNexusServiceClient(conn)
 	rspn, err := cl.CallServod(ctx, &lsnexus.CallServodRequest{
 		Method:  lsnexus.CallServodRequest_SET,
@@ -182,24 +183,6 @@ func TestCallServodGet(t *testing.T) {
 	model := "model"
 	control := "control"
 	value := "value"
-	dut := &api.Dut{
-		Id: &api.Dut_Id{Value: "id"},
-		DutType: &api.Dut_Chromeos{
-			Chromeos: &api.Dut_ChromeOS{
-				DutModel: &api.DutModel{
-					BuildTarget: board,
-					ModelName:   model,
-				},
-				Servo: &api.Servo{
-					ServodAddress: &api.IpEndpoint{
-						Port: port,
-					},
-					Serial:        serial,
-					ContainerName: containerName,
-				},
-			},
-		},
-	}
 	handler := func(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
 			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
@@ -227,7 +210,7 @@ func TestCallServodGet(t *testing.T) {
 	}
 	defer stopBols()
 	ctx := context.Background()
-	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, bolsAddr, t.TempDir(), dut)
+	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, t.TempDir())
 	if err != nil {
 		t.Fatalf("failed to start LSNexus server: %v", err)
 	}
@@ -237,6 +220,23 @@ func TestCallServodGet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create LSNexus client: %v", err)
 	}
+
+	genericClient := testapi.NewGenericServiceClient(conn)
+	startRequest, err := createGenericStartRequest(map[string]proto.Message{
+		"bols_addr":        structpb.NewStringValue(bolsAddr),
+		"board":            structpb.NewStringValue(board),
+		"model":            structpb.NewStringValue(model),
+		"servod_serial":    structpb.NewStringValue(serial),
+		"servod_container": structpb.NewStringValue(containerName),
+		"servod_port":      structpb.NewNumberValue(float64(port)),
+	})
+	if err != nil {
+		t.Fatalf("failed to create generic start request: %v", err)
+	}
+	if _, err := genericClient.Start(ctx, startRequest); err != nil {
+		t.Fatalf("Failed to call Start: %v", err)
+	}
+
 	cl := lsnexus.NewLSNexusServiceClient(conn)
 	rspn, err := cl.CallServod(ctx, &lsnexus.CallServodRequest{
 		Method:  lsnexus.CallServodRequest_GET,
@@ -299,35 +299,40 @@ func startMockBolsServer(mockServer *mockBolsService) (stopFunc func(), addr str
 	}, lis.Addr().String(), nil
 }
 
-func startLSNexusServer(ctx context.Context, bolsAddr, dir string, dut *api.Dut) (stopFunc func(), addr string, err error) {
-	content, err := protojson.Marshal(dut)
-	if err != nil {
-		return nil, "", fmt.Errorf("failed to write dut topology: %v", err)
+func createGenericStartRequest(protoMap map[string]proto.Message) (*testapi.GenericStartRequest, error) {
+	values := map[string]*anypb.Any{}
+	for key, protoObj := range protoMap {
+		asAny, err := anypb.New(protoObj)
+		if err != nil {
+			return nil, err
+		}
+		values[key] = asAny
 	}
-	dutTopologyFile := filepath.Join(dir, "dut.json")
-	if err := os.WriteFile(dutTopologyFile, content, 0644); err != nil {
-		return nil, "", fmt.Errorf("failed to write dut topology file: %w", err)
-	}
-	s, err := New(ctx, bolsAddr, "", 8888,
-		dut.GetChromeos().GetDutModel().GetBuildTarget(),
-		dut.GetChromeos().GetDutModel().GetModelName(),
-		dut.GetPools(),
-		dut.GetChromeos().GetServo().GetSerial(),
-		dut.GetChromeos().GetServo().GetContainerName(),
-		int(dut.GetChromeos().GetServo().GetServodAddress().GetPort()))
-	if err != nil {
-		return nil, "", fmt.Errorf("failed to create LSNexusServer: %v", err)
-	}
-	srv := grpc.NewServer()
-	lsnexus.RegisterLSNexusServiceServer(srv, s.(*service))
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		return nil, "", fmt.Errorf("Failed to listen: %w", err)
-	}
+	return &testapi.GenericStartRequest{
+		Message: &testapi.GenericMessage{
+			Values: values,
+		},
+	}, nil
+}
 
-	go srv.Serve(lis)
+func startLSNexusServer(ctx context.Context, dir string) (stopFunc func(), addr string, err error) {
+	logFile, err := common.CreateLogFile(dir)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to create log file: %w", err)
+	}
+	defer logFile.Close()
+	logger := common.NewLogger(logFile)
+	log.SetOutput(logger.Writer())
+
+	server := NewServer(logger)
+
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to create a net listener: %w", err)
+	}
+	go server.Serve(l)
 
 	return func() {
-		srv.Stop()
-	}, lis.Addr().String(), nil
+		server.Stop()
+	}, l.Addr().String(), nil
 }

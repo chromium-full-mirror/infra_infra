@@ -125,13 +125,13 @@ func (ex *GenericServiceExecutor) Start(
 	client testapi.GenericServiceClient,
 	req *testapi.GenericStartRequest,
 ) (resp *testapi.GenericStartResponse, err error) {
-	step, ctx := build.StartStep(ctx, "Start")
-	defer func() { step.End(err) }()
 
 	if req == nil {
-		err = fmt.Errorf("GenericStartRequest is nil")
 		return
 	}
+
+	step, ctx := build.StartStep(ctx, "Start")
+	defer func() { step.End(err) }()
 
 	if client == nil {
 		err = fmt.Errorf("GenericServiceClient is nil")
@@ -153,13 +153,13 @@ func (ex *GenericServiceExecutor) Run(
 	client testapi.GenericServiceClient,
 	req *testapi.GenericRunRequest,
 ) (resp *testapi.GenericRunResponse, err error) {
-	step, ctx := build.StartStep(ctx, "Run")
-	defer func() { step.End(err) }()
 
 	if req == nil {
-		err = fmt.Errorf("GenericRunRequest is nil")
 		return
 	}
+
+	step, ctx := build.StartStep(ctx, "Run")
+	defer func() { step.End(err) }()
 
 	if client == nil {
 		err = fmt.Errorf("GenericServiceClient is nil")
@@ -181,13 +181,13 @@ func (ex *GenericServiceExecutor) Stop(
 	client testapi.GenericServiceClient,
 	req *testapi.GenericStopRequest,
 ) (resp *testapi.GenericStopResponse, err error) {
-	step, ctx := build.StartStep(ctx, "Stop")
-	defer func() { step.End(err) }()
 
 	if req == nil {
-		err = fmt.Errorf("GenericStopRequest is nil")
 		return
 	}
+
+	step, ctx := build.StartStep(ctx, "Stop")
+	defer func() { step.End(err) }()
 
 	if client == nil {
 		err = fmt.Errorf("GenericServiceClient is nil")

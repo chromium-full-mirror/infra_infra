@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package server implement lsnexus-service API.
 package server
 
 import (
@@ -18,7 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/lsnexus"
 )
 
-func (s *service) StartServod(ctx context.Context, req *lsnexus.StartServodRequest) (*lsnexus.StartServodResponse, error) {
+func (s *LsNexus) StartServod(ctx context.Context, req *lsnexus.StartServodRequest) (*lsnexus.StartServodResponse, error) {
 	s.log("Serving StartServod request")
 	config := ""
 	if pools := s.pools; len(pools) > 0 {
@@ -48,7 +47,7 @@ func (s *service) StartServod(ctx context.Context, req *lsnexus.StartServodReque
 	return &lsnexus.StartServodResponse{}, nil
 }
 
-func (s *service) CallServod(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
+func (s *LsNexus) CallServod(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
 	s.log("Serving CallServod request")
 	switch req.GetMethod() {
 	case lsnexus.CallServodRequest_GET:
@@ -71,14 +70,14 @@ func (s *service) CallServod(ctx context.Context, req *lsnexus.CallServodRequest
 	return nil, status.Error(codes.Unimplemented, "the specified call servod method not implemented")
 }
 
-func (s *service) log(args ...any) {
+func (s *LsNexus) log(args ...any) {
 	if s.logger == nil {
 		return
 	}
 	s.logger.Println(args...)
 }
 
-func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
+func (s *LsNexus) getServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
 	if req.GetControl() == "" {
 		err := errors.New("get servod request needs an non-empty string as control value")
 		s.log(err)
@@ -106,7 +105,7 @@ func (s *service) getServodRequest(ctx context.Context, req *lsnexus.CallServodR
 		}}, nil
 }
 
-func (s *service) setServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
+func (s *LsNexus) setServodRequest(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
 	args := req.GetArgs()
 	if len(args) != 1 {
 		err := fmt.Errorf("set servod request has wrong number of arguments: got: %d expected: 1", len(args))
