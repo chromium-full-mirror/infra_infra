@@ -485,9 +485,6 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 			return Device{}, ErrDeviceAlreadyLeased
 		}
 
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "UpdateDeviceToLeased: unable to rollback: %v", rollbackErr)
-		}
 		return Device{}, err
 	}
 

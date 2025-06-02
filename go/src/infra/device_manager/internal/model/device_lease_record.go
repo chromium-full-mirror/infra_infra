@@ -104,9 +104,6 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 	)
 	if err != nil {
 		logging.Errorf(ctx, "CreateDeviceLeaseRecord: error inserting into DeviceLeaseRecords: %s", err)
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "CreateDeviceLeaseRecord: unable to rollback: %v", rollbackErr)
-		}
 		return DeviceLeaseRecord{}, err
 	}
 

@@ -38,12 +38,20 @@ type ExpirerOpts struct {
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, deviceID string, idType model.DeviceIDType) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, deviceID string, idType model.DeviceIDType) (resp *api.LeaseDeviceResponse, err error) {
 	// TODO (b/328662436): Collect metrics
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.New("LeaseDevice: failed to start database transaction")
 	}
+
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				logging.Errorf(ctx, "LeaseDevice: unable to rollback: %v", rollbackErr)
+			}
+		}
+	}()
 
 	deviceToLease := model.Device{
 		ID: deviceID,
@@ -52,15 +60,19 @@ func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, dev
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to update device state to leased: %s", err)
 
-		// Handle error if Device is already leased
-		if errors.Is(err, model.ErrDeviceAlreadyLeased) {
-			return &api.LeaseDeviceResponse{
-				ErrorType:   api.LeaseDeviceResponseErrorType_LEASE_ERROR_TYPE_DEVICE_ALREADY_LEASED,
-				ErrorString: fmt.Sprintf("Device %s was already leased", deviceID),
-			}, nil
+		if !errors.Is(err, model.ErrDeviceAlreadyLeased) {
+			return nil, err
 		}
-
-		return nil, err
+		// Handle error if Device is already leased
+		// Rollback explicitly here because we change 'err' to nil, so the deferred
+		// rollback won't run.
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "LeaseDevice: unable to rollback: %v", rollbackErr)
+		}
+		return &api.LeaseDeviceResponse{
+			ErrorType:   api.LeaseDeviceResponseErrorType_LEASE_ERROR_TYPE_DEVICE_ALREADY_LEASED,
+			ErrorString: fmt.Sprintf("Device %s was already leased", deviceID),
+		}, nil
 	}
 
 	newRecord := model.DeviceLeaseRecord{
