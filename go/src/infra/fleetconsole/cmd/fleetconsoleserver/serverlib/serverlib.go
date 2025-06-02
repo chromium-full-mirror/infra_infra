@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -23,6 +24,7 @@ import (
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
+	"go.chromium.org/luci/server/pubsub"
 	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/sqldb"
 
@@ -47,6 +49,7 @@ func Modules() []module.Module {
 		// For the database info and password.
 		secrets.NewModuleFromFlags(),
 		cron.NewModuleFromFlags(),
+		pubsub.NewModuleFromFlags(),
 		sqldb.NewModuleFromFlags(),
 	}
 }
@@ -89,6 +92,12 @@ func ServerMain(srv *server.Server) error {
 	cron.RegisterHandler("repopulate-cache", func(ctx context.Context) error {
 		_, err := consoleFrontend.RepopulateCache(ctx, &fleetconsolerpc.RepopulateCacheRequest{})
 		return err
+	})
+
+	// Instead of anypb.Any there should be the actual proto file sent by the pubsub, this is a place holder
+	pubsub.RegisterJSONPBHandler("update-android-devices", func(ctx context.Context, msg pubsub.Message, tp *anypb.Any) error {
+		logging.Infof(ctx, "Pubsub message received: %v", tp)
+		return nil
 	})
 
 	logging.Infof(srv.Context, "End initialization of console server.")
