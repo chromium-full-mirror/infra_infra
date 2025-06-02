@@ -50,8 +50,7 @@ func TestSingleConversions(t *testing.T) {
 				TestIdStructured: &sinkpb.TestIdentifier{
 					CaseNameComponents: []string{"*fixture"},
 				},
-				Expected: true,
-				Status:   pb.TestStatus_PASS,
+				StatusV2: pb.TestResult_PASSED,
 			}
 			assert.Loosely(t, testResults, should.HaveLength(1))
 			assert.Loosely(t, testResults[0], should.Resemble(expected))
@@ -71,8 +70,13 @@ func TestSingleConversions(t *testing.T) {
 				TestIdStructured: &sinkpb.TestIdentifier{
 					CaseNameComponents: []string{"*fixture"},
 				},
-				Expected:    false,
-				Status:      pb.TestStatus_FAIL,
+				StatusV2: pb.TestResult_FAILED,
+				FailureReason: &pb.FailureReason{
+					Kind: pb.FailureReason_ORDINARY,
+					Errors: []*pb.FailureReason_Error{
+						{Message: "Failed to run content_shell."},
+					},
+				},
 				SummaryHtml: "<pre>Failed to run content_shell.</pre>",
 			}
 			assert.Loosely(t, testResults, should.HaveLength(1))
@@ -93,8 +97,10 @@ func TestSingleConversions(t *testing.T) {
 				TestIdStructured: &sinkpb.TestIdentifier{
 					CaseNameComponents: []string{"*fixture"},
 				},
-				Expected: false,
-				Status:   pb.TestStatus_ABORT,
+				StatusV2: pb.TestResult_FAILED,
+				FailureReason: &pb.FailureReason{
+					Kind: pb.FailureReason_TIMEOUT,
+				},
 			}
 			assert.Loosely(t, testResults, should.HaveLength(1))
 			assert.Loosely(t, testResults[0], should.Resemble(expected))

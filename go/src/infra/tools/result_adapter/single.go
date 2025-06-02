@@ -46,16 +46,35 @@ func (r *SingleResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 
 	switch {
 	case !r.Valid:
-		tr.Expected = false
-		tr.Status = pb.TestStatus_ABORT
+		tr.StatusV2 = pb.TestResult_FAILED
+		tr.FailureReason = &pb.FailureReason{
+			Kind: pb.FailureReason_TIMEOUT,
+		}
 	case len(r.Failures) == 0:
-		tr.Expected = true
-		tr.Status = pb.TestStatus_PASS
+		tr.StatusV2 = pb.TestResult_PASSED
 	default:
-		tr.Expected = false
-		tr.Status = pb.TestStatus_FAIL
+		tr.StatusV2 = pb.TestResult_FAILED
+
+		errs, truncated := truncateErrorsToResultDBLimits(toErrors(r.Failures))
+		tr.FailureReason = &pb.FailureReason{
+			Kind:                 pb.FailureReason_ORDINARY,
+			Errors:               errs,
+			TruncatedErrorsCount: int32(truncated),
+		}
+
 		tr.SummaryHtml = fmt.Sprintf("<pre>%s</pre>", html.EscapeString(strings.Join(r.Failures, "\n")))
 	}
 
 	return []*sinkpb.TestResult{tr}, nil
+}
+
+// toErrors converts failures to a ResultDB FailureReason_Errors collection.
+func toErrors(failures []string) []*pb.FailureReason_Error {
+	errors := make([]*pb.FailureReason_Error, 0, len(failures))
+	for _, f := range failures {
+		errors = append(errors, &pb.FailureReason_Error{
+			Message: f,
+		})
+	}
+	return errors
 }
