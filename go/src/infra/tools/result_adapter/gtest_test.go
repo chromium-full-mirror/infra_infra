@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -206,7 +206,11 @@ func TestGTestConversions(t *testing.T) {
 		convert := func(result *GTestRunResult) *sinkpb.TestResult {
 			r := &GTestResults{}
 			buf := &bytes.Buffer{}
-			tr, err := r.convertTestResult(ctx, buf, "testId", "TestName", result)
+			testIDStructured := &sinkpb.TestIdentifier{
+				FineName:           "MySuite",
+				CaseNameComponents: []string{"MyTest"},
+			}
+			tr, err := r.convertTestResult(ctx, buf, "testId", "TestName", testIDStructured, result)
 			assert.Loosely(t, err, should.BeNil)
 			return tr
 		}
@@ -276,6 +280,10 @@ func TestGTestConversions(t *testing.T) {
 		})
 
 		t.Run("testLocations", func(t *ftt.Test) {
+			testIDStructured := &sinkpb.TestIdentifier{
+				FineName:           "MySuite",
+				CaseNameComponents: []string{"MyTest"},
+			}
 			t.Run(`Works`, func(t *ftt.Test) {
 				results := &GTestResults{
 					TestLocations: map[string]*Location{
@@ -285,7 +293,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				}
-				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", &GTestRunResult{Status: "SUCCESS"})
+				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", testIDStructured, &GTestRunResult{Status: "SUCCESS"})
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, tr.TestMetadata, should.Resemble(&pb.TestMetadata{
 					Name: "TestName",
@@ -305,7 +313,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				}
-				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", &GTestRunResult{Status: "SUCCESS"})
+				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", testIDStructured, &GTestRunResult{Status: "SUCCESS"})
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, tr.TestMetadata.Location, should.Resemble(&pb.TestLocation{
 					Repo:     chromiumSrcRepo,
@@ -730,64 +738,82 @@ Backtrace:
 	ftt.Run(`extractGTestParameters`, t, func(t *ftt.Test) {
 		t.Run(`type parametrized`, func(t *ftt.Test) {
 			t.Run(`with instantiation`, func(t *ftt.Test) {
-				baseID, err := extractGTestParameters("MyInstantiation/FooTest/1.DoesBar")
+				baseID, structuredID, err := extractGTestParameters("MyInstantiation/FooTest/1.DoesBar")
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/MyInstantiation.1"))
+				assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+					FineName:           "FooTest",
+					CaseNameComponents: []string{"DoesBar/MyInstantiation.1"},
+				}))
 			})
 
 			t.Run(`without instantiation`, func(t *ftt.Test) {
-				baseID, err := extractGTestParameters("FooTest/1.DoesBar")
+				baseID, structuredID, err := extractGTestParameters("FooTest/1.DoesBar")
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/1"))
+				assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+					FineName:           "FooTest",
+					CaseNameComponents: []string{"DoesBar/1"},
+				}))
 			})
 		})
 
 		t.Run(`value parametrized`, func(t *ftt.Test) {
 			t.Run(`with instantiation`, func(t *ftt.Test) {
-				baseID, err := extractGTestParameters("MyInstantiation/FooTest.DoesBar/1")
+				baseID, structuredID, err := extractGTestParameters("MyInstantiation/FooTest.DoesBar/1")
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/MyInstantiation.1"))
+				assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+					FineName:           "FooTest",
+					CaseNameComponents: []string{"DoesBar/MyInstantiation.1"},
+				}))
 			})
 
 			t.Run(`without instantiation`, func(t *ftt.Test) {
-				baseID, err := extractGTestParameters("FooTest.DoesBar/1")
+				baseID, structuredID, err := extractGTestParameters("FooTest.DoesBar/1")
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/1"))
+				assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+					FineName:           "FooTest",
+					CaseNameComponents: []string{"DoesBar/1"},
+				}))
 			})
 		})
 
 		t.Run(`not parametrized`, func(t *ftt.Test) {
-			baseID, err := extractGTestParameters("FooTest.DoesBar")
+			baseID, structuredID, err := extractGTestParameters("FooTest.DoesBar")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar"))
+			assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+				FineName:           "FooTest",
+				CaseNameComponents: []string{"DoesBar"},
+			}))
 		})
 
 		t.Run(`with magic prefixes`, func(t *ftt.Test) {
-			baseID, err := extractGTestParameters("FooTest.PRE_PRE_MANUAL_DoesBar")
+			baseID, structuredID, err := extractGTestParameters("FooTest.PRE_PRE_MANUAL_DoesBar")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar"))
-		})
-
-		t.Run(`with JUnit tests`, func(t *ftt.Test) {
-			baseID, err := extractGTestParameters("org.chromium.tests#testFoo_sub__param=val")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, baseID, should.Equal("org.chromium.tests#testFoo_sub__param=val"))
+			assert.Loosely(t, structuredID, should.Match(&sinkpb.TestIdentifier{
+				FineName:           "FooTest",
+				CaseNameComponents: []string{"DoesBar"},
+			}))
 		})
 
 		t.Run(`synthetic parameterized test`, func(t *ftt.Test) {
-			_, err := extractGTestParameters("GoogleTestVerification.UninstantiatedParamaterizedTestSuite<Suite>")
+			_, _, err := extractGTestParameters("GoogleTestVerification.UninstantiatedParamaterizedTestSuite<Suite>")
 			assert.Loosely(t, err, should.ErrLike("not a real test"))
 			assert.Loosely(t, syntheticTestTag.In(err), should.BeTrue)
 		})
 
 		t.Run(`synthetic type parameterized test`, func(t *ftt.Test) {
-			_, err := extractGTestParameters("GoogleTestVerification.UninstantiatedTypeParamaterizedTestSuite<Suite>")
+			_, _, err := extractGTestParameters("GoogleTestVerification.UninstantiatedTypeParamaterizedTestSuite<Suite>")
 			assert.Loosely(t, err, should.ErrLike("not a real test"))
 			assert.Loosely(t, syntheticTestTag.In(err), should.BeTrue)
 		})
 
 		t.Run(`with unrecognized format`, func(t *ftt.Test) {
-			_, err := extractGTestParameters("not_gtest_test")
+			_, _, err := extractGTestParameters("not_gtest_test")
 			assert.Loosely(t, err, should.ErrLike("test id of unknown format"))
 		})
 	})
@@ -850,7 +876,11 @@ Backtrace:
 			expected := []*sinkpb.TestResult{
 				// Disabled tests.
 				{
-					TestId:   "FooTest.TestDoBarDisabled",
+					TestId: "FooTest.TestDoBarDisabled",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "FooTest",
+						CaseNameComponents: []string{"TestDoBarDisabled"},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_SKIP,
 					Tags: pbutil.StringPairs(
@@ -865,7 +895,11 @@ Backtrace:
 				},
 				// Iteration 1.
 				{
-					TestId:   "BazTest.DoesQux",
+					TestId: "BazTest.DoesQux",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "BazTest",
+						CaseNameComponents: []string{"DoesQux"},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_PASS,
 					Tags: pbutil.StringPairs(
@@ -881,6 +915,10 @@ Backtrace:
 				},
 				{
 					TestId: "BazTest.DoesQux",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "BazTest",
+						CaseNameComponents: []string{"DoesQux"},
+					},
 					Status: pb.TestStatus_FAIL,
 					Tags: pbutil.StringPairs(
 						"test_name", "BazTest.DoesQux",
@@ -895,6 +933,10 @@ Backtrace:
 				},
 				{
 					TestId: "FooTest.DoesBar",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "FooTest",
+						CaseNameComponents: []string{"DoesBar"},
+					},
 					Status: pb.TestStatus_FAIL,
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
@@ -909,6 +951,10 @@ Backtrace:
 				},
 				{
 					TestId: "FooTest.DoesBar",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "FooTest",
+						CaseNameComponents: []string{"DoesBar"},
+					},
 					Status: pb.TestStatus_FAIL,
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
@@ -924,7 +970,11 @@ Backtrace:
 
 				// Iteration 2.
 				{
-					TestId:   "BazTest.DoesQux",
+					TestId: "BazTest.DoesQux",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "BazTest",
+						CaseNameComponents: []string{"DoesQux"},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_PASS,
 					Tags: pbutil.StringPairs(
@@ -939,7 +989,11 @@ Backtrace:
 					},
 				},
 				{
-					TestId:   "BazTest.DoesQux",
+					TestId: "BazTest.DoesQux",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "BazTest",
+						CaseNameComponents: []string{"DoesQux"},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_PASS,
 					Tags: pbutil.StringPairs(
@@ -955,6 +1009,10 @@ Backtrace:
 				},
 				{
 					TestId: "FooTest.DoesBar",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "FooTest",
+						CaseNameComponents: []string{"DoesBar"},
+					},
 					Status: pb.TestStatus_FAIL,
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
@@ -969,6 +1027,10 @@ Backtrace:
 				},
 				{
 					TestId: "FooTest.DoesBar",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "FooTest",
+						CaseNameComponents: []string{"DoesBar"},
+					},
 					Status: pb.TestStatus_FAIL,
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
@@ -1009,7 +1071,11 @@ Backtrace:
 
 			expected := []*sinkpb.TestResult{
 				{
-					TestId:   longTestName,
+					TestId: longTestName,
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "LongNameTest",
+						CaseNameComponents: []string{strings.Repeat("a", 300)},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_PASS,
 					Tags: pbutil.StringPairs(

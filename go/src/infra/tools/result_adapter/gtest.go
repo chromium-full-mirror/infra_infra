@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -29,10 +29,6 @@ import (
 var (
 	// Prefixes that may be present in the test name and must be stripped before forming the base id.
 	prefixes = []string{"MANUAL_", "PRE_"}
-
-	// Java base ids aren't actually GTest but use the same launcher output format.
-	// TODO(chanli@): remove java test related logic when crbug.com/1104245 and crbug.com/1104238 are done.
-	javaIDRe = regexp.MustCompile(`^[\w.]+#`)
 
 	// Test base ids look like FooTest.DoesBar: "FooTest" is the suite and "DoesBar" the test name.
 	baseIDRE = regexp.MustCompile(`^(\w+)\.(\w+)$`)
@@ -229,7 +225,7 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 	globalTags[len(r.GlobalTags)] = pbutil.StringPair(originalFormatTagKey, formatGTest)
 
 	for _, name := range r.DisabledTests {
-		testID, err := extractGTestParameters(name)
+		testID, testIDStructured, err := extractGTestParameters(name)
 		switch {
 		case syntheticTestTag.In(err):
 			continue
@@ -238,9 +234,10 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 				"failed to extract test id and parameters from %q", name).Err()
 		}
 		tr := &sinkpb.TestResult{
-			TestId:   testID,
-			Expected: true,
-			Status:   pb.TestStatus_SKIP,
+			TestId:           testID,
+			TestIdStructured: testIDStructured,
+			Expected:         true,
+			Status:           pb.TestStatus_SKIP,
 			Tags: []*pb.StringPair{
 				// Store the original Gtest test name.
 				maybeTestNameTag(name),
@@ -263,7 +260,7 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 		sort.Strings(testNames)
 
 		for _, name := range testNames {
-			testID, err := extractGTestParameters(name)
+			testID, testIDStructured, err := extractGTestParameters(name)
 			switch {
 			case syntheticTestTag.In(err):
 				continue
@@ -274,7 +271,7 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 
 			for i, result := range data[name] {
 				// Store the processed test result into the correct part of the overall map.
-				rpb, err := r.convertTestResult(ctx, &buf, testID, name, result)
+				rpb, err := r.convertTestResult(ctx, &buf, testID, name, testIDStructured, result)
 				if err != nil {
 					return nil, errors.Annotate(err,
 						"iteration %d of test %s failed to convert run result", i, name).Err()
@@ -317,14 +314,8 @@ func fromGTestStatus(s string) (status pb.TestStatus, expected bool, err error) 
 }
 
 // extractGTestParameters extracts parameters from a test id as a mapping with "param/" keys.
-func extractGTestParameters(testID string) (baseID string, err error) {
+func extractGTestParameters(testID string) (baseID string, structuredID *sinkpb.TestIdentifier, err error) {
 	var suite, name, instantiation, id string
-
-	// If this is a JUnit tests, don't try to extract parameters.
-	if match := javaIDRe.FindStringSubmatch(testID); match != nil {
-		baseID = testID
-		return
-	}
 
 	// Tests can be only one of type- or value-parametrized, if parametrized at all.
 	if match := typeParamRE.FindStringSubmatch(testID); match != nil {
@@ -347,6 +338,7 @@ func extractGTestParameters(testID string) (baseID string, err error) {
 	} else if syntheticTestRE.MatchString(testID) {
 		// A synthetic test, skip.
 		err = errors.Reason("not a real test").Tag(syntheticTestTag).Err()
+		return
 	} else {
 		// Otherwise test id format is unrecognized.
 		err = errors.Reason("test id of unknown format").Err()
@@ -354,15 +346,24 @@ func extractGTestParameters(testID string) (baseID string, err error) {
 	}
 
 	// Strip prefixes from test name if necessary.
+	// For structured test IDs we do not do this anymore.
 	name = stripRepeatedPrefixes(name, prefixes...)
 
+	var caseName string
 	switch {
 	case id == "":
-		baseID = fmt.Sprintf("%s.%s", suite, name)
+		caseName = name
 	case instantiation == "":
-		baseID = fmt.Sprintf("%s.%s/%s", suite, name, id)
+		caseName = fmt.Sprintf("%s/%s", name, id)
 	default:
-		baseID = fmt.Sprintf("%s.%s/%s.%s", suite, name, instantiation, id)
+		caseName = fmt.Sprintf("%s/%s.%s", name, instantiation, id)
+	}
+
+	baseID = fmt.Sprintf("%s.%s", suite, caseName)
+	structuredID = &sinkpb.TestIdentifier{
+		CoarseName:         "", // Unused for gtests.
+		FineName:           suite,
+		CaseNameComponents: []string{caseName},
 	}
 
 	return
@@ -532,16 +533,17 @@ func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.Fa
 	}
 }
 
-func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer, testID, name string, result *GTestRunResult) (*sinkpb.TestResult, error) {
+func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer, testID, name string, testIDStructured *sinkpb.TestIdentifier, result *GTestRunResult) (*sinkpb.TestResult, error) {
 	status, expected, err := fromGTestStatus(result.Status)
 	if err != nil {
 		return nil, err
 	}
 
 	tr := &sinkpb.TestResult{
-		TestId:   testID,
-		Expected: expected,
-		Status:   status,
+		TestId:           testID,
+		TestIdStructured: testIDStructured,
+		Expected:         expected,
+		Status:           status,
 		Tags: []*pb.StringPair{
 			// Store the original Gtest test name.
 			maybeTestNameTag(name),
