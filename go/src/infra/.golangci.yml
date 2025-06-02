@@ -9,10 +9,10 @@ linters:
   enable:
     - copyloopvar
     - errorlint
-    - intrange
-    - noctx
     - gomodguard
     - govet
+    - intrange
+    - noctx
   disable:
     # There are also many unchecked errors.
     - errcheck
@@ -145,15 +145,6 @@ linters:
       - ^cros/internal/branch/helper.go$
       # TODO(gregorynisbet): remove this exemption too.
       - ^qscheduler/service/app/state/batchrunner.go$
-      # TODO(gregorynisbet): remove this exemption after https://chromium-review.googlesource.com/c/infra/infra/+/6581399 lands
-      - ^cros/cmd/ctpv2/internal/commands/schedule_tasks.go$
-      # TODO(gregorynisbet): BEGIN remove after https://chromium-review.googlesource.com/c/infra/infra/+/6580823 lands
-      - ^cros/cmd/cft/execution/cros-test/internal/driver/tradefed_nonxts_command_builder.go$
-      - ^cros/cmd/cft/execution/cros-test/internal/driver/tradefed_xts_command_builder.go$
-      - ^cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go$
-      - ^cros/cmd/kron/builds/ingest.go$
-      # TODO(gregorynisbet): END remove after https://chromium-review.googlesource.com/c/infra/infra/+/6580823 lands
-
       # TODO(gregorynisbet): BEGIN copylock issue files.
       - appengine/rotation-proxy/rotation_proxy_server.go
       - cmd/bqexport/test_data/main.go
