@@ -87,8 +87,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "go.chromium.org/infra/tools/result_adapter"
 					case_name_components: "*fixture"
 			}
-			expected:  true
-			status:  PASS
+			status_v2:  PASSED
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time:  {
 		  		seconds:  1623970750
@@ -109,8 +108,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "go.chromium.org/infra/tools/result_adapter"
 					case_name_components: "TestEnsureArgsValid"
 			}
-			expected:  true
-			status:  PASS
+			status_v2:  PASSED
 			summary_html:  "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time:  {
 		  		seconds:  1623970750
@@ -199,8 +197,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "example/pkg"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1680540298
@@ -221,8 +218,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "example/pkg"
 					case_name_components: "TestA"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1680540298
@@ -241,8 +237,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "example/pkg"
 					case_name_components: "TestB"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1680540298
@@ -261,8 +256,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "example/pkg"
 					case_name_components: "TestAB"
 			}
-			expected:  true
-			status:  PASS
+			status_v2:  PASSED
 			summary_html:  "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time:  {
 			  seconds:  1680540298
@@ -287,8 +281,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/a"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -309,8 +302,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/a"
 					case_name_components: "TestA"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -329,7 +321,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/b"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -348,7 +343,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/c"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -367,7 +365,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/c2"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1737045179
@@ -386,8 +387,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/d"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -408,8 +408,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/d"
 					case_name_components: "TestD"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734113176
@@ -433,8 +432,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/a"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -455,8 +453,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/a"
 					case_name_components: "TestA"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -475,7 +472,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/b"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -494,7 +494,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/c"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -513,7 +516,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/c2"
 					case_name_components: "*fixture"
 			}
-			status: FAIL
+			status_v2: FAILED
+			failure_reason: {
+			  kind: ORDINARY
+			}
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1737045161
@@ -532,8 +538,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/d"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -554,8 +559,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test/d"
 					case_name_components: "TestD"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1734116530
@@ -580,8 +584,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1736812206
@@ -602,8 +605,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test.test"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			duration: {}
 			artifacts: {
@@ -623,8 +625,7 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "test"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: PASS
+			status_v2: PASSED
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
 			  seconds: 1736812228
@@ -654,8 +655,10 @@ func TestGenerateTestResults(t *testing.T) {
 					fine_name: "go.chromium.org/luci/resultdb/internal/permissions"
 					case_name_components: "*fixture"
 			}
-			expected: true
-			status: SKIP
+			status_v2: SKIPPED
+			skipped_reason: {
+			  kind: SKIPPED_BY_TEST_BODY,
+			}
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			duration: {}
 			artifacts: {

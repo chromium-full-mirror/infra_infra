@@ -299,10 +299,13 @@ func (pr *PackageRecord) ingest(te *GoTestEvent, buildRecords map[string]*BuildR
 }
 
 func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult {
-	anyTestFailed := false
+	var testsFailed int
+	var exampleTestFailed string
 	for _, tr := range pr.OrderedTests {
 		if tr.Result == "fail" {
-			anyTestFailed = true
+			testsFailed++
+			exampleTestFailed = tr.TestName
+			break
 		}
 	}
 
@@ -316,31 +319,51 @@ func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult 
 		CaseNameComponents: []string{"*fixture"},
 	}
 
+	var resultMessage string
+
 	switch pr.Result {
 	case "pass", "bench":
-		packageResult.Status = resultpb.TestStatus_PASS
-		packageResult.Expected = true
+		packageResult.StatusV2 = resultpb.TestResult_PASSED
 	case "fail":
-		if anyTestFailed {
+		if testsFailed > 0 {
 			// Package may only be reporting fail because one of the tests failed.
 			// Report 'skip' to signify we don't know whether the package setup/teardown
 			// passed or failed.
 			// This is different to how go represents package failures but is intended
 			// to avoid creating two 'failing' results in response to one test failure.
-			packageResult.Status = resultpb.TestStatus_SKIP
-			packageResult.Expected = true
+			if testsFailed > 1 {
+				resultMessage = fmt.Sprintf("Package result is precluded by test %q (and %v other test(s)) failing.", exampleTestFailed, testsFailed-1)
+			} else {
+				resultMessage = fmt.Sprintf("Package result is precluded by test %q failing.", exampleTestFailed)
+			}
+
+			packageResult.StatusV2 = resultpb.TestResult_PRECLUDED
 		} else {
 			// Package failed in setup/teardown.
-			packageResult.Status = resultpb.TestStatus_FAIL
+			packageResult.StatusV2 = resultpb.TestResult_FAILED
+			packageResult.FailureReason = &resultpb.FailureReason{
+				Kind: resultpb.FailureReason_ORDINARY,
+			}
 		}
 	case "skip":
-		packageResult.Status = resultpb.TestStatus_SKIP
-		packageResult.Expected = true
+		packageResult.StatusV2 = resultpb.TestResult_SKIPPED
+		packageResult.SkippedReason = &resultpb.SkippedReason{
+			Kind: resultpb.SkippedReason_SKIPPED_BY_TEST_BODY,
+		}
 	case "":
 		// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
 		// have its status unset.
-		packageResult.Status = resultpb.TestStatus_ABORT
+		packageResult.StatusV2 = resultpb.TestResult_EXECUTION_ERRORED
+		resultMessage = "<code>go test</code> reported no status for this test. This usually means execution was interrupted by SIGTERM, SIGABORT or SIGKILL."
 	}
+
+	var summaryHTML strings.Builder
+	if resultMessage != "" {
+		summaryHTML.WriteString(`<p><strong>`)
+		summaryHTML.WriteString(resultMessage)
+		summaryHTML.WriteString(`</strong></p>`)
+	}
+	summaryHTML.WriteString(`<p>Result only captures package setup and teardown. Tests within the package have their own result.</p>`)
 
 	if pr.Output.Len() > 0 {
 		a := sinkpb.Artifact{}
@@ -348,9 +371,9 @@ func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult 
 			Contents: []byte(pr.Output.String()),
 		}
 		packageResult.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
-		packageResult.SummaryHtml = `<p>Result only captures package setup and teardown. Tests within the package have their own result.</p>` +
-			`<p><text-artifact artifact-id="output"></p>`
+		summaryHTML.WriteString(`<p><text-artifact artifact-id="output"></p>`)
 	}
+	packageResult.SummaryHtml = summaryHTML.String()
 	packageResult.Duration = durationpb.New(time.Duration(int64(pr.Elapsed * float64(time.Second))))
 	if pr.Started != (time.Time{}) {
 		packageResult.StartTime = timestamppb.New(pr.Started)
@@ -433,15 +456,22 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 		CaseNameComponents: []string{encodeErrorRunes(tr.TestName)},
 	}
 
+	var resultMessage string
 	switch tr.Result {
 	case "pass", "bench":
-		result.Status = resultpb.TestStatus_PASS
-		result.Expected = true
+		result.StatusV2 = resultpb.TestResult_PASSED
 	case "fail":
-		result.Status = resultpb.TestStatus_FAIL
+		result.StatusV2 = resultpb.TestResult_FAILED
+		result.FailureReason = &resultpb.FailureReason{
+			// Once https://github.com/golang/go/issues/62728 fixed, add
+			// test reported failure reason here.
+			Kind: resultpb.FailureReason_ORDINARY,
+		}
 	case "skip":
-		result.Status = resultpb.TestStatus_SKIP
-		result.Expected = true
+		result.StatusV2 = resultpb.TestResult_SKIPPED
+		result.SkippedReason = &resultpb.SkippedReason{
+			Kind: resultpb.SkippedReason_SKIPPED_BY_TEST_BODY,
+		}
 	case "":
 		// It has been observed that test2json may fail to parse the status
 		// of a test when multiple tests run in parallel in the same package
@@ -451,13 +481,20 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 		if packagePassed {
 			logging.Warningf(ctx,
 				"Status for test %s is missing from the list of test events. Setting to `pass` because package passed.", testID)
-			result.Status = resultpb.TestStatus_PASS
-			result.Expected = true
+			result.StatusV2 = resultpb.TestResult_PASSED
 		} else {
 			// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
 			// have its status unset.
-			result.Status = resultpb.TestStatus_ABORT
+			result.StatusV2 = resultpb.TestResult_EXECUTION_ERRORED
+			resultMessage = "<code>go test</code> reported no status for this test. This usually means execution was interrupted by SIGTERM, SIGABORT or SIGKILL."
 		}
+	}
+
+	var summaryHTML strings.Builder
+	if resultMessage != "" {
+		summaryHTML.WriteString(`<p><strong>`)
+		summaryHTML.WriteString(resultMessage)
+		summaryHTML.WriteString(`</strong></p>`)
 	}
 	if tr.Output.Len() > 0 {
 		a := sinkpb.Artifact{}
@@ -465,8 +502,10 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 			Contents: []byte(tr.Output.String()),
 		}
 		result.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
-		result.SummaryHtml = `<p><text-artifact artifact-id="output"></p>`
+		summaryHTML.WriteString(`<p><text-artifact artifact-id="output"></p>`)
 	}
+	result.SummaryHtml = summaryHTML.String()
+
 	result.Duration = durationpb.New(time.Duration(int64(tr.Elapsed * float64(time.Second))))
 	result.StartTime = timestamppb.New(tr.Started)
 	return result
