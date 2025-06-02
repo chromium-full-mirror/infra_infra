@@ -10537,6 +10537,8 @@ plans:
               exec_args:
                 - chrome
                 - chrome.tests
+                - chrome.tests.gpu
+                - chrome.tests.osnext
                 - chrome.tests.perf
               docs:
                 - Verify device is in pools which require to be on stable version.

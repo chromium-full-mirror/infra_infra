@@ -355,6 +355,8 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"chrome",
 				"chrome.tests",
+				"chrome.tests.gpu",
+				"chrome.tests.osnext",
 				"chrome.tests.perf",
 			},
 			RunControl:    RunControl_RUN_ONCE,
