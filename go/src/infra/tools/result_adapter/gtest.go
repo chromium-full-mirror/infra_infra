@@ -236,8 +236,10 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 		tr := &sinkpb.TestResult{
 			TestId:           testID,
 			TestIdStructured: testIDStructured,
-			Expected:         true,
-			Status:           pb.TestStatus_SKIP,
+			StatusV2:         pb.TestResult_SKIPPED,
+			SkippedReason: &pb.SkippedReason{
+				Kind: pb.SkippedReason_DISABLED_AT_DECLARATION,
+			},
 			Tags: []*pb.StringPair{
 				// Store the original Gtest test name.
 				maybeTestNameTag(name),
@@ -286,30 +288,50 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 	return ret, nil
 }
 
-func fromGTestStatus(s string) (status pb.TestStatus, expected bool, err error) {
+func fromGTestStatusAndParts(s string, parts []*GTestRunResultPart) (status pb.TestResult_Status, err error) {
 	switch s {
 	case "SUCCESS":
-		return pb.TestStatus_PASS, true, nil
+		if hasSkipResultPart(parts) {
+			return pb.TestResult_SKIPPED, nil
+		}
+		return pb.TestResult_PASSED, nil
 	case "FAILURE":
-		return pb.TestStatus_FAIL, false, nil
+		return pb.TestResult_FAILED, nil
 	case "FAILURE_ON_EXIT":
-		return pb.TestStatus_FAIL, false, nil
+		return pb.TestResult_FAILED, nil
 	case "TIMEOUT":
-		return pb.TestStatus_ABORT, false, nil
+		return pb.TestResult_FAILED, nil
 	case "CRASH":
-		return pb.TestStatus_CRASH, false, nil
+		return pb.TestResult_FAILED, nil
 	case "SKIPPED":
-		return pb.TestStatus_SKIP, true, nil
+		return pb.TestResult_SKIPPED, nil
 	case "EXCESSIVE_OUTPUT":
-		return pb.TestStatus_FAIL, false, nil
+		return pb.TestResult_FAILED, nil
 	case "NOTRUN":
-		return pb.TestStatus_SKIP, false, nil
+		return pb.TestResult_EXECUTION_ERRORED, nil
 	case "UNKNOWN":
-		return pb.TestStatus_ABORT, false, nil
+		return pb.TestResult_EXECUTION_ERRORED, nil
 	default:
 		// This would only happen if the set of possible GTest result statuses change and resultsdb has
 		// not been updated to match.
-		return pb.TestStatus_STATUS_UNSPECIFIED, false, errors.Reason("unknown GTest status %q", s).Err()
+		return pb.TestResult_STATUS_UNSPECIFIED, errors.Reason("unknown GTest status %q", s).Err()
+	}
+}
+
+func failureKindFromGTestStatus(s string) (pb.FailureReason_Kind, error) {
+	switch s {
+	case "FAILURE":
+		return pb.FailureReason_ORDINARY, nil
+	case "FAILURE_ON_EXIT":
+		return pb.FailureReason_ORDINARY, nil
+	case "EXCESSIVE_OUTPUT":
+		return pb.FailureReason_ORDINARY, nil
+	case "TIMEOUT":
+		return pb.FailureReason_TIMEOUT, nil
+	case "CRASH":
+		return pb.FailureReason_CRASH, nil
+	default:
+		return pb.FailureReason_KIND_UNSPECIFIED, errors.Reason("unknown GTest status %q", s).Err()
 	}
 }
 
@@ -401,70 +423,98 @@ func truncateString(s string, length int) string {
 	return s[:lastIndex] + "..."
 }
 
+// prioritisedFailureParts returns the test result parts in order of priority:
+// - fatal failures appear first (in order of occurrence), then
+// - failures.
+// If there are no failures, returns an empty list.
 // extractPrimaryFailure returns the first fatal result part, or if it does not exist,
 // the first non-fatal failure. If there is no failure, it returns nil.
-func extractPrimaryFailure(ctx context.Context, parts []*GTestRunResultPart) *GTestRunResultPart {
-	var primaryFailure *GTestRunResultPart
+func prioritisedFailureParts(ctx context.Context, parts []*GTestRunResultPart) []*GTestRunResultPart {
+	var fatalFailures []*GTestRunResultPart
+	var failures []*GTestRunResultPart
 	for _, part := range parts {
 		switch part.Type {
 		case "success":
 		case "failure":
-			// Select the first non-fatal failure.
-			if primaryFailure == nil {
-				primaryFailure = part
-			}
+			failures = append(failures, part)
 		case "fatal_failure":
-			// Or the first fatal failure, if it exists.
-			return part
+			fatalFailures = append(fatalFailures, part)
 		case "skip":
 		default:
 			logging.Warningf(ctx, "Unknown GTest result part status %q", part.Type)
 		}
 	}
-	return primaryFailure
+	return append(fatalFailures, failures...)
 }
 
-// extractFailureReasonFromResultParts identifies a test failure reason from
-// structured test result output provided by Google Test. This is the
-// preferred way of identifying a test's failure reason, but this way may not
-// always be possible (e.g. if the test crashed).
-func extractFailureReasonFromResultParts(ctx context.Context, parts []*GTestRunResultPart) *pb.FailureReason {
-	f := extractPrimaryFailure(ctx, parts)
-	if f == nil {
-		// No failure part.
-		return nil
+// skipResultPart finds the result part that explains the skip, if any.
+// Such result parts are only generated if the GTEST_SKIP macro is used explicitly.
+func skipResultPart(parts []*GTestRunResultPart) *GTestRunResultPart {
+	for _, part := range parts {
+		if part.Type == "skip" {
+			return part
+		}
 	}
+	return nil
+}
+
+// hasSkipResultPart determines if the test has a skipped result part.
+func hasSkipResultPart(parts []*GTestRunResultPart) bool {
+	return skipResultPart(parts) != nil
+}
+
+func extractMessageFromResultPart(f *GTestRunResultPart) (string, error) {
 	summaryBytes, err := base64.StdEncoding.DecodeString(f.SummaryBase64)
 	if err != nil {
 		// Log the error, but we shouldn't fail to convert a file just because we can't
 		// convert a summary.
-		logging.Warningf(ctx, "Failed to convert SummaryBase64 %q", f.SummaryBase64)
-		return nil
+		return "", errors.Fmt("Failed to decode SummaryBase64: %w", err)
 	}
 	if !utf8.Valid(summaryBytes) {
 		// summaryBytes may not be valid UTF-8 (this is permitted on the Chrome side).
 		// If so, drop it, but log a message. In future, we could consider escaping
 		// characters.
-		logging.Warningf(ctx, "SummaryBase64 is not valid UTF-8 %q", f.SummaryBase64)
-		return nil
+		return "", errors.New("SummaryBase64 is not valid UTF-8")
 	}
 	// On Windows, paths reported in the result parts use forward or
 	// backward slashes, so use a splitting method that accepts either.
 	_, fileName := filepath.Split(f.File)
 	summary := strings.TrimSpace(trimGoogleTestTrace(string(summaryBytes)))
 
-	// Contextualise the assertion failure with the file name and line number.
+	// Contextualise the assertion failure/skip message with the file name and line number.
 	// This avoids coming up with failure reasons which are too generic,
 	// e.g. "Expected equality of these values:\n true\n false".
-	primaryError := truncateString(
-		fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary),
-		maxErrorMessageBytes)
-	return &pb.FailureReason{
-		PrimaryErrorMessage: primaryError,
-		Errors: []*pb.FailureReason_Error{
-			{Message: primaryError},
-		},
+	return fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary), nil
+}
+
+// extractFailureReasonErrorsFromResultParts identifies the errors that caused
+// the test to fail from the structured test result output provided by Google Test.
+// The list of errors returned is limited to the size allowed by ResultDB. The
+// number of errors truncated to do so is returned in `truncateddErrors`.
+//
+// This is the preferred way of identifying a test's reasons for failure, but this
+// way may not always be possible (e.g. if the test crashed).
+func extractFailureReasonErrorsFromResultParts(ctx context.Context, parts []*GTestRunResultPart) (result []*pb.FailureReason_Error, truncatedErrors int) {
+	fs := prioritisedFailureParts(ctx, parts)
+	if len(fs) == 0 {
+		// No failure parts.
+		return nil, 0
 	}
+
+	var errors []*pb.FailureReason_Error
+	for _, f := range fs {
+		msg, err := extractMessageFromResultPart(f)
+		if err != nil {
+			logging.Warningf(ctx, "Failed to extract message from ResultPart: %s", err)
+			// Prefer to return no errors rather than an incorrect error as the
+			// first (most causal) error.
+			return nil, 0
+		}
+		errors = append(errors, &pb.FailureReason_Error{
+			Message: msg,
+		})
+	}
+	return truncateErrorsToResultDBLimits(errors)
 }
 
 func trimGoogleTestTrace(message string) string {
@@ -476,7 +526,7 @@ func trimGoogleTestTrace(message string) string {
 // It tries to identify fatal log messages (including DCheck failures)
 // and failed GTest expectations. This fallback is usually used if
 // the test crashed and GTest does not report structured failure data.
-func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.FailureReason {
+func extractFailureReasonFromSnippet(ctx context.Context, snippet string) []*pb.FailureReason_Error {
 	// Try to find fatal log messages.
 	match := fatalMessageRE.FindStringSubmatchIndex(snippet)
 	checkFailedMatch := checkFailedRE.FindStringSubmatchIndex(snippet)
@@ -496,11 +546,8 @@ func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.Fa
 		primaryError := truncateString(
 			fmt.Sprintf("%v: %v", fileNameAndLine, message),
 			maxErrorMessageBytes)
-		return &pb.FailureReason{
-			PrimaryErrorMessage: primaryError,
-			Errors: []*pb.FailureReason_Error{
-				{Message: primaryError},
-			},
+		return []*pb.FailureReason_Error{
+			{Message: primaryError},
 		}
 	}
 	// As a second approach, we will try to extract GTest expectation failures.
@@ -525,16 +572,13 @@ func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.Fa
 	primaryError := truncateString(
 		fmt.Sprintf("%v(%v): %v", fileName, lineNumber, message),
 		maxErrorMessageBytes)
-	return &pb.FailureReason{
-		PrimaryErrorMessage: primaryError,
-		Errors: []*pb.FailureReason_Error{
-			{Message: primaryError},
-		},
+	return []*pb.FailureReason_Error{
+		{Message: primaryError},
 	}
 }
 
 func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer, testID, name string, testIDStructured *sinkpb.TestIdentifier, result *GTestRunResult) (*sinkpb.TestResult, error) {
-	status, expected, err := fromGTestStatus(result.Status)
+	status, err := fromGTestStatusAndParts(result.Status, result.ResultParts)
 	if err != nil {
 		return nil, err
 	}
@@ -542,8 +586,7 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 	tr := &sinkpb.TestResult{
 		TestId:           testID,
 		TestIdStructured: testIDStructured,
-		Expected:         expected,
-		Status:           status,
+		StatusV2:         status,
 		Tags: []*pb.StringPair{
 			// Store the original Gtest test name.
 			maybeTestNameTag(name),
@@ -552,8 +595,35 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 			// Store the correct output snippet.
 			pbutil.StringPair("lossless_snippet", strconv.FormatBool(result.LosslessSnippet)),
 		},
-		TestMetadata:  &pb.TestMetadata{Name: name},
-		FailureReason: extractFailureReasonFromResultParts(ctx, result.ResultParts),
+		TestMetadata: &pb.TestMetadata{Name: name},
+	}
+	if status == pb.TestResult_FAILED {
+		kind, err := failureKindFromGTestStatus(result.Status)
+		if err != nil {
+			return nil, err
+		}
+		errs, truncatedErrs := extractFailureReasonErrorsFromResultParts(ctx, result.ResultParts)
+		tr.FailureReason = &pb.FailureReason{
+			Kind:                 kind,
+			Errors:               errs,
+			TruncatedErrorsCount: int32(truncatedErrs),
+		}
+	} else if status == pb.TestResult_SKIPPED {
+		tr.SkippedReason = &pb.SkippedReason{
+			// The skipped due to disabled test is case is handled elsewhere, by
+			// iterating over the DisabledTests collection.
+			Kind: pb.SkippedReason_SKIPPED_BY_TEST_BODY,
+		}
+		// Try to find the result part that explains the skip.
+		// This is only present if the test explicitly called GTEST_SKIP macro.
+		skipResultPart := skipResultPart(result.ResultParts)
+		if skipResultPart != nil {
+			msg, err := extractMessageFromResultPart(skipResultPart)
+			if err != nil {
+				logging.Warningf(ctx, "Failed to extract message from skip ResultPart: %s", err)
+			}
+			tr.SkippedReason.ReasonMessage = truncateString(msg, maxSkipMessageBytes)
+		}
 	}
 
 	// Do not set duration if it is unknown.
@@ -571,9 +641,11 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 			// convert a summary.
 			logging.Warningf(ctx, "Failed to convert OutputSnippetBase64 %q", result.OutputSnippetBase64)
 		} else {
-			failed := status == pb.TestStatus_FAIL || status == pb.TestStatus_CRASH || status == pb.TestStatus_ABORT
-			if tr.FailureReason == nil && failed {
-				tr.FailureReason = extractFailureReasonFromSnippet(ctx, string(outputBytes))
+			if status == pb.TestResult_FAILED && len(tr.FailureReason.Errors) == 0 {
+				// Try extracting the failure reason details from snippet, if we didn't
+				// get anything from the result parts. This can occur if the test crashed.
+				tr.FailureReason.Errors = extractFailureReasonFromSnippet(ctx, string(outputBytes))
+				tr.FailureReason.TruncatedErrorsCount = 0
 			}
 			tr.Artifacts = map[string]*sinkpb.Artifact{"snippet": {
 				Body:        &sinkpb.Artifact_Contents{Contents: outputBytes},

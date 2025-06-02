@@ -12,6 +12,8 @@ import (
 	"strings"
 	"testing"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -216,22 +218,29 @@ func TestGTestConversions(t *testing.T) {
 		}
 		t.Run("EXCESSIVE_OUTPUT", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{Status: "EXCESSIVE_OUTPUT"})
-			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_FAIL))
+			assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_FAILED))
 			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "EXCESSIVE_OUTPUT")), should.BeTrue)
 		})
 
 		t.Run("NOTRUN", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{Status: "NOTRUN"})
-			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_SKIP))
-			assert.Loosely(t, tr.Expected, should.BeFalse)
+			assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_EXECUTION_ERRORED))
 			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "NOTRUN")), should.BeTrue)
 		})
 
-		t.Run("SKIPPED", func(t *ftt.Test) {
+		t.Run("Skipped", func(t *ftt.Test) {
+			// It is unclear under what circumstances this result is produced, but documentation suggests it is possible.
 			tr := convert(&GTestRunResult{Status: "SKIPPED"})
-			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_SKIP))
-			assert.Loosely(t, tr.Expected, should.BeTrue)
+			assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_SKIPPED))
 			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "SKIPPED")), should.BeTrue)
+		})
+
+		t.Run("Skipped by test content", func(t *ftt.Test) {
+			// This following result is observed for tests skipped by GTEST_SKIP macro.
+			tr := convert(&GTestRunResult{Status: "SUCCESS", ResultParts: []*GTestRunResultPart{{Type: "skip"}}})
+			assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_SKIPPED))
+			assert.Loosely(t, tr.SkippedReason.Kind, should.Equal(pb.SkippedReason_SKIPPED_BY_TEST_BODY))
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "SUCCESS")), should.BeTrue)
 		})
 
 		t.Run("Duration", func(t *ftt.Test) {
@@ -357,9 +366,46 @@ func TestGTestConversions(t *testing.T) {
 			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_3")), should.BeTrue)
 			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_3", "tag_value_4")), should.BeTrue)
 		})
+		t.Run("skip reason", func(t *ftt.Test) {
+			result := &GTestRunResult{
+				Status: "SUCCESS",
+				ResultParts: []*GTestRunResultPart{
+					{
+						Type:          "skip",
+						File:          "../../services/webnn/webnn_graph_impl_backend_test.cc",
+						Line:          465,
+						SummaryBase64: "U2tpcHBpbmcgdGVzdCBiZWNhdXNlIHRoZSBvcGVyYXRvciBpcyBub3QgeWV0IHN1cHBvcnRlZC4K",
+					},
+				},
+			}
+			t.Run("baseline", func(t *ftt.Test) {
+				tr := convert(result)
+				assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_SKIPPED))
+				assert.Loosely(t, tr.SkippedReason, should.Resemble(&pb.SkippedReason{
+					Kind:          pb.SkippedReason_SKIPPED_BY_TEST_BODY,
+					ReasonMessage: "webnn_graph_impl_backend_test.cc(465): Skipping test because the operator is not yet supported.",
+				}))
+			})
+			t.Run("reason exceeds 1024 bytes", func(t *ftt.Test) {
+				// Use swedish "Place of interest symbol", which encodes as three-bytes, e2 8c 98.
+				// See https://blog.golang.org/strings.
+				// We use a complex character to make sure the truncation happens on a rune boundary
+				// (so that the result remains valid UTF-8) and not just on a byte boundary.
+				// 400 * 3 = 1200 bytes which exceeds the 1024 required.
+				summary := strings.Repeat("\u2318", 400)
+				result.ResultParts[0].SummaryBase64 = base64.StdEncoding.EncodeToString([]byte(summary))
+
+				tr := convert(result)
+				assert.Loosely(t, tr.StatusV2, should.Equal(pb.TestResult_SKIPPED))
+				// One short of 1024 bytes we targeted because truncation happened on a rune boundary not a byte boundary.
+				assert.Loosely(t, len(tr.SkippedReason.ReasonMessage), should.Equal(1023))
+				assert.Loosely(t, tr.SkippedReason.ReasonMessage, should.HavePrefix("webnn_graph_impl_backend_test.cc(465): \u2318\u2318\u2318\u2318"))
+				assert.Loosely(t, tr.SkippedReason.ReasonMessage, should.HaveSuffix("\u2318\u2318\u2318\u2318..."))
+			})
+		})
 
 		t.Run("failure reason", func(t *ftt.Test) {
-			t.Run("first failure takes precedence", func(t *ftt.Test) {
+			t.Run("sort order among ordinary failures maintained", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -379,17 +425,18 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.Resemble(
+				assert.Loosely(t, tr.FailureReason, should.Match(
 					&pb.FailureReason{
-						PrimaryErrorMessage: `first_failure.cc(123): ` +
-							`This is a failure message.`,
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `first_failure.cc(123): ` +
 								`This is a failure message.`},
+							{Message: `second_failure.cc(456): ` +
+								`This is a second failure message.`},
 						},
 					}))
 			})
-			t.Run("first fatal failure takes precedence", func(t *ftt.Test) {
+			t.Run("fatal failures takes precedence to non-fatal failures", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -416,13 +463,16 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.Resemble(
+				assert.Loosely(t, tr.FailureReason, should.Match(
 					&pb.FailureReason{
-						PrimaryErrorMessage: `first_fatal.cc(456): This is a ` +
-							`fatal failure message.`,
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `first_fatal.cc(456): This is a fatal ` +
 								`failure message.`},
+							{Message: `second_fatal.cc(789): This is a second fatal ` +
+								`failure message.`},
+							{Message: `failure.cc(123): This is a failure ` +
+								`message.`},
 						},
 					}))
 			})
@@ -441,10 +491,9 @@ func TestGTestConversions(t *testing.T) {
 					// [FATAL:file_name.cc(123)] Error message.
 					OutputSnippetBase64: "W0ZBVEFMOmZpbGVfbmFtZS5jYygxMjMpXSBFcnJvciBtZXNzYWdlLg==",
 				})
-				assert.Loosely(t, tr.FailureReason, should.Resemble(
+				assert.Loosely(t, tr.FailureReason, should.Match(
 					&pb.FailureReason{
-						PrimaryErrorMessage: `failure_parts.cc(456): This is ` +
-							`a failure message.`,
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `failure_parts.cc(456): This is a ` +
 								`failure message.`},
@@ -464,9 +513,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.Resemble(
+				assert.Loosely(t, tr.FailureReason, should.Match(
 					&pb.FailureReason{
-						PrimaryErrorMessage: "file_name.cc(123): error message",
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: "file_name.cc(123): error message"},
 						},
@@ -485,10 +534,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.Resemble(
+				assert.Loosely(t, tr.FailureReason, should.Match(
 					&pb.FailureReason{
-						PrimaryErrorMessage: "file_name.cc(123): error\n " +
-							"message",
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: "file_name.cc(123): error\n message"},
 						},
@@ -499,9 +547,11 @@ func TestGTestConversions(t *testing.T) {
 					Status:      "FAILURE",
 					ResultParts: []*GTestRunResultPart{},
 				})
-				assert.Loosely(t, tr.FailureReason, should.BeNil)
+				assert.Loosely(t, tr.FailureReason, should.Match(&pb.FailureReason{
+					Kind: pb.FailureReason_ORDINARY,
+				}))
 			})
-			t.Run("primary error message truncated at 1024 bytes", func(t *ftt.Test) {
+			t.Run("error messages truncated at 1024 bytes", func(t *ftt.Test) {
 				var input bytes.Buffer
 				var expected bytes.Buffer
 
@@ -538,11 +588,35 @@ func TestGTestConversions(t *testing.T) {
 				})
 				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
-						PrimaryErrorMessage: expected.String(),
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: expected.String()},
 						},
 					}))
+			})
+			t.Run("errors collection limited to 3172 bytes", func(t *ftt.Test) {
+				input := &GTestRunResult{
+					Status: "FAILURE",
+				}
+				for range 100 {
+					input.ResultParts = append(input.ResultParts, &GTestRunResultPart{
+						SummaryBase64: base64.StdEncoding.EncodeToString([]byte("another error message appears")),
+						Type:          "failure",
+						File:          `path/file/filename.cc`,
+						Line:          123,
+					})
+				}
+				tr := convert(input)
+				sumSize := 0
+				for _, e := range tr.FailureReason.Errors {
+					sumSize += proto.Size(e)
+				}
+
+				// The message above should be less than 100 bytes, so we should get
+				// within 100 bytes of our limit.
+				assert.Loosely(t, sumSize, should.BeLessThanOrEqual(3172))
+				assert.Loosely(t, sumSize, should.BeGreaterThan(3072))
+				assert.Loosely(t, tr.FailureReason.TruncatedErrorsCount, should.Equal(100-len(tr.FailureReason.Errors)))
 			})
 			t.Run("invalid type does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
@@ -557,7 +631,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.BeNil)
+				assert.Loosely(t, tr.FailureReason, should.Match(&pb.FailureReason{
+					Kind: pb.FailureReason_ORDINARY,
+				}))
 			})
 			t.Run("invalid UTF-8 does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
@@ -573,7 +649,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.BeNil)
+				assert.Loosely(t, tr.FailureReason, should.Match(&pb.FailureReason{
+					Kind: pb.FailureReason_ORDINARY,
+				}))
 			})
 			t.Run("invalid base64 does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
@@ -587,7 +665,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				assert.Loosely(t, tr.FailureReason, should.BeNil)
+				assert.Loosely(t, tr.FailureReason, should.Match(&pb.FailureReason{
+					Kind: pb.FailureReason_ORDINARY,
+				}))
 			})
 			t.Run("extracted from snippet", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
@@ -597,7 +677,7 @@ func TestGTestConversions(t *testing.T) {
 				})
 				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
-						PrimaryErrorMessage: `file_name.cc(123): Error message.`,
+						Kind: pb.FailureReason_ORDINARY,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `file_name.cc(123): Error message.`},
 						},
@@ -611,7 +691,7 @@ func TestGTestConversions(t *testing.T) {
 			result := extractFailureReasonFromSnippet(ctx, input)
 			if expected != "" {
 				assert.Loosely(t, result, should.NotBeNil)
-				assert.Loosely(t, result.PrimaryErrorMessage, should.Equal(expected))
+				assert.Loosely(t, result, should.Match([]*pb.FailureReason_Error{{Message: expected}}))
 			} else {
 				assert.Loosely(t, result, should.BeNil)
 			}
@@ -881,8 +961,10 @@ Backtrace:
 						FineName:           "FooTest",
 						CaseNameComponents: []string{"TestDoBarDisabled"},
 					},
-					Expected: true,
-					Status:   pb.TestStatus_SKIP,
+					StatusV2: pb.TestResult_SKIPPED,
+					SkippedReason: &pb.SkippedReason{
+						Kind: pb.SkippedReason_DISABLED_AT_DECLARATION,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.TestDoBarDisabled",
 						"disabled_test", "true",
@@ -900,8 +982,7 @@ Backtrace:
 						FineName:           "BazTest",
 						CaseNameComponents: []string{"DoesQux"},
 					},
-					Expected: true,
-					Status:   pb.TestStatus_PASS,
+					StatusV2: pb.TestResult_PASSED,
 					Tags: pbutil.StringPairs(
 						"test_name", "BazTest.DoesQux",
 						"gtest_status", "SUCCESS",
@@ -919,7 +1000,10 @@ Backtrace:
 						FineName:           "BazTest",
 						CaseNameComponents: []string{"DoesQux"},
 					},
-					Status: pb.TestStatus_FAIL,
+					StatusV2: pb.TestResult_FAILED,
+					FailureReason: &pb.FailureReason{
+						Kind: pb.FailureReason_ORDINARY,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "BazTest.DoesQux",
 						"gtest_status", "FAILURE",
@@ -937,7 +1021,10 @@ Backtrace:
 						FineName:           "FooTest",
 						CaseNameComponents: []string{"DoesBar"},
 					},
-					Status: pb.TestStatus_FAIL,
+					StatusV2: pb.TestResult_FAILED,
+					FailureReason: &pb.FailureReason{
+						Kind: pb.FailureReason_ORDINARY,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
 						"gtest_status", "EXCESSIVE_OUTPUT",
@@ -955,7 +1042,10 @@ Backtrace:
 						FineName:           "FooTest",
 						CaseNameComponents: []string{"DoesBar"},
 					},
-					Status: pb.TestStatus_FAIL,
+					StatusV2: pb.TestResult_FAILED,
+					FailureReason: &pb.FailureReason{
+						Kind: pb.FailureReason_ORDINARY,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
 						"gtest_status", "FAILURE_ON_EXIT",
@@ -975,8 +1065,7 @@ Backtrace:
 						FineName:           "BazTest",
 						CaseNameComponents: []string{"DoesQux"},
 					},
-					Expected: true,
-					Status:   pb.TestStatus_PASS,
+					StatusV2: pb.TestResult_PASSED,
 					Tags: pbutil.StringPairs(
 						"test_name", "BazTest.DoesQux",
 						"gtest_status", "SUCCESS",
@@ -994,8 +1083,7 @@ Backtrace:
 						FineName:           "BazTest",
 						CaseNameComponents: []string{"DoesQux"},
 					},
-					Expected: true,
-					Status:   pb.TestStatus_PASS,
+					StatusV2: pb.TestResult_PASSED,
 					Tags: pbutil.StringPairs(
 						"test_name", "BazTest.DoesQux",
 						"gtest_status", "SUCCESS",
@@ -1013,7 +1101,10 @@ Backtrace:
 						FineName:           "FooTest",
 						CaseNameComponents: []string{"DoesBar"},
 					},
-					Status: pb.TestStatus_FAIL,
+					StatusV2: pb.TestResult_FAILED,
+					FailureReason: &pb.FailureReason{
+						Kind: pb.FailureReason_ORDINARY,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
 						"gtest_status", "FAILURE",
@@ -1031,7 +1122,10 @@ Backtrace:
 						FineName:           "FooTest",
 						CaseNameComponents: []string{"DoesBar"},
 					},
-					Status: pb.TestStatus_FAIL,
+					StatusV2: pb.TestResult_FAILED,
+					FailureReason: &pb.FailureReason{
+						Kind: pb.FailureReason_ORDINARY,
+					},
 					Tags: pbutil.StringPairs(
 						"test_name", "FooTest.DoesBar",
 						"gtest_status", "FAILURE_ON_EXIT",
@@ -1076,8 +1170,7 @@ Backtrace:
 						FineName:           "LongNameTest",
 						CaseNameComponents: []string{strings.Repeat("a", 300)},
 					},
-					Expected: true,
-					Status:   pb.TestStatus_PASS,
+					StatusV2: pb.TestResult_PASSED,
 					Tags: pbutil.StringPairs(
 						"test_name_omitted_for_brevity", "true",
 						"gtest_status", "SUCCESS",

@@ -48,9 +48,13 @@ const (
 	// ResultSink limits the summary html message to 4096 bytes in UTF-8.
 	maxSummaryHtmlBytes = 4096
 
-	// ResultSink limits the failure reason primary error message to 1024 bytes
+	// ResultSink limits the failure reason error messages to 1024 bytes
 	// in UTF-8.
 	maxErrorMessageBytes = 1024
+
+	// ResultSink limits the number of bytes in the skip reason to 1024 bytes
+	// in UTF-8.
+	maxSkipMessageBytes = 1024
 
 	// ResultDB limits the total size of the error protos to 3172 bytes.
 	maxErrorsBytes = 3*1024 + 100
@@ -470,4 +474,32 @@ func commonDirFromFiles(filepaths []string) (commonDir string) {
 	}
 
 	return commonDir
+}
+
+// truncateErrorsToResultDBLimits truncates the errors collection to fit within
+// ResultDB limits. Two types of truncation are applied:
+// - Messages are truncated to the message limit.
+// - The errors collection is truncated to fit the total size limit.
+func truncateErrorsToResultDBLimits(original []*pb.FailureReason_Error) (result []*pb.FailureReason_Error, truncatedErrors int) {
+	result = make([]*pb.FailureReason_Error, 0, len(original))
+
+	var totalBytes int
+	for _, errItem := range original {
+		truncatedMessage := truncateString(errItem.Message, maxErrorMessageBytes)
+		errorItem := &pb.FailureReason_Error{
+			Message: truncatedMessage,
+		}
+
+		errorItemSize := proto.Size(errorItem)
+		if totalBytes+errorItemSize < maxErrorsBytes {
+			totalBytes += errorItemSize
+			result = append(result, errorItem)
+		} else {
+			// We would exceed the size limit on the errors collectio.
+			break
+		}
+	}
+	// Remaining errors have been truncated.
+	truncatedErrors = len(original) - len(result)
+	return
 }
