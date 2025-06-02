@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -39,6 +39,9 @@ func (r *SingleResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 	tr := &sinkpb.TestResult{
 		// For a test suite with a single test, the suite itself is one test.
 		TestId: "",
+		TestIdStructured: &sinkpb.TestIdentifier{
+			CaseNameComponents: []string{"*fixture"},
+		},
 	}
 
 	switch {

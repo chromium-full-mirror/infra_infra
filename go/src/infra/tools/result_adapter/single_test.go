@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -46,7 +46,10 @@ func TestSingleConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
-				TestId:   "",
+				TestId: "",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					CaseNameComponents: []string{"*fixture"},
+				},
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
 			}
@@ -64,7 +67,10 @@ func TestSingleConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
-				TestId:      "",
+				TestId: "",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					CaseNameComponents: []string{"*fixture"},
+				},
 				Expected:    false,
 				Status:      pb.TestStatus_FAIL,
 				SummaryHtml: "<pre>Failed to run content_shell.</pre>",
@@ -83,7 +89,10 @@ func TestSingleConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
-				TestId:   "",
+				TestId: "",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					CaseNameComponents: []string{"*fixture"},
+				},
 				Expected: false,
 				Status:   pb.TestStatus_ABORT,
 			}
