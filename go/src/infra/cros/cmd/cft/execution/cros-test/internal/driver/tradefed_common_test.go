@@ -51,7 +51,7 @@ func TestGenerateDriverArgsCmds(t *testing.T) {
 		},
 	}
 	cmd := generateDriverArgsCmds(metadata)
-	if len(cmd) != 3 {
-		t.Errorf("Retry config expected 6")
+	if len(cmd) != 6 {
+		t.Errorf("Retry config count incorrect: got %d, want 6", len(cmd))
 	}
 }

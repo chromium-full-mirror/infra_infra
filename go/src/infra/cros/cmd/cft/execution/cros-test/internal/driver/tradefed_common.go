@@ -64,7 +64,7 @@ func generateDriverArgsCmds(metadata *api.ExecutionMetadata) []string {
 			if strings.Contains(arg.Flag, "driverArg:") {
 				parts := strings.SplitN(arg.Flag, "driverArg:", 2)
 				if len(parts) > 1 {
-					cmd = append(cmd, "--"+strings.TrimSpace(parts[1])+" "+strings.TrimSpace(arg.Value))
+					cmd = append(cmd, "--"+strings.TrimSpace(parts[1]), strings.TrimSpace(arg.Value))
 				}
 			}
 		}
