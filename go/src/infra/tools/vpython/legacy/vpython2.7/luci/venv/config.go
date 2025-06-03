@@ -74,7 +74,7 @@ type Config struct {
 	// Package is the VirtualEnv package to install. It must be non-nil and
 	// valid. It will be used if the environment specification doesn't supply an
 	// overriding one.
-	Package vpython.Spec_Package
+	Package *vpython.Spec_Package
 
 	// Python is a hardcoded set of Python interpreters to use, keyed by
 	// the python minor version, such as "3.8". If a key is found for the
@@ -201,7 +201,7 @@ func (cfg *Config) makeEnv(c context.Context, e *vpython.Environment) (*Env, err
 	// If the environment doesn't specify a VirtualEnv package (expected), use
 	// our default.
 	if e.Spec.Virtualenv == nil {
-		e.Spec.Virtualenv = &cfg.Package
+		e.Spec.Virtualenv = cfg.Package
 	}
 
 	if err := cfg.Loader.Resolve(c, e); err != nil {

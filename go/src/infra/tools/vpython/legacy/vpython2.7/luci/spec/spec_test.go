@@ -36,14 +36,14 @@ func TestNormalizeAndHash(t *testing.T) {
 		pkgBar := &vpython.Spec_Package{Name: "bar", Version: "2"}
 		pkgBaz := &vpython.Spec_Package{Name: "baz", Version: "3"}
 
-		env := vpython.Environment{
+		env := &vpython.Environment{
 			Pep425Tag: []*vpython.PEP425Tag{otherTag},
 		}
 		var rt vpython.Runtime
 
 		t.Run(`Will normalize an empty spec`, func(t *ftt.Test) {
-			assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
-			assert.Loosely(t, env, should.Resemble(vpython.Environment{
+			assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
+			assert.That(t, env, should.Resemble(&vpython.Environment{
 				Spec:      &vpython.Spec{},
 				Runtime:   &vpython.Runtime{},
 				Pep425Tag: []*vpython.PEP425Tag{otherTag},
@@ -55,7 +55,7 @@ func TestNormalizeAndHash(t *testing.T) {
 
 			t.Run(`Will normalize to sorted order.`, func(t *ftt.Test) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgFoo, pkgBar, pkgBaz}
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 				assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
 					Wheel: []*vpython.Spec_Package{pkgBar, pkgBaz, pkgFoo},
 				}))
@@ -71,7 +71,7 @@ func TestNormalizeAndHash(t *testing.T) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgFoo, pkgMaybe}
 
 				t.Run(`Will omit the package if it doesn't match a tag`, func(t *ftt.Test) {
-					assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+					assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 					assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
 						Wheel: []*vpython.Spec_Package{pkgFoo},
 					}))
@@ -80,7 +80,7 @@ func TestNormalizeAndHash(t *testing.T) {
 				t.Run(`Will include the package if it matches a tag, and strip the match field.`, func(t *ftt.Test) {
 					env.Pep425Tag = append(env.Pep425Tag, maybeTag)
 
-					assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+					assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 
 					pkgMaybe.MatchTag = nil
 					assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
@@ -99,7 +99,7 @@ func TestNormalizeAndHash(t *testing.T) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgMaybe, pkgFoo, pkgMaybeNonexistTag}
 				env.Pep425Tag = append(env.Pep425Tag, maybeTag)
 
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 
 				pkgMaybe.MatchTag = nil
 				assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
@@ -115,14 +115,14 @@ func TestNormalizeAndHash(t *testing.T) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgFoo, pkgMaybeNonexistTag}
 				env.Pep425Tag = append(env.Pep425Tag, maybeTag)
 
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 				assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
 					Wheel: []*vpython.Spec_Package{pkgFoo},
 				}))
 
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgAlways, pkgFoo, pkgMaybeNonexistTag}
 
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 				assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
 					Wheel: []*vpython.Spec_Package{pkgFoo, pkgAlways},
 				}))
@@ -130,7 +130,7 @@ func TestNormalizeAndHash(t *testing.T) {
 
 			t.Run(`Will normalize if there are duplicate wheels that share a version.`, func(t *ftt.Test) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgFoo, pkgFoo, pkgBar, pkgBaz}
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 				assert.Loosely(t, env.Spec, should.Resemble(&vpython.Spec{
 					Wheel: []*vpython.Spec_Package{pkgBar, pkgBaz, pkgFoo},
 				}))
@@ -138,7 +138,7 @@ func TestNormalizeAndHash(t *testing.T) {
 
 			t.Run(`Will fail to normalize if there are duplicate wheels with different versions.`, func(t *ftt.Test) {
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgFoo, pkgFooV2, pkgFoo, pkgBar, pkgBaz}
-				assert.Loosely(t, NormalizeEnvironment(&env), should.ErrLike("multiple versions for package"))
+				assert.Loosely(t, NormalizeEnvironment(env), should.ErrLike("multiple versions for package"))
 			})
 
 			t.Run(`Will normalize if there is a duplicate wheel with a different version, but it doesn't match.`, func(t *ftt.Test) {
@@ -153,7 +153,7 @@ func TestNormalizeAndHash(t *testing.T) {
 				}}
 
 				env.Spec.Wheel = []*vpython.Spec_Package{pkgMaybe, pkgSkipped}
-				assert.Loosely(t, NormalizeEnvironment(&env), should.BeNil)
+				assert.Loosely(t, NormalizeEnvironment(env), should.BeNil)
 			})
 		})
 	})

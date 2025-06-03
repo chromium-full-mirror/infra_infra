@@ -390,7 +390,7 @@ func (cfg *Config) Main(c context.Context, argv []string, env environ.Env) int {
 				BaseDir:           "", // (Determined below).
 				MaxHashLen:        6,
 				SetupEnv:          env,
-				Package:           cfg.VENVPackage,
+				Package:           &cfg.VENVPackage,
 				Python:            cfg.InterpreterPaths,
 				PruneThreshold:    cfg.PruneThreshold,
 				MaxPrunesPerSweep: cfg.MaxPrunesPerSweep,

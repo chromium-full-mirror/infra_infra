@@ -249,7 +249,7 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 			BaseDir:    tdir,
 			MaxHashLen: 4,
 			SetupEnv:   environ.System(),
-			Package: vpython.Spec_Package{
+			Package: &vpython.Spec_Package{
 				Name:    "foo/bar/virtualenv",
 				Version: "unresolved",
 			},

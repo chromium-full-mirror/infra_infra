@@ -57,7 +57,7 @@ func (cr *verifyCommandRun) Run(app subcommands.Application, args []string, env 
 			s = &vpython.Spec{}
 		}
 		if s.Virtualenv == nil {
-			s.Virtualenv = &a.opts.EnvConfig.Package
+			s.Virtualenv = a.opts.EnvConfig.Package
 		}
 
 		// Verify that the spec can be normalized. This may modify it, so we will

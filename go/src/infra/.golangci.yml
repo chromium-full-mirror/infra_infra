@@ -156,15 +156,6 @@ linters:
       - cros/lib/buildbucket/properties_test.go
       - libs/fleet/boxster/swarming/convert_test.go
       - monorail/endpoints_test.go
-      - tools/vpython/legacy/vpython2.7/luci/application/application.go
-      - tools/vpython/legacy/vpython2.7/luci/application/subcommand_delete.go
-      - tools/vpython/legacy/vpython2.7/luci/application/subcommand_install.go
-      - tools/vpython/legacy/vpython2.7/luci/run.go
-      - tools/vpython/legacy/vpython2.7/luci/spec/spec_test.go
-      - tools/vpython/legacy/vpython2.7/luci/venv/config.go
-      - tools/vpython/legacy/vpython2.7/luci/venv/venv.go
-      - tools/vpython/legacy/vpython2.7/luci/venv/venv_resources_test.go
-      - tools/vpython/legacy/vpython2.7/luci/venv/venv_test.go
       # TODO(gregorynisbet): END copylock issue files.
 
 
