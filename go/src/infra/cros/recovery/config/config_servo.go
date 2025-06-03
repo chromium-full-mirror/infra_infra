@@ -1022,6 +1022,7 @@ func servoPlanActions() map[string]*Action {
 				"Try fake disconnect and stop",
 				"Toggle CC line and stop",
 				"Toggle PD once and stop",
+				"Reopen CCD then reboot GSC and stop",
 				"Reboot by EC console and stop",
 				"Cold reset the DUT by servod and stop",
 				"Reset EC from DUT and stop",
@@ -1671,6 +1672,43 @@ func servoPlanActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Reopen CCD then reboot GSC and stop": {
+			Docs: []string{
+				"that is like `gsc_testlab:open sleep:1 gsc_reboot:on sleep:10` by dut-control.",
+			},
+			Conditions: []string{
+				"Run only if gsc_reboot is present",
+			},
+			Dependencies: []string{
+				"Reopen CCD",
+				"Sleep 1s",
+				"Reboot GSC",
+				"Sleep 10s",
+				"Stop servod",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Reopen CCD": {
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:gsc_testlab",
+				"string_value:open",
+			},
+		},
+		"Reboot GSC": {
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:gsc_reboot",
+				"string_value:on",
+			},
+		},
+		"Run only if gsc_reboot is present": {
+			ExecName: "servod_has",
+			ExecExtraArgs: []string{
+				"command:gsc_reboot",
+			},
+		},
 		"Reboot by DUT's EC UART": {
 			Docs: []string{
 				"Try to reboot EC on DUT using servod command.",
@@ -1915,6 +1953,17 @@ func servoPlanActions() map[string]*Action {
 				"sleep:1",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
+			ExecTimeout:            &durationpb.Duration{Seconds: 2},
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Sleep 10s": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:10",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			ExecTimeout:            &durationpb.Duration{Seconds: 11},
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
@@ -1924,6 +1973,7 @@ func servoPlanActions() map[string]*Action {
 				"sleep:35",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
+			ExecTimeout:            &durationpb.Duration{Seconds: 36},
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},

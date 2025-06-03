@@ -44,7 +44,7 @@ plans:
                 - name: Wait for labstation to load ('cros_access') (time:'2m0s')
             - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
-            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2s')
             - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
@@ -96,7 +96,7 @@ plans:
                 - name: Wait for labstation to load ('cros_access') (time:'2m0s')
             - name: Set state:SERVO_UPDATER_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
-            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2s')
             - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
               dependencies:
                 - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
@@ -191,7 +191,7 @@ plans:
                 - name: Wait for labstation to load ('cros_access') (time:'2m0s')
             - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
-            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2s')
             - name: Create request to reboot labstation ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Only applies to labstation ('servo_host_is_labstation')
@@ -267,7 +267,7 @@ plans:
                 - name: Wait for labstation to load ('cros_access') (time:'2m0s')
             - name: Set state:SERVO_UPDATER_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
-            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2s')
             - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
               dependencies:
                 - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
@@ -537,7 +537,7 @@ plans:
                 - name: RPM config present ('device_has_rpm_info')
               dependencies:
                 - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
-                - name: Sleep 35s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+                - name: Sleep 35s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'36s')
                 - name: Set RPM ON ('device_rpm_power_on') (ALWAYS_RUN)
                 - name: Try Cold reset by servod (Allow to fail) ('servo_power_state_reset') (ALWAYS_RUN)
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
@@ -1971,6 +1971,19 @@ plans:
                 - name: Toggle PD once and stop ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Toggle PD once ('servo_servod_toggle_pd_role') (ALWAYS_RUN)
+                    - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Reopen CCD then reboot GSC and stop ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Run only if gsc_reboot is present ('servod_has')
+                  dependencies:
+                    - name: Reopen CCD ('servo_set')
+                    - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2s')
+                    - name: Reboot GSC ('servo_set')
+                    - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')

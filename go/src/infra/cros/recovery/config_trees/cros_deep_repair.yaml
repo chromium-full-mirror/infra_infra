@@ -2546,7 +2546,7 @@ plans:
               exec_args:
                 - state:SERVO_HOST_ISSUE
           recoveries:
-            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN) (time:'2s')
               exec_name: sample_sleep
               exec_args:
                 - sleep:1
@@ -2780,7 +2780,7 @@ plans:
               exec_args:
                 - state:SERVO_UPDATER_ISSUE
           recoveries:
-            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
+            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN) (time:'2s')
               exec_name: sample_sleep
               exec_args:
                 - sleep:1
@@ -3566,7 +3566,7 @@ plans:
                   exec_name: device_rpm_power_off
                   exec_args:
                     - device_type:dut
-                - name: Sleep 35s (Allow to fail) (ALWAYS_RUN)
+                - name: Sleep 35s (Allow to fail) (ALWAYS_RUN) (time:'36s')
                   exec_name: sample_sleep
                   exec_args:
                     - sleep:35
@@ -7889,6 +7889,45 @@ plans:
                         - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
+                    - name: Stop servod (Allow to fail) (ALWAYS_RUN)
+                      exec_name: servo_host_servod_stop
+                      docs:
+                        - Stop the servod daemon.
+                        - Allowed to fail as can be run when servod is not running.
+                      dependencies:
+                        - name: Save UART capture (Allow to fail)
+                          exec_name: servod_save_uart_capture
+                          dependencies:
+                            - name: Stop UART capture (Allow to fail)
+                              exec_name: servod_stop_uart_capture
+                - name: Reopen CCD then reboot GSC and stop (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - that is like `gsc_testlab:open sleep:1 gsc_reboot:on sleep:10` by dut-control.
+                  conditions:
+                    - name: Run only if gsc_reboot is present
+                      exec_name: servod_has
+                      exec_args:
+                        - command:gsc_reboot
+                  dependencies:
+                    - name: Reopen CCD
+                      exec_name: servo_set
+                      exec_args:
+                        - command:gsc_testlab
+                        - string_value:open
+                    - name: Sleep 1s (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:1
+                    - name: Reboot GSC
+                      exec_name: servo_set
+                      exec_args:
+                        - command:gsc_reboot
+                        - string_value:on
+                    - name: Sleep 10s (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:10
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
