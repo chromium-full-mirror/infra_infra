@@ -30,6 +30,7 @@ import (
 
 var (
 	PullFromFirestore = []string{
+		common.AshChromeProvision,
 		common.CrosDut,
 		common.CrosProvision,
 		common.FwProvision,

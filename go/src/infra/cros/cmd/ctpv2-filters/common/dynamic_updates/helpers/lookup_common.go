@@ -145,3 +145,23 @@ func GenerateProvisionRequest(
 
 	return dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, provisionGenerator.Generate)
 }
+
+// GenerateProvisionRequest provides more configurable variables.
+func GenerateProvisionRequestForVM(
+	req *api.InternalTestplan,
+	taskId *common.TaskIdentifier,
+	deviceId *common.DeviceIdentifier,
+	provisionContainers []*builders.ContainerBuilder,
+	provisionInstallRequest *interfaces.ProvisionTaskInstallRequest) error {
+
+	provisionGenerator := generators.NewProvisionTaskGenerator(
+		taskId.Id, taskId.Id, deviceId.Id,
+		provisionContainers,
+		common.PrependTaskWrapper(common.FindFirst(api.FocalTaskFinder_TEST)),
+		DefaultProvisionStartUpRequestForVM(deviceId),
+		provisionInstallRequest,
+	)
+
+	return dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, provisionGenerator.Generate)
+
+}

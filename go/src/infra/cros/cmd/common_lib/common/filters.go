@@ -21,6 +21,7 @@ import (
 var (
 	TtcpContainerName                    = "cros-ddd-filter" // ttcp-demo
 	LegacyHWContainerName                = "cros-legacy-hw-filter"
+	AshChromeProvisionContainerName      = "ash-chrome-provision-filter"
 	ProvisionContainerName               = "provision-filter"
 	TestFinderContainerName              = "cros-test-finder"
 	ALTestFinderName                     = "test-finder"
@@ -72,7 +73,7 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 }
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
-func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string, isPartner, isAlRun bool) []*api.CTPFilter {
+func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string, isPartner, isAlRun, hasAshChrome bool) []*api.CTPFilter {
 	hwFilter := ""
 	if suiteReq.GetDddSuite() {
 		hwFilter = TtcpContainerName
@@ -91,6 +92,9 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experim
 			filters = append(filters, filter)
 
 		}
+	}
+	if hasAshChrome {
+		filters = append(filters, AshChromeProvisionContainerName)
 	}
 	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) && isSuiteSchedulerConfig(suiteReq) && !isAlRun {
 		filters = append(filters, AutoVMTestShifterFilterContainerName)

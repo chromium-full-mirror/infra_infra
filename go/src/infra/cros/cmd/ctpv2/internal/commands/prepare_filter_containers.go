@@ -32,6 +32,7 @@ type PrepareFilterContainersInfoCmd struct {
 	Experiments  []string
 	IsAlRun      bool
 	IsPartnerRun bool
+	HasAshChrome bool
 	// Updates
 	FiltersQueue *list.List
 }
@@ -88,6 +89,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	cmd.CtpReq = sk.CtpReq
 	cmd.IsAlRun = sk.IsAlRun
 	cmd.IsPartnerRun = sk.IsPartnerRun
+	cmd.HasAshChrome = sk.HasAshChrome
 	cmd.Environment = sk.Environment
 	return nil
 }
@@ -111,7 +113,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 
-	defaultFilters := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments, cmd.IsPartnerRun, cmd.IsAlRun)
+	defaultFilters := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments, cmd.IsPartnerRun, cmd.IsAlRun, cmd.HasAshChrome)
 
 	ctpFilters := common.ConstructCtpFilters(ctx, defaultFilters, cmd.CtpReq.GetKarbonFilters())
 

@@ -12,7 +12,9 @@ import (
 	conf "go.chromium.org/chromiumos/config/go"
 	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
@@ -61,6 +63,9 @@ func (DH *DynamicAshChromeProvisionHelper) GenerateProvisionRequest(req *api.Int
 	DH.count += 1
 	if installReq == nil {
 		return nil
+	}
+	if commonlib.IsSupportedVMBoard(extractDutModel(swarmingDef).GetBuildTarget()) {
+		return helpers.GenerateProvisionRequestForVM(req, taskID, deviceID, containerBuilders, installReq)
 	}
 	return helpers.GenerateProvisionRequest(
 		req, taskID, deviceID,
@@ -121,5 +126,20 @@ func newAshChromeProvisionContainer(taskID *common.TaskIdentifier) *builders.Con
 		AshChromeProvisionArtifactDir,
 		fmt.Sprintf("%s %s", AshChromeProvision, AshChromeProvisionArgs),
 	)
+	// We can safely append these Envs regardless of skylab drone, cloudbot or vmlab
+	// since TRv2 handles all situations correctly.
+	container.AppendEnv("USE_GCE_METADATA=True",
+		"USE_CLOUDBOT_SSH_CONFIG=/home/ash-chrome-provision")
 	return container
+}
+
+func extractDutModel(swarmingDef *api.SwarmingDefinition) *dut_api.DutModel {
+	switch dutType := swarmingDef.GetDutInfo().GetDutType().(type) {
+	case *dut_api.Dut_Chromeos:
+		return dutType.Chromeos.GetDutModel()
+	case *dut_api.Dut_Android_:
+		return dutType.Android.GetDutModel()
+	default:
+		return nil
+	}
 }

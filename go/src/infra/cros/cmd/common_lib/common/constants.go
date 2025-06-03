@@ -146,19 +146,20 @@ const (
 // Constants relating to dynamic dependency storage.
 const (
 	// Base task identifiers and image metadata keys.
-	CrosProvision    = "cros-provision"
-	FoilProvision    = "foil-provision"
-	AndroidProvision = "android-provision"
-	FwProvision      = "cros-fw-provision"
-	VmProvision      = "vm-provision"
-	CrosDut          = "cros-dut"
-	CrosTest         = "cros-test"
-	CrosPublish      = "cros-publish"
-	RdbPublish       = "rdb-publish"
-	GcsPublish       = "gcs-publish"
-	CpconPublish     = "cpcon-publish"
-	PostProcess      = "post-process"
-	ServoNexus       = "servo-nexus"
+	AshChromeProvision = "ash-chrome-provision"
+	CrosProvision      = "cros-provision"
+	FoilProvision      = "foil-provision"
+	AndroidProvision   = "android-provision"
+	FwProvision        = "cros-fw-provision"
+	VmProvision        = "vm-provision"
+	CrosDut            = "cros-dut"
+	CrosTest           = "cros-test"
+	CrosPublish        = "cros-publish"
+	RdbPublish         = "rdb-publish"
+	GcsPublish         = "gcs-publish"
+	CpconPublish       = "cpcon-publish"
+	PostProcess        = "post-process"
+	ServoNexus         = "servo-nexus"
 
 	// Device base identifiers.
 	Primary   = "primary"

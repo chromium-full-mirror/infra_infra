@@ -32,6 +32,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
 	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
 	"go.chromium.org/infra/cros/cmd/common_lib/commontypes"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"go.chromium.org/infra/cros/cmd/common_lib/tools/outputprops"
@@ -349,6 +350,16 @@ func executeFiltersInLuciBuild(
 		alStateInfo = nil
 	}
 
+	hasAshChrome := false
+	for _, scheduleTarget := range req.GetScheduleTargets() {
+		for _, target := range scheduleTarget.GetTargets() {
+			for _, kvs := range target.GetSwTarget().GetLegacySw().GetKeyValues() {
+				if kvs.Key == commonbuilders.AshChromeGcsPath {
+					hasAshChrome = true
+				}
+			}
+		}
+	}
 	sk := &data.FilterStateKeeper{
 		CtpReq:                  req,
 		Ctr:                     ctr,
@@ -364,13 +375,14 @@ func executeFiltersInLuciBuild(
 		AlStateInfo:             alStateInfo,
 		IsAlRun:                 req.IsAlRun,
 		IsPartnerRun:            isPartnerRun,
+		HasAshChrome:            hasAshChrome,
 		SuiteTestResults:        map[string]*data.TestResults{},
 		ExecutionAIContext:      fmt.Sprintf("%s \n Suite request: %s", common.CTPContext, req),
 		ContainerRequestChannel: containerRequestChannel,
 		ContainerLogsChannel:    make(chan *commontypes.ContainerLogInfo),
 	}
 
-	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments, isPartnerRun, req.IsAlRun))
+	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments, isPartnerRun, req.IsAlRun, hasAshChrome))
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)

@@ -6,6 +6,7 @@ package common
 
 import (
 	"fmt"
+	"sort"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -42,6 +43,12 @@ func GenerateDynamicDeps(rpc string, depMap map[string]string, format string) []
 			Value: val,
 		})
 	}
+
+	// Sort by key to ensure nested children are placed at later positions.
+	// e.g. dut.cacheServer should be put after dut, but map doesn't guarantee any order in golang.
+	sort.Slice(deps, func(i, j int) bool {
+		return deps[i].GetKey() < deps[j].GetKey()
+	})
 
 	return deps
 }

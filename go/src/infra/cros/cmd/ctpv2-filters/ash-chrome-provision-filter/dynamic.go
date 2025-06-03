@@ -6,14 +6,8 @@ package main
 
 import (
 	"go.chromium.org/chromiumos/config/go/test/api"
-	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
-	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision
@@ -37,22 +31,23 @@ func GenerateDynamicInfo(req *api.InternalTestplan) error {
 // requests and sets the relevant placeholders.
 func generateProvisionRequests(req *api.InternalTestplan) (err error) {
 	provisionHelper := NewDynamicAshChromeProvisionHelper()
-	for _, targetOptions := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions() {
-		for _, target := range targetOptions.GetSchedulingUnits() {
-			generateProvisionRequestForSchedUnit(target, req, provisionHelper)
-		}
+	suiteMetadata := req.GetSuiteInfo().GetSuiteMetadata()
+	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 && len(suiteMetadata.GetSchedulingUnitOptions()[0].GetSchedulingUnits()) > 0 {
+		generateProvisionRequestForSchedUnit(suiteMetadata.GetSchedulingUnitOptions()[0].GetSchedulingUnits()[0], req, provisionHelper)
+
 	}
 
 	// TODO(oldProto-azrahman): remove when schedulingOptions are fully rolled in.
-	for _, target := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits() {
-		generateProvisionRequestForSchedUnit(target, req, provisionHelper)
+	if len(suiteMetadata.GetSchedulingUnits()) > 0 {
+		generateProvisionRequestForSchedUnit(suiteMetadata.GetSchedulingUnits()[0], req, provisionHelper)
 	}
 
 	// TODO (oldProto-azrahman): remove old proto stuffs when schedulingUnits are fully rolled in.
-	for _, legacyTarget := range req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements() {
-		for _, innerTarget := range legacyTarget.GetHwRequirements().GetHwDefinition() {
-			swRequirements := legacyTarget.GetSwRequirement()
-			provisionHelper.GenerateProvisionRequest(req, innerTarget, swRequirements, true)
+	if len(suiteMetadata.GetTargetRequirements()) > 0 {
+		hwDef := suiteMetadata.GetTargetRequirements()[0].GetHwRequirements().GetHwDefinition()
+		swReq := suiteMetadata.GetTargetRequirements()[0].GetSwRequirement()
+		if len(hwDef) > 0 {
+			provisionHelper.GenerateProvisionRequest(req, hwDef[0], swReq, true)
 		}
 	}
 
@@ -109,47 +104,15 @@ func generateLookupTableForSchedUnits(schedUnits []*api.SchedulingUnit) {
 		// Do primary
 		primarySwarming := target.PrimaryTarget.GetSwarmingDef()
 		primarySw := target.PrimaryTarget.GetSwReq()
-		primaryBoard := extractDutModel(primarySwarming).GetBuildTarget()
 		addProvisionValuesToLookup(lookup, primarySwarming, primarySw, lookupHelper)
-		if common.IsSupportedVMBoard(primaryBoard) {
-			generateVMDynamicProvisionRequest(target)
-			continue
-		}
 
 		// Do Companion
 		for _, companion := range target.GetCompanionTargets() {
 			swarmingDef := companion.GetSwarmingDef()
 			swReq := companion.GetSwReq()
 			addProvisionValuesToLookup(lookup, swarmingDef, swReq, lookupHelper)
+
 		}
-	}
-}
-
-// generateVMDynamicProvisionRequest
-func generateVMDynamicProvisionRequest(sUnit *api.SchedulingUnit) {
-	if sUnit.SecondaryDynamicUpdates == nil {
-		sUnit.SecondaryDynamicUpdates = []*api.UserDefinedDynamicUpdate{}
-	}
-
-	generator := generators.NewInsertGenerator()
-	generator.AddInsertion(&api.CrosTestRunnerDynamicRequest_Task{
-		OrderedContainerRequests: []*api.ContainerRequest{
-			helpers.NewCacheServerContainer().Build(),
-			helpers.NewCrosDutContainer(dynamic_common.NewPrimaryDeviceIdentifier()).Build(),
-		},
-	}, dynamic_common.ReplaceTaskWrapper(dynamic_common.FindFirst(api.FocalTaskFinder_PROVISION)))
-
-	dynamic_updates.AppendUserDefinedDynamicUpdates(&sUnit.SecondaryDynamicUpdates, generator.Generate)
-}
-
-func extractDutModel(swarmingDef *api.SwarmingDefinition) *dut_api.DutModel {
-	switch dutType := swarmingDef.GetDutInfo().GetDutType().(type) {
-	case *dut_api.Dut_Chromeos:
-		return dutType.Chromeos.GetDutModel()
-	case *dut_api.Dut_Android_:
-		return dutType.Android.GetDutModel()
-	default:
-		return nil
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/interfaces"
 )
@@ -23,6 +24,18 @@ func DefaultProvisionStartUpRequest(deviceId *common.DeviceIdentifier) *interfac
 			"dut":            deviceId.GetDevice("dut"),
 			"dutServer":      deviceId.GetCrosDutServer(),
 			"servoNexusAddr": servoTaskIdentifier.Id,
+		},
+	}
+}
+
+// DefaultProvisionStartUpRequestForVM outlines the default values for starting up a provision task to vmlab ChromeOS.
+func DefaultProvisionStartUpRequestForVM(deviceId *common.DeviceIdentifier) *interfaces.ProvisionTaskStartUpRequest {
+	return &interfaces.ProvisionTaskStartUpRequest{
+		DynamicInputs: map[string]string{
+			"dut":                             deviceId.GetDevice("dut"),
+			"dutServer":                       deviceId.GetCrosDutServer(),
+			"dut.cacheServer.address":         commonlib.CacheServer,
+			"dut.cacheServer.address.address": commonlib.HostIP,
 		},
 	}
 }

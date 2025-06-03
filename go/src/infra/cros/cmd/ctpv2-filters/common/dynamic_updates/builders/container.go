@@ -68,6 +68,14 @@ func (builder *ContainerBuilder) SetAdditionalVolumes(volumes []string) {
 	builder.AdditionalVolumes = append(builder.AdditionalVolumes, volumes...)
 }
 
+func (builder *ContainerBuilder) SetEnvs(envs []string) {
+	builder.Envs = envs
+}
+
+func (builder *ContainerBuilder) AppendEnv(envs ...string) {
+	builder.Envs = append(builder.Envs, envs...)
+}
+
 // Build constructs the container request from the information
 // provided to the ContainerBuilder.
 func (builder *ContainerBuilder) Build() *api.ContainerRequest {

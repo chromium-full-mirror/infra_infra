@@ -34,6 +34,7 @@ type FilterStateKeeper struct {
 	CTPversion              string
 	Environment             string
 	IsPartnerRun            bool
+	HasAshChrome            bool
 	// For V1 req, it will be key provided with input,
 	// for direct v2, this will be index of the request.
 	// Cannot use suite here coz two different suites can be present with different
