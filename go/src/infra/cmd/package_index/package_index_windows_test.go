@@ -11,7 +11,6 @@ import (
 	"archive/zip"
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -20,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/testing/ftt"
@@ -45,11 +44,7 @@ func TestPackageIndexWindows(t *testing.T) {
 		// Setup.
 		chanSize := 10
 		numRoutines := 2
-		tmpdir, err := ioutil.TempDir("", "")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer os.RemoveAll(tmpdir)
+		tmpdir := t.TempDir()
 
 		cwd, err := os.Getwd()
 		if err != nil {
@@ -77,13 +72,13 @@ func TestPackageIndexWindows(t *testing.T) {
 		//   \'s for windows runs (assuming no in/out of quotes)
 		// * Json needs \ escaping, so replacing 2 \'s with 1 \ requires replacing
 		//   4 \'s with 2 \'s.
-		origCompDB, err := ioutil.ReadFile(filepath.Join(rootDir, "src", "out", "Debug", "compile_commands_win.json"))
+		origCompDB, err := os.ReadFile(filepath.Join(rootDir, "src", "out", "Debug", "compile_commands_win.json"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		modCompDBContents := regexp.MustCompile(`(?m)\\\\\\\\`).ReplaceAll(origCompDB, []byte("\\\\"))
 		modCompDBPath := filepath.Join(tmpdir, "compile_commands_win_mod.json")
-		err = ioutil.WriteFile(modCompDBPath, modCompDBContents, 0444)
+		err = os.WriteFile(modCompDBPath, modCompDBContents, 0444)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -93,17 +88,17 @@ func TestPackageIndexWindows(t *testing.T) {
 
 		// Read expected units and place into a map.
 		unitMap := make(map[unitKey]string)
-		units, err := ioutil.ReadDir(filepath.Join(testDir, "units_win.expected"))
+		units, err := os.ReadDir(filepath.Join(testDir, "units_win.expected"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		for _, f := range units {
-			content, err := ioutil.ReadFile(filepath.Join(testDir, "units_win.expected", f.Name()))
+			content, err := os.ReadFile(filepath.Join(testDir, "units_win.expected", f.Name()))
 			if err != nil {
 				t.Fatal(err)
 			}
 			indexedCompilation := &kpb.IndexedCompilation{}
-			err = v1.UnmarshalText(string(content), indexedCompilation)
+			err = prototext.Unmarshal(content, indexedCompilation)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -262,7 +257,7 @@ func TestPackageIndexWindows(t *testing.T) {
 				}
 
 				// Check generated data files match expected.
-				files, _ := ioutil.ReadDir(filepath.Join(testDir, "files.expected"))
+				files, _ := os.ReadDir(filepath.Join(testDir, "files.expected"))
 				assert.Loosely(t, len(dataInfo), should.Equal(len(files)))
 
 				for _, file := range dataInfo {
@@ -278,13 +273,13 @@ func TestPackageIndexWindows(t *testing.T) {
 					}
 
 					_, name := filepath.Split(file.Name)
-					dataContentExpected, err := ioutil.ReadFile(
+					dataContentExpected, err := os.ReadFile(
 						filepath.Join(testDir, "files.expected", name))
 					if err != nil {
 						t.Fatal(err)
 					}
 
-					assert.Loosely(t, dataContentOut, should.Resemble(dataContentExpected))
+					assert.Loosely(t, dataContentOut, should.Match(dataContentExpected))
 				}
 
 				// Check generated unit protos match expected.
@@ -309,7 +304,7 @@ func TestPackageIndexWindows(t *testing.T) {
 					}
 					unitOut := indexedCompilationOut.GetUnit()
 
-					assert.Loosely(t, unitOut.String(), should.Resemble(
+					assert.Loosely(t, unitOut.String(), should.Match(
 						unitMap[unitKey{unitOut.GetVName().GetCorpus(), unitOut.GetSourceFile()[0]}]))
 				}
 			})
