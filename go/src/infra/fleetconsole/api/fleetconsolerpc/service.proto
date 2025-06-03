@@ -304,6 +304,20 @@ message ResourceRequest {
 
   // Status of the Fulfillment bug for the resource request.
   optional Status fulfillment_status = 9;
+  optional Status material_sourcing_status = 26;
+  optional Status build_status = 27;
+  optional Status qa_status = 28;
+  optional Status config_status = 29;
+  optional string customer = 30;
+  optional string resource_group = 31;
+  optional string resource_name = 32;
+  optional int32 accepted_quantity = 33;
+  optional string criticality = 34;
+  optional string request_approval = 35;
+  optional string resource_pm = 36;
+  optional string fulfillment_channel = 37;
+  optional string execution_status = 38;
+  repeated string resource_groups = 39;
 }
 
 message CountResourceRequestsRequest {
@@ -328,4 +342,19 @@ message GetResourceRequestsMultiselectFilterValuesRequest {
 message GetResourceRequestsMultiselectFilterValuesResponse {
   repeated string rr_ids = 1;
   repeated string resource_details = 2;
+  repeated string material_sourcing_status = 3;
+  repeated string build_status = 4;
+  repeated string qa_status = 5;
+  repeated string config_status = 6;
+  repeated string customer = 7;
+  repeated string resource_name = 8;
+  repeated int32 accepted_quantity = 9;
+  repeated string criticality = 10;
+  repeated string request_approval = 11;
+  repeated string resource_pm = 12;
+  repeated string fulfillment_channel = 13;
+  repeated string execution_status = 14;
+  // Contains all unique string values from the 'resource_groups' (repeated) field
+  // across all resource requests.
+  repeated string resource_groups = 15;
 }

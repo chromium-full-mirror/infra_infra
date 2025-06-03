@@ -29,7 +29,7 @@ func Test_buildListResourceRequestsQuery(t *testing.T) {
 		query, err := buildListResourceRequestsQuery(ctx, &bigquery.Client{}, req, 0, false)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, query.Q, should.Equal(
-			`SELECT rr_id, resource_details, resource_request_actual_delivery_date, resource_request_target_delivery_date, fulfillment_status, material_sourcing_target_start_date, material_sourcing_actual_start_date, material_sourcing_target_delivery_date, material_sourcing_actual_delivery_date, build_target_start_date, build_actual_start_date, build_target_delivery_date, build_actual_delivery_date, qa_target_start_date, qa_actual_start_date, qa_target_delivery_date, qa_actual_delivery_date, config_target_start_date, config_actual_start_date, config_target_delivery_date, config_actual_delivery_date
+			`SELECT rr_id, resource_details, resource_request_actual_delivery_date, resource_request_target_delivery_date, fulfillment_status, material_sourcing_target_start_date, material_sourcing_actual_start_date, material_sourcing_target_delivery_date, material_sourcing_actual_delivery_date, build_target_start_date, build_actual_start_date, build_target_delivery_date, build_actual_delivery_date, qa_target_start_date, qa_actual_start_date, qa_target_delivery_date, qa_actual_delivery_date, config_target_start_date, config_actual_start_date, config_target_delivery_date, config_actual_delivery_date, material_sourcing_status, build_status, qa_status, config_status, customer, resource_group, resource_name, accepted_quantity, criticality, request_approval, resource_pm, fulfillment_channel, execution_status, resource_groups
 FROM `+
 				"`resource_delivery_dev.resource_requests`"+
 				`

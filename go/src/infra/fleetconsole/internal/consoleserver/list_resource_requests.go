@@ -36,6 +36,38 @@ func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) 
 	return utils.FromCivilDate(value.(civil.Date))
 }
 
+func bigQueryNullableString(value bigquery.Value) *string {
+	if value == nil {
+		return nil
+	}
+
+	res := value.(string)
+
+	return &res
+}
+
+func bigQueryInteger(value bigquery.Value) *int32 {
+	if value == nil {
+		return nil
+	}
+
+	res := int32(value.(int64))
+
+	return &res
+}
+
+func bigQueryRepeatedString(value bigquery.Value) []string {
+	values := value.([]bigquery.Value)
+
+	res := make([]string, len(values))
+
+	for i, v := range values {
+		res[i] = v.(string)
+	}
+
+	return res
+}
+
 func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 	rrID := row[rri.RrIDColumn].(string)
 	actualDeliveryDate := BigQueryValueToDate(row[rri.ResourceRequestActualDeliveryDateColumn])
@@ -71,6 +103,20 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		ConfigActualStartDate:         BigQueryValueToDate(row[rri.ConfigActualStartDateColumn]),
 		ConfigTargetDeliveryDate:      BigQueryValueToDate(row[rri.ConfigTargetDeliveryDateColumn]),
 		ConfigActualDeliveryDate:      BigQueryValueToDate(row[rri.ConfigActualDeliveryDateColumn]),
+		MaterialSourcingStatus:        rri.MapFulfillmentStatus(row[rri.MaterialSourcingStatusColumn].(string)),
+		BuildStatus:                   rri.MapFulfillmentStatus(row[rri.BuildStatusColumn].(string)),
+		QaStatus:                      rri.MapFulfillmentStatus(row[rri.QAStatusColumn].(string)),
+		ConfigStatus:                  rri.MapFulfillmentStatus(row[rri.ConfigStatusColumn].(string)),
+		Customer:                      bigQueryNullableString(row[rri.CustomerColumn]),
+		ResourceGroup:                 bigQueryNullableString(row[rri.ResourceGroupColumn]),
+		ResourceName:                  bigQueryNullableString(row[rri.ResourceNameColumn]),
+		AcceptedQuantity:              bigQueryInteger(row[rri.AcceptedQuantityColumn]),
+		Criticality:                   bigQueryNullableString(row[rri.CriticalityColumn]),
+		RequestApproval:               bigQueryNullableString(row[rri.RequestApprovalColumn]),
+		ResourcePm:                    bigQueryNullableString(row[rri.ResourcePmColumn]),
+		FulfillmentChannel:            bigQueryNullableString(row[rri.FulfillmentChannelColumn]),
+		ExecutionStatus:               bigQueryNullableString(row[rri.ExecutionStatusColumn]),
+		ResourceGroups:                bigQueryRepeatedString(row[rri.ResourceGroupsColumn]),
 	}
 }
 

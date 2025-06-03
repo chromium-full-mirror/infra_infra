@@ -204,7 +204,7 @@ func (q *QueryBuilder) handleSimpleComparison(restriction *aip160.Restriction, c
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", columnName, argSQL), nil
-	case ":":
+	case ":": //TODO: this should work as IN on lists
 		argSQL, err = q.likeArgValue(restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
