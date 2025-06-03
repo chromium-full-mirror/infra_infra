@@ -169,14 +169,14 @@ func UpdateVM(ctx context.Context, vm *ufspb.VM, mask *field_mask.FieldMask) (*u
 }
 
 // UpdateVMHost updates the vm host(update ip assignment).
-func UpdateVMHost(ctx context.Context, vmName string, nwOpt *ufsAPI.NetworkOption) (*ufspb.VM, error) {
+func UpdateVMHost(ctx context.Context, newVM *ufspb.VM, nwOpt *ufsAPI.NetworkOption) (*ufspb.VM, error) {
 	var vm *ufspb.VM
 	var err error
 	f := func(ctx context.Context) error {
-		hc := getVMHistoryClient(&ufspb.VM{Name: vmName})
+		hc := getVMHistoryClient(&ufspb.VM{Name: newVM.GetName()})
 
 		//Get VM
-		vm, err = GetVM(ctx, vmName)
+		vm, err = GetVM(ctx, newVM.GetName())
 		if err != nil {
 			return err
 		}
@@ -193,7 +193,11 @@ func UpdateVMHost(ctx context.Context, vmName string, nwOpt *ufsAPI.NetworkOptio
 		if err := hc.netUdt.addVMHostHelper(ctx, nwOpt, vm); err != nil {
 			return errors.Annotate(err, "Fail to assign ip to vm %s", vm.Name).Err()
 		}
-		vm.ResourceState = ufspb.State_STATE_DEPLOYING
+		if newVM.ResourceState != ufspb.State_STATE_UNSPECIFIED && newVM.ResourceState != vm.ResourceState {
+			vm.ResourceState = newVM.GetResourceState()
+		} else {
+			vm.ResourceState = ufspb.State_STATE_DEPLOYING
+		}
 		if err := hc.stUdt.updateStateHelper(ctx, vm.ResourceState); err != nil {
 			return errors.Annotate(err, "Fail to update state to vm %s", vm.GetName()).Err()
 		}

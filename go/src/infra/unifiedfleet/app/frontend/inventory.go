@@ -326,7 +326,7 @@ func (fs *FleetServerImpl) UpdateVM(ctx context.Context, req *ufsAPI.UpdateVMReq
 				return nil, err
 			}
 		} else if req.GetNetworkOption().GetVlan() != "" || req.GetNetworkOption().GetIp() != "" {
-			vm, err = controller.UpdateVMHost(ctx, req.Vm.Name, req.GetNetworkOption())
+			vm, err = controller.UpdateVMHost(ctx, req.Vm, req.GetNetworkOption())
 			if err != nil {
 				return nil, err
 			}

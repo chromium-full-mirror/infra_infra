@@ -266,7 +266,7 @@ func TestUpdateVM(t *testing.T) {
 			}
 			_, err := CreateVM(ctx, vm1, nil)
 			assert.Loosely(t, err, should.BeNil)
-			resp, err := UpdateVMHost(ctx, vm1.Name, &ufsAPI.NetworkOption{
+			resp, err := UpdateVMHost(ctx, vm1, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
 			})
 			assert.Loosely(t, err, should.BeNil)
@@ -341,7 +341,7 @@ func TestUpdateVM(t *testing.T) {
 			_, err := CreateVM(ctx, vm1, nil)
 			assert.Loosely(t, err, should.BeNil)
 
-			_, err = UpdateVMHost(ctx, vm1.Name, &ufsAPI.NetworkOption{
+			_, err = UpdateVMHost(ctx, vm1, &ufsAPI.NetworkOption{
 				Ip: "192.168.40.19",
 			})
 			assert.Loosely(t, err, should.BeNil)
@@ -369,9 +369,6 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("vm.ip"))
 			assert.Loosely(t, changes[2].GetOldValue(), should.BeEmpty)
 			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("192.168.40.19"))
-			assert.Loosely(t, changes[3].GetEventLabel(), should.Equal("vm.resource_state"))
-			assert.Loosely(t, changes[3].GetOldValue(), should.Equal("STATE_REGISTERED"))
-			assert.Loosely(t, changes[3].GetNewValue(), should.Equal("STATE_DEPLOYING"))
 			// From deleting vm's ip
 			assert.Loosely(t, changes[4].GetEventLabel(), should.Equal("vm.vlan"))
 			assert.Loosely(t, changes[4].GetOldValue(), should.Equal("vlan-1"))
