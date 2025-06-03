@@ -337,6 +337,7 @@ func TestIngestPostProcessResponses(t *testing.T) {
 					BuildInfo: &artifact.BuildInfo{
 						BuildMetadata: &artifact.BuildMetadata{},
 					},
+					DutInfo: &artifact.DutInfo{},
 				},
 			},
 			TestRuns: []*artifact.TestRun{
@@ -358,6 +359,12 @@ func TestIngestPostProcessResponses(t *testing.T) {
 			ServoVersions: "c2d2_v2.4.73-d771c18ba9,0.24.40/ti50_common_prepvt-15086.B:v0.0.355-15c69d7f,fizz-labstation-release/R115-15474.55.0,servo_v4_v2.4.58-c37246f9c",
 		}
 		servoInfoAny, _ := anypb.New(servoInfo)
+
+		usbInfo := &artifact.DutInfo_UsbInfo{
+			PowerDeliveryPortServo: "0",
+			PowerDeliveryPortCount: 2,
+		}
+		usbInfoAny, _ := anypb.New(usbInfo)
 
 		// Create a post process response proto.
 		postProcessResps := &api.RunActivitiesResponse{
@@ -413,6 +420,13 @@ func TestIngestPostProcessResponses(t *testing.T) {
 						},
 					},
 				},
+				{
+					Response: &api.RunActivityResponse_GetUsbInfoResponse{
+						GetUsbInfoResponse: &api.GetUsbInfoResponse{
+							UsbInfo: usbInfoAny,
+						},
+					},
+				},
 			},
 		}
 
@@ -451,8 +465,12 @@ func TestIngestPostProcessResponses(t *testing.T) {
 			AvlPartFirmware:  "0xa200000000000000",
 			AvlPartModel:     "0x0000f5 MMC32G",
 		}
+		wantDutInfo := &artifact.DutInfo{
+			UsbInfo: usbInfo,
+		}
 		assert.That(t, testResult.TestInvocation.PrimaryExecutionInfo.BuildInfo.BuildMetadata, should.Match(wantBuildMetadata))
 		assert.That(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.Match(wantAVL))
+		assert.That(t, testResult.TestInvocation.PrimaryExecutionInfo.DutInfo, should.Match(wantDutInfo))
 	})
 }
 

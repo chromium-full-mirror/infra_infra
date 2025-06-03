@@ -480,6 +480,7 @@ func ingestPostProcessResponses(testResult *artifact.TestResult, postProcessResp
 	log.Printf("start to ingest post process responses: %#v", postProcessResps)
 
 	buildMetadata := testResult.GetTestInvocation().GetPrimaryExecutionInfo().GetBuildInfo().GetBuildMetadata()
+	dutInfo := testResult.GetTestInvocation().GetPrimaryExecutionInfo().GetDutInfo()
 	for _, resp := range postProcessResps.Responses {
 		switch resp.GetResponse().(type) {
 		case *api.RunActivityResponse_GetFwInfoResponse:
@@ -494,6 +495,8 @@ func ingestPostProcessResponses(testResult *artifact.TestResult, postProcessResp
 			populateGSCInfo(testResult, resp.GetGetGscInfoResponse())
 		case *api.RunActivityResponse_GetServoInfoResponse:
 			populateServoInfo(buildMetadata, resp.GetGetServoInfoResponse())
+		case *api.RunActivityResponse_GetUsbInfoResponse:
+			populateUsbInfo(dutInfo, resp.GetGetUsbInfoResponse())
 		default:
 			log.Printf("post process response type: %T is not supported", resp.GetResponse())
 		}
@@ -746,4 +749,24 @@ func populateServoInfo(buildMetadata *artifact.BuildMetadata, servoInfoResp *api
 	buildMetadata.ServoInfo = servoInfo
 
 	log.Printf("successfully populated servo info: %#v", servoInfoResp)
+}
+
+// populateUsbInfo populates usb info.
+func populateUsbInfo(dutInfo *artifact.DutInfo, usbInfoResp *api.GetUsbInfoResponse) {
+	if usbInfoResp == nil {
+		log.Printf("usb info response is empty")
+		return
+	}
+
+	log.Printf("start to populate usb info: %#v", usbInfoResp)
+
+	usbInfoAny := usbInfoResp.GetUsbInfo()
+	usbInfo := &artifact.DutInfo_UsbInfo{}
+	opts := proto.UnmarshalOptions{DiscardUnknown: true}
+	if err := anypb.UnmarshalTo(usbInfoAny, usbInfo, opts); err != nil {
+		log.Printf("failed to unmarshal usb info: %s", usbInfoAny)
+	}
+	dutInfo.UsbInfo = usbInfo
+
+	log.Printf("successfully populated usb info: %#v", usbInfoResp)
 }
