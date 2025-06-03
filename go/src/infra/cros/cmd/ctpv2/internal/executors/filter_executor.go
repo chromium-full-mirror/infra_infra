@@ -333,10 +333,11 @@ func (ex *FilterExecutor) ExecuteFilter(
 	serviceName := cmd.Filter.GetContainerInfo().GetContainer().GetName()
 	disallowCloudRun := false
 	usedFallback := false
+	useCloudRun := false
 	defer func() {
 		filterDuration := time.Since(startTime)
 		success := err == nil
-		ObserveFilterData(ctx, cmd, serviceName, filterDuration.Seconds(), !disallowCloudRun, usedFallback, success)
+		ObserveFilterData(ctx, cmd, serviceName, filterDuration.Seconds(), useCloudRun, usedFallback, success)
 	}()
 
 	// Disallow cros-test-finder.
@@ -347,7 +348,8 @@ func (ex *FilterExecutor) ExecuteFilter(
 	if cmd.Filter.GetContainerInfo().GetContainer().GetRepository().GetHostname() != "" {
 		disallowCloudRun = true
 	}
-	if !disallowCloudRun && cmd.CloudRunEnabled {
+	useCloudRun = !disallowCloudRun && cmd.CloudRunEnabled
+	if useCloudRun {
 		serviceTag := common.LabelStaging
 		if cmd.CTPversion == common.LabelProd {
 			serviceTag = common.LabelProd
