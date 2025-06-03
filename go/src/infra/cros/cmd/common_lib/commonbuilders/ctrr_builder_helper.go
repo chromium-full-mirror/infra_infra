@@ -471,6 +471,11 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 						GetUsbInfoRequest: &api.GetUsbInfoRequest{},
 					},
 				},
+				{
+					Request: &api.Request_GetStressTestInfoRequest{
+						GetStressTestInfoRequest: &api.GetStressTestInfoRequest{},
+					},
+				},
 			},
 		},
 		DynamicIdentifier: dynamicID,
