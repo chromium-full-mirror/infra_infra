@@ -131,7 +131,7 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 	cmd.Creds = sk.DockerKeyFile
 	cmd.CtpReq = sk.CtpReq
 	cmd.FirestoreDB = common.TestPlatformFireStore
-	if sk.IsAlRun && sk.IsPartnerRun {
+	if sk.IsPartnerRun {
 		cmd.FirestoreDB = common.PartnerTestPlatformFireStore
 	}
 
