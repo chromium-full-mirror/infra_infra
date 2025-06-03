@@ -120,10 +120,6 @@ linters:
       - linters:
         - unused
         path: ^(appengine/(cr-rev|cros|crosskylabadmin|dashboard|drone-queen|poros|rietveld-static|rubber-stamper|sheriff-o-matic|test-results|tree-status)|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
-      # TODO(b/398333401): Reduce this exclude by cleaning up ineffective assignments.
-      - linters:
-        - ineffassign
-        path: ^(appengine/(cros|poros|rotation-proxy)|chromeperf|cmd|cr_builder_health|cros|experimental|qscheduler|rts|tools|unifiedfleet)/
       # See https://chromium-review.googlesource.com/c/infra/infra/+/6490573 and https://chromium-review.googlesource.com/c/infra/infra/+/6284947 for details.
       # golangbuild intentionally does not wrap certain errors.
       # TODO(gregorynisbet): Drop this stanza when go1.23 support is dropped + 1 month-ish.
@@ -157,6 +153,76 @@ linters:
       - libs/fleet/boxster/swarming/convert_test.go
       - monorail/endpoints_test.go
       # TODO(gregorynisbet): END copylock issue files.
+      # TODO(gregorynisbet): BEGIN ineffective assignment issue files.
+      - appengine/cros/lab_inventory/api/bigquery/scripts/dumpManualRepairPlxToBq.go
+      - appengine/poros/api/service/assetHandler_test.go
+      - appengine/poros/api/service/assetInstanceHandler_test.go
+      - appengine/poros/api/service/assetResourceHandler_test.go
+      - appengine/poros/api/service/resourceHandler_test.go
+      - appengine/poros/taskspb/createasset_handler.go
+      - appengine/rotation-proxy/rotation_proxy_server_test.go
+      - chromeperf/pinpoint/cli/analyze.go
+      - chromeperf/pinpoint/cli/generate_batch_summary.go
+      - cmd/cros_test_platform/internal/execution/testrunner/service/client.go
+      - cmd/gaedeploy/module/module.go
+      - cmd/mac_toolchain/package.go
+      - cmd/package_index/proto.go
+      - cmd/shivas/internal/experimental/verify_bot_status.go
+      - cmd/shivas/internal/queen/cmds/queen-push-duts.go
+      - cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go
+      - cmd/shivas/internal/ufs/subcmds/vm/get_vm.go
+      - cr_builder_health/src_config.go
+      - cros/cmd/cft/dut/cros-dut/cli/dutserver.go
+      - cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go
+      - cros/cmd/common_lib/common/filters.go
+      - cros/cmd/common_lib/commonexecutors/container_manager_executor.go
+      - cros/cmd/common_lib/secretmanager/secretmanager.go
+      - cros/cmd/conductor/collect_state.go
+      - cros/cmd/container_uprev/executions/build_execution.go
+      - cros/cmd/container_uprev/executions/manual_execution.go
+      - cros/cmd/container_uprev/internal/docker.go
+      - cros/cmd/cros-tool-runner/internal/docker/docker.go
+      - cros/cmd/cros_test_runner/analytics/bigquery.go
+      - cros/cmd/cros_test_runner/internal/commands/build_input_validation_cmd.go
+      - cros/cmd/cros_test_runner/internal/commands/parse_args_cmd.go
+      - cros/cmd/cros_test_runner/internal/commands/parse_dut_topology_cmd.go
+      - cros/cmd/cros_test_runner/internal/commands/process_results_cmd.go
+      - cros/cmd/cros_test_runner/internal/executors/inv_service_executor.go
+      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/descriptor_parser.go
+      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/categoryFlattener.go
+      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go
+      - cros/cmd/lucifer/internal/abortsock/abortsock_test.go
+      - cros/cmd/manifest_doctor/public_buildspec.go
+      - cros/cmd/provision/cros-fw-provision/service/firmwareservice.go
+      - cros/cmd/upload_debug_symbols/builder.go
+      - cros/internal/branch/parser_test.go
+      - cros/internal/gs/gs.go
+      - cros/internal/repo/manifest_test.go
+      - cros/internal/repoharness/repoharness_test.go
+      - cros/recovery/karte/karte.go
+      - cros/satlab/common/services/build_service/build_service_impl.go
+      - cros/satlab/satlabrpcserver/client/main.go
+      - cros/satlab/satlabrpcserver/platform/cpu_temperature/cpu_temperature_test.go
+      - cros/satlab/satlabrpcserver/services/rpc_services/rpc_services.go
+      - cros/satlab/satlabrpcserver/utils/sized_queue/sized_queue_test.go
+      - cros/satlab/satlabrpcserver/utils/utils_test.go
+      - cros/support/bq-insert/main.go
+      - experimental/crderiveinputs/main.go
+      - experimental/crderiveinputs/oracle_pin.go
+      - experimental/crderiveinputs/vpython.go
+      - experimental/golangbuild/fetch.go
+      - experimental/golangbuild/steps.go
+      - experimental/golangbuild/testmode.go
+      - qscheduler/service/app/state/nodestore/nodestore_test.go
+      - rts/cmd/rts-chromium/select.go
+      - rts/cmd/rts-ml-chromium/select.go
+      - rts/internal/chromium/test_files_test.go
+      - tools/cloudtail/chan.go
+      - tools/kitchen/cook.go
+      - tools/recipe_bundler/cmd_bundle.go
+      - tools/vpython/legacy/vpython2.7/luci/application/probe.go
+      - unifiedfleet/app/dumper/nlyte_bq_sync.go
+      # TODO(gregorynisbet): END ineffective assignment issue files.
 
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
