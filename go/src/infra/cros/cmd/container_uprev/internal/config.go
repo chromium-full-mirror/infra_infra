@@ -174,6 +174,13 @@ type Repository struct {
 // GetConfigs returns the uprev configs.
 func GetConfigs() []*UprevConfig {
 	configs := []*UprevConfig{
+		// {
+		// 	Name: "example-filter",
+		// 	CIPDPackages: []*CIPDPackage{
+		// 		NewCIPDPackage("chromiumos/infra/ctpv2-filters/example-filter/${platform}"),
+		// 	},
+		// 	CloudRunConfig: &cloudrun.Config{},
+		// },
 		{
 			Name: "partner-staging",
 			CIPDPackages: []*CIPDPackage{
