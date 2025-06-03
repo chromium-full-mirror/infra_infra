@@ -87,7 +87,7 @@ func (c *deleteVM) innerRun(a subcommands.Application, args []string, env subcom
 		fmt.Fprintln(a.GetOut(), args[0], "is deleted successfully.")
 		return nil
 	}
-	return errors.Annotate(err, "Unable to delete the VM on the host").Err()
+	return errors.Fmt("Unable to delete the VM on the host: %w", err)
 }
 
 func (c *deleteVM) validateArgs() error {

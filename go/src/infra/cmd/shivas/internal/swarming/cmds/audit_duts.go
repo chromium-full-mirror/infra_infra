@@ -175,5 +175,5 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device
 		return "", errors.Annotate(err, "creating Scheduke client").Err()
 	}
 	url, _, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
-	return url, errors.Annotate(err, "schedule audit builder").Err()
+	return url, errors.WrapIf(err, "schedule audit builder")
 }

@@ -241,7 +241,7 @@ func (c *manageWifiCmd) cleanAndValidateFlags() error {
 			for i, rec := range records {
 				if i == 0 {
 					if len(rec) == 0 {
-						return errors.Annotate(err, "header should not be empty").Err()
+						return errors.New("header should not be empty")
 					}
 					for _, key := range rec {
 						if !csvHeaderMap[key] {
