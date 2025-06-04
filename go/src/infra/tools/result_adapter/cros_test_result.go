@@ -291,15 +291,20 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			}
 
 			dutInfo := primaryExecInfo.GetDutInfo()
-			if dutInfo != nil && dutInfo.GetDut() != nil {
-				dut := dutInfo.GetDut()
-				chromeOSInfo := dut.GetChromeos()
-				if chromeOSInfo != nil {
-					tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
-					tags = AppendTags(tags, "phase", chromeOSInfo.GetPhase().String())
-				}
+			if dutInfo != nil {
+				if dutInfo.GetDut() != nil {
+					dut := dutInfo.GetDut()
+					chromeOSInfo := dut.GetChromeos()
+					if chromeOSInfo != nil {
+						tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
+						tags = AppendTags(tags, "phase", chromeOSInfo.GetPhase().String())
+					}
 
-				tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))
+					tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))
+				}
+				usbInfo := dutInfo.GetUsbInfo()
+				tags = AppendTags(tags, "power_delivery_port_servo", usbInfo.GetPowerDeliveryPortServo())
+				tags = AppendTags(tags, "power_delivery_port_count", strconv.FormatUint(uint64(usbInfo.GetPowerDeliveryPortCount()), 10))
 			}
 
 			inventoryInfo := primaryExecInfo.GetInventoryInfo()

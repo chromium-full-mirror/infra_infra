@@ -90,7 +90,11 @@
                         "phase": 3
                     }
                 },
-                "cbx": true
+                "cbx": true,
+                 "usb_info": {
+                    "power_delivery_port_servo": "0",
+                    "power_delivery_port_count": 2
+                }
             },
             "skylab_info":{
                 "drone_info":{
