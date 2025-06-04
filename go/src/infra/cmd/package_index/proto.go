@@ -249,11 +249,7 @@ func (t *gnTarget) IsProtoTarget() bool {
 	if t.targetInfo.Script == "" {
 		return false
 	}
-	script := t.targetInfo.Script
-	if strings.HasSuffix(script, "/python2_action.py") && len(t.targetInfo.Args) > 0 {
-		script = t.targetInfo.Args[0]
-	}
-	return strings.HasSuffix(script, "/protoc_wrapper.py")
+	return strings.HasSuffix(t.targetInfo.Script, "/protoc_wrapper.py")
 }
 
 // normpath is a helper function that returns a clean path of argPath relative to the protoTarget.

@@ -256,9 +256,6 @@ func isMojomTarget(t *gnTarget) bool {
 
 	// Determine if wrapper script is used. If it is, extract actual script
 	// which is located at the very first argument.
-	if !isMojom && strings.HasSuffix(t.targetInfo.Script, "/python2_action.py") && len(t.targetInfo.Args) > 0 {
-		isMojom = strings.HasSuffix(t.targetInfo.Args[0], mojomScript)
-	}
 	if !isMojom && strings.HasSuffix(t.targetInfo.Script, "/action_remote.py") && len(t.targetInfo.Args) > 0 {
 		// handle reclient
 		for _, arg := range t.targetInfo.Args[1:] {
