@@ -165,10 +165,12 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb
 			args...)
 		if err != nil {
 			logging.Warningf(ctx, "Failed to write device %v\n", err)
+			continue
 		}
 		rowsAffected, err := result.RowsAffected()
 		if err != nil {
 			logging.Warningf(ctx, "Failed to write device %v\n", err)
+			continue
 		}
 		upsertedDevicesN += rowsAffected
 	}
