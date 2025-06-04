@@ -115,7 +115,11 @@ type CloudRunExperimentData struct {
 	UsedFallback bool
 	// Success indicates if the filter call did not fail for any reason. Includes success
 	// on fallback. Should help indicate stability of the cloud run experiment.
-	Success bool
+	Success      bool
+	Bucket       string
+	Builder      string
+	IsPartnerRun bool
+	IsAlRun      bool
 }
 
 func InsertCloudRunExperimentData(c *bigquery.Client, data *CloudRunExperimentData) error {
@@ -129,6 +133,8 @@ func InsertCloudRunExperimentData(c *bigquery.Client, data *CloudRunExperimentDa
 
 func SoftInsertCloudRunExperimentFilterData(ctx context.Context, BQClient *bigquery.Client, data *CloudRunExperimentData, build *build.State) {
 	data.BBID = getBBID(build)
+	data.Bucket = getBucket(build)
+	data.Builder = getBuilder(build)
 	if BQClient != nil {
 		err := InsertCloudRunExperimentData(BQClient, data)
 		if err != nil {
@@ -322,6 +328,20 @@ func getBBID(build *build.State) string {
 		return bbid
 	}
 	return ""
+}
+
+func getBucket(build *build.State) string {
+	if build == nil {
+		return ""
+	}
+	return build.Build().GetBuilder().GetBucket()
+}
+
+func getBuilder(build *build.State) string {
+	if build == nil {
+		return ""
+	}
+	return build.Build().GetBuilder().GetBuilder()
 }
 
 // buildDataFromInternal will append the internal test plan details to the to be inserted BQ row.

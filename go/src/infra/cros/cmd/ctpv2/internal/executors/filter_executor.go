@@ -411,6 +411,8 @@ func ObserveFilterData(ctx context.Context, cmd *commands.FilterExecutionCmd, fi
 		SuiteName:         cmd.InputTestPlan.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName(),
 		UsedFallback:      usedFallback,
 		Success:           success,
+		IsPartnerRun:      cmd.IsPartnerRun,
+		IsAlRun:           cmd.IsAlRun,
 	}
 	analytics.SoftInsertCloudRunExperimentFilterData(ctx, cmd.BQClient, data, cmd.BuildState)
 }
