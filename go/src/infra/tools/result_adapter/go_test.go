@@ -657,7 +657,8 @@ func TestGenerateTestResults(t *testing.T) {
 			}
 			status_v2: SKIPPED
 			skipped_reason: {
-			  kind: SKIPPED_BY_TEST_BODY,
+				kind: OTHER
+				reason_message: "Skipped because there are no tests in this package."
 			}
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			duration: {}

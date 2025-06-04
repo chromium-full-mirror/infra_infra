@@ -348,7 +348,8 @@ func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult 
 	case "skip":
 		packageResult.StatusV2 = resultpb.TestResult_SKIPPED
 		packageResult.SkippedReason = &resultpb.SkippedReason{
-			Kind: resultpb.SkippedReason_SKIPPED_BY_TEST_BODY,
+			Kind:          resultpb.SkippedReason_OTHER,
+			ReasonMessage: "Skipped because there are no tests in this package.",
 		}
 	case "":
 		// A test interrupted by SIGTERM, SIGABORT, SIGKILL will usually
