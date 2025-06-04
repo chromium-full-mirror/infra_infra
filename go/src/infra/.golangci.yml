@@ -406,7 +406,6 @@ linters:
       - unifiedfleet/app/model/registration/machine_test.go
       - unifiedfleet/app/model/registration/nlyte_asset.go
       - unifiedfleet/cmd/ufs-service/serverlib/serverlib.go
-      - vm_leaser/internal/frontend/frontend.go
       # TODO(gregorynisbet): END unused variable/function issue files.
 
 

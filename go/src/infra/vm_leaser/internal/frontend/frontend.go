@@ -12,9 +12,7 @@ import (
 	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/google/uuid"
-	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -29,15 +27,6 @@ import (
 	"go.chromium.org/infra/vm_leaser/internal/validation"
 	"go.chromium.org/infra/vm_leaser/internal/zone_selector"
 )
-
-// computeInstancesClient interfaces the GCE instance client API.
-type computeInstancesClient interface {
-	Delete(ctx context.Context, r *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
-	Get(ctx context.Context, r *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error)
-	Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
-	List(ctx context.Context, r *computepb.ListInstancesRequest, opts ...gax.CallOption) *compute.InstanceIterator
-	AggregatedList(ctx context.Context, r *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *compute.InstancesScopedListPairIterator
-}
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
 var _ api.VMLeaserServiceServer = (*Server)(nil)
