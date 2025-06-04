@@ -189,7 +189,7 @@ pins:
 			}
 			return nil
 		})
-		assert.Loosely(t, err, should.ErrLike(`blarg (and 1 other error)`))
+		assert.Loosely(t, err, should.ErrLike(`blarg`))
 
 		// Updated only img1 ones.
 		assert.Loosely(t, p.Pins, should.Resemble([]Pin{
