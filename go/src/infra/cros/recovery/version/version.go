@@ -88,10 +88,6 @@ func ByDetails(ctx context.Context, versionType Type, deviceName, board, model s
 }
 
 func version(ctx context.Context, deviceName string, versionType Type, board, model string, pools []string) (rData Data, _ error) {
-	c := GetClient(ctx)
-	if c == nil {
-		return nil, errors.Reason("version: client not found").Err()
-	}
 	deviceType := toDeviceType(defaultTypeIfEmpty(versionType, deviceName))
 	cacheKey := cacheKey(deviceType, deviceName, board, model, pools)
 	// Check if the version is in the cache before trying to read from outside.
@@ -113,6 +109,11 @@ func version(ctx context.Context, deviceName string, versionType Type, board, mo
 		} else {
 			return v, nil
 		}
+	}
+	// From here we start use CSA to get version for the DUT.
+	c := GetClient(ctx)
+	if c == nil {
+		return nil, errors.Reason("version: client not found").Err()
 	}
 	req := &fleet.GetRecoveryVersionRequest{
 		DeviceType: deviceType,
