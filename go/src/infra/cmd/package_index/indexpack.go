@@ -10,6 +10,7 @@ import (
 
 type indexPackLanguageStats struct {
 	numCompilationUnits int
+	numDuplicates       int
 	// Store the following in maps so they will be deduped.
 	requiredInputs map[string]bool
 	sourceFiles    map[string]bool

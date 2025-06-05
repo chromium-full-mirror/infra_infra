@@ -369,7 +369,20 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 	defer w.Close()
 
 	// Write kzip entries into kzip.
+	seenPaths := make(map[string]struct{})
 	for entry := range kzipEntryChannel {
+		// A kzipEntry's path contains the hash of the IndexedCompilation proto, so
+		// if the path has already been seen, it's an exact duplicate, skip it.
+		if _, ok := seenPaths[entry.path]; ok {
+			logging.Warningf(ip.ctx, "Skipping identical entry %s", entry.path)
+			// Update stats.
+			if entry.cuLanguage != "" {
+				ip.languageStats(entry.cuLanguage).numDuplicates++
+			}
+			continue
+		}
+		seenPaths[entry.path] = struct{}{}
+
 		f, err := w.Create(entry.path)
 		if err != nil {
 			return err
@@ -383,14 +396,7 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 		if entry.cuLanguage == "" {
 			continue
 		}
-		ls, present := ip.stats[entry.cuLanguage]
-		if !present {
-			ls = &indexPackLanguageStats{
-				requiredInputs: make(map[string]bool),
-				sourceFiles:    make(map[string]bool),
-			}
-			ip.stats[entry.cuLanguage] = ls
-		}
+		ls := ip.languageStats(entry.cuLanguage)
 		ls.numCompilationUnits++
 		for _, d := range entry.cuRequiredInputs {
 			ls.requiredInputs[d] = true
@@ -401,4 +407,17 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 	}
 
 	return nil
+}
+
+// languageStats gets or creates the stats struct for a given language.
+func (ip *indexPack) languageStats(cuLanguage string) *indexPackLanguageStats {
+	ls, present := ip.stats[cuLanguage]
+	if !present {
+		ls = &indexPackLanguageStats{
+			requiredInputs: make(map[string]bool),
+			sourceFiles:    make(map[string]bool),
+		}
+		ip.stats[cuLanguage] = ls
+	}
+	return ls
 }

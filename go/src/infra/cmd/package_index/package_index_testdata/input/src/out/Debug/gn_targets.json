@@ -205,11 +205,25 @@
     "type": "action",
     "visibility": [ "//third_party/blink/public/mojom/runtime_feature_state:*" ]
  },
-  "//components/send_tab_to_self/proto:send_tab_to_self_proto_gen" : {
+  "//net/cert:root_store_proto_full_gen" : {
     "outputs" : ["not inspected"],
-    "args" : ["main.proto", "--protoc", "./clang_x64/protoc", "--proto-in-dir", "../../", "--cc-out-dir", "gen/", "--py-out-dir", "pyproto/"],
+    "args" : ["main.proto", "--protoc", "./clang_x64/protoc", "--proto-in-dir", "../../", "--fatal_warnings", "--cc-out-dir", "gen/", "--py-out-dir", "pyproto/"],
     "toolchain" : "//build/toolchain/android:android_clang_arm",
     "visibility" : ["//proto:main"],
+    "testonly" : false,
+    "type" : "action",
+    "public" : "*",
+    "metadata" : {},
+    "sources" : ["//main.proto"],
+    "script" : "//tools/protoc_wrapper/protoc_wrapper.py",
+    "deps" : ["//third_party/protobuf:protoc(//build/toolchain/linux:clang_x64)"],
+    "inputs" : ["//out/android-Debug/clang_x64/protoc"]
+  },
+  "//net/cert:root_store_proto_lite_gen" : {
+    "outputs" : ["not inspected"],
+    "args" : ["main.proto", "--protoc", "./clang_x64/protoc", "--proto-in-dir", "../../", "--fatal_warnings", "--cc-out-dir", "gen/", "--cc-options", "lite=true:", "--py-out-dir", "pyproto/"],
+    "toolchain" : "//build/toolchain/android:android_clang_arm",
+    "visibility" : ["//proto:lite"],
     "testonly" : false,
     "type" : "action",
     "public" : "*",

@@ -282,6 +282,21 @@ func TestPackageIndexWindows(t *testing.T) {
 					assert.Loosely(t, dataContentOut, should.Match(dataContentExpected))
 				}
 
+				// Check the expected number of duplicate units generated match expected.
+				for lang, stats := range ip.stats {
+					if lang == "protobuf" {
+						// Both targets
+						// - //net/cert:root_store_proto_full_gen
+						// - //net/cert:root_store_proto_lite_gen
+						// are distinct however evaluate to an identical CU derived from their
+						// identical source proto, hence there should be one duplicate.
+						assert.That(t, stats.numDuplicates, should.Equal(1))
+					} else {
+						// Duplicates are unexpected for other languages.
+						assert.That(t, stats.numDuplicates, should.Equal(0))
+					}
+				}
+
 				// Check generated unit protos match expected.
 				assert.Loosely(t, len(unitInfo), should.Equal(len(unitMap)))
 				for _, file := range unitInfo {
