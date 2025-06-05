@@ -11,6 +11,7 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -25,6 +26,7 @@ import (
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // ProvisionBtpeers provisions a DUTs btpeers.
@@ -90,6 +92,8 @@ func (command *provisionBtpeerCommand) innerRun(app subcommands.Application, arg
 		Host:    command.envFlags.Env().UFSService,
 		Options: site.UFSPRPCOptions,
 	})
+	md := metadata.Pairs(ufsUtil.Namespace, ufsUtil.OSNamespace)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	authOpts, err := command.authFlags.Options()
 	if err != nil {
 		return errors.Annotate(err, "getting auth opts").Err()

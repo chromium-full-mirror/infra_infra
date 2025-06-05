@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -27,6 +28,7 @@ import (
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	"go.chromium.org/infra/libs/skylab/swarming"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Recovery subcommand: Recovering the devices.
@@ -92,6 +94,8 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 		Host:    c.envFlags.Env().UFSService,
 		Options: site.UFSPRPCOptions,
 	})
+	md := metadata.Pairs(ufsUtil.Namespace, ufsUtil.OSNamespace)
+	ctx = metadata.NewOutgoingContext(ctx, md)
 	authOpts, err := c.authFlags.Options()
 	if err != nil {
 		return errors.Annotate(err, "getting auth opts").Err()
