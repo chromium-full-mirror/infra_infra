@@ -117,6 +117,9 @@ func generateScheduleRequest(builder *bbpb.BuilderID, waitForChildren bool, batc
 	for range batchSize {
 		subReq := &bbpb.ScheduleBuildRequest{
 			Builder: builder,
+			Dimensions: []*bbpb.RequestedDimension{
+				{Key: "effective_bot_id", Value: calculateEffectiveBotID()},
+			},
 		}
 		if waitForChildren {
 			subReq.CanOutliveParent = bbpb.Trinary_NO
@@ -129,6 +132,11 @@ func generateScheduleRequest(builder *bbpb.BuilderID, waitForChildren bool, batc
 		})
 	}
 	return req
+}
+
+func calculateEffectiveBotID() string {
+	botID := rand.Intn(1000)
+	return fmt.Sprintf("test-bots-0-%d-%d-%d-effective", botID/100, botID%100/10, botID%10)
 }
 
 func scheduleOneBatch(ctx context.Context, bbClient bbpb.BuildsClient, idx, batchSize int, cbs *fakebuildpb.ChildBuilds) ([]int64, error) {
