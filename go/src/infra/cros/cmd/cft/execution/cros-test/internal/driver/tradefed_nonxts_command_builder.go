@@ -70,7 +70,6 @@ func BuildNonXtsTestCommand(logger *log.Logger, testType string, tests []*api.Te
 	}
 
 	var buildInfoReported = false
-	var invocationInfoReported = false
 	var branch, target, build string
 	// To support ATP runs, the priority is given to the "extra" metadata
 	// which is pointing to the location of test and Tradefed ZIP packages.
@@ -82,7 +81,7 @@ func BuildNonXtsTestCommand(logger *log.Logger, testType string, tests []*api.Te
 		// If provided, use these to set branch, target and build. this will make internal
 		// TF ants plugin to work correctly with ATP created invocation.
 		cmd = append(cmd, "--branch", branch, "--build-flavor", target, "--build-id", build)
-		invocationInfoReported = true
+		buildInfoReported = true
 		logger.Println("Setting build info from execution metadata - branch/target/build: ", branch, "/", target, "/", build)
 	}
 
@@ -91,12 +90,9 @@ func BuildNonXtsTestCommand(logger *log.Logger, testType string, tests []*api.Te
 			tiBranch, tiTarget, tiBuild := extractBuildInfoFromTest(t.TestCase, metadata, board)
 			if len(tiBranch) > 0 && len(tiTarget) > 0 && len(tiBuild) > 0 {
 				logger.Println("Setting build info from test metadata - branch/target/build: ", board, "/", target, "/", build)
-				if !invocationInfoReported {
-					// if no build info is updated yet, then use test metadata build info to update them.
-					cmd = append(cmd, "--branch", tiBranch, "--build-flavor", tiTarget,
-						"--build-id", tiBuild)
-					invocationInfoReported = true
-				}
+				// if no build info is updated yet, then use test metadata build info to update them.
+				cmd = append(cmd, "--branch", tiBranch, "--build-flavor", tiTarget,
+					"--build-id", tiBuild)
 				buildInfoReported = true
 			}
 		}

@@ -275,6 +275,11 @@ func TestGetArchFromBoard(t *testing.T) {
 				board:        "corsola",
 				expectedArch: "arm",
 			},
+			{
+				name:         "Rauru (arm) target",
+				board:        "rauru",
+				expectedArch: "arm",
+			},
 		}
 
 		for _, tc := range testCases {
@@ -320,7 +325,7 @@ func TestExtractBuildInfoFromTest(t *testing.T) {
 				tags:            []string{"branch:git_main", "target:target_arm_1", "build_id:12345"},
 				expectedBranch:  "git_main",
 				expectedTarget:  "target_arm_1",
-				expectedBuildID: "12681648",
+				expectedBuildID: "12345",
 			},
 			{
 				name:  "1.5 metadata with x86 board",

@@ -24,18 +24,6 @@ const (
 	DTS                = "dts"
 )
 
-func extractBuildInfo(test *api.TestCase, metadata *api.ExecutionMetadata, board string, plan string, logger *log.Logger) (branch string, target string, build string) {
-	branch, target, build = extractTestInfoFromExecutionMetadata(metadata)
-	if len(branch) <= 0 || len(target) <= 0 || len(build) <= 0 {
-		// As no direct way to return error, we continue with what we have and let Tradefed error out if it doesn't have enough information.
-		// Print log to make it clear what is missing.
-		logger.Println("Missing required info branch/target/build, got: ", branch, "/", target, "/", build)
-	}
-	logger.Println("Setting xTS build info from build info - branch/target/build: ", branch, "/", target, "/", build)
-
-	return
-}
-
 func getTestRunner() string {
 	if isAospTradefed() {
 		return tfAospTestRunner
@@ -158,21 +146,27 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 	}
 	for _, t := range tests {
 		testName := formatTestName(t.GetTestCase().GetId().GetValue())
-		ctsBranch, ctsTarget, ctsBuild := extractBuildInfo(t.TestCase, metadata, board, plan, logger)
-		if len(ctsBranch) > 0 && len(ctsTarget) > 0 && len(ctsBuild) > 0 && !buildInfoReported {
-			if !invocationInfoReported {
-				// if no build info is updated yet, then use test metadata build info to update them.
-				cmd = append(cmd, "--branch", ctsBranch, "--build-flavor", ctsTarget,
-					"--build-id", ctsBuild)
-				invocationInfoReported = true
-				branch = ctsBranch
-				target = ctsTarget
-				build = ctsBuild
-			}
+		if !buildInfoReported {
+			ctsBranch, ctsTarget, ctsBuild := extractTestInfoFromExecutionMetadata(metadata)
+			if len(ctsBranch) > 0 && len(ctsTarget) > 0 && len(ctsBuild) > 0 {
+				if !invocationInfoReported {
+					// if no build info is updated yet, then use test metadata build info to update them.
+					cmd = append(cmd, "--branch", ctsBranch, "--build-flavor", ctsTarget,
+						"--build-id", ctsBuild)
+					invocationInfoReported = true
+					branch = ctsBranch
+					target = ctsTarget
+					build = ctsBuild
+				}
 
-			if !isAospTradefed() {
-				cmd = append(cmd, "--cts-branch", ctsBranch, "--cts-build-flavor", ctsTarget,
-					"--cts-build-id", ctsBuild)
+				if !isAospTradefed() {
+					logger.Printf("Setting test info from execution metadata of test: %s, branch/target/build: %s/%s/%s",
+						testName, ctsBranch, ctsTarget, ctsBuild)
+					cmd = append(cmd, "--cts-branch", ctsBranch, "--cts-build-flavor", ctsTarget,
+						"--cts-build-id", ctsBuild)
+				}
+			} else {
+				logger.Println("Missing test info in execution metadata of test: ", testName)
 			}
 			buildInfoReported = true
 		}

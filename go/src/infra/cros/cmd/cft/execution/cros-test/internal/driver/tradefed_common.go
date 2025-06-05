@@ -27,7 +27,7 @@ const (
 var skipDownloadArtifacts = []string{"TESTS_ZIP", "DEVICE_IMAGE", "BASEBAND"}
 
 // TODO: find better way to discover or pass in board's architecture.
-var armBoards = []string{"corsola"}
+var armBoards = []string{"corsola", "rauru"}
 
 func getArchFromBoard(targetBoard string) string {
 	arch := "x86"
@@ -100,6 +100,14 @@ func extractTestInfoFromExecutionMetadata(metadata *api.ExecutionMetadata) (bran
 	return
 }
 
+func isArmOnX86(metadata *api.ExecutionMetadata) bool {
+	if _, err := extractMetadataFlag(metadata, "arm_on_x86"); err == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
 func extractBuildInfoFromTest(test *api.TestCase, metadata *api.ExecutionMetadata, board string) (branch string, target string, build string) {
 	for _, t := range test.Tags {
 		if strings.HasPrefix(t.Value, "target_build=") {
@@ -116,7 +124,7 @@ func extractBuildInfoFromTest(test *api.TestCase, metadata *api.ExecutionMetadat
 					abi = strings.TrimPrefix(tag, "abi:")
 				}
 			}
-			if abi != "" && strings.Contains(abi, getArchFromBoard(board)) {
+			if abi != "" && (isArmOnX86(metadata) || strings.Contains(abi, getArchFromBoard(board))) {
 				build = buildCandidate
 				target = targetCandidate
 			}
@@ -124,15 +132,11 @@ func extractBuildInfoFromTest(test *api.TestCase, metadata *api.ExecutionMetadat
 		if strings.HasPrefix(t.Value, "branch:") {
 			branch = strings.TrimPrefix(t.Value, "branch:")
 		}
-		if strings.HasPrefix(t.Value, "target:") && strings.Contains(t.Value, getArchFromBoard(board)) && target == "" {
+		if strings.HasPrefix(t.Value, "target:") && (isArmOnX86(metadata) || strings.Contains(t.Value, getArchFromBoard(board))) && target == "" {
 			target = strings.TrimPrefix(t.Value, "target:")
 		}
 		if strings.HasPrefix(t.Value, "build_id:") && build == "" {
-			if getArchFromBoard(board) == "arm" && branch == "git_main" {
-				build = "12681648"
-			} else {
-				build = strings.TrimPrefix(t.Value, "build_id:")
-			}
+			build = strings.TrimPrefix(t.Value, "build_id:")
 		}
 	}
 	return
