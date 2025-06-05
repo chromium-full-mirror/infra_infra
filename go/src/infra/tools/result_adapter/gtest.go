@@ -463,7 +463,44 @@ func hasSkipResultPart(parts []*GTestRunResultPart) bool {
 	return skipResultPart(parts) != nil
 }
 
-func extractMessageFromResultPart(f *GTestRunResultPart) (string, error) {
+func extractFailureMessageFromResultPart(f *GTestRunResultPart) (string, error) {
+	summary, err := extractSummaryFromResultPart(f)
+	if err != nil {
+		return "", err
+	}
+	summary = strings.TrimSpace(trimGoogleTestTrace(summary))
+
+	// On Windows, paths reported in the result parts use forward or
+	// backward slashes, so use a splitting method that accepts either.
+	_, fileName := filepath.Split(f.File)
+
+	// Contextualise the assertion failure message with the file name and line number.
+	// This avoids coming up with failure reasons which are too generic,
+	// e.g. "Expected equality of these values:\n true\n false".
+	return fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary), nil
+}
+
+func extractSkipMessageFromResultPart(f *GTestRunResultPart) (string, error) {
+	summary, err := extractSummaryFromResultPart(f)
+	if err != nil {
+		return "", err
+	}
+	summary = strings.TrimSpace(trimGoogleTestTrace(summary))
+	if summary == "" {
+		summary = "Test called GTEST_SKIP()"
+	}
+
+	// On Windows, paths reported in the result parts use forward or
+	// backward slashes, so use a splitting method that accepts either.
+	_, fileName := filepath.Split(f.File)
+
+	// Contextualise the assertion failure message with the file name and line number.
+	// This avoids coming up with failure reasons which are too generic,
+	// e.g. "Expected equality of these values:\n true\n false".
+	return fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary), nil
+}
+
+func extractSummaryFromResultPart(f *GTestRunResultPart) (string, error) {
 	summaryBytes, err := base64.StdEncoding.DecodeString(f.SummaryBase64)
 	if err != nil {
 		// Log the error, but we shouldn't fail to convert a file just because we can't
@@ -476,15 +513,7 @@ func extractMessageFromResultPart(f *GTestRunResultPart) (string, error) {
 		// characters.
 		return "", errors.New("SummaryBase64 is not valid UTF-8")
 	}
-	// On Windows, paths reported in the result parts use forward or
-	// backward slashes, so use a splitting method that accepts either.
-	_, fileName := filepath.Split(f.File)
-	summary := strings.TrimSpace(trimGoogleTestTrace(string(summaryBytes)))
-
-	// Contextualise the assertion failure/skip message with the file name and line number.
-	// This avoids coming up with failure reasons which are too generic,
-	// e.g. "Expected equality of these values:\n true\n false".
-	return fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary), nil
+	return string(summaryBytes), nil
 }
 
 // extractFailureReasonErrorsFromResultParts identifies the errors that caused
@@ -503,7 +532,7 @@ func extractFailureReasonErrorsFromResultParts(ctx context.Context, parts []*GTe
 
 	var errors []*pb.FailureReason_Error
 	for _, f := range fs {
-		msg, err := extractMessageFromResultPart(f)
+		msg, err := extractFailureMessageFromResultPart(f)
 		if err != nil {
 			logging.Warningf(ctx, "Failed to extract message from ResultPart: %s", err)
 			// Prefer to return no errors rather than an incorrect error as the
@@ -618,7 +647,7 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 		// This is only present if the test explicitly called GTEST_SKIP macro.
 		skipResultPart := skipResultPart(result.ResultParts)
 		if skipResultPart != nil {
-			msg, err := extractMessageFromResultPart(skipResultPart)
+			msg, err := extractSkipMessageFromResultPart(skipResultPart)
 			if err != nil {
 				logging.Warningf(ctx, "Failed to extract message from skip ResultPart: %s", err)
 			}
