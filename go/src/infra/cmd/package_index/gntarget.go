@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"os"
 	"sync"
 
 	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
@@ -80,7 +80,7 @@ func NewGnTargets(gnTargetsPath string) *GnTargets {
 func (gnTargets *GnTargets) populateChannel() {
 	if gnTargetsMap == nil {
 		// Unmarshal JSON.
-		dat, err := ioutil.ReadFile(gnTargets.filePath)
+		dat, err := os.ReadFile(gnTargets.filePath)
 		if err != nil {
 			panic(err)
 		}

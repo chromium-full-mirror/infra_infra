@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -69,7 +68,7 @@ func NewClangTargets(clangTargetsPath string) *ClangTargets {
 func (clangTargets *ClangTargets) populateChannel() {
 	if clangTargets.entries == nil {
 		// Parse JSON
-		dat, err := ioutil.ReadFile(clangTargets.filePath)
+		dat, err := os.ReadFile(clangTargets.filePath)
 		if err != nil {
 			panic(err)
 		}

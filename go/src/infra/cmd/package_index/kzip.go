@@ -11,7 +11,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -293,7 +292,7 @@ func (ip *indexPack) dataFileToKzipEntry(ctx context.Context,
 				continue
 			}
 
-			content, err := ioutil.ReadFile(fname)
+			content, err := os.ReadFile(fname)
 			if err != nil {
 				return err
 			}
