@@ -37,7 +37,7 @@ type LsNexus struct {
 	pools           []string
 	servodSerial    string
 	servodContainer string
-	servodPort      int
+	servodPort      int32
 }
 
 func NewServer(logger *log.Logger) *grpc.Server {

@@ -35,19 +35,19 @@ func TestStartServod(t *testing.T) {
 	model := "model"
 	handler := func(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
-			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
+			return nil, fmt.Errorf("port number mismatched: got: %d wanted: %d",
 				req.GetStationId().GetServodPort(), port)
 		}
 		if req.GetStationId().GetContainerName() != containerName {
-			return nil, fmt.Errorf("container name mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("container name mismatched: got: %s wanted: %s",
 				req.GetStationId().GetContainerName(), containerName)
 		}
 		if req.GetBoard() != board {
-			return nil, fmt.Errorf("board mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("board mismatched: got: %s wanted: %s",
 				req.GetBoard(), board)
 		}
 		if req.GetModel() != model {
-			return nil, fmt.Errorf("model mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("model mismatched: got: %s wanted: %s",
 				req.GetModel(), model)
 		}
 		return &bols.StartServodResponse{}, nil
@@ -104,19 +104,19 @@ func TestCallServodSet(t *testing.T) {
 	value := "value"
 	handler := func(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
-			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
+			return nil, fmt.Errorf("port number mismatched: got: %d wanted: %d",
 				req.GetStationId().GetServodPort(), port)
 		}
 		if req.GetStationId().GetContainerName() != containerName {
-			return nil, fmt.Errorf("container name mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("container name mismatched: got: %s wanted: %s",
 				req.GetStationId().GetContainerName(), containerName)
 		}
 		if req.GetControl() != control {
-			return nil, fmt.Errorf("control mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("control mismatched: got: %s wanted: %s",
 				req.GetControl(), control)
 		}
 		if req.GetValue().GetStringValue() != value {
-			return nil, fmt.Errorf("value mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("value mismatched: got: %s wanted: %s",
 				req.GetValue().GetStringValue(), value)
 
 		}
@@ -185,15 +185,15 @@ func TestCallServodGet(t *testing.T) {
 	value := "value"
 	handler := func(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
 		if req.GetStationId().GetServodPort() != port {
-			return nil, fmt.Errorf("port number mismatched: got: %d wamted: %d",
+			return nil, fmt.Errorf("port number mismatched: got: %d wanted: %d",
 				req.GetStationId().GetServodPort(), port)
 		}
 		if req.GetStationId().GetContainerName() != containerName {
-			return nil, fmt.Errorf("container name mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("container name mismatched: got: %s wanted: %s",
 				req.GetStationId().GetContainerName(), containerName)
 		}
 		if req.GetControl() != control {
-			return nil, fmt.Errorf("control mismatched: got: %s wamted: %s",
+			return nil, fmt.Errorf("control mismatched: got: %s wanted: %s",
 				req.GetControl(), control)
 		}
 		return &bols.GetServodResponse{

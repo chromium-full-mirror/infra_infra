@@ -504,6 +504,13 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 		},
+		{
+			Name: "lsnexus-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/lsnexus-filter/${platform}"),
+			},
+			CloudRunConfig: &cloudrun.Config{},
+		},
 	}
 
 	return CleanConfigs(configs)
