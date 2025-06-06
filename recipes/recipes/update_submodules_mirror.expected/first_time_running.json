@@ -27,6 +27,20 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
+      "--url",
+      "https://chromiumdash.appspot.com/fetch_milestones?only_branched=true",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "/path/to/tmp/json"
+    ],
+    "name": "GET https://chromiumdash.appspot.com/fetch_milestones?only_branched=true"
+  },
+  {
+    "cmd": [
       "git",
       "ls-remote",
       "https://chromium.googlesource.com/chromium/src",
@@ -35,6 +49,50 @@
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
     "name": "git ls-remote"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7204"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (2)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7151"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (3)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7103"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (4)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/3112"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (5)"
   },
   {
     "cmd": [

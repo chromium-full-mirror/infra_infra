@@ -17,6 +17,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
+    "recipe_engine/url",
     'recipe_engine/step',
     'depot_tools/gclient',
     'depot_tools/git',
@@ -49,14 +50,14 @@ PROPERTIES = {
         Property(default="", help="If should fetch internal source"),
     'with_tags':
         Property(default=True, help='Whether to clone, fetch and push tags.'),
-    # Note: ref_patterns require a `git ls-remote` call. If performance becomes
-    # a concern, we may add a `refs` for complete names of refs we care about.
     'ref_patterns':
         Property(
-            default=['refs/heads/main'],
+            default=[],
             help='A list of patterns for which matching refs should be added. '
-            'Git supported pattern syntax: '
-            'https://man7.org/linux/man-pages/man7/glob.7.html'),
+            'If empty, the main and branch-heads for recent milestones will be '
+            'auto-selected. '
+            'Visit https://man7.org/linux/man-pages/man7/glob.7.html for '
+            'Git supported pattern syntax.'),
     'refs_to_skip':
         Property(
             default=[],
@@ -79,7 +80,48 @@ COMMIT_EMAIL_ADDRESS = \
 MAIN_REF = 'refs/heads/main'
 
 SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
-
+TEST_CHROMIUMDASH_RESP = [
+    # active, beta milestone
+    {
+        'chromium_branch': '7204',
+        'chromium_main_branch_hash': 'd5de512d',
+        'chromium_main_branch_position': 1465706,
+        'schedule_active': True,
+        'schedule_phase': 'beta',
+    },
+    # active, stable milestones
+    {
+        'chromium_branch': '7151',
+        'chromium_main_branch_hash': '8e0d32ed',
+        'chromium_main_branch_position': 1453031,
+        'milestone': 137,
+        'schedule_active': True,
+        'schedule_phase': 'stable',
+    },
+    {
+        "chromium_branch": "7103",
+        "chromium_main_branch_hash": "e09430c6",
+        "chromium_main_branch_position": 1440670,
+        "milestone": 136,
+        "schedule_active": True,
+        "schedule_phase": "stable",
+    },
+    # inactive milestones
+    {
+        "chromium_branch": "3112",
+        "chromium_main_branch_hash": "b6460e24",
+        "chromium_main_branch_position": 474897,
+        "milestone": 60,
+        "schedule_active": False,
+    },
+    {
+        'chromium_branch': '3071',
+        'chromium_main_branch_hash': 'a106f0ab',
+        'chromium_main_branch_position': 464641,
+        'milestone': 59,
+        'schedule_active': False,
+    },
+]
 
 def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
              overlays, internal, with_tags, ref_patterns, refs_to_skip,
@@ -117,7 +159,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
   api.m.path.checkout_dir = source_checkout_dir
 
   refs_to_mirror_set = set()
-
+  ref_patterns = ref_patterns or RefsForLatestMilestones(api)
   for ref_pattern in ref_patterns:
     resp = api.git(
         'ls-remote', source_repo, ref_pattern,
@@ -269,6 +311,32 @@ def RefToRemoteRef(ref):
   ref = ref.replace('refs/heads', 'refs/remotes/origin')
   ref = ref.replace('refs/branch-heads', 'refs/remotes/branch-heads')
   return ref
+
+
+def RefsForLatestMilestones(api):
+  """Returns the refs to the branch heads for the latest Milestones.
+
+  Returns:
+    the branch head refs for all active milestones and the latest inactive
+      milestone.
+  """
+  v = api.url.get_json(
+      'https://chromiumdash.appspot.com/fetch_milestones?only_branched=true',
+      default_test_data=TEST_CHROMIUMDASH_RESP,
+  )
+  # the main branch and heads for active milestones.
+  ret = ['refs/heads/main']
+  ret.extend("refs/branch-heads/%s" % m['chromium_branch']
+             for m in v.output
+             if m['schedule_active'] == True)
+  # The milestones are ordered in the reverse chronological order.
+  # Add the branch head for the most recent inactive milestone.
+  inactive = next("refs/branch-heads/%s" % m['chromium_branch']
+                  for m in v.output
+                  if m['schedule_active'] == False)
+  if inactive:
+    ret.append(inactive)
+  return ret
 
 
 def GetSubmodules(api, deps, source_checkout_name, overlays):
@@ -600,6 +668,38 @@ def GenTests(api):
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
          api.step_data(
              'Process refs/branch-heads/5173.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/heads/main.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+
+  yield (api.test('without_ref_patterns') + api.properties(
+      source_repo='https://chromium.googlesource.com/chromium/src',
+      target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
+      ref_patterns=[]) + api.step_data(
+          'git ls-remote',
+          api.raw_io.stream_output_text(
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+              stream='stdout')) +
+         api.step_data(
+             'git ls-remote (2)',
+             api.raw_io.stream_output_text(
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/7204\n' +
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/7151\n' +
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/7103\n' +
+                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/branch-heads/3112\n',
+                 stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/7204.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/7151.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/7103.gclient evaluate DEPS',
+             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+         api.step_data(
+             'Process refs/branch-heads/3112.gclient evaluate DEPS',
              api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
          api.step_data(
              'Process refs/heads/main.gclient evaluate DEPS',

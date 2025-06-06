@@ -1,0 +1,861 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0o777",
+      "[CACHE]/codesearch_update_submodules_mirror"
+    ],
+    "infra_step": true,
+    "name": "Create checkout parent dir"
+  },
+  {
+    "cmd": [
+      "git",
+      "clone",
+      "https://chromium.googlesource.com/chromium/src",
+      "[CACHE]/codesearch_update_submodules_mirror/src"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "infra_step": true,
+    "name": "git clone"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
+      "--url",
+      "https://chromiumdash.appspot.com/fetch_milestones?only_branched=true",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "/path/to/tmp/json"
+    ],
+    "name": "GET https://chromiumdash.appspot.com/fetch_milestones?only_branched=true"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/heads/main"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7204"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (2)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7151"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (3)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/7103"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (4)"
+  },
+  {
+    "cmd": [
+      "git",
+      "ls-remote",
+      "https://chromium.googlesource.com/chromium/src",
+      "refs/branch-heads/3112"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git ls-remote (5)"
+  },
+  {
+    "cmd": [
+      "git",
+      "reset",
+      "--hard",
+      "origin/main"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git reset"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "-t"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git fetch"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "refs/branch-heads/3112:refs/remotes/branch-heads/3112"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git fetch (2)"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "refs/branch-heads/7103:refs/remotes/branch-heads/7103"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git fetch (3)"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "refs/branch-heads/7151:refs/remotes/branch-heads/7151"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git fetch (4)"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "refs/branch-heads/7204:refs/remotes/branch-heads/7204"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git fetch (5)"
+  },
+  {
+    "cmd": [],
+    "name": "Process refs/heads/main"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "refs/remotes/origin/main"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/heads/main.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "revinfo",
+      "--deps",
+      "all",
+      "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS'}]",
+      "--output-json=-"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/heads/main.gclient evaluate DEPS",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "160000,4ad2459561d76217c9b7aff412c5c086b491078a,v8",
+      "--cacheinfo",
+      "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/heads/main.Add gitlinks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8\n[submodule \"buildtools\"]\n\tpath = buildtools\n\turl = https://chromium.googlesource.com/chromium/buildtools",
+      "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
+    ],
+    "infra_step": true,
+    "name": "Process refs/heads/main.Write .gitmodules file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"buildtools\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = buildtools@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/chromium/buildtools@@@",
+      "@@@STEP_LOG_END@.gitmodules@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      ".gitmodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/heads/main.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "-c",
+      "user.name=Submodules bot",
+      "-c",
+      "user.email=infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
+      "commit",
+      "-m",
+      "Synthetic commit for submodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/heads/main.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "HEAD:refs/heads/main",
+      "--push-option=skip-validation",
+      "--force"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/heads/main.git push refs/heads/main",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Process refs/branch-heads/3112"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "refs/remotes/branch-heads/3112"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "revinfo",
+      "--deps",
+      "all",
+      "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS'}]",
+      "--output-json=-"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.gclient evaluate DEPS",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "160000,4ad2459561d76217c9b7aff412c5c086b491078a,v8",
+      "--cacheinfo",
+      "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.Add gitlinks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8\n[submodule \"buildtools\"]\n\tpath = buildtools\n\turl = https://chromium.googlesource.com/chromium/buildtools",
+      "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
+    ],
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.Write .gitmodules file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"buildtools\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = buildtools@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/chromium/buildtools@@@",
+      "@@@STEP_LOG_END@.gitmodules@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      ".gitmodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "-c",
+      "user.name=Submodules bot",
+      "-c",
+      "user.email=infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
+      "commit",
+      "-m",
+      "Synthetic commit for submodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "HEAD:refs/branch-heads/3112",
+      "--push-option=skip-validation",
+      "--force"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/3112.git push refs/branch-heads/3112",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Process refs/branch-heads/7103"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "refs/remotes/branch-heads/7103"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "revinfo",
+      "--deps",
+      "all",
+      "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS'}]",
+      "--output-json=-"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.gclient evaluate DEPS",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "160000,4ad2459561d76217c9b7aff412c5c086b491078a,v8",
+      "--cacheinfo",
+      "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.Add gitlinks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8\n[submodule \"buildtools\"]\n\tpath = buildtools\n\turl = https://chromium.googlesource.com/chromium/buildtools",
+      "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
+    ],
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.Write .gitmodules file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"buildtools\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = buildtools@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/chromium/buildtools@@@",
+      "@@@STEP_LOG_END@.gitmodules@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      ".gitmodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "-c",
+      "user.name=Submodules bot",
+      "-c",
+      "user.email=infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
+      "commit",
+      "-m",
+      "Synthetic commit for submodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "HEAD:refs/branch-heads/7103",
+      "--push-option=skip-validation",
+      "--force"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7103.git push refs/branch-heads/7103",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Process refs/branch-heads/7151"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "refs/remotes/branch-heads/7151"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "revinfo",
+      "--deps",
+      "all",
+      "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS'}]",
+      "--output-json=-"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.gclient evaluate DEPS",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "160000,4ad2459561d76217c9b7aff412c5c086b491078a,v8",
+      "--cacheinfo",
+      "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.Add gitlinks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8\n[submodule \"buildtools\"]\n\tpath = buildtools\n\turl = https://chromium.googlesource.com/chromium/buildtools",
+      "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
+    ],
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.Write .gitmodules file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"buildtools\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = buildtools@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/chromium/buildtools@@@",
+      "@@@STEP_LOG_END@.gitmodules@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      ".gitmodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "-c",
+      "user.name=Submodules bot",
+      "-c",
+      "user.email=infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
+      "commit",
+      "-m",
+      "Synthetic commit for submodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "HEAD:refs/branch-heads/7151",
+      "--push-option=skip-validation",
+      "--force"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7151.git push refs/branch-heads/7151",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "Process refs/branch-heads/7204"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "refs/remotes/branch-heads/7204"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_REPO[depot_tools]/gclient.py",
+      "revinfo",
+      "--deps",
+      "all",
+      "--ignore-dep-type=cipd",
+      "--ignore-dep-type=gcs",
+      "--spec",
+      "solutions=[{'managed': False, 'name': 'src/', 'url': 'https://chromium.googlesource.com/chromium/src', 'deps_file': 'DEPS'}]",
+      "--output-json=-"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror",
+    "env_suffixes": {
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.gclient evaluate DEPS",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "160000,4ad2459561d76217c9b7aff412c5c086b491078a,v8",
+      "--cacheinfo",
+      "160000,13a00f110ef910a25763346d6538b60f12845656,buildtools"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.Add gitlinks",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[submodule \"v8\"]\n\tpath = v8\n\turl = https://chromium.googlesource.com/v8/v8\n[submodule \"buildtools\"]\n\tpath = buildtools\n\turl = https://chromium.googlesource.com/chromium/buildtools",
+      "[CACHE]/codesearch_update_submodules_mirror/src/.gitmodules"
+    ],
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.Write .gitmodules file",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"v8\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/v8/v8@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@[submodule \"buildtools\"]@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\tpath = buildtools@@@",
+      "@@@STEP_LOG_LINE@.gitmodules@\turl = https://chromium.googlesource.com/chromium/buildtools@@@",
+      "@@@STEP_LOG_END@.gitmodules@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      ".gitmodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "-c",
+      "user.name=Submodules bot",
+      "-c",
+      "user.email=infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
+      "commit",
+      "-m",
+      "Synthetic commit for submodules"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "HEAD:refs/branch-heads/7204",
+      "--push-option=skip-validation",
+      "--force"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "Process refs/branch-heads/7204.git push refs/branch-heads/7204",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "https://chromium.googlesource.com/codesearch/src_mirror",
+      "refs/remotes/origin/main:refs/heads/main-original"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git push"
+  },
+  {
+    "cmd": [
+      "git",
+      "push",
+      "-o",
+      "nokeycheck",
+      "--tags",
+      "https://chromium.googlesource.com/codesearch/src_mirror"
+    ],
+    "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
+    "infra_step": true,
+    "name": "git push --tags"
+  },
+  {
+    "name": "$result"
+  }
+]
