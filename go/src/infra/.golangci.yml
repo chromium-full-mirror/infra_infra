@@ -125,7 +125,7 @@ linters:
       # TODO(gregorynisbet): Reduce this exclude by cleaning up instances where the context should be passed.
       - linters:
         - noctx
-        path: ^(appengine|build|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
+        path: ^(appengine|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
