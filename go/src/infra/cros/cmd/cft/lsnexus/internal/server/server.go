@@ -27,7 +27,8 @@ type LsNexus struct {
 	api.UnimplementedGenericServiceServer
 
 	// During initialization.
-	logger *log.Logger
+	logger      *log.Logger
+	artifactDir string
 
 	// Filled during call to Start.
 	cl bols.BolsServiceClient
@@ -40,9 +41,10 @@ type LsNexus struct {
 	servodPort      int32
 }
 
-func NewServer(logger *log.Logger) *grpc.Server {
+func NewServer(logger *log.Logger, artifactDir string) *grpc.Server {
 	s := &LsNexus{
-		logger: logger,
+		logger:      logger,
+		artifactDir: artifactDir,
 	}
 	server := grpc.NewServer()
 	lsnexus.RegisterLSNexusServiceServer(server, s)
@@ -75,7 +77,7 @@ func StartServer(name, artifactDir string) error {
 	if err != nil {
 		return fmt.Errorf("failed to write metadata port: %w", err)
 	}
-	server := NewServer(logger)
+	server := NewServer(logger, artifactDir)
 
 	err = server.Serve(l)
 	if err != nil {

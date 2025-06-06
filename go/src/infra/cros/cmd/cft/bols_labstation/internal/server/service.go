@@ -39,6 +39,25 @@ func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest)
 // GetFile gets a file from labstation.
 func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
 	fn := req.GetFilename()
+	fileInfo, err := os.Lstat(fn)
+	if err != nil {
+		return fmt.Errorf("failed to stat file: %w", err)
+	}
+	// Check if the file mode indicates it's a symbolic link.
+	if fileInfo.Mode()&os.ModeSymlink != 0 {
+		// os.Readlink returns the path the symbolic link points to.
+		resolvedPath, err := os.Readlink(fn)
+		if err != nil {
+			return fmt.Errorf("failed to resolve symbolic link: %w", err)
+		}
+		// In case the symlink is relative, resolve it to an absolute path
+		// based on the link's directory.
+		if !filepath.IsAbs(resolvedPath) {
+			dir := filepath.Dir(fn)
+			resolvedPath = filepath.Join(dir, resolvedPath)
+		}
+		fn = resolvedPath
+	}
 	file, err := os.Open(fn)
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", fn, err)

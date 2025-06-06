@@ -324,7 +324,7 @@ func startLSNexusServer(ctx context.Context, dir string) (stopFunc func(), addr 
 	logger := common.NewLogger(logFile)
 	log.SetOutput(logger.Writer())
 
-	server := NewServer(logger)
+	server := NewServer(logger, dir)
 
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {

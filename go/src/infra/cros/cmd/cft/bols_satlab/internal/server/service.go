@@ -12,6 +12,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -26,12 +27,65 @@ import (
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
+const bufSize int = 1024 * 1024
+
 func (s *service) GetFileStat(context.Context, *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFileStat not implemented")
 }
 
 func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetFile not implemented")
+	s.logger.Println("receive GetFile request for file ", req.GetFilename())
+	ctx := stream.Context()
+	args := []string{"realpath", req.GetFilename()}
+	containerName := req.StationId.GetContainerName()
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return fmt.Errorf("fail to create docker client: %w", err)
+	}
+	timeout := timeRemaining(ctx)
+	eReq := &docker.ExecRequest{
+		Timeout: timeout,
+		Cmd:     args,
+	}
+	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
+	if err != nil {
+		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+	}
+	realpath := strings.TrimSpace(string(res.Stdout))
+
+	file, err := os.CreateTemp("", fmt.Sprintf("%s.*.tmp", filepath.Base(realpath)))
+	if err != nil {
+		return fmt.Errorf("failed to create temporary file for %s: %w",
+			realpath, err)
+	}
+	tempFileName := file.Name()
+	file.Close()
+	defer os.Remove(tempFileName) // Clean up the file when done
+
+	if err := c.CopyFrom(ctx, containerName, realpath, tempFileName); err != nil {
+		return fmt.Errorf("failed to copy %s from container %s: %v",
+			realpath, containerName, err)
+
+	}
+	file, err = os.Open(tempFileName)
+	if err != nil {
+		return fmt.Errorf("failed to open %s: %w", tempFileName, err)
+	}
+	defer file.Close()
+	buffer := make([]byte, bufSize)
+	for {
+		n, err := file.Read(buffer)
+		if err != nil {
+			if err != io.EOF {
+				return fmt.Errorf("failed to read %s: %w", tempFileName, err)
+			}
+			break // End of file
+		}
+		stream.Send(&bols.GetFileResponse{
+			Data: buffer[:n],
+		})
+	}
+	return nil
 }
 
 func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
@@ -82,7 +136,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 		Cmd:     args,
 		Stdout:  tmpStdout,
 	}
-	res, err := c.Exec(ctx, req.StationId.GetContainerName(), eReq)
+	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
 	tmpStdout.Close()
 	if err != nil {
 		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
@@ -90,8 +144,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 	if res != nil && res.ExitCode != 0 {
 		return fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
 	}
-	const size int = 1024 * 1024
-	buffer := make([]byte, size)
+	buffer := make([]byte, bufSize)
 	file, err := os.Open(stdoutFileName)
 	if err != nil {
 		return fmt.Errorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err)
