@@ -47,9 +47,9 @@ const defaultRetryInterval = time.Duration(10 * time.Second)
 
 // DutServiceServer implementation of dut_service.proto
 type DutServiceServer struct {
-	manager    *lro.Manager
-	logger     *log.Logger
-	connection dutssh.ClientInterface
+	manager         *lro.Manager
+	logger          *log.Logger
+	connectionOrNil dutssh.ClientInterface
 	// connectionMutex must be held when creating a new connection.
 	// This prevents multiple connections from being created simultaneously.
 	connectionMutex sync.Mutex
@@ -63,20 +63,20 @@ type DutServiceServer struct {
 // newDutServiceServer creates a new dut service server to listen to rpc requests.
 func newDutServiceServer(l net.Listener, logger *log.Logger, conn dutssh.ClientInterface, serializerPath string, protoChunkSize int64, dutName, wiringAddress string, cacheAddress string) (*grpc.Server, func()) {
 	s := &DutServiceServer{
-		manager:        lro.New(),
-		logger:         logger,
-		connection:     conn,
-		serializerPath: serializerPath,
-		protoChunkSize: protoChunkSize,
-		dutName:        dutName,
-		wiringAddress:  wiringAddress,
-		cacheAddress:   cacheAddress,
+		manager:         lro.New(),
+		logger:          logger,
+		connectionOrNil: conn,
+		serializerPath:  serializerPath,
+		protoChunkSize:  protoChunkSize,
+		dutName:         dutName,
+		wiringAddress:   wiringAddress,
+		cacheAddress:    cacheAddress,
 	}
 
 	server := grpc.NewServer()
 	destructor := func() {
-		if s.connection != nil {
-			s.connection.Close()
+		if s.connectionOrNil != nil {
+			s.connectionOrNil.Close()
 		}
 		s.manager.Close()
 	}
@@ -116,13 +116,18 @@ func (s *DutServiceServer) FetchFile(req *api.FetchFileRequest, stream api.DutSe
 	fetchFile := req.File
 	s.logger.Printf("Received api.FetchFile: %s", fetchFile)
 
-	if exists, stderr, err := s.runCmdOutput(stream.Context(), dutssh.PathExistsCommand(fetchFile)); err != nil {
+	conn, err := s.ensureConnection(stream.Context())
+	if err != nil {
+		return status.Errorf(codes.Unavailable, "Failed to get connection: %s", err)
+	}
+
+	if exists, stderr, err := s.runCmdOutput(stream.Context(), conn, dutssh.PathExistsCommand(fetchFile)); err != nil {
 		return status.Errorf(codes.FailedPrecondition, "Failed to check for file: %s", stderr)
 	} else if exists != "1" {
 		return status.Errorf(codes.NotFound, "file not present on device.")
 	}
 
-	session, err := s.connection.NewSession(stream.Context())
+	session, err := conn.NewSession(stream.Context())
 
 	if err != nil {
 		return status.Errorf(codes.FailedPrecondition, "Failed to start ssh session: %s", err)
@@ -160,13 +165,18 @@ func (s *DutServiceServer) FetchFile(req *api.FetchFileRequest, stream api.DutSe
 // FetchCrashes remotely fetches crashes from the DUT.
 func (s *DutServiceServer) FetchCrashes(req *api.FetchCrashesRequest, stream api.DutService_FetchCrashesServer) error {
 	s.logger.Println("Received api.FetchCrashesRequest: ", req)
-	if exists, stderr, err := s.runCmdOutput(stream.Context(), dutssh.PathExistsCommand(s.serializerPath)); err != nil {
+	conn, err := s.ensureConnection(stream.Context())
+	if err != nil {
+		return status.Errorf(codes.Unavailable, "Failed to get connection: %s", err)
+	}
+
+	if exists, stderr, err := s.runCmdOutput(stream.Context(), conn, dutssh.PathExistsCommand(s.serializerPath)); err != nil {
 		return status.Errorf(codes.FailedPrecondition, "Failed to check crash_serializer existence: %s", stderr)
 	} else if exists != "1" {
 		return status.Errorf(codes.NotFound, "crash_serializer not present on device.")
 	}
 
-	session, err := s.connection.NewSession(stream.Context())
+	session, err := conn.NewSession(stream.Context())
 	if err != nil {
 		return status.Errorf(codes.FailedPrecondition, "Failed to start ssh session: %s", err)
 	}
@@ -214,10 +224,16 @@ func (s *DutServiceServer) FetchCrashes(req *api.FetchCrashesRequest, stream api
 // Restart is a special case of ExecCommand which restarts the DUT and reconnects
 func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest) (*longrunning.Operation, error) {
 	s.logger.Println("Received api.RestartRequest: ", req)
+
+	conn, err := s.ensureConnection(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unavailable, "Failed to get connection: %s", err)
+	}
+
 	op := s.manager.NewOperation()
 
 	// Get the boot ID before rebooting to ensure it changes.
-	preBootID, err := s.getBootID(ctx)
+	preBootID, err := s.getBootID(ctx, conn)
 	if err != nil {
 		s.manager.SetError(op.Name, status.New(codes.Aborted, fmt.Sprintf("failed to get bootID before reboot: %s", err)))
 		return op, err
@@ -226,7 +242,7 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 	command := "reboot " + strings.Join(req.Args, " ")
 
 	s.logger.Printf("Rebooting Client.")
-	output, bootStderr, _ := s.runCmdOutput(ctx, command)
+	output, bootStderr, _ := s.runCmdOutput(ctx, conn, command)
 	if bootStderr != "" {
 		s.logger.Printf("reboot command stderr: %s", bootStderr)
 	}
@@ -234,7 +250,7 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 		Output: output,
 	})
 
-	err = s.waitForReboot(ctx, req)
+	err = s.waitForReboot(ctx, conn, req)
 	if err != nil {
 		s.manager.SetError(op.Name, status.New(codes.Aborted, fmt.Sprintf("rebootDut: error waiting for reboot: %s", err)))
 		return op, err
@@ -248,7 +264,10 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 	}
 
 	err = retry(ctx, retryCount, retryInterval, s.logger, func() error {
-		return s.ensureConnected(ctx)
+		var e error
+
+		conn, e = s.ensureConnection(ctx)
+		return e
 	})
 	if err != nil {
 		s.manager.SetError(op.Name, status.New(codes.Unavailable, fmt.Sprintf("rebootDut: error reconnecting: %s", err)))
@@ -256,7 +275,7 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 	}
 	s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
 
-	postBootID, err := s.getBootID(ctx)
+	postBootID, err := s.getBootID(ctx, conn)
 	if err != nil {
 		s.manager.SetError(op.Name, status.New(codes.Aborted, fmt.Sprintf("failed to get bootID after reconnection: %s", err)))
 		return op, err
@@ -271,8 +290,8 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 
 }
 
-func (s *DutServiceServer) getBootID(ctx context.Context) (string, error) {
-	stdout, stderr, err := s.runCmdOutput(ctx, "cat /proc/sys/kernel/random/boot_id")
+func (s *DutServiceServer) getBootID(ctx context.Context, conn dutssh.ClientInterface) (string, error) {
+	stdout, stderr, err := s.runCmdOutput(ctx, conn, "cat /proc/sys/kernel/random/boot_id")
 	if err != nil {
 		s.logger.Printf("Failed to get bootID:  %s\n, %s", err, stderr)
 		return stdout, fmt.Errorf("failed to get bootID %w", err)
@@ -282,15 +301,12 @@ func (s *DutServiceServer) getBootID(ctx context.Context) (string, error) {
 	return stdout, nil
 }
 
-func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRequest) error {
+func (s *DutServiceServer) waitForReboot(ctx context.Context, conn dutssh.ClientInterface, req *api.RestartRequest) error {
 	// Wait so following commands don't run before an actual reboot has kicked off
 	// by waiting for the client connection to shutdown or a timeout.
 	s.logger.Printf("Waiting for reboot to complete.")
 
 	var wg sync.WaitGroup
-
-	// Ensure the connection doesn't change out from under us.
-	connection := s.connection
 
 	wait := make(chan struct{})
 
@@ -309,7 +325,7 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 				case <-wait:
 					return
 				case <-tick:
-					s.logger.Printf("IsConnectionAlive=%v", connection.IsAlive())
+					s.logger.Printf("IsConnectionAlive=%v", conn.IsAlive())
 				case <-ctx.Done():
 					return
 				}
@@ -322,7 +338,7 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 
 	go func() {
 		s.logger.Print("Waiting for reboot: Connection wait.")
-		e := connection.Wait()
+		e := conn.Wait()
 		s.logger.Print("Waiting for reboot: Connection wait complete: ", e)
 		close(wait)
 		s.logger.Print("Waiting for reboot: close wait")
@@ -369,6 +385,11 @@ func (s *DutServiceServer) DetectDeviceConfigId(
 // Cache downloads a specified file to the DUT via CacheForDut service
 func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*longrunning.Operation, error) {
 	s.logger.Println("Received api.CacheRequest: ", req)
+	conn, err := s.ensureConnection(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unavailable, "Failed to get connection: %s", err)
+	}
+
 	op := s.manager.NewOperation()
 
 	command := formatDownloadCmdLine()
@@ -386,14 +407,14 @@ func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*l
 	if mkdirPath != "" {
 		mkdircmd := fmt.Sprintf("mkdir -p %s", mkdirPath)
 		s.logger.Printf("Running cmd %s\n", mkdircmd)
-		if stdout, stderr, err := s.runCmdOutput(ctx, mkdircmd); err != nil {
+		if stdout, stderr, err := s.runCmdOutput(ctx, conn, mkdircmd); err != nil {
 			s.logger.Printf("Getting error running command '%q' from server to host: %v", mkdircmd, err)
 			s.logger.Printf("cmd stdout: %s, cmd stderr: %s", stdout, stderr)
 		}
 	}
 	fullCmd := fmt.Sprintf("%s %s", command, destination)
 
-	if stdout, stderr, err := s.runCmdOutputWithRetry(ctx, fullCmd, req.GetRetry()); err != nil {
+	if stdout, stderr, err := s.runCmdOutputWithRetry(ctx, conn, fullCmd, req.GetRetry()); err != nil {
 		s.logger.Printf("Getting error from cache server while running command %q: %v", fullCmd, err)
 		s.logger.Printf("stdout: %s, stderr: %s", stdout, stderr)
 		status := status.New(codes.Aborted, fmt.Sprintf("err: %s, stderr: %s", err, stderr))
@@ -409,7 +430,7 @@ func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*l
 	return op, nil
 }
 
-func (s *DutServiceServer) runCmdOutputWithRetry(ctx context.Context, cmd string, retry *api.CacheRequest_Retry) (stdout string, stderr string, err error) {
+func (s *DutServiceServer) runCmdOutputWithRetry(ctx context.Context, conn dutssh.ClientInterface, cmd string, retry *api.CacheRequest_Retry) (stdout string, stderr string, err error) {
 	retryCount := 0
 	retryInterval := time.Duration(0)
 
@@ -419,7 +440,7 @@ func (s *DutServiceServer) runCmdOutputWithRetry(ctx context.Context, cmd string
 	}
 
 	for ; retryCount >= 0 && ctx.Err() == nil; retryCount-- {
-		stdout, stderr, err = s.runCmdOutput(ctx, cmd)
+		stdout, stderr, err = s.runCmdOutput(ctx, conn, cmd)
 		if err == nil {
 			return
 		}
@@ -536,13 +557,11 @@ func (s *DutServiceServer) ForceReconnect(ctx context.Context, req *api.ForceRec
 func (s *DutServiceServer) reconnect(ctx context.Context) error {
 	s.logger.Printf("attempting to reconnect to DUT.")
 
-	if s.connection != nil {
-		if err := s.connection.Close(); err != nil {
+	if s.connectionOrNil != nil {
+		if err := s.connectionOrNil.Close(); err != nil {
 			s.logger.Printf("Closing previous connection failed: %s", err.Error())
 		}
-		// It would be nice to nil out the connection, but since methods directly
-		// access the `s.connection` member we don't want to leave them with
-		// a nil pointer.
+		s.connectionOrNil = nil
 	}
 
 	conn, err := GetConnection(ctx, s.dutName, s.wiringAddress, s.logger)
@@ -550,7 +569,7 @@ func (s *DutServiceServer) reconnect(ctx context.Context) error {
 		s.logger.Printf("Failed to reconnect to DUT.")
 		return err
 	}
-	s.connection = conn
+	s.connectionOrNil = conn
 	return nil
 }
 
@@ -668,19 +687,19 @@ func GetConnection(ctx context.Context, dutIdentifier string, wiringAddress stri
 	return dutssh.NewClientInterface(ctx, dutIdentifier, ssh)
 }
 
-// ensureConnected guarantees that s.connection will be non-nil if a nil
+// ensureConnection guarantees that s.connection will be non-nil if a nil
 // error is returned. This method will ensure that there is only one request at
 // a time to create a new connection.
-func (s *DutServiceServer) ensureConnected(ctx context.Context) error {
+func (s *DutServiceServer) ensureConnection(ctx context.Context) (dutssh.ClientInterface, error) {
 	s.logger.Printf("Checking Connection")
+
 	// This is the fast path. We intentionally don't hold the mutex as to not
 	// serialize all the IsAlive checks.
 	//
-	// The only writer to `s.connection` is `reconnect()`. The method guarantees
-	// that once the connection pointer is set to a value it will never be nil
-	// again.
-	if s.connection != nil && s.connection.IsAlive() {
-		return nil
+	// Save the pointer to make sure we don't hit a TOCTOU issue.
+	conn := s.connectionOrNil
+	if conn != nil && conn.IsAlive() {
+		return conn, nil
 	}
 
 	s.connectionMutex.Lock()
@@ -688,22 +707,23 @@ func (s *DutServiceServer) ensureConnected(ctx context.Context) error {
 
 	// Check the connection again after acquiring the lock since the connection
 	// could have been restored while we were blocked waiting for the lock.
-	if s.connection != nil && s.connection.IsAlive() {
-		return nil
+	if s.connectionOrNil != nil && s.connectionOrNil.IsAlive() {
+		return s.connectionOrNil, nil
 	}
 
 	if err := s.reconnect(ctx); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return s.connectionOrNil, nil
 }
 
 // runCmd run remote command returning return value, stdout, stderr, and error if any
 func (s *DutServiceServer) runCmd(ctx context.Context, cmd string, stdin io.Reader, combined bool) *api.ExecCommandResponse {
 	s.logger.Printf("Running cmd %s", cmd)
 
-	if err := s.ensureConnected(ctx); err != nil {
+	conn, err := s.ensureConnection(ctx)
+	if err != nil {
 		err = fmt.Errorf("runCmd failed getting connection: %w", err)
 		s.logger.Print(err)
 
@@ -712,7 +732,7 @@ func (s *DutServiceServer) runCmd(ctx context.Context, cmd string, stdin io.Read
 		}
 	}
 
-	session, err := s.connection.NewSession(ctx)
+	session, err := conn.NewSession(ctx)
 	if err != nil {
 		s.logger.Printf("failed to start session %s\n", err)
 		return &api.ExecCommandResponse{
@@ -745,13 +765,9 @@ func (s *DutServiceServer) runCmd(ctx context.Context, cmd string, stdin io.Read
 
 // runCmdOutput interprets the given string command in a shell and returns stdout and stderr.
 // Overall this is a simplified version of runCmd which only returns output.
-func (s *DutServiceServer) runCmdOutput(ctx context.Context, cmd string) (string, string, error) {
-	if err := s.ensureConnected(ctx); err != nil {
-		return "", "", fmt.Errorf("runCmdOutput failed getting connection: %w", err)
-	}
-
+func (s *DutServiceServer) runCmdOutput(ctx context.Context, conn dutssh.ClientInterface, cmd string) (string, string, error) {
 	s.logger.Printf("Creating new session.")
-	session, err := s.connection.NewSession(ctx)
+	session, err := conn.NewSession(ctx)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to establish a new session for command run, %w", err)
 	}
