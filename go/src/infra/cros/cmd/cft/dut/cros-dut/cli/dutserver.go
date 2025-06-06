@@ -42,6 +42,8 @@ import (
 const cacheDownloadURI = "/download/%s"
 const cacheUntarAndDownloadURI = "/extract/%s?file=%s"
 const cacheExtraAndDownloadURI = "/decompress/%s"
+const defaultRetryCount = 5
+const defaultRetryInterval = time.Duration(10 * time.Second)
 
 // DutServiceServer implementation of dut_service.proto
 type DutServiceServer struct {
@@ -243,14 +245,21 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 		return op, err
 	}
 
-	// TODO: Use `reconnect()`.
-	conn, err := GetConnectionWithRetry(ctx, s.dutName, s.wiringAddress, req, s.logger)
+	retryCount := defaultRetryCount
+	retryInterval := defaultRetryInterval
+	if req.Retry != nil {
+		retryCount = int(req.Retry.Times)
+		retryInterval = time.Duration(req.Retry.IntervalMs) * time.Millisecond
+	}
+
+	err = retry(ctx, retryCount, retryInterval, s.logger, func() error {
+		return s.reconnect(ctx)
+	})
 	if err != nil {
 		s.manager.SetError(op.Name, status.New(codes.Unavailable, fmt.Sprintf("rebootDut: error reconnecting: %s", err)))
 		return op, err
 	}
 	s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
-	s.connection = conn
 
 	postBootID, err := s.getBootID(ctx)
 	if err != nil {
@@ -588,34 +597,27 @@ func readFetchCrashesProto(stdout io.Reader, buffer bytes.Buffer) (*api.FetchCra
 	return crashResp, nil
 }
 
-// GetConnectionWithRetry calls GetConnect with retries.
-func GetConnectionWithRetry(ctx context.Context, dutIdentifier string, wiringAddress string, req *api.RestartRequest, logger *log.Logger) (dutssh.ClientInterface, error) {
-	logger.Printf("GetConnectionWithRetry Start")
-
-	retryCount := 5
-	retryInterval := time.Duration(10 * time.Second)
+// retry calls `fn` with the specified number of retries.
+func retry(ctx context.Context, retryCount int, retryInterval time.Duration, logger *log.Logger, fn func() error) error {
 	var err error
-	var client dutssh.ClientInterface
-	if req.Retry != nil {
-		retryCount = int(req.Retry.Times)
-		retryInterval = time.Duration(req.Retry.IntervalMs) * time.Millisecond
-	}
-	logger.Printf("GetConnectionWithRetry Retries %v Interval %v", retryCount, retryInterval)
 
-	for ; retryCount >= 0; retryCount-- {
-		err = nil
-		logger.Printf("GetConnectionWithRetry Calling GetConn!")
-		client, err = GetConnection(ctx, dutIdentifier, wiringAddress, logger)
+	logger.Printf("Retries %v, Interval %v", retryCount, retryInterval)
+
+	for ; ctx.Err() == nil; retryCount-- {
+		err = fn()
 		if err == nil {
-			logger.Printf("GetConnectionWithRetry succeed with %d retries left.\n", retryCount)
-			return client, nil
+			logger.Printf("succeed with %d retries left.\n", retryCount)
+			return nil
+		} else if retryCount > 0 {
+			logger.Printf("failed with %d retries left: %s", retryCount, err)
+			time.Sleep(retryInterval)
 		} else {
-			logger.Printf("GetConnectionWithRetry FAILED TO CONNECT TO DUT %s", err)
+			logger.Printf("failed and exhausted retries: %s", err)
+			return err
 		}
-		time.Sleep(retryInterval)
 	}
-	logger.Printf("GetConnectionWithRetry failed after exhausting retries.\n")
-	return nil, err
+	logger.Printf("failed and context terminated: %s", err)
+	return err
 }
 
 // GetConnection connects to a dut server. If wiringAddress is provided,
