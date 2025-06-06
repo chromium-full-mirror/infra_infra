@@ -911,7 +911,7 @@ func appendServoEntryToLabstation(ctx context.Context, servo *chromeosLab.Servo,
 	for i, s := range existingServos {
 		if s.GetServoSerial() == servo.GetServoSerial() {
 			// Replace the servo entry if it exists
-			existingServos[i] = s
+			existingServos[i] = servo
 			return nil
 		}
 	}
