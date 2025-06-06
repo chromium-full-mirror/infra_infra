@@ -87,14 +87,6 @@ func newDutServiceServer(l net.Listener, logger *log.Logger, conn dutssh.ClientI
 	return server, destructor
 }
 
-// Close closes DUT service.
-func (s *DutServiceServer) Close() {
-	s.manager.Close()
-	if s.connection != nil {
-		s.connection.Close()
-	}
-}
-
 // ExecCommand remotely executes a command on the DUT.
 func (s *DutServiceServer) ExecCommand(req *api.ExecCommandRequest, stream api.DutService_ExecCommandServer) error {
 	s.logger.Println("Received api.ExecCommandRequest: ", req)

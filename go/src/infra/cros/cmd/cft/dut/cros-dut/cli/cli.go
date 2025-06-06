@@ -12,7 +12,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
@@ -124,6 +126,24 @@ func MainInternal() int {
 
 	server, destructor := newDutServiceServer(l, logger, nil, *serializerPath, *protoChunkSize, *dutName, *wiringAddress, *cacheAddress)
 	defer destructor()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		// Block until a signal is received
+		sig := <-sigChan
+		fmt.Printf("Received signal: %v\n", sig)
+
+		log.Println("Initiating graceful shutdown...")
+		timer := time.AfterFunc(10*time.Second, func() {
+			log.Println("Server couldn't stop gracefully in time. Doing force stop.")
+			server.Stop()
+		})
+		defer timer.Stop()
+		server.GracefulStop()
+		log.Println("Server stopped gracefully.")
+	}()
 
 	err = server.Serve(l)
 	if err != nil {
