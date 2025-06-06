@@ -239,9 +239,18 @@ func (s *DutServiceServer) Restart(ctx context.Context, req *api.RestartRequest)
 
 	err = s.waitForReboot(ctx, req)
 	if err != nil {
-		s.manager.SetError(op.Name, status.New(codes.Aborted, fmt.Sprintf("rebootDut: unable to get connection, %s", err)))
+		s.manager.SetError(op.Name, status.New(codes.Aborted, fmt.Sprintf("rebootDut: error waiting for reboot: %s", err)))
 		return op, err
 	}
+
+	// TODO: Use `reconnect()`.
+	conn, err := GetConnectionWithRetry(ctx, s.dutName, s.wiringAddress, req, s.logger)
+	if err != nil {
+		s.manager.SetError(op.Name, status.New(codes.Unavailable, fmt.Sprintf("rebootDut: error reconnecting: %s", err)))
+		return op, err
+	}
+	s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
+	s.connection = conn
 
 	postBootID, err := s.getBootID(ctx)
 	if err != nil {
@@ -274,51 +283,52 @@ func (s *DutServiceServer) waitForReboot(ctx context.Context, req *api.RestartRe
 	// by waiting for the client connection to shutdown or a timeout.
 	s.logger.Printf("Waiting for reboot to complete.")
 
+	var wg sync.WaitGroup
+
+	// Ensure the connection doesn't change out from under us.
+	connection := s.connection
+
+	wait := make(chan struct{})
+
 	// On cloudbots, the Wait() never returned even after the dut has
 	// already been rebooted. This caused timeout and test failures.
 	// By checking connection IsAlive() periodically, the Wait() does return and
 	// test can continue as expected.
 	if env.IsCloudBot() {
+		wg.Add(1)
 		go func() {
-			t := time.NewTimer(15 * time.Second)
+			defer wg.Done()
+
+			tick := time.Tick(15 * time.Second)
 			for {
 				select {
-				case <-t.C:
-					s.logger.Printf("IsConnectionAlive=%v", s.connection.IsAlive())
-					t.Reset(10 * time.Second)
+				case <-wait:
 					return
+				case <-tick:
+					s.logger.Printf("IsConnectionAlive=%v", connection.IsAlive())
 				case <-ctx.Done():
-					if !t.Stop() {
-						<-t.C
-					}
 					return
 				}
 			}
 		}()
+
+		// Ensure the polling goroutine is complete before we exit.
+		defer wg.Wait()
 	}
 
-	wait := make(chan any)
 	go func() {
-		s.logger.Printf("Waiting for reboot: Connection wait.")
-		_ = s.connection.Wait()
-		s.logger.Printf("Waiting for reboot: Connection wait complete.")
+		s.logger.Print("Waiting for reboot: Connection wait.")
+		e := connection.Wait()
+		s.logger.Print("Waiting for reboot: Connection wait complete: ", e)
 		close(wait)
-		s.logger.Printf("Waiting for reboot: close wait")
-
+		s.logger.Print("Waiting for reboot: close wait")
 	}()
+
 	select {
 	case <-wait:
-		s.logger.Printf("Waiting for reboot: GetConnectionWithRetry")
-		conn, err := GetConnectionWithRetry(ctx, s.dutName, s.wiringAddress, req, s.logger)
-		if err != nil {
-			s.logger.Println("unable to connect to dut post reboot.")
-			return fmt.Errorf("rebootDut: unable to get connection, %w", err)
-		}
-		s.logger.Printf("Waiting for reboot: GetConnectionWithRetry completed.")
-		s.connection = conn
 		return nil
-
 	case <-ctx.Done():
+		// We unfortunately leak the waiting goroutine.
 		s.logger.Println("Failed to reboot within timeout")
 		return fmt.Errorf("rebootDUT: timeout waiting for reboot")
 	}
