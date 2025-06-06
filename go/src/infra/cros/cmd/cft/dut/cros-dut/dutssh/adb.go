@@ -54,10 +54,6 @@ func NewADBClient(parentCtx context.Context, target string) (*ADBClient, error) 
 		adbPath = path
 	}
 
-	// Close any existing connections since they might be stale.
-	// We ignore the return code since the connection might not exist.
-	runCommand(adbPath, "disconnect", target)
-
 	if err := runCommand(adbPath, "connect", target); err != nil {
 		return nil, err
 	}

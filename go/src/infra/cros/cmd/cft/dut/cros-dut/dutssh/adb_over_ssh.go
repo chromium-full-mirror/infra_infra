@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -23,12 +22,9 @@ type ADBOverSSHClient struct {
 // NewADBOverSSHClient creates a new ADB over SSH client. The SSH host is
 // expected to be the Android DUT. This relies on the sshforwarder process
 // running on the DUT.
-func NewADBOverSSHClient(conname string, ssh *ssh.Client) (*ADBOverSSHClient, error) {
-	// ADB doesn't like having a : in the socket name.
-	conname = strings.ReplaceAll(conname, ":", ".")
-
+func NewADBOverSSHClient(ssh *ssh.Client) (*ADBOverSSHClient, error) {
 	// TODO: Switch from localhost:5555 to the ADB unix socket.
-	server, err := CreateUnixSocketServer(conname, ssh, "localhost:5555")
+	server, err := CreateUnixSocketServer(ssh, "localhost:5555")
 	if err != nil {
 		return nil, err
 	}

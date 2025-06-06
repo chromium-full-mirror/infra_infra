@@ -11,12 +11,17 @@ import (
 	"io"
 	"log"
 	"net"
-	"os"
+	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"golang.org/x/crypto/ssh"
 )
+
+// instanceCounter is used to count the number of unix socket bridges that have
+// been created. This helps ensure that each socket we create is unique.
+var instanceCounter atomic.Uint64
 
 type unixSocketBridge struct {
 	// internalCtx is used to signal to the server and workers when to shut down.
@@ -34,8 +39,14 @@ type unixSocketBridge struct {
 // CreateUnixSocketServer creates a new Unix Socket using (the connname for the
 // path). The socket will forward all new connections to the specified target on
 // the ssh host.
-func CreateUnixSocketServer(conname string, ssh *ssh.Client, target string) (*unixSocketBridge, error) {
-	socketPath := fmt.Sprintf("/tmp/%s.sock", conname)
+func CreateUnixSocketServer(ssh *ssh.Client, target string) (*unixSocketBridge, error) {
+	// The ssh.localAddr() should be unique on the system. We also use an instance
+	// counter so that we can support having multiple unix socket servers over
+	// the same SSH connection.
+	socketPath := fmt.Sprintf("/tmp/%s.%d.sock", ssh.LocalAddr(), instanceCounter.Add(1))
+
+	// ADB doesn't like having a : in the socket name.
+	socketPath = strings.ReplaceAll(socketPath, ":", ".")
 
 	internalCtx, stopServer := context.WithCancelCause(context.Background())
 	externalCtx, signalStopped := context.WithCancelCause(context.Background())
@@ -74,11 +85,6 @@ func CreateUnixSocketServer(conname string, ssh *ssh.Client, target string) (*un
 
 // Start listen for connections on the local unix socket.
 func (s *unixSocketBridge) Start() error {
-	err := os.Remove(s.socketPath)
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("Failed to remove %s: %w", s.socketPath, err)
-	}
-
 	log.Printf("Starting SSH proxy for %s <-> %s <-> %s", s.socketPath, s.ssh.RemoteAddr().String(), s.target)
 	listener, err := net.Listen("unix", s.socketPath)
 	if err != nil {
