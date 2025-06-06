@@ -56,7 +56,7 @@ func hostnameToBotID(ctx context.Context, swarmingBotsClient swarmingapi.BotsCli
 }
 
 // hostnameToPool returns the pool for a given DUT hostname.
-func hostnameToPool(ctx context.Context, swarmingBotsClient swarmingapi.BotsClient, hostname string) (string, error) {
+func hostnameToPool(ctx context.Context, swarmingBotsClient swarmingapi.BotsClient, hostname string) (string, string, error) {
 	botsListReply, err := swarmingBotsClient.ListBots(ctx, &swarmingapi.BotsRequest{
 		Limit: 1,
 		Dimensions: []*swarmingapi.StringPair{
@@ -67,23 +67,34 @@ func hostnameToPool(ctx context.Context, swarmingBotsClient swarmingapi.BotsClie
 		},
 	})
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	bots := botsListReply.GetItems()
 	if len(bots) == 0 {
-		return "", errors.Reason(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname)).Err()
+		return "", "", errors.Reason(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname)).Err()
 	}
 	dims := bots[0].GetDimensions()
+	pool := []string{}
+	dutID := []string{}
 	for _, dim := range dims {
 		if dim.GetKey() == poolLabelName {
-			vals := dim.GetValue()
-			if len(vals) == 0 {
+			pool = dim.GetValue()
+			if len(pool) == 0 {
 				break
 			}
-			return vals[0], nil
 		}
+		if dim.GetKey() == dutIDLabelName {
+			dutID = dim.GetValue()
+			if len(dutID) == 0 {
+				break
+			}
+		}
+		if len(pool) > 0 && len(dutID) > 0 {
+			return pool[0], dutID[0], nil
+		}
+
 	}
-	return "", fmt.Errorf("no pool found for %s", hostname)
+	return "", "", fmt.Errorf("no pool found for %s", hostname)
 }
 
 // countBotsWithDims returns the number of Swarming bots satisfying the given

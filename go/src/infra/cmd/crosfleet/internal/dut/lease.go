@@ -37,6 +37,7 @@ const (
 	maxLeaseReasonCharacters = 30
 	poolConfigsDirURL        = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
 	poolLabelName            = "label-pool"
+	dutIDLabelName           = "dut_id"
 	boardLabelName           = "label-board"
 	modelLabelName           = "label-model"
 	deviceNameLabelName      = "dut_name"
@@ -98,14 +99,16 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 # To obtain a DUT as quickly as possible in the future, request #
 # your lease with the -pool and -dims flags only, which gives   #
 # crosfleet a better chance at finding the first free DUT that  #
-# is compatible with your use-case.                             #
+# is compatible with your use-case.				#
+# Lease by host will internally convert to lease by dut-id      #
 #################################################################`)
 		c.host = heuristics.NormalizeBotNameToDeviceName(c.host)
-		pool, err := hostnameToPool(ctx, swarmingBotsClient, c.host)
+		pool, dutID, err := hostnameToPool(ctx, swarmingBotsClient, c.host)
 		if err != nil {
 			return err
 		}
 		c.pool = pool
+		c.dutID = dutID
 	}
 
 	botDims, buildTags, err := botDimsAndBuildTags(c.leaseFlags)
@@ -217,9 +220,9 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 	tags = map[string]string{}
 	if leaseFlags.host != "" {
 		// Hostname-based lease.
-		tags["lease-by"] = "host"
+		tags["lease-by"] = dutIDLabelName
 		tags[deviceNameLabelName] = leaseFlags.host
-		dims[deviceNameLabelName] = leaseFlags.host
+		dims[dutIDLabelName] = leaseFlags.dutID
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
@@ -260,6 +263,7 @@ type leaseFlags struct {
 	board        string
 	pool         string
 	freeformDims map[string]string
+	dutID        string
 }
 
 // Registers lease-specific flags.

@@ -141,9 +141,10 @@ var testBotDimsAndBuildTagsData = []struct {
 			host:         "sample hostname",
 			reason:       "sample reason 3",
 			freeformDims: map[string]string{"label-pool": "p2"},
+			dutID:        "C12345",
 		},
 		map[string]string{
-			"dut_name":   "sample hostname",
+			"dut_id":     "C12345",
 			"label-pool": "p2",
 		},
 		map[string]string{
@@ -152,7 +153,7 @@ var testBotDimsAndBuildTagsData = []struct {
 			"dut_name":       "sample hostname",
 			"label-pool":     "p2",
 			"qs_account":     "leases",
-			"lease-by":       "host",
+			"lease-by":       "dut_id",
 		},
 	},
 }
