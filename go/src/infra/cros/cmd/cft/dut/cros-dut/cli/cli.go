@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-dut/dutssh"
 )
 
 // Version is the version info of this command. It is filled in during emerge.
@@ -124,7 +125,10 @@ func MainInternal() int {
 		logger.Println("Warning: error when writing to metadata file: ", err)
 	}
 
-	server, destructor := newDutServiceServer(l, logger, nil, *serializerPath, *protoChunkSize, *dutName, *wiringAddress, *cacheAddress)
+	connManager := dutssh.NewDUTConnectionManager(logger, *dutName, *wiringAddress)
+	defer connManager.Close()
+
+	server, destructor := newDutServiceServer(l, logger, connManager, *serializerPath, *protoChunkSize, *cacheAddress)
 	defer destructor()
 
 	sigChan := make(chan os.Signal, 1)
