@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
@@ -38,7 +39,7 @@ func NewADBOverSSHClient(conname string, ssh *ssh.Client) (*ADBOverSSHClient, er
 
 	target := fmt.Sprintf("localfilesystem:%s", server.Socket())
 
-	adb, err := NewADBClient(target)
+	adb, err := NewADBClient(server.Ctx(), target)
 	if err != nil {
 		return nil, errors.Join(
 			fmt.Errorf("ADB failed to connect to %s: %w", target, err),
@@ -53,28 +54,22 @@ func NewADBOverSSHClient(conname string, ssh *ssh.Client) (*ADBOverSSHClient, er
 	}, nil
 }
 
+// Close attempts to gracefully shut down the connections.
 func (c *ADBOverSSHClient) Close() error {
 	var errs []error
 
-	if c.adb != nil {
-		if err := c.adb.Close(); err != nil {
-			errs = append(errs, fmt.Errorf("Failed to close ADB: %w", err))
-		}
-		c.adb = nil
+	if err := c.adb.Close(); err != nil {
+		errs = append(errs, fmt.Errorf("Failed to stop ADB: %w", err))
 	}
 
-	if c.server != nil {
-		if err := c.server.Stop(); err != nil {
-			errs = append(errs, fmt.Errorf("Failed to stop SSH proxy: %w", err))
-		}
-		c.server = nil
+	if err := c.server.Stop(); err != nil {
+		errs = append(errs, fmt.Errorf("Failed to stop SSH proxy: %w", err))
 	}
 
-	if c.ssh != nil {
-		if err := c.ssh.Close(); err != nil {
+	if err := c.ssh.Close(); err != nil {
+		if !errors.Is(err, net.ErrClosed) {
 			errs = append(errs, fmt.Errorf("Failed to close SSH: %w", err))
 		}
-		c.ssh = nil
 	}
 
 	return errors.Join(errs...)
@@ -85,17 +80,9 @@ func (c *ADBOverSSHClient) NewSession(ctx context.Context) (SessionInterface, er
 }
 
 func (c *ADBOverSSHClient) Wait() error {
-	if c.adb == nil {
-		return errors.New("Client already closed")
-	}
-
 	return c.adb.Wait()
 }
 
 func (c *ADBOverSSHClient) IsAlive() bool {
-	if c.ssh == nil || c.adb == nil {
-		return false
-	}
-
 	return c.ssh.IsAlive() && c.adb.IsAlive()
 }

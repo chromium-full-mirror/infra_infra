@@ -19,12 +19,16 @@ import (
 )
 
 type unixSocketBridge struct {
-	ctx        context.Context
-	close      context.CancelCauseFunc
-	ssh        *ssh.Client
-	socketPath string
-	target     string
-	wg         sync.WaitGroup
+	// internalCtx is used to signal to the server and workers when to shut down.
+	internalCtx context.Context
+	// stopServer closes `internalCtx`.
+	stopServer context.CancelCauseFunc
+	// externalCtx signals when the server and all workers have shut down.
+	externalCtx context.Context
+	ssh         *ssh.Client
+	socketPath  string
+	target      string
+	wg          sync.WaitGroup
 }
 
 // CreateUnixSocketServer creates a new Unix Socket using (the connname for the
@@ -33,14 +37,39 @@ type unixSocketBridge struct {
 func CreateUnixSocketServer(conname string, ssh *ssh.Client, target string) (*unixSocketBridge, error) {
 	socketPath := fmt.Sprintf("/tmp/%s.sock", conname)
 
-	ctx, cancel := context.WithCancelCause(context.Background())
-	return &unixSocketBridge{
-		ctx:        ctx,
-		close:      cancel,
-		ssh:        ssh,
-		socketPath: socketPath,
-		target:     target,
-	}, nil
+	internalCtx, stopServer := context.WithCancelCause(context.Background())
+	externalCtx, signalStopped := context.WithCancelCause(context.Background())
+
+	s := &unixSocketBridge{
+		internalCtx: internalCtx,
+		stopServer:  stopServer,
+		externalCtx: externalCtx,
+		ssh:         ssh,
+		socketPath:  socketPath,
+		target:      target,
+	}
+
+	// When the internalCtx is shut down, wait for all the goroutines to
+	// terminate and then signal to the `externalCtx` that the server has shut
+	// down.
+	context.AfterFunc(internalCtx, func() {
+		// Wait for all goroutines to complete.
+		s.wg.Wait()
+
+		log.Print("SSH Proxy: shutdown complete")
+
+		err := context.Cause(internalCtx)
+		if errors.Is(err, context.Canceled) {
+			// Cancelled just means a nil error was passed into stopServer.
+			// i.e., an intentional shut down.
+			err = nil
+		}
+
+		// Proxy the original shutdown reason.
+		signalStopped(err)
+	})
+
+	return s, nil
 }
 
 // Start listen for connections on the local unix socket.
@@ -62,7 +91,7 @@ func (s *unixSocketBridge) Start() error {
 		defer s.wg.Done()
 
 		select {
-		case <-s.ctx.Done():
+		case <-s.internalCtx.Done():
 			if err := listener.Close(); err != nil {
 				log.Printf("SSH Proxy: error closing listener: %s", err.Error())
 			}
@@ -80,7 +109,7 @@ func (s *unixSocketBridge) Start() error {
 		// Be extra cautious in case `Wait()` panics.
 		defer func() {
 			log.Printf("SSH Proxy: ssh connection was closed, shutting down.")
-			s.close(fmt.Errorf("SSH proxy: ssh connection was closed by %w", err))
+			s.stopServer(fmt.Errorf("SSH proxy: ssh connection was closed by %w", err))
 		}()
 		err = s.ssh.Wait()
 	}()
@@ -94,7 +123,7 @@ func (s *unixSocketBridge) Start() error {
 			conn, err := listener.Accept()
 			if err != nil {
 				// Shut down the server on accept errors.
-				s.close(fmt.Errorf("SSH Proxy: Accept error: %w", err))
+				s.stopServer(fmt.Errorf("SSH Proxy: Accept error: %w", err))
 				return
 			}
 
@@ -102,7 +131,7 @@ func (s *unixSocketBridge) Start() error {
 			s.wg.Add(1)
 			go func() {
 				defer s.wg.Done()
-				s.handleConnection(s.ctx, conn)
+				s.handleConnection(s.internalCtx, conn)
 			}()
 		}
 	}()
@@ -110,15 +139,26 @@ func (s *unixSocketBridge) Start() error {
 	return nil
 }
 
+// Ctx returns a context that will be done when the server and all the workers
+// are shut down. This is can be useful to check if the server is still running
+// and attaching callbacks via `context.AfterFunc`.
+func (s *unixSocketBridge) Ctx() context.Context {
+	return s.externalCtx
+}
+
 // Stop the proxy and all connections.
 func (s *unixSocketBridge) Stop() error {
 	// Shut down the server.
-	s.close(nil)
+	s.stopServer(nil)
 
-	// Wait for all goroutines to complete.
-	s.wg.Wait()
+	<-s.externalCtx.Done()
 
-	return context.Cause(s.ctx)
+	err := context.Cause(s.externalCtx)
+	if errors.Is(err, context.Canceled) {
+		// stopServer was called with a nil error.
+		return nil
+	}
+	return err
 }
 
 // Socket returns the path to the unix socket.

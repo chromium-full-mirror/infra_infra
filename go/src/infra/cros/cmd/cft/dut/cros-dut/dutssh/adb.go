@@ -6,6 +6,7 @@ package dutssh
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -29,11 +30,25 @@ func runCommand(args ...string) error {
 }
 
 type ADBClient struct {
-	target  string
-	adbPath string
+	parentCtx context.Context
+
+	// internalCtx is closed with either the `parentCtx` has closed, or when
+	// the `Close()` method is called. This signal is used to disconnect from the
+	// target.
+	internalCtx context.Context
+	// stop is called to begin disconnecting.
+	stop context.CancelCauseFunc
+	// externalCtx will be closed when ADB has disconnected, and it will contain
+	// any errors encountered while disconnecting.
+	externalCtx context.Context
+	target      string
+	adbPath     string
 }
 
-func NewADBClient(target string) (*ADBClient, error) {
+// NewADBClient creates a new ADB client. `parentCtx` will be used to
+// automatically close the ADB client. This is useful if `target` is provided
+// by a different service.
+func NewADBClient(parentCtx context.Context, target string) (*ADBClient, error) {
 	adbPath := "adb"
 	if path, ok := os.LookupEnv("ADB_PATH"); ok {
 		adbPath = path
@@ -51,11 +66,31 @@ func NewADBClient(target string) (*ADBClient, error) {
 		log.Printf("adb: Failed to switch to root, running user build?")
 	}
 
-	return &ADBClient{target, adbPath}, nil
+	internalCtx, stop := context.WithCancelCause(parentCtx)
+	externalCtx, signalStopped := context.WithCancelCause(context.Background())
+	context.AfterFunc(internalCtx, func() {
+		signalStopped(runCommand(adbPath, "disconnect", target))
+	})
+
+	return &ADBClient{parentCtx, internalCtx, stop, externalCtx, target, adbPath}, nil
+}
+
+// Ctx returns a context that will be closed once ADB has been disconnected.
+func (s *ADBClient) Ctx() context.Context {
+	return s.externalCtx
 }
 
 func (c *ADBClient) Close() error {
-	return runCommand(c.adbPath, "disconnect", c.target)
+	c.stop(nil)
+
+	<-c.externalCtx.Done()
+
+	err := context.Cause(c.externalCtx)
+	if errors.Is(err, context.Canceled) {
+		// signalStopped was called with a nil error.
+		return nil
+	}
+	return err
 }
 
 func (c *ADBClient) Wait() error {
