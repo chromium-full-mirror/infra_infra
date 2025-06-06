@@ -22,20 +22,6 @@ type GitTilesClient interface {
 	DownloadFile(ctx context.Context, in *gitiles.DownloadFileRequest, opts ...grpc.CallOption) (*gitiles.DownloadFileResponse, error)
 }
 
-type gitTilesClientImpl struct {
-	client gitiles.GitilesClient
-}
-
-// Log implements gitiles.GitilesClient.Log()
-func (gc *gitTilesClientImpl) Log(ctx context.Context, req *gitiles.LogRequest) (*gitiles.LogResponse, error) {
-	return gc.client.Log(ctx, req)
-}
-
-// DownloadFile implements gitiles.GitilesClient.DownloadFile()
-func (gc *gitTilesClientImpl) DownloadFile(ctx context.Context, in *gitiles.DownloadFileRequest) (*gitiles.DownloadFileResponse, error) {
-	return gc.client.DownloadFile(ctx, in)
-}
-
 // GetGitilesClient returns the GitilesClient for the given host.
 func GetGitilesClient(ctx context.Context, gitilesHost string) (gitiles.GitilesClient, error) {
 	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesapi.OAuthScope))

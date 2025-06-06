@@ -29,14 +29,6 @@ func parseDutAttribute(t *testing.T, protoText string) *api.DutAttribute {
 	return &da
 }
 
-func parseFlatConfig(t *testing.T, protoText string) *api.DutAttribute {
-	var da api.DutAttribute
-	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
-		t.Fatalf("Error unmarshalling example text: %s", err)
-	}
-	return &da
-}
-
 func mockMachineLSEWithLabConfigs(name string) *ufspb.MachineLSE {
 	return &ufspb.MachineLSE{
 		Name:     name,

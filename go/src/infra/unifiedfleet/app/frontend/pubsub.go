@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"regexp"
 
 	"github.com/golang/protobuf/proto"
 
@@ -20,8 +19,6 @@ import (
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
-
-var macAddress = regexp.MustCompile(`^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$`)
 
 // HaRTPushHandler handles the pubsub push responses from HaRT pubsub
 //

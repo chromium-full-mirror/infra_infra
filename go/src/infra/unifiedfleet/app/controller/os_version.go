@@ -8,11 +8,9 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
-	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 // ListOSes lists the chrome os_version
@@ -26,24 +24,4 @@ func ListOSes(ctx context.Context, pageSize int32, pageToken string, filter stri
 		}
 	}
 	return configuration.ListOSes(ctx, pageSize, pageToken, filterMap, keysOnly)
-}
-
-func deleteNonExistingOSes(ctx context.Context, oses []*ufspb.OSVersion, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range oses {
-		resMap[r.GetValue()] = true
-	}
-	resp, err := configuration.GetAllOSes(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.OSVersion)
-		if _, ok := resMap[s.GetValue()]; !ok {
-			toDelete = append(toDelete, s.GetValue())
-		}
-	}
-	logging.Debugf(ctx, "Deleting %d non-existing oses", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, configuration.DeleteOSes), nil
 }

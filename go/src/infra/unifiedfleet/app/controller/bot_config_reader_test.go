@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
-	configpb "go.chromium.org/luci/swarming/proto/config"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/config"
@@ -56,18 +55,6 @@ func mockOwnershipConfig() *config.Config {
 					Name:       "test_name",
 					RemotePath: "test_security_git_path",
 				},
-			},
-		},
-	}
-}
-
-// Dummy config for bots
-func mockBotConfig(botRange string, pool string) *configpb.BotsCfg {
-	return &configpb.BotsCfg{
-		BotGroup: []*configpb.BotGroup{
-			{
-				BotId:      []string{botRange},
-				Dimensions: []string{"pool:" + pool},
 			},
 		},
 	}

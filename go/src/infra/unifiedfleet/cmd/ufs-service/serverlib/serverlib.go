@@ -8,7 +8,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"cloud.google.com/go/profiler"
@@ -183,9 +182,6 @@ func versionInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo
 	resp, err = handler(ctx, req)
 	return
 }
-
-// Assuming the version number for major, minor and patch are less than 1000.
-var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)
 
 // validateUserAgent returns a tuple
 //

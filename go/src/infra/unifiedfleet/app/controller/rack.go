@@ -705,29 +705,6 @@ func validateDeleteRack(ctx context.Context, rack *ufspb.Rack) error {
 	return nil
 }
 
-// validateCreateRack validates if a Rack can be created
-//
-// A rack cannot exist in the system with both ChromeBrowserRack/ChromeOSRack as nil
-// checks if ChromeBrowserRack/ChromeOSRack is nil and initializes the object for rack
-// checks the zone in the location to decide between browser/chromeos rack
-func validateCreateRack(ctx context.Context, rack *ufspb.Rack) error {
-	if rack.GetChromeBrowserRack() == nil && rack.GetChromeosRack() == nil {
-		if rack.GetLocation() == nil || rack.GetLocation().GetZone() == ufspb.Zone_ZONE_UNSPECIFIED {
-			return errors.New("zone information in the location object cannot be empty/unspecified for a rack")
-		}
-		if ufsUtil.IsInBrowserZone(rack.GetLocation().GetZone().String()) {
-			rack.Rack = &ufspb.Rack_ChromeBrowserRack{
-				ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
-			}
-		} else {
-			rack.Rack = &ufspb.Rack_ChromeosRack{
-				ChromeosRack: &ufspb.ChromeOSRack{},
-			}
-		}
-	}
-	return nil
-}
-
 func validateRackBbnum(ctx context.Context, rackName string, bbnum int32) error {
 	if bbnum == 0 {
 		// Won't verify bbnum's uniqueness if it's not set

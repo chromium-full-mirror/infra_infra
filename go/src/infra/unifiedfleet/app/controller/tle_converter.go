@@ -51,18 +51,6 @@ func Convert(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload
 	return nil, errors.New("convert FlatConfigSource is disabled; skipping")
 }
 
-// convertFlatConfigSource handles the label conversion of FlatConfig.
-func convertFlatConfigSource(ctx context.Context, dutAttr *api.DutAttribute, flatConfig *payload.FlatConfig) (swarming.Dimensions, error) {
-	if flatConfig == nil {
-		return nil, errors.New("FlatConfig cannot be nil")
-	}
-	dims, err := swarming.ConvertAll(dutAttr, flatConfig)
-	if err != nil {
-		return nil, err
-	}
-	return dims, nil
-}
-
 // convertTleSource handles the label conversion of MachineLSE and DutState.
 func convertTleSource(ctx context.Context, dutAttr *api.DutAttribute, lse *ufspb.MachineLSE, dutState *chromeosLab.DutState) (swarming.Dimensions, error) {
 	labelAliases, err := swarming.GetLabelNames(dutAttr)

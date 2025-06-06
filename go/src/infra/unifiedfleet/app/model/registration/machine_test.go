@@ -87,14 +87,6 @@ func assertMachineWithOwnershipEqual(t *ftt.Test, a *ufspb.Machine, b *ufspb.Mac
 	assert.Loosely(t, a.GetOwnership().SecurityLevel, should.Equal(b.GetOwnership().SecurityLevel))
 }
 
-func getMachineNames(machines []*ufspb.Machine) []string {
-	names := make([]string, len(machines))
-	for i, p := range machines {
-		names[i] = p.GetName()
-	}
-	return names
-}
-
 func TestCreateMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")

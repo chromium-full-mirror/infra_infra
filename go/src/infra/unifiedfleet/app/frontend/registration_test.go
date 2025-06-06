@@ -31,17 +31,6 @@ func mockChromeOSMachine(id, lab, board string) *ufspb.Machine {
 	}
 }
 
-func mockChromeBrowserMachine(id, lab, name string) *ufspb.Machine {
-	return &ufspb.Machine{
-		Name: util.AddPrefix(util.MachineCollection, id),
-		Device: &ufspb.Machine_ChromeBrowserMachine{
-			ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{
-				Description: name,
-			},
-		},
-	}
-}
-
 func assertMachineEqual(t *ftt.Test, a *ufspb.Machine, b *ufspb.Machine) {
 	assert.Loosely(t, a.GetName(), should.Equal(b.GetName()))
 	assert.Loosely(t, a.GetChromeBrowserMachine().GetDescription(), should.Equal(

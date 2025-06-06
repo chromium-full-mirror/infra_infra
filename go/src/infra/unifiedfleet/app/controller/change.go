@@ -1081,10 +1081,3 @@ func approxZone(zone string) string {
 	}
 	return zone
 }
-
-func approxState(s string) string {
-	if s == "" {
-		return ufspb.State_STATE_UNSPECIFIED.String()
-	}
-	return s
-}

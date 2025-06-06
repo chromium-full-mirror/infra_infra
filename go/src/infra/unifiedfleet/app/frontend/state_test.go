@@ -5,7 +5,6 @@
 package frontend
 
 import (
-	"context"
 	"testing"
 
 	"go.chromium.org/luci/common/testing/ftt"
@@ -13,11 +12,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
-	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/model/datastore"
-	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
-	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 	"go.chromium.org/infra/unifiedfleet/app/model/state"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -132,113 +128,4 @@ func TestGetState(t *testing.T) {
 			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
 	})
-}
-
-func mockOSMachineAssetAndHost(ctx context.Context, id, hostname, deviceType string) error {
-	osCtx, err := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
-	if err != nil {
-		return err
-	}
-	var machineLSE1 *ufspb.MachineLSE
-	var machine *ufspb.Machine
-	var asset *ufspb.Asset
-	switch deviceType {
-	case "dut":
-		machineLSE1 = &ufspb.MachineLSE{
-			Name:     hostname,
-			Hostname: hostname,
-			Machines: []string{id},
-			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
-				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
-					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
-						DeviceLse: &ufspb.ChromeOSDeviceLSE{
-							Device: &ufspb.ChromeOSDeviceLSE_Dut{
-								Dut: &chromeosLab.DeviceUnderTest{
-									Hostname: hostname,
-									Peripherals: &chromeosLab.Peripherals{
-										Servo: &chromeosLab.Servo{},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		machine = &ufspb.Machine{
-			Name: id,
-			Device: &ufspb.Machine_ChromeosMachine{
-				ChromeosMachine: &ufspb.ChromeOSMachine{},
-			},
-		}
-		asset = &ufspb.Asset{
-			Name: id,
-			Info: &ufspb.AssetInfo{
-				AssetTag: id,
-			},
-			Type:     ufspb.AssetType_DUT,
-			Location: &ufspb.Location{},
-		}
-	case "labstation":
-		machineLSE1 = &ufspb.MachineLSE{
-			Name:     hostname,
-			Hostname: hostname,
-			Machines: []string{id},
-			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
-				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
-					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
-						DeviceLse: &ufspb.ChromeOSDeviceLSE{
-							Device: &ufspb.ChromeOSDeviceLSE_Labstation{
-								Labstation: &chromeosLab.Labstation{
-									Hostname: hostname,
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		machine = &ufspb.Machine{
-			Name: id,
-			Device: &ufspb.Machine_ChromeosMachine{
-				ChromeosMachine: &ufspb.ChromeOSMachine{},
-			},
-		}
-		asset = &ufspb.Asset{
-			Name: id,
-			Info: &ufspb.AssetInfo{
-				AssetTag: id,
-			},
-			Type:     ufspb.AssetType_LABSTATION,
-			Location: &ufspb.Location{},
-		}
-	case "browser":
-		machineLSE1 = &ufspb.MachineLSE{
-			Name:     hostname,
-			Hostname: hostname,
-			Machines: []string{id},
-			Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
-				ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
-			},
-		}
-		machine = &ufspb.Machine{
-			Name: id,
-			Device: &ufspb.Machine_ChromeBrowserMachine{
-				ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
-			},
-		}
-	}
-
-	if _, err := registration.CreateMachine(osCtx, machine); err != nil {
-		return err
-	}
-	if asset != nil {
-		if _, err := registration.CreateAsset(osCtx, asset); err != nil {
-			return err
-		}
-	}
-	if _, err := inventory.CreateMachineLSE(osCtx, machineLSE1); err != nil {
-		return err
-	}
-	return nil
 }

@@ -5,8 +5,6 @@
 package frontend
 
 import (
-	"fmt"
-
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -42,22 +40,7 @@ func (fs *FleetServerImpl) getImportPageSize() int {
 
 // Error messages for data import
 var (
-	machineDBServiceFailure     = "Fail to call machine DB service: %s"
-	crosInventoryServiceFailure = "Fail to call Inventory V2 service: %s"
-
-	successStatus                    = status.New(codes.OK, "")
-	emptyConfigSourceStatus          = status.New(codes.InvalidArgument, "Invalid argument - Config source is empty")
-	invalidConfigServiceName         = status.New(codes.FailedPrecondition, "The config service name is invalid")
-	invalidConfigFileContentStatus   = status.New(codes.FailedPrecondition, "The config file format is invalid")
-	configServiceFailureStatus       = status.New(codes.Internal, "Fail to get configs from luci config service")
-	machineDBConnectionFailureStatus = status.New(codes.Internal, "Fail to initialize connection to machine DB")
-	machineDBServiceFailureStatus    = func(service string) *status.Status {
-		return status.New(codes.Internal, fmt.Sprintf(machineDBServiceFailure, service))
-	}
-	crosInventoryConnectionFailureStatus = status.New(codes.Internal, "Fail to initialize connection to Inventory V2")
-	crosInventoryServiceFailureStatus    = func(service string) *status.Status {
-		return status.New(codes.Internal, fmt.Sprintf(crosInventoryServiceFailure, service))
-	}
+	successStatus                = status.New(codes.OK, "")
 	sheetConnectionFailureStatus = status.New(codes.Internal, "Fail to initialize connection to Google sheet")
 	gitConnectionFailureStatus   = status.New(codes.Internal, "Fail to initialize connection to Gitiles")
 	insertDatastoreFailureStatus = status.New(codes.Internal, "Fail to insert entity into datastore while importing")

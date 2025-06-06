@@ -9,8 +9,6 @@ package config
 
 import "context"
 
-const configFile = "config.cfg"
-
 // unique key used to store and retrieve context.
 var contextKey = "ufs luci-config key"
 

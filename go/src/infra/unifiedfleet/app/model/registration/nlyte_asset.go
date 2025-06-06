@@ -60,15 +60,6 @@ func (a *NlyteAssetEntity) GetRealm() string {
 	return a.Realm
 }
 
-// newNlyteAssetRealmEntity creates a new Realm entity object from proto message.
-func newNlyteAssetRealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
-	asset, err := newNlyteAssetEntity(ctx, pm)
-	if err != nil {
-		return nil, err
-	}
-	return asset.(*NlyteAssetEntity), nil
-}
-
 // newNlyteAssetEntity creates a new asset entity object from proto message.
 func newNlyteAssetEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	a, ok := pm.(*ufspb.Asset)
@@ -113,16 +104,6 @@ func GetNlyteAssetACL(ctx context.Context, id string) (*ufspb.Asset, error) {
 	// Mlyte: No equivalent ACL method, so just call standard method.
 
 	return GetNlyteAsset(ctx, id)
-}
-
-// getNlyteAssetACL returns a machine for the given ID after verifying the user
-// has permission.
-func getNlyteAssetACL(ctx context.Context, id string) (*ufspb.Asset, error) {
-	pm, err := ufsds.GetACL(ctx, &ufspb.Asset{Name: id}, newAssetRealmEntity, util.RegistrationsGet)
-	if err == nil {
-		return pm.(*ufspb.Asset), err
-	}
-	return nil, err
 }
 
 // CreateNlyteAsset creates an asset record in the datastore using the given asset proto.

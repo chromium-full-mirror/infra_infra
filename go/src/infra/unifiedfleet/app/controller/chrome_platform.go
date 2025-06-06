@@ -19,7 +19,6 @@ import (
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
-	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 )
@@ -139,26 +138,6 @@ func DeleteChromePlatform(ctx context.Context, id string) error {
 		return err
 	}
 	return configuration.DeleteChromePlatform(ctx, id)
-}
-
-func deleteNonExistingPlatforms(ctx context.Context, platforms []*ufspb.ChromePlatform, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range platforms {
-		resMap[r.GetName()] = true
-	}
-	resp, err := configuration.GetAllChromePlatforms(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.ChromePlatform)
-		if _, ok := resMap[s.GetName()]; !ok {
-			toDelete = append(toDelete, s.GetName())
-		}
-	}
-	logging.Infof(ctx, "Deleting %d non-existing platforms", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, configuration.DeleteChromePlatforms), nil
 }
 
 // ReplaceChromePlatform replaces an old ChromePlatform with new ChromePlatform in datastore

@@ -17,8 +17,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
-	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
-	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
@@ -303,49 +301,6 @@ func deleteNicHelper(ctx context.Context, id string, inTransaction bool) error {
 		return nil
 	}
 	return f(ctx)
-}
-
-func deleteNonExistingNics(ctx context.Context, nics []*ufspb.Nic, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range nics {
-		resMap[r.GetName()] = true
-	}
-	resp, err := registration.GetAllNics(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.Nic)
-		if _, ok := resMap[s.GetName()]; !ok {
-			toDelete = append(toDelete, s.GetName())
-		}
-	}
-	logging.Infof(ctx, "Deleting %d non-existing nics", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, registration.DeleteNics), nil
-}
-
-func deleteNonExistingDracs(ctx context.Context, dracs []*ufspb.Drac, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range dracs {
-		resMap[r.GetName()] = true
-	}
-	resp, err := registration.GetAllDracs(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.Drac)
-		if _, ok := resMap[s.GetName()]; !ok {
-			toDelete = append(toDelete, s.GetName())
-		}
-	}
-	logging.Infof(ctx, "Deleting %d non-existing dracs", len(toDelete))
-	logging.Infof(ctx, "Deleting %d non-existing drac-related dhcps", len(toDelete))
-	allRes := *deleteByPage(ctx, toDelete, pageSize, registration.DeleteDracs)
-	allRes = append(allRes, *deleteByPage(ctx, toDelete, pageSize, configuration.DeleteDHCPs)...)
-	return &allRes, nil
 }
 
 // ReplaceNic replaces an old Nic with new Nic in datastore

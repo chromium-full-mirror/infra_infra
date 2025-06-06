@@ -80,19 +80,6 @@ func zonesToStrSlice(zones []ufspb.Zone) []string {
 	return s
 }
 
-func queryAll(ctx context.Context) ([]ufsds.FleetEntity, error) {
-	var entities []*CSEntity
-	q := datastore.NewQuery(CachingServiceKind)
-	if err := datastore.GetAll(ctx, q, &entities); err != nil {
-		return nil, err
-	}
-	fe := make([]ufsds.FleetEntity, len(entities))
-	for i, e := range entities {
-		fe[i] = e
-	}
-	return fe, nil
-}
-
 // CreateCachingService creates a new CachingService in datastore.
 func CreateCachingService(ctx context.Context, cs *ufspb.CachingService) (*ufspb.CachingService, error) {
 	return putCachingService(ctx, cs, false)

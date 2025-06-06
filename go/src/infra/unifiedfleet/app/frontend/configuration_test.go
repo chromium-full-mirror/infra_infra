@@ -1444,14 +1444,6 @@ func TestOSImportVlans(t *testing.T) {
 	})
 }
 
-func getReturnedPlatformNames(res datastore.OpResults) []string {
-	gets := make([]string, len(res))
-	for i, r := range res {
-		gets[i] = r.Data.(*ufspb.ChromePlatform).GetName()
-	}
-	return gets
-}
-
 func TestUpdateConfigBundle(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

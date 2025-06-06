@@ -374,38 +374,6 @@ linters:
       - tools/kitchen/util.go
       - tools/relnotes/relnotes.go
       - tools/result_adapter/json.go
-      - unifiedfleet/app/config/config.go
-      - unifiedfleet/app/controller/bot_config_reader_test.go
-      - unifiedfleet/app/controller/change.go
-      - unifiedfleet/app/controller/chrome_platform.go
-      - unifiedfleet/app/controller/datacenter.go
-      - unifiedfleet/app/controller/drac.go
-      - unifiedfleet/app/controller/dut.go
-      - unifiedfleet/app/controller/fleet_tests_policy_test.go
-      - unifiedfleet/app/controller/helper.go
-      - unifiedfleet/app/controller/labstation.go
-      - unifiedfleet/app/controller/nic.go
-      - unifiedfleet/app/controller/os_version.go
-      - unifiedfleet/app/controller/rack.go
-      - unifiedfleet/app/controller/state.go
-      - unifiedfleet/app/controller/testing.go
-      - unifiedfleet/app/controller/tle_converter.go
-      - unifiedfleet/app/controller/tle_converter_test.go
-      - unifiedfleet/app/controller/vlan.go
-      - unifiedfleet/app/dumper/metrics.go
-      - unifiedfleet/app/external/gitiles.go
-      - unifiedfleet/app/frontend/configuration_test.go
-      - unifiedfleet/app/frontend/fleet.go
-      - unifiedfleet/app/frontend/frontend_test.go
-      - unifiedfleet/app/frontend/git.go
-      - unifiedfleet/app/frontend/pubsub.go
-      - unifiedfleet/app/frontend/registration_test.go
-      - unifiedfleet/app/frontend/state_test.go
-      - unifiedfleet/app/model/caching/caching_service.go
-      - unifiedfleet/app/model/configuration/device_config_test.go
-      - unifiedfleet/app/model/registration/machine_test.go
-      - unifiedfleet/app/model/registration/nlyte_asset.go
-      - unifiedfleet/cmd/ufs-service/serverlib/serverlib.go
       # TODO(gregorynisbet): END unused variable/function issue files.
 
 

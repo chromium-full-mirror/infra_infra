@@ -373,23 +373,6 @@ func ReplaceDrac(ctx context.Context, oldDrac *ufspb.Drac, newDrac *ufspb.Drac) 
 	return nil, nil
 }
 
-// getBrowserMachineForDrac return browser machine associated with the drac.
-func getBrowserMachineForDrac(ctx context.Context, dracName string) (*ufspb.Machine, error) {
-	machines, err := registration.QueryMachineByPropertyName(ctx, "drac_id", dracName, false)
-	if err != nil {
-		return nil, errors.Annotate(err, "Unable to query machine for drac %s", dracName).Err()
-	}
-	if len(machines) == 0 {
-		errorMsg := fmt.Sprintf("No machine associated with the drac %s. Data discrepancy error.\n", dracName)
-		return nil, status.Errorf(codes.Internal, errorMsg)
-	}
-	if len(machines) > 1 {
-		errorMsg := fmt.Sprintf("More than one machine associated the drac %s. Data discrepancy error.\n", dracName)
-		return nil, status.Errorf(codes.Internal, errorMsg)
-	}
-	return machines[0], nil
-}
-
 // validateCreateDrac validates if a drac can be created
 //
 // check if the drac already exists

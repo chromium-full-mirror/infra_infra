@@ -10,12 +10,6 @@ import (
 )
 
 var (
-	dumpToBQTick = metric.NewCounter(
-		"chromeos/ufs/dumper/dump_to_bq",
-		"dumpToBQ attempt",
-		nil,
-		field.Bool("success"), // If the attempt succeed
-	)
 	dumpToBQDailyTick = metric.NewCounter(
 		"chromeos/ufs/dumper/dump_to_bq_daily",
 		"dumpToBQ daily attempt",

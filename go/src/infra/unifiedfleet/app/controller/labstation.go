@@ -25,13 +25,6 @@ import (
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
-// deployLabstationMaskPaths contains paths for which deploy task if required.
-var deployLabstationMaskPaths = []string{
-	"machines",
-	"labstation.rpm.host",
-	"labstation.rpm.outlet",
-}
-
 // CreateLabstation creates a new labstation entry in UFS.
 func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.MachineLSE, error) {
 	f := func(ctx context.Context) error {

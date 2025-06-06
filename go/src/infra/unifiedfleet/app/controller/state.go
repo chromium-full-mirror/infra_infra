@@ -6,7 +6,6 @@ package controller
 
 import (
 	"context"
-	"strings"
 
 	"github.com/golang/protobuf/proto"
 
@@ -15,35 +14,10 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
-	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/state"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
-
-func deleteNonExistingStates(ctx context.Context, states []*ufspb.StateRecord, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range states {
-		resMap[r.GetResourceName()] = true
-	}
-	resp, err := state.GetAllStates(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.StateRecord)
-		// Skip deleting os hosts' state
-		if strings.HasPrefix(s.GetResourceName(), "hosts/chromeos") {
-			continue
-		}
-		if _, ok := resMap[s.GetResourceName()]; !ok {
-			toDelete = append(toDelete, s.GetResourceName())
-		}
-	}
-	logging.Infof(ctx, "Deleting %d non-existing states", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, state.DeleteStates), nil
-}
 
 // UpdateState updates state record for a resource.
 func UpdateState(ctx context.Context, stateRecord *ufspb.StateRecord) (*ufspb.StateRecord, error) {

@@ -47,9 +47,6 @@ func loadACLConfig(ctx context.Context) context.Context {
 }
 
 func TestPartnerInterceptor(t *testing.T) {
-	type args struct {
-		ctx context.Context
-	}
 	tests := []struct {
 		name     string
 		user     string

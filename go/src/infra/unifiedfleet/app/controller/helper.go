@@ -348,19 +348,6 @@ func testServoEq(a, b []*chromeosLab.Servo) bool {
 	return true
 }
 
-func deleteByPage(ctx context.Context, toDelete []string, pageSize int, deletFunc func(ctx context.Context, resourceNames []string) *ufsds.OpResults) *ufsds.OpResults {
-	var allRes ufsds.OpResults
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(toDelete))
-		res := deletFunc(ctx, toDelete[i:end])
-		allRes = append(allRes, *res...)
-		if i+pageSize >= len(toDelete) {
-			break
-		}
-	}
-	return &allRes
-}
-
 // TODO(eshwarn) : Use pattern matching instead of strings.split and add unit test
 func getFilterMap(filter string, f getFieldFunc) (map[string][]any, error) {
 	filterMap := make(map[string][]any)

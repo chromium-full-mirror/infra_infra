@@ -577,10 +577,3 @@ func mockDevices() *ufspb.GoldenEyeDevices {
 		},
 	}
 }
-
-func getModelNamesFromMockBoard(board *ufspb.Board) (models []string) {
-	for _, model := range board.Models {
-		models = append(models, model.Name)
-	}
-	return models
-}

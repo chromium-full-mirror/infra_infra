@@ -46,8 +46,6 @@ const (
 	servoPortMin = 9000
 )
 
-var defaultPools = []string{"DUT_POOL_QUOTA"}
-
 // CreateDUT creates ChromeOSMachineLSE entities for a DUT.
 //
 // Creates one MachineLSE for DUT and updates another MachineLSE for the

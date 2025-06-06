@@ -32,11 +32,6 @@ func makeDevCfgForTesting(board, model, variant string, tams []string) *deviceco
 	}
 }
 
-// boardRealmAssigner just sets the realm to be equal to the board.
-func boardRealmAssigner(c *deviceconfig.Config) string {
-	return c.Id.PlatformId.Value
-}
-
 // grantRealmPerms grants `configuration.get` permissions in specified realms.
 func grantRealmPerms(ctx context.Context, realms ...string) context.Context {
 	perms := []authtest.RealmPermission{}
