@@ -100,6 +100,11 @@ func MainInternal() int {
 	defer logFile.Close()
 
 	logger := newLogger(logFile)
+
+	// Ensure the default logger also writes to the log file.
+	log.SetOutput(logger.Writer())
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	logger.Println("Starting dutservice version ", Version)
 	logger.Println("Starting dutservice on port ", *port)
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))

@@ -56,6 +56,10 @@ func (sc *ServerCommand) Init(args []string) error {
 		return fmt.Errorf("unable to set up logs: %w", err)
 	}
 
+	// Ensure the default logger also writes to the log file.
+	log.SetOutput(sc.log.Writer())
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	if err = sc.validateCLIInputs(); err != nil {
 		return err
 	}
