@@ -656,7 +656,7 @@ func (s *DutServiceServer) runCmd(ctx context.Context, cmd string, stdin io.Read
 	s.logger.Printf("Checking Connection")
 	if s.connection == nil || !s.connection.IsAlive() {
 		s.logger.Printf("Connection is not alive, trying to reconnect")
-		if err := s.reconnect(context.Background()); err != nil {
+		if err := s.reconnect(ctx); err != nil {
 			s.logger.Printf("failed to reconnect in runcmd %s\n", err)
 
 			return &api.ExecCommandResponse{
@@ -702,7 +702,7 @@ func (s *DutServiceServer) runCmd(ctx context.Context, cmd string, stdin io.Read
 func (s *DutServiceServer) runCmdOutput(ctx context.Context, cmd string) (string, string, error) {
 	s.logger.Printf("Checking Connection is alive.")
 	if s.connection == nil || !s.connection.IsAlive() {
-		if err := s.reconnect(context.Background()); err != nil {
+		if err := s.reconnect(ctx); err != nil {
 			return "", "", fmt.Errorf("failed to reconnect after connection failure, %w", err)
 		}
 	}
