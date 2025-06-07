@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"slices"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -865,21 +866,27 @@ func validateServoInfoForDUT(ctx context.Context, servo *chromeosLab.Servo, DUTH
 	return "", nil
 }
 
-// getLabstationMachineLSE get the Labstation MachineLSE
-func getLabstationMachineLSE(ctx context.Context, labstationMachinelseName string) (*ufspb.MachineLSE, error) {
-	labstationMachinelse, err := inventory.GetMachineLSE(ctx, labstationMachinelseName)
+// getHostMachineLSE get the host MachineLSE
+// This can be a labstation, android host, etc.
+func getHostMachineLSE(ctx context.Context, id string, msgName string) (*ufspb.MachineLSE, error) {
+	lse, err := inventory.GetMachineLSE(ctx, id)
 	if status.Code(err) == codes.Internal {
 		return nil, err
 	}
-	if labstationMachinelse == nil {
-		// There is no Labstation MachineLSE existing in the system
-		errorMsg := fmt.Sprintf("Labstation %s not found in the system. "+
-			"Please deploy the Labstation %s before deploying the DUT.",
-			labstationMachinelseName, labstationMachinelseName)
+	if lse == nil {
+		// There is no MachineLSE existing in the system
+		errorMsg := fmt.Sprintf("%s %s not found in the system. "+
+			"Please deploy the %s %s before deploying the DUT.",
+			msgName, id, msgName, id)
 		logging.Errorf(ctx, errorMsg)
 		return nil, status.Errorf(codes.FailedPrecondition, errorMsg)
 	}
-	return labstationMachinelse, nil
+	return lse, nil
+}
+
+// getLabstationMachineLSE get the Labstation MachineLSE
+func getLabstationMachineLSE(ctx context.Context, labstationMachinelseName string) (*ufspb.MachineLSE, error) {
+	return getHostMachineLSE(ctx, labstationMachinelseName, "Labstation")
 }
 
 // appendServoEntryToLabstation append servo entry to the Labstation.
@@ -887,49 +894,46 @@ func getLabstationMachineLSE(ctx context.Context, labstationMachinelseName strin
 // servo => Servo to be added to the DUT.
 // labstation => Current labstation configuration.
 func appendServoEntryToLabstation(ctx context.Context, servo *chromeosLab.Servo, labstation *ufspb.MachineLSE) error {
-	if servo == nil || servo.GetServoHostname() == "" {
-		// Nothing to append.
-		return status.Errorf(codes.FailedPrecondition, "Servo/ServoHost is nil")
-	}
 	// Check if the servo is a V3 device. They can be updated without servo serial.
 	if util.ServoV3HostnameRegex.MatchString(labstation.GetHostname()) {
 		return updateServoV3EntryInLabstation(ctx, servo, labstation)
 	}
-	// If not a servo V3 device. Servo serial should not be empty.
-	if servo.GetServoSerial() == "" {
-		return status.Errorf(codes.FailedPrecondition, "Missing servo serial. Cannot assign servo")
-	}
-	// Not a servo v3 device. Validate port in range.
-	if port := servo.GetServoPort(); port > servoPortMax || port < servoPortMin {
-		return status.Errorf(codes.FailedPrecondition, "Port %v, out of range for servo", port)
-	}
+	// If not a servo V3 device
 	// Ensure we can add the servo to the labstation.
 	if err := validateServoForLabstation(ctx, servo, labstation); err != nil {
 		return errors.Annotate(err, "appendServoEntryToLabstation - Cannot add servo to labstation").Err()
 	}
 	existingServos := labstation.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetServos()
-	for i, s := range existingServos {
-		if s.GetServoSerial() == servo.GetServoSerial() {
-			// Replace the servo entry if it exists
-			existingServos[i] = servo
-			return nil
-		}
+	if i := slices.IndexFunc(existingServos, func(s *chromeosLab.Servo) bool {
+		return s.GetServoSerial() == servo.GetServoSerial()
+	}); i == -1 {
+		existingServos = append(existingServos, servo)
+		labstation.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos = existingServos
+	} else {
+		// Replace the servo entry if it exists
+		existingServos[i] = servo
 	}
-	existingServos = append(existingServos, servo)
-	labstation.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos = existingServos
 	return nil
 }
 
 // validateServoForLabstation checks if the given servo can be used on the labstation.
 func validateServoForLabstation(ctx context.Context, servo *chromeosLab.Servo, labstation *ufspb.MachineLSE) error {
+	if util.ServoV3HostnameRegex.MatchString(labstation.GetHostname()) {
+		return status.Errorf(codes.FailedPrecondition, "validateServoForLabstation - Servo is V3 device")
+	}
 	if servo == nil || servo.GetServoHostname() == "" {
 		// Nothing to append.
 		return status.Errorf(codes.FailedPrecondition, "validateServoForLabstation - Servo/ServoHost is nil")
 	}
+	if servo.GetServoSerial() == "" {
+		return status.Errorf(codes.FailedPrecondition, "validateServoForLabstation - Missing servo serial. Cannot assign servo")
+	}
+	if port := servo.GetServoPort(); port > servoPortMax || port < servoPortMin {
+		return status.Errorf(codes.FailedPrecondition, "validateServoForLabstation - Port %v, out of range for servo", port)
+	}
 	if labstation == nil {
 		return status.Errorf(codes.FailedPrecondition, "validateServoForLabstation - Labstation is nil")
 	}
-
 	if servo.GetServoHostname() != labstation.GetHostname() {
 		status.Errorf(codes.Internal, "Cannot add servo %s:%v on %s labstation", servo.GetServoHostname(), servo.GetServoPort(), labstation.GetHostname())
 	}
