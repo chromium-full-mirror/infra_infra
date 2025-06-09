@@ -58,17 +58,37 @@ func NewADBClient(parentCtx context.Context, target string) (*ADBClient, error) 
 		return nil, err
 	}
 
+	internalCtx, stop := context.WithCancelCause(parentCtx)
+	externalCtx, signalStopped := context.WithCancelCause(context.Background())
+	context.AfterFunc(internalCtx, func() {
+		var errs []error
+
+		// Canceled means a nil error was passed into `stop`.
+		// i.e., an intentional disconnect.
+		if err := context.Cause(internalCtx); !errors.Is(err, context.Canceled) {
+			errs = append(errs, err)
+		}
+
+		if err := runCommand(adbPath, "disconnect", target); err != nil {
+			errs = append(errs, err)
+		}
+
+		signalStopped(errors.Join(errs...))
+	})
+
+	c := &ADBClient{parentCtx, internalCtx, stop, externalCtx, target, adbPath}
+
+	// `adb connect` will return success even if the connection is down.
+	if !c.IsAlive() {
+		c.stop(fmt.Errorf("adb: device is not up"))
+		return nil, c.Close()
+	}
+
 	if err := runCommand(adbPath, "-s", target, "root"); err != nil {
 		log.Printf("adb: Failed to switch to root, running user build?")
 	}
 
-	internalCtx, stop := context.WithCancelCause(parentCtx)
-	externalCtx, signalStopped := context.WithCancelCause(context.Background())
-	context.AfterFunc(internalCtx, func() {
-		signalStopped(runCommand(adbPath, "disconnect", target))
-	})
-
-	return &ADBClient{parentCtx, internalCtx, stop, externalCtx, target, adbPath}, nil
+	return c, nil
 }
 
 // Ctx returns a context that will be closed once ADB has been disconnected.
