@@ -12,6 +12,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -54,4 +55,16 @@ func EncodeAnyObj(anyObj any) (string, error) {
 	encodedString := string(encodedData)
 
 	return encodedString, nil
+}
+
+func ProtoMapToAnyMap(protoMap map[string]proto.Message) (map[string]*anypb.Any, error) {
+	anyMap := make(map[string]*anypb.Any)
+	for k, v := range protoMap {
+		anyValue, err := anypb.New(v)
+		if err != nil {
+			return nil, err
+		}
+		anyMap[k] = anyValue
+	}
+	return anyMap, nil
 }
