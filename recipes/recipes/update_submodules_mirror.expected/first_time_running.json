@@ -18,8 +18,6 @@
     "cmd": [
       "git",
       "clone",
-      "--depth",
-      "1",
       "https://chromium.googlesource.com/chromium/src",
       "[CACHE]/codesearch_update_submodules_mirror/src"
     ],
