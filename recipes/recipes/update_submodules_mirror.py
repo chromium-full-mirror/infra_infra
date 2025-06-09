@@ -153,7 +153,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
     with api.context(cwd=checkout_dir):
       # Don't use --no-tags even if with_tags is False here since clones may
       # time out.
-      api.git('clone', source_repo, source_checkout_dir)
+      api.git('clone', '--depth', '1', source_repo, source_checkout_dir)
 
   # This is implicitly used as the cwd by all the git steps below.
   api.m.path.checkout_dir = source_checkout_dir
@@ -182,10 +182,14 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
     # gitmodules entries. This causes fetch to fail. Resetting the repository
     # before fetching fixes this. See crbug.com/1499932.
     api.git('reset', '--hard', 'origin/main')
-    api.git('fetch', '-t' if with_tags else '-n')
+    if with_tags:
+      api.git('fetch', '-t')
+    else:
+      api.git('fetch', '-n', '--depth', '1')
     for ref in refs_to_mirror:
       if not ref.startswith('refs/heads'):
-        api.git('fetch', 'origin', ref + ':' + RefToRemoteRef(ref))
+        api.git('fetch', '--depth', '1', 'origin',
+                ref + ':' + RefToRemoteRef(ref))
   except api.step.StepFailure:
     # Remove broken source checkout so that subsequent runs don't fail because
     # of it.
