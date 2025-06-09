@@ -118,7 +118,7 @@ func TestCloseWUTree(t *testing.T) {
 				mockInv.EXPECT().Update(inv.InvocationId, gomock.Any()).Return(inv, nil)
 			}
 
-			mockWU.EXPECT().Get(gomock.Any()).Return(wu, nil).Times(2)
+			mockWU.EXPECT().Get(gomock.Any()).Return(wu, nil)
 			mockWU.EXPECT().Update(wu.Id, wu).Return(wu, tc.wuErr)
 			mockWU.EXPECT().Update(wu.Id, wu).Return(wu, tc.invErr)
 
