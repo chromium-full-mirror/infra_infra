@@ -24,6 +24,9 @@ service FleetConsole {
   // PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
   rpc PingUfs(PingUfsRequest) returns (PingUfsResponse);
 
+  // LogFrontend used to collect logs from the frontend
+  rpc LogFrontend(LogFrontendRequest) returns (LogFrontendResponse);
+
   // ListDevices managed by Device Manager.
   rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {};
 
@@ -87,6 +90,28 @@ message PingUfsRequest {
 
 // PingUfsResponse intentionally contains nothing.
 message PingUfsResponse {
+}
+
+message LogFrontendRequest {
+  enum Severity {
+    INFO = 0;
+    WARNING = 1;
+    ERROR = 2;
+  }
+
+  string message = 1;
+	string source = 2;
+	int32 lineno  = 3;
+	int32 colno   = 4;
+	string stack   = 5;
+  // Captures which react component contains the error
+  string component_stack = 6;
+	string url     = 7;
+  Severity severity = 8;
+}
+
+// LogFrontendResponse intentionally contains nothing.
+message LogFrontendResponse {
 }
 
 message Device {

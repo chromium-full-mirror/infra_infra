@@ -68,6 +68,7 @@ var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/PingBigQuery":                               "googlers",
 	"/fleetconsole.FleetConsole/PingDeviceManager":                          "googlers",
 	"/fleetconsole.FleetConsole/PingUfs":                                    "googlers",
+	"/fleetconsole.FleetConsole/LogFrontend":                                "googlers",
 	"/fleetconsole.FleetConsole/RepopulateCache":                            "mdb/fleet-console-eng",
 	"/discovery.Discovery/Describe":                                         rpcacl.All,
 	"/grpc.health.v1.Health/Watch":                                          rpcacl.All,
