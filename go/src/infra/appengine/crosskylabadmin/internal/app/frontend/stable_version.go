@@ -31,7 +31,6 @@ import (
 	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/git"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
-	"go.chromium.org/infra/libs/skylab/inventory"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
@@ -135,21 +134,6 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 	}
 	logging.Infof(ctx, "Finding a version for board:%q, model:%q, poools:%q", board, model, pools)
 	return dssv.FindVersion(ctx, deviceType, board, model, pools)
-}
-
-// getDUTOverrideForTests is an override for tests only.
-//
-// Do not set this variable for any other purpose.
-var getDUTOverrideForTests func(context.Context, string) (*inventory.DeviceUnderTest, error) = nil
-
-// getDUT returns the DUT associated with a particular hostname from datastore
-func getDUT(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
-	if getDUTOverrideForTests != nil {
-		return getDUTOverrideForTests(ctx, hostname)
-	}
-	// Call UFS directly to get DUT info, if fails, falling back to use the old workflow
-	dutV1, err := ufs.GetDutV1(ctx, hostname)
-	return dutV1, errors.Annotate(err, "get DUT from inventory by hostname: %q", hostname).Err()
 }
 
 func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.ClientInterface, error) {

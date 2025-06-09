@@ -54,16 +54,6 @@ type Client interface {
 	GetDUTsForLabstation(context.Context, *ufsAPI.GetDUTsForLabstationRequest, ...grpc.CallOption) (*ufsAPI.GetDUTsForLabstationResponse, error)
 }
 
-// ClientImpl is the concrete implementation of this client.
-type clientImpl struct {
-	client ufsAPI.FleetClient
-}
-
-// GetMachineLSE gets information about a DUT.
-func (c *clientImpl) GetMachineLSE(ctx context.Context, req *ufsAPI.GetMachineLSERequest) (*models.MachineLSE, error) {
-	return c.client.GetMachineLSE(ctx, req)
-}
-
 // NewClient creates a new UFS client when given a hostname and a http client.
 // The hostname should generally be read from the config.
 func NewClient(ctx context.Context, hc *http.Client, hostname string) (Client, error) {

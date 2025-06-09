@@ -13,26 +13,16 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/dummy"
-	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
 
 	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer"
 	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer/step"
 	"go.chromium.org/infra/monitoring/messages"
 )
-
-func newTestContext() context.Context {
-	c := gaetesting.TestingContext()
-	ta := datastore.GetTestable(c)
-	ta.Consistent(true)
-	c = gologger.StdConfig.Use(c)
-	return c
-}
 
 type giMock struct {
 	info.RawInterface

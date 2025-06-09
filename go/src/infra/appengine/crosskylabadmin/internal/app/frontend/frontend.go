@@ -106,8 +106,6 @@ func CheckAccess(c context.Context, _ string, _ proto.Message) (context.Context,
 	return c, nil
 }
 
-var cachedTracker fleet.TrackerServer
-
 // Assuming the version number for major, minor and patch are less than 1000.
 var versionRegex = regexp.MustCompile(`[0-9]{1,3}`)
 

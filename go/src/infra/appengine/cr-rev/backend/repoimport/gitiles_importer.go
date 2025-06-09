@@ -15,7 +15,6 @@ import (
 
 	"go.chromium.org/infra/appengine/cr-rev/backend/gitiles"
 	"go.chromium.org/infra/appengine/cr-rev/common"
-	"go.chromium.org/infra/appengine/cr-rev/config"
 	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
@@ -27,7 +26,6 @@ type gitilesImporter struct {
 	gitiesClient gitiles.Client
 	leaser       *leaser
 	repo         common.GitRepository
-	config       *config.Repository
 	// importedBranches keys are git refs
 	importedRefs map[string]struct{}
 	// importedCommits keys are git commit hashes

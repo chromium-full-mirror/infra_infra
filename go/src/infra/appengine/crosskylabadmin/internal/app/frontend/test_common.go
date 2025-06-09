@@ -26,7 +26,6 @@ import (
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/tq"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs/mockufs"
 	"go.chromium.org/infra/cros/recovery/logger/metrics/mockmetrics"
-	"go.chromium.org/infra/libs/git"
 )
 
 type testFixture struct {
@@ -117,29 +116,6 @@ func testingContext() context.Context {
 	c = gologger.StdConfig.Use(c)
 	c = logging.SetLevel(c, logging.Debug)
 	return c
-}
-
-type fakeGitClient struct {
-	getFile func(ctx context.Context, path string) (string, error)
-}
-
-func (f *fakeGitClient) GetFile(ctx context.Context, path string) (string, error) {
-	return f.getFile(ctx, path)
-}
-
-func (f *fakeGitClient) SwitchProject(ctx context.Context, project string) error {
-	return nil
-}
-
-func (tf *testFixture) setStableVersionFactory(stableVersionFileContent string) {
-	is := tf.Inventory
-	is.StableVersionGitClientFactory = func(c context.Context) (git.ClientInterface, error) {
-		gc := &fakeGitClient{}
-		gc.getFile = func(ctx context.Context, path string) (string, error) {
-			return stableVersionFileContent, nil
-		}
-		return gc, nil
-	}
 }
 
 // expectDefaultPerBotRefresh sets up the default expectations for refreshing

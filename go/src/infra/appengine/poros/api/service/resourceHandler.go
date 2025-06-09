@@ -24,26 +24,6 @@ type ResourceHandler struct {
 	proto.UnimplementedResourceServer
 }
 
-func toResourceEntity(model *proto.ResourceModel) *entities.ResourceEntity {
-	if model != nil {
-		return &entities.ResourceEntity{
-			ResourceId:      model.ResourceId,
-			Name:            model.Name,
-			Description:     model.Description,
-			Type:            model.Type,
-			OperatingSystem: model.OperatingSystem,
-			ImageProject:    model.ImageProject,
-			ImageFamily:     model.ImageFamily,
-			ImageSource:     model.ImageSource,
-			CreatedAt:       model.CreatedAt.AsTime(),
-			CreatedBy:       model.CreatedBy,
-			ModifiedAt:      model.ModifiedAt.AsTime(),
-			ModifiedBy:      model.ModifiedBy,
-			Deleted:         model.Deleted,
-		}
-	}
-	return nil
-}
 func toResourceModel(entity *entities.ResourceEntity) *proto.ResourceModel {
 	if entity != nil {
 		return &proto.ResourceModel{

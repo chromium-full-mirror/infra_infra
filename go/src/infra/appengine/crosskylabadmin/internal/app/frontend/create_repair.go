@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -30,37 +29,7 @@ import (
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
-// UFSErrorPolicy controls how UFS errors are handled.
-type ufsErrorPolicy string
-
-// UFS error policy constants.
-// Error policy constants are defined in go/src/infra/appengine/crosskylabadmin/app/config/config.proto.
-//
-// Strict   -- fail on UFS error even if we don't need the result
-// Fallback -- if we encounter a UFS error, fall back to the legacy path.
-// Lax      -- if we do not need the UFS response to make a decision, do not fail the request.
-const (
-	// The strict policy causes all UFS error requests to be treated as fatal and causes the request to fail.
-	ufsErrorPolicyStrict   ufsErrorPolicy = "strict"   //nolint:unused
-	ufsErrorPolicyFallback ufsErrorPolicy = "fallback" //nolint:unused
-	ufsErrorPolicyLax      ufsErrorPolicy = "lax"      //nolint:unused
-)
-
 const maxConsequentRecFailureCount = 4
-
-// NormalizeError policy normalizes a string into the canonical name for a policy.
-func normalizeErrorPolicy(policy string) (ufsErrorPolicy, error) {
-	policy = strings.ToLower(policy)
-	switch policy {
-	case "", "default", "fallback":
-		return ufsErrorPolicyFallback, nil
-	case "strict":
-		return ufsErrorPolicyStrict, nil
-	case "lax":
-		return ufsErrorPolicyLax, nil
-	}
-	return "", fmt.Errorf("unrecognized policy: %q", policy)
-}
 
 // getRolloutConfig gets the applicable rolloutConfig.
 func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, expectedState string) (*config.RolloutConfig, error) {

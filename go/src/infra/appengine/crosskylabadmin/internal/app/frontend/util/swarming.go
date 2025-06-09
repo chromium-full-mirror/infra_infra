@@ -17,11 +17,6 @@ import (
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
 )
 
-const (
-	// taskUser is the user for tasks created by Tasker.
-	taskUser = "admin-service"
-)
-
 // URLForTask returns the task URL for a given task ID.
 func URLForTask(ctx context.Context, tid string) string {
 	cfg := config.Get(ctx)

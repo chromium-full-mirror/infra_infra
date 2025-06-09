@@ -25,11 +25,6 @@ import (
 
 const (
 	maxRetries = 3
-	// FYI https://github.com/golang/go/issues/9405 in Go 1.4
-	// http timeout errors are logged as "use of closed network connection"
-	timeout    = 5 * time.Second
-	miloScheme = "https"
-	miloHost   = "ci.chromium.org"
 )
 
 var (

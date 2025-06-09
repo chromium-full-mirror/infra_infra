@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"strings"
@@ -116,27 +115,6 @@ func indexPage(ctx *router.Context) {
 	if err != nil {
 		logging.Errorf(c, "while rendering index: %s", err)
 	}
-}
-
-func getXSRFToken(ctx *router.Context) {
-	c, w := ctx.Request.Context(), ctx.Writer
-
-	tok, err := xsrf.Token(c)
-	if err != nil {
-		logging.Errorf(c, "while getting xsrf token: %s", err)
-	}
-
-	data := map[string]string{
-		"token": tok,
-	}
-	txt, err := json.Marshal(data)
-	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(txt)
 }
 
 // // Routes.

@@ -8,10 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
 )
-
-var backgroundProcessOnce sync.Once
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))

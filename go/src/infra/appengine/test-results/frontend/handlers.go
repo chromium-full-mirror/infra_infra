@@ -19,12 +19,6 @@ import (
 	"go.chromium.org/luci/server/templates"
 )
 
-const (
-	deleteKeysQueueName = "delete-keys"
-
-	deleteKeysPath = "/internal/delete-keys"
-)
-
 func init() {
 	r := router.New()
 

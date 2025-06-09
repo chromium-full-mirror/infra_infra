@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth/xsrf"
-	"go.chromium.org/luci/server/caching"
 	"go.chromium.org/luci/server/router"
 
 	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
@@ -29,11 +28,8 @@ import (
 )
 
 const (
-	annotationsCacheKey = "annotation-metadata"
 	// annotations will expire after this amount of time
 	annotationExpiration = time.Hour * 24 * 10
-	// maxMonorailQuerySize is the maximum number of bugs per monorail query.
-	maxMonorailQuerySize = 100
 )
 
 // AnnotationsIssueClient is for testing purpose
@@ -58,8 +54,6 @@ type AnnotationResponse struct {
 	model.Annotation
 	BugData map[string]MonorailBugData `json:"bug_data"`
 }
-
-var metadataCache = caching.RegisterLRUCache[string, []*MonorailBugData](5)
 
 func convertAnnotationsNonGroupingToAnnotations(annotationsNonGrouping []*model.AnnotationNonGrouping, annotations *[]*model.Annotation) {
 	*annotations = make([]*model.Annotation, len(annotationsNonGrouping))

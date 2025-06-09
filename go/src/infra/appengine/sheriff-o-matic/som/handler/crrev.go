@@ -1,30 +1,15 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"go.chromium.org/luci/gae/service/memcache"
-	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
 	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
 )
-
-// getOAuthClient returns a client capable of making HTTP requests authenticated
-// with OAuth access token for userinfo.email scope.
-var getOAuthClient = func(c context.Context) (*http.Client, error) {
-	// Note: "https://www.googleapis.com/auth/userinfo.email" is the default
-	// scope used by GetRPCTransport(AsSelf). Use auth.WithScopes(...) option to
-	// override.
-	t, err := auth.GetRPCTransport(c, auth.AsSelf)
-	if err != nil {
-		return nil, err
-	}
-	return &http.Client{Transport: t}, nil
-}
 
 // GetRevRangeHandler returns a revision range queury for gitiles, given one or
 // two commit positions.

@@ -24,8 +24,6 @@ import (
 const (
 	// Maximum number of alerts to autoresolve at once to datastore to avoid exceedding datasize limits.
 	maxAlertsAutoResolveCount = 100
-	// model.RevisionSummaryJSONs this recent will be returned
-	recentRevisions = time.Hour * 24 * 7
 	// model.AlertJSONs this recently resolved will be returned
 	recentResolved = time.Hour * 24 * 3
 	// resolved alerts will expire after this time

@@ -29,22 +29,6 @@ type AssetInstanceHandler struct {
 	proto.UnimplementedAssetInstanceServer
 }
 
-func toAssetInstanceEntity(model *proto.AssetInstanceModel) *entities.AssetInstanceEntity {
-	if model != nil {
-		return &entities.AssetInstanceEntity{
-			AssetInstanceId: model.AssetInstanceId,
-			AssetId:         model.AssetId,
-			Status:          model.Status,
-			CreatedAt:       model.CreatedAt.AsTime(),
-			CreatedBy:       model.CreatedBy,
-			ModifiedAt:      model.ModifiedAt.AsTime(),
-			ModifiedBy:      model.ModifiedBy,
-			DeleteAt:        model.DeleteAt.AsTime(),
-		}
-	}
-	return nil
-}
-
 func toAssetIntanceModel(entity *entities.AssetInstanceEntity) *proto.AssetInstanceModel {
 	if entity != nil {
 		return &proto.AssetInstanceModel{

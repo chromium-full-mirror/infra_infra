@@ -76,10 +76,6 @@ func validateAssetResourceEntity(entity *entities.AssetResourceEntity) error {
 	return nil
 }
 
-func fakeAssetResourceAncestorKey(ctx context.Context) *datastore.Key {
-	return datastore.MakeKey(ctx, "AssetResource", "key")
-}
-
 // Creates the given AssetResourceEntity.
 func (e *AssetResourceHandler) Create(ctx context.Context, req *proto.CreateAssetResourceRequest) (*proto.AssetResourceModel, error) {
 	id := uuid.New().String()

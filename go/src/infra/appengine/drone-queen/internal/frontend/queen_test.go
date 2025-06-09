@@ -546,19 +546,6 @@ func staticTime(t time.Time) func() time.Time {
 	}
 }
 
-func assertSubsetStrings(t *testing.T, all, got []string) {
-	t.Helper()
-	set := make(map[string]bool)
-	for _, s := range all {
-		set[s] = true
-	}
-	for _, s := range got {
-		if !set[s] {
-			t.Errorf("Got %v not in expected set %v", s, all)
-		}
-	}
-}
-
 func assertSameStrings(t *testing.T, want, got []string) {
 	t.Helper()
 	sort.Strings(want)

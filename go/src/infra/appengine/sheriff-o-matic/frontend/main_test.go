@@ -12,8 +12,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/julienschmidt/httprouter"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -106,20 +104,4 @@ func TestMain(t *testing.T) {
 func makeGetRequest(ctx context.Context, path string) *http.Request {
 	req, _ := http.NewRequestWithContext(ctx, "GET", path, nil)
 	return req
-}
-
-func makeParams(items ...string) httprouter.Params {
-	if len(items)%2 != 0 {
-		return nil
-	}
-
-	params := make([]httprouter.Param, len(items)/2)
-	for i := range params {
-		params[i] = httprouter.Param{
-			Key:   items[2*i],
-			Value: items[2*i+1],
-		}
-	}
-
-	return params
 }

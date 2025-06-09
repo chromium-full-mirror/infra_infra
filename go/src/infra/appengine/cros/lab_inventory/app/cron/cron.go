@@ -33,8 +33,6 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	r.GET("/internal/cron/sync-dev-config", mwCron, logAndSetHTTPErr(syncDevConfigHandler))
 }
 
-const pageSize = 500
-
 func importServiceConfig(c *router.Context) error {
 	return config.Import(c.Request.Context())
 }

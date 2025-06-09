@@ -14,7 +14,6 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
-	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
@@ -138,45 +137,6 @@ func TestDeviceConfigsExists(t *testing.T) {
 			assert.Loosely(t, resp.Exists[1], should.BeTrue)
 		})
 	})
-}
-
-func mockServo(servoHost string) *lab.Servo {
-	return &lab.Servo{
-		ServoHostname: servoHost,
-		ServoPort:     8888,
-		ServoSerial:   "SERVO1",
-		ServoType:     "v3",
-	}
-}
-
-func mockDut(hostname, id, servoHost string) *lab.ChromeOSDevice {
-	return &lab.ChromeOSDevice{
-		Id: &lab.ChromeOSDeviceID{
-			Value: id,
-		},
-		Device: &lab.ChromeOSDevice_Dut{
-			Dut: &lab.DeviceUnderTest{
-				Hostname: hostname,
-				Peripherals: &lab.Peripherals{
-					Servo:       mockServo(servoHost),
-					SmartUsbhub: false,
-				},
-			},
-		},
-	}
-}
-
-func mockLabstation(hostname, id string) *lab.ChromeOSDevice {
-	return &lab.ChromeOSDevice{
-		Id: &lab.ChromeOSDeviceID{
-			Value: id,
-		},
-		Device: &lab.ChromeOSDevice_Labstation{
-			Labstation: &lab.Labstation{
-				Hostname: hostname,
-			},
-		},
-	}
 }
 
 func mockDevCfg(board string, model string, variant string) *device.Config {

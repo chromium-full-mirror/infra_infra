@@ -1,16 +1,10 @@
 package client
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
-	"strings"
 	"time"
-
-	"go.chromium.org/luci/common/logging"
 )
 
 type simpleClient struct {
@@ -35,61 +29,4 @@ func retry(f func() (bool, error), maxAttempts int) error {
 	}
 
 	return fmt.Errorf("error max retries exceeded")
-}
-
-func (sc *simpleClient) attemptReq(ctx context.Context, r *http.Request, v any) (int, error) {
-	r.Header.Set("User-Agent", "Go-http-client/1.1 infra/monitoring/simpleclient")
-	client, err := getAsSelfOAuthClient(ctx)
-	if err != nil {
-		return 0, err
-	}
-
-	resp, err := client.Do(r)
-	if err != nil {
-		logging.Errorf(ctx, "error: %q, possibly retrying.", err.Error())
-		return 0, err
-	}
-	defer resp.Body.Close()
-	status := resp.StatusCode
-	if status != http.StatusOK {
-		return status, fmt.Errorf("bad response code: %v", status)
-	}
-
-	if err = json.NewDecoder(resp.Body).Decode(v); err != nil {
-		logging.Errorf(ctx, "Error decoding response: %v", err)
-		return status, err
-	}
-	ct := strings.ToLower(resp.Header.Get("Content-Type"))
-	expected := "application/json"
-	if !strings.HasPrefix(ct, expected) {
-		err = fmt.Errorf("unexpected Content-Type, expected \"%s\", got \"%s\": %s", expected, ct, r.URL)
-		return status, err
-	}
-
-	return status, err
-}
-
-// postJSON does a simple HTTP POST on a endpoint, with retries and backoff.
-//
-// Returns the status code and the error, if any.
-func (sc *simpleClient) postJSON(ctx context.Context, url string, data []byte, v any) (status int, err error) {
-	req, err := http.NewRequest("POST", url, bytes.NewReader(data))
-	req.Header.Set("Content-Type", "application/json")
-	if err != nil {
-		return 0, err
-	}
-	err = retry(func() (bool, error) {
-		status, err = sc.attemptReq(ctx, req, v)
-		if status >= 400 && status < 500 {
-			return false, fmt.Errorf("HTTP status %d, not retrying: %s", status, url)
-		}
-
-		if err != nil {
-			logging.Errorf(ctx, "Error attempting POST: %v", err)
-			return true, err
-		}
-		return false, nil
-	}, maxRetries)
-
-	return status, err
 }

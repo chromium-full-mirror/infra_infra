@@ -15,12 +15,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
-type getServiceTest struct {
-	inputID    string
-	expService *Service
-	expError   error
-}
-
 var testService = Service{
 	ID:   "testservice",
 	Name: "Test Service",

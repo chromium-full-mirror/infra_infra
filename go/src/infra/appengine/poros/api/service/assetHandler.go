@@ -26,23 +26,6 @@ type AssetHandler struct {
 	proto.UnimplementedAssetServer
 }
 
-func toEntity(model *proto.AssetModel) *entities.AssetEntity {
-	if model != nil {
-		return &entities.AssetEntity{
-			AssetId:     model.AssetId,
-			Name:        model.Name,
-			AssetType:   model.AssetType,
-			Description: model.Description,
-			CreatedAt:   model.CreatedAt.AsTime(),
-			CreatedBy:   model.CreatedBy,
-			ModifiedAt:  model.ModifiedAt.AsTime(),
-			ModifiedBy:  model.ModifiedBy,
-			Deleted:     model.Deleted,
-		}
-	}
-	return nil
-}
-
 func toModel(entity *entities.AssetEntity) *proto.AssetModel {
 	if entity != nil {
 		return &proto.AssetModel{
@@ -72,12 +55,6 @@ func validateEntity(entity *entities.AssetEntity) error {
 		return errors.New("type cannot be empty")
 	}
 	return nil
-}
-
-// A query in transaction requires to have Ancestor filter, see
-// https://cloud.google.com/appengine/docs/standard/python/datastore/query-restrictions#queries_inside_transactions_must_include_ancestor_filters
-func fakeAncestorKey(ctx context.Context) *datastore.Key {
-	return datastore.MakeKey(ctx, "AssetEntity", "key")
 }
 
 // Creates the given Asset.

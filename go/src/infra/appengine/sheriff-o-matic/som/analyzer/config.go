@@ -53,13 +53,3 @@ func (r *ConfigRules) ExcludeFailure(ctx context.Context, builderGroup, builder,
 
 	return false
 }
-
-func contains(arr []string, s string) bool {
-	for _, itm := range arr {
-		if itm == s {
-			return true
-		}
-	}
-
-	return false
-}
