@@ -143,6 +143,7 @@ func getInstallConstantsFromKind(kind KindType) (RuntimeKindConstants, bool) {
 var KindTypeEnum = flagenum.Enum{
 	MacPackageName:          macKind,
 	IosPackageName:          iosKind,
+	TvosPackageName:         tvosKind,
 	XcodeArchivePackageName: xcodeArchiveKind,
 }
 
