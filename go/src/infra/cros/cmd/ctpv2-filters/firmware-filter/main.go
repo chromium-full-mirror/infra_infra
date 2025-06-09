@@ -112,7 +112,7 @@ func (specs *FirmwareSpecs) Executor(req *api.InternalTestplan, log *log.Logger,
 		return nil, fmt.Errorf("suite_info.suite_metadata is required")
 	}
 
-	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{specs.SAFile}, common.BigqueryScope)
+	tokenSource := commonParams.AuthHelper.GetTokenSource([]string{specs.SAFile}, common.AllPurposeCloudScope)
 
 	if specs.FirmwareBuilds == nil {
 		ctx := context.Background()
