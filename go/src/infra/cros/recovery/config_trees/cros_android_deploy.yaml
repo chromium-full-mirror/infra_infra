@@ -256,6 +256,35 @@ plans:
               dependencies:
                 - name: cros_create_reboot_request
                   exec_name: cros_create_reboot_request
+        - name: Update GenesysLogic Firmware for all servo_v4.1 (Allow to fail) (time:'10m10s')
+          exec_name: cros_update_genesys_logic_firmware
+          docs:
+            - Attempt to update GenesysLogic firmware for all servos on the labstation if needed.
+            - The update run will be a no-op if a servo is already updated to the target firmware.
+          conditions:
+            - name: Only runs for physical labstation
+              exec_name: servo_uses_servod_container
+              exec_args:
+                - reverse:true
+            - name: is_servo_v4p1_by_serial_number
+              exec_name: is_servo_v4p1_by_serial_number
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_access
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              dependencies:
+                - name: Set state:NO_SSH (ALWAYS_RUN)
+                  exec_name: servo_set_servo_state
+                  exec_args:
+                    - state:NO_SSH
+              recoveries:
+                - name: Wait for labstation to load (time:'2m0s')
+                  exec_name: cros_access
+                  docs:
+                    - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                    - Labstation is expected to complete the reboot within 2 minutes.
         - name: All servo's fw updated (time:'5m0s')
           exec_name: servo_fw_need_update
           docs:

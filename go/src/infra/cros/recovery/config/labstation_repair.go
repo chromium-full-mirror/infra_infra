@@ -30,6 +30,7 @@ func LabstationRepairConfig() *Configuration {
 		"reboot_by_request",
 		"Reboot labstation if uptime longer than 7 days",
 		"Attempt to disable bluetooth adapter",
+		"Update GenesysLogic Firmware for all servo_v4.1",
 		"Is crosid readable",
 		"Update inventory info",
 		"Set state: ready",
@@ -357,21 +358,16 @@ func LabstationRepairConfig() *Configuration {
 			},
 			AllowFailAfterRecovery: true,
 		},
-		"Labstation image contains target GenesysLogic firmware": {
-			Docs: []string{
-				"Check if the current labstation OS image contains required GenesysLogic firmware",
-			},
-			ExecName: "cros_genesys_logic_firmware_image_exists",
-		},
-		"Update GenesysLogic Firmware for servos": {
+		"Update GenesysLogic Firmware for all servo_v4.1": {
 			Docs: []string{
 				"Attempt to update GenesysLogic firmware for all servos on the labstation if needed.",
 				"The update run will be a no-op if a servo is already updated to the target firmware.",
 			},
-			Conditions: []string{
-				"Labstation image contains target GenesysLogic firmware",
+			Dependencies: []string{
+				"Device is SSHable",
 			},
 			ExecName:               "cros_update_genesys_logic_firmware",
+			ExecTimeout:            &durationpb.Duration{Seconds: 610},
 			AllowFailAfterRecovery: true,
 		},
 		"System services is up": {

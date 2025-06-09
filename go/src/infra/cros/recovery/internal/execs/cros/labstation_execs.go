@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components"
 	"go.chromium.org/infra/cros/recovery/internal/components/cros"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
@@ -128,23 +129,20 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// checkGenesysLogicFirmwareImageExists checks if the OS image on labstation contains a specific GenesysLogic firmware image.
-func checkGenesysLogicFirmwareImageExists(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.DefaultRunner()
-	if _, err := run(ctx, 20*time.Second, fmt.Sprintf("test -f %s", genesysLogicFirmwarePath)); err != nil {
-		return errors.Reason("check genesys logic firmware image exists: current labstation image does not contains target firmware.").Err()
-	}
-	return nil
-}
-
 // updateGenesysLogicFirmwareForServos updates a specific version of GenesysLogic firmware for all
 // servo_v4p1 on the labstation. The update is a no-op for servos that already updated to the given
 // firmware, and servos that doesn't have the applicable chip(e.g. servo_v4).
 func updateGenesysLogicFirmwareForServos(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	if _, err := run(ctx, 20*time.Minute, fmt.Sprintf("fwupdtool install %s", genesysLogicFirmwarePath)); err != nil {
-		// We expected non-zero exit code in no-op cases, so just log the error here.
-		log.Debugf(ctx, "(Non-critical)fwupdtool run returns non-zero exit code, %s", err.Error())
+	if _, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf("fwupdtool install --filter=\"updatable\" %s", genesysLogicFirmwarePath)); err != nil {
+		errorCode, ok := components.ErrCodeTag.Value(err)
+		if !ok {
+			return errors.Annotate(err, "update GenesysLogic firmware for servos: cannot find error code").Err()
+		}
+		// The tool would complete with exit code 2 when all servos already updated or no applicate servos.
+		if errorCode != 2 {
+			return errors.Annotate(err, "update GenesysLogic firmware for servos").Err()
+		}
 	}
 	return nil
 }
@@ -191,6 +189,5 @@ func init() {
 	execs.Register("cros_filesystem_io_not_blocked", filesystemIoNotBlockedExec)
 	execs.Register("cros_log_clean_up", logCleanupExec)
 	execs.Register("cros_update_genesys_logic_firmware", updateGenesysLogicFirmwareForServos)
-	execs.Register("cros_genesys_logic_firmware_image_exists", checkGenesysLogicFirmwareImageExists)
 	execs.Register("cros_check_used_inode_percentage_lower_than_threshold", checkUsedInodePercentageLowerThanThreshold)
 }

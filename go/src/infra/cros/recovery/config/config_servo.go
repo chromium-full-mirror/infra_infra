@@ -62,6 +62,7 @@ func servoPreDeployPlan() *Plan {
 			"Mark labstation as servod is in-use",
 			"Has enough free disk space",
 			"Servo_v4(p1) main present",
+			"Update GenesysLogic Firmware for all servo_v4.1",
 			"All servo's fw updated",
 			"Start servod daemon with recovery",
 			"Servo Poweron Default Set",
@@ -2026,6 +2027,22 @@ func servoPlanActions() map[string]*Action {
 			},
 			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Update GenesysLogic Firmware for all servo_v4.1": {
+			Docs: []string{
+				"Attempt to update GenesysLogic firmware for all servos on the labstation if needed.",
+				"The update run will be a no-op if a servo is already updated to the target firmware.",
+			},
+			Conditions: []string{
+				"Only runs for physical labstation",
+				"is_servo_v4p1_by_serial_number",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_update_genesys_logic_firmware",
+			ExecTimeout:            &durationpb.Duration{Seconds: 610},
+			AllowFailAfterRecovery: true,
 		},
 	}
 }
