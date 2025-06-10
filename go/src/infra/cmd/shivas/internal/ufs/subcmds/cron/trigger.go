@@ -39,8 +39,6 @@ type cron struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
-
-	job string
 }
 
 func (c *cron) Run(a subcommands.Application, args []string, env subcommands.Env) int {

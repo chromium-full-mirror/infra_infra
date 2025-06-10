@@ -222,8 +222,6 @@ linters:
       # TODO(gregorynisbet): BEGIN unused variable/function issue files.
       - chromeperf/pinpoint/cli/analyze.go
       - chromeperf/pinpoint/cli/diff.go
-      - chromeperf/workflows_server/templates_server.go
-      - chromium/bootstrapper/bootstrap/test_utils.go
       - chromium/bootstrapper/clients/fakes/gerrit/gerrit_test.go
       - cmd/cros_test_platform/internal/cmd/compute-backfill.go
       - cmd/cros_test_platform/internal/cmd/enumerate.go
@@ -242,7 +240,6 @@ linters:
       - cmd/shivas/internal/ufs/subcmds/attacheddevicehost/update_attached_device_host.go
       - cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/add_attached_device_machine.go
       - cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/update_attached_device_machine.go
-      - cmd/shivas/internal/ufs/subcmds/cron/trigger.go
       - cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_lse.go
       - cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_machine.go
       - cmd/shivas/internal/ufs/subcmds/devboard/update_devboard_machine.go

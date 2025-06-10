@@ -1,8 +1,11 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
 	"context"
-	"flag"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -15,12 +18,6 @@ import (
 	"go.chromium.org/infra/chromeperf/workflows"
 	"go.chromium.org/infra/chromeperf/workflows_server/proto"
 )
-
-// Scopes to use for OAuth2.0 credentials.
-var scopesRequired = []string{
-	// Provide access to the email address of the user.
-	"https://www.googleapis.com/auth/userinfo.email",
-}
 
 // Configuration path we're looking for to support project-defined templates.
 const workflowTemplatesFile = "workflow-templates.cfg"
@@ -79,8 +76,6 @@ func (s *workflowTemplatesServer) GetWorkflowTemplate(ctx context.Context, req *
 	}
 	return nil, status.Errorf(codes.NotFound, "Template not found: %s", req.Name)
 }
-
-var luciConfigService = flag.String("luci-config-service", "https://luci-config.appspot.com/_ah/api", "luci-config service base URL")
 
 func main() {
 }

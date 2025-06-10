@@ -53,17 +53,3 @@ func getInput(build *buildbucketpb.Build) *Input {
 	util.PanicOnError(err)
 	return input
 }
-
-func getValueAtPath(s *structpb.Struct, path ...string) *structpb.Value {
-	util.PanicIf(len(path) < 1, "at least one path element must be provided")
-	original := s
-	for i, p := range path[:len(path)-1] {
-		value, ok := s.Fields[p]
-		util.PanicIf(!ok, "path %s is not present in struct %v", path[:i+1], original)
-		s = value.GetStructValue()
-		util.PanicIf(s == nil, "path %s is not present in struct %v", path[:i+2], original)
-	}
-	value, ok := s.Fields[path[len(path)-1]]
-	util.PanicIf(!ok, "path %s is not present in struct %v", path, original)
-	return value
-}
