@@ -6,6 +6,7 @@
 package server
 
 import (
+	"archive/tar"
 	"context"
 	"errors"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -34,13 +36,13 @@ func (s *service) GetFileStat(context.Context, *bols.GetFileStatRequest) (*bols.
 }
 
 func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
-	s.logger.Println("receive GetFile request for file ", req.GetFilename())
+	s.logger.Println("Receive GetFile request for file ", req.GetFilename())
 	ctx := stream.Context()
 	args := []string{"realpath", req.GetFilename()}
 	containerName := req.StationId.GetContainerName()
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return fmt.Errorf("fail to create docker client: %w", err)
+		return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
 	}
 	timeout := timeRemaining(ctx)
 	eReq := &docker.ExecRequest{
@@ -49,27 +51,29 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 	}
 	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
 	if err != nil {
-		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+		return s.logAndReturnErr(fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err))
 	}
 	realpath := strings.TrimSpace(string(res.Stdout))
 
-	file, err := os.CreateTemp("", fmt.Sprintf("%s.*.tmp", filepath.Base(realpath)))
+	tempDir, err := os.MkdirTemp("", "getfile-*")
 	if err != nil {
-		return fmt.Errorf("failed to create temporary file for %s: %w",
-			realpath, err)
+		return s.logAndReturnErr(fmt.Errorf("failed to create temporary directory: %w", err))
 	}
-	tempFileName := file.Name()
-	file.Close()
-	defer os.Remove(tempFileName) // Clean up the file when done
-
-	if err := c.CopyFrom(ctx, containerName, realpath, tempFileName); err != nil {
-		return fmt.Errorf("failed to copy %s from container %s: %v",
-			realpath, containerName, err)
-
+	defer os.RemoveAll(tempDir) // Clean up the directory when done
+	tarFileName := filepath.Join(tempDir, fmt.Sprintf("%s.*.tar", filepath.Base(realpath)))
+	if err := c.CopyFrom(ctx, containerName, realpath, tarFileName); err != nil {
+		return s.logAndReturnErr(fmt.Errorf("failed to copy %s from container %s: %v",
+			realpath, containerName, err))
 	}
-	file, err = os.Open(tempFileName)
+	tempFileName := filepath.Join(tempDir, filepath.Base(realpath))
+	if err := extractOneFileFromTarFile(tempFileName, tarFileName); err != nil {
+		return s.logAndReturnErr(fmt.Errorf("failed to extract %s from tar file: %v",
+			realpath, err))
+	}
+
+	file, err := os.Open(tempFileName)
 	if err != nil {
-		return fmt.Errorf("failed to open %s: %w", tempFileName, err)
+		return s.logAndReturnErr(fmt.Errorf("failed to open %s: %w", tempFileName, err))
 	}
 	defer file.Close()
 	buffer := make([]byte, bufSize)
@@ -77,7 +81,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 		n, err := file.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
-				return fmt.Errorf("failed to read %s: %w", tempFileName, err)
+				return s.logAndReturnErr(fmt.Errorf("failed to read %s: %w", tempFileName, err))
 			}
 			break // End of file
 		}
@@ -85,11 +89,79 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 			Data: buffer[:n],
 		})
 	}
+	s.logger.Println("Served GetFile Request Successfully")
 	return nil
 }
 
 func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
-	return status.Errorf(codes.Unimplemented, "method PutFile not implemented")
+	s.logger.Println("Receive PutFile Request")
+	var f *os.File
+	var fn string
+	var dir string
+	var containerName string
+	ctx := stream.Context()
+
+	tempDir, err := os.MkdirTemp("", "putfile-*")
+	if err != nil {
+		return s.logAndReturnErr(fmt.Errorf("failed to create temporary directory: %w", err))
+	}
+	defer os.RemoveAll(tempDir) // Clean up the directory when done
+	timeout := timeRemaining(ctx)
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			if f == nil {
+				return s.logAndReturnErr(errors.New("stream was closed prematurely"))
+			}
+			f.Close()
+			c, err := dockerClient(ctx, containerName)
+			if err != nil {
+				return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+			}
+			if err := mkdirInContainer(ctx, c, containerName, dir, timeout); err != nil {
+				return s.logAndReturnErr(fmt.Errorf("failed to make directory %s in container %s: %w",
+					dir, containerName, err))
+			}
+			tarFileName := fmt.Sprintf("%s.tar", f.Name())
+			if err := copyFileToTar(f.Name(), tarFileName); err != nil {
+				return s.logAndReturnErr(fmt.Errorf("failed to create tar file %s: %w",
+					tarFileName, err))
+			}
+			if err := c.CopyTo(ctx, containerName, tarFileName, dir); err != nil {
+				return s.logAndReturnErr(fmt.Errorf("failed to copy file %s to container %s as %s: %w",
+					f.Name(), containerName, fn, err))
+			}
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("failed to receive streaming data: %w", err)
+		}
+		switch {
+		case req.GetReqInfo() != nil:
+			info := req.GetReqInfo()
+			containerName = info.GetStationId().GetContainerName()
+			fn = info.GetFilename()
+			dir = filepath.Dir(fn)
+			base := filepath.Base(fn)
+			f, err = os.OpenFile(filepath.Join(tempDir, base), os.O_RDWR|os.O_CREATE, 0644)
+			if err != nil {
+				return s.logAndReturnErr(
+					fmt.Errorf("failed to create temporary file for %s: %w", fn, err))
+			}
+			s.logger.Println("PutFile Request destination file: ", fn)
+		case req.GetData() != nil:
+			if f == nil {
+				return s.logAndReturnErr(errors.New("data was send before file name"))
+			}
+			if _, err := f.Write(req.GetData()); err != nil {
+				return s.logAndReturnErr(
+					fmt.Errorf("failed to write file %s: %w", fn, err))
+			}
+		}
+	}
+	stream.SendAndClose(&bols.PutFileResponse{})
+	s.logger.Println("Served PutFile Request Successfully")
+	return nil
 }
 
 func (s *service) DownloadFile(context.Context, *bols.DownloadFileRequest) (*bols.DownloadFileResponse, error) {
@@ -121,12 +193,13 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 	args := []string{"dmesg", "-H"}
 	c, err := dockerClient(ctx, req.StationId.GetContainerName())
 	if err != nil {
-		return fmt.Errorf("fail to create docker client: %w", err)
+		return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
 	}
 
 	tmpStdout, err := os.CreateTemp("", "dmesg-stdout-*.txt")
 	if err != nil {
-		return fmt.Errorf("failed to create temporary file to capture dmesg stdout: %w", err)
+		return s.logAndReturnErr(
+			fmt.Errorf("failed to create temporary file to capture dmesg stdout: %w", err))
 	}
 	stdoutFileName := tmpStdout.Name()
 	defer os.Remove(stdoutFileName)
@@ -139,22 +212,26 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
 	tmpStdout.Close()
 	if err != nil {
-		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+		return s.logAndReturnErr(
+			fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err))
 	}
 	if res != nil && res.ExitCode != 0 {
-		return fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
+		return s.logAndReturnErr(
+			fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr))
 	}
 	buffer := make([]byte, bufSize)
 	file, err := os.Open(stdoutFileName)
 	if err != nil {
-		return fmt.Errorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err)
+		return s.logAndReturnErr(
+			fmt.Errorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err))
 	}
 	defer file.Close()
 	for {
 		n, err := file.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
-				return fmt.Errorf("failed to read %s for stdout of dmesg: %w", stdoutFileName, err)
+				return s.logAndReturnErr(
+					fmt.Errorf("failed to read %s for stdout of dmesg: %w", stdoutFileName, err))
 			}
 			break // End of file
 		}
@@ -189,7 +266,7 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		req.GetBoard(), req.GetModel(), req.GetStationId().GetServoSerial(), req.GetConfig(),
 		req.GetRecoveryMode(),
 		req.GetStationId().GetServodPort(), s.logger); err != nil {
-		return nil, fmt.Errorf("fail to start servod: %w", err)
+		return nil, s.logAndReturnErr(fmt.Errorf("fail to start servod: %w", err))
 	}
 	return &bols.StartServodResponse{}, nil
 }
@@ -282,6 +359,22 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 			Stdout: []byte(stdout),
 			Stderr: []byte(stderr),
 		}}, nil
+}
+
+func (s *service) logAndReturnErr(err error) error {
+	if s.logger == nil {
+		return err
+	}
+	prefix := ""
+	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller
+	if ok {
+		funcInfo := runtime.FuncForPC(pc)
+		if funcInfo != nil {
+			prefix = fmt.Sprintf("%s:", funcInfo.Name())
+		}
+	}
+	s.logger.Println(prefix, err)
+	return err
 }
 
 func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
@@ -463,4 +556,78 @@ func timeRemaining(ctx context.Context) time.Duration {
 		return time.Until(deadline)
 	}
 	return defaultTimeout
+}
+
+func mkdirInContainer(ctx context.Context, c docker.Client,
+	containerName, path string, timeout time.Duration) error {
+	args := []string{"mkdir", "-p", path}
+	req := &docker.ExecRequest{
+		Timeout: timeout,
+		Cmd:     args,
+	}
+	if _, err := c.Exec(ctx, containerName, req); err != nil {
+		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+	}
+	return nil
+}
+
+func copyFileToTar(filePath, tarFileName string) error {
+	tarfile, err := os.Create(tarFileName)
+	if err != nil {
+		return fmt.Errorf("failed to creat tar file %s: %w", tarFileName, err)
+	}
+	defer tarfile.Close()
+
+	// Create a new tar archive.
+	tw := tar.NewWriter(tarfile)
+	defer tw.Close()
+
+	// Add a file to the archive.
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open %s: %w", filePath, err)
+	}
+	defer file.Close()
+
+	// Get the file info.
+	info, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("failed to get file stat from %s: %w", filePath, err)
+	}
+
+	// Create a tar header.
+	header, err := tar.FileInfoHeader(info, info.Name())
+	if err != nil {
+		return fmt.Errorf("failed to create tar header: %w", err)
+	}
+
+	// Write the header.
+	if err := tw.WriteHeader(header); err != nil {
+		return fmt.Errorf("failed to write tar header: %w", err)
+	}
+
+	// Copy the file data to the tar writer.
+	if _, err := io.Copy(tw, file); err != nil {
+		return fmt.Errorf("failed to copy %s tar file %s archive: %w", filePath, tarFileName, err)
+	}
+	return nil
+}
+
+func extractOneFileFromTarFile(filePath, tarFileName string) error {
+	tarFileReader, err := os.Open(tarFileName)
+	if err != nil {
+		return fmt.Errorf("failed to open tar file %s: %w", tarFileName, err)
+	}
+	outFile, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open file %s: %w", filePath, err)
+	}
+	tr := tar.NewReader(tarFileReader)
+	if _, err := tr.Next(); err != nil {
+		return fmt.Errorf("failed to get content from tar file %s: %w", tarFileName, err)
+	}
+	if _, err = io.Copy(outFile, tr); err != nil {
+		return fmt.Errorf("failed to copy content from tar file %s to %s: %w", tarFileName, filePath, err)
+	}
+	return outFile.Close()
 }

@@ -147,7 +147,8 @@ func verifyPutAndGetFile(ctx context.Context, logger *log.Logger, a *args, cl bo
 }
 
 func putFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient, src, dest string) error {
-	logger.Printf("Sending PutFile Request src: %s dest: %s", src, dest)
+	logger.Printf("Sending PutFile Request src: %s dest: %s servod port: %d servod container %s",
+		src, dest, a.servodPort, a.servodContainer)
 	initReq := &bols.PutFileRequest{
 		Source: &bols.PutFileRequest_ReqInfo{
 			ReqInfo: &bols.PutFileRequestInitInfo{
@@ -209,7 +210,7 @@ func getFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServi
 	if err != nil {
 		return fmt.Errorf("failed to create put file client: %w", err)
 	}
-	f, err := os.OpenFile(dest, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.Create(dest)
 	if err != nil {
 		return fmt.Errorf("failed to open %s: %w", src, err)
 	}

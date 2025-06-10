@@ -93,6 +93,8 @@ func runCLI(ctx context.Context, d []string) int {
 
 	logger := newLogger(logFile)
 	logger.Println("bols_testing version ", Version)
+	logger.Println("Command line: ", d)
+	logger.Printf("Args: %v\n", a)
 	if err := verify(ctx, logger, &a); err != nil {
 		logger.Fatalln("Failed in verification: ", err)
 		return 2
@@ -134,7 +136,7 @@ func BOLSTestingInternal(ctx context.Context) int {
 	}
 	switch runMode {
 	case runCli:
-		log.Printf("Running CLI mode!")
+		log.Println("Running CLI mode: ", os.Args)
 		return runCLI(ctx, os.Args[2:])
 	case runVersion:
 		log.Printf("bols_testing version: %s", Version)
