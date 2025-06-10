@@ -170,16 +170,21 @@ func extractMetadataFlag(metadata *api.ExecutionMetadata, flagName string) (stri
 	return "", fmt.Errorf("flag %s for found in test metadata", flagName)
 }
 
-func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadata, args map[string][]string, board, model string) []string {
-	cmd := []string{}
-
-	uploadToAnts := true
+func isAntsPluginEnabled(logger *log.Logger, metadata *api.ExecutionMetadata) bool {
+	pluginEnabled := true
 	if skipAntsUploadFlag, err := extractMetadataFlag(metadata, "skip_ants_upload"); err == nil {
 		logger.Printf("Skip upload to AnTS: %s", skipAntsUploadFlag)
 		if b, err := strconv.ParseBool(skipAntsUploadFlag); err == nil && b {
-			uploadToAnts = false
+			pluginEnabled = false
 		}
 	}
+	return pluginEnabled
+}
+
+func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadata, args map[string][]string, board, model string) []string {
+	cmd := []string{}
+
+	uploadToAnts := isAntsPluginEnabled(logger, metadata)
 
 	if resultsUpload && uploadToAnts {
 		cmd = append(cmd, "--ants-result-reporter:create-local-invocation",
@@ -191,10 +196,17 @@ func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadat
 			cmd = append(cmd, "--invocation-data", fmt.Sprintf("invocation_id=%s", AnTsInvID))
 			logger.Printf("Got invocation id: %s", AnTsInvID)
 		}
-		if AnTsWorkUnitID, err := extractMetadataFlag(metadata, "ants_work_unit_id"); err == nil { // nolint:staticcheck // ST1003
+
+		// Extract attempted workunit id first from execution metadata, if exist use this WU to upload results,
+		// otherwise fallback to use ants_workunit_id.
+		if AnTsWorkUnitID, err := extractMetadataFlag(metadata, "attempt_wu_id"); err == nil { // nolint:staticcheck // ST1003
+			cmd = append(cmd, "--invocation-data", fmt.Sprintf("work_unit_id=%s", AnTsWorkUnitID))
+			logger.Printf("Got attempted work unit id: %s", AnTsWorkUnitID)
+		} else if AnTsWorkUnitID, err := extractMetadataFlag(metadata, "ants_work_unit_id"); err == nil { // nolint:staticcheck // ST1003
 			cmd = append(cmd, "--invocation-data", fmt.Sprintf("work_unit_id=%s", AnTsWorkUnitID))
 			logger.Printf("Got work unit id: %s", AnTsWorkUnitID)
 		}
+
 		if atpName, err := extractMetadataFlag(metadata, "atp_test_name"); err == nil {
 			cmd = append(cmd, "--invocation-data", fmt.Sprintf("atp_test_name=%s", atpName))
 			logger.Printf("Got ATP test name: %s", atpName)

@@ -58,6 +58,16 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 			"orderedContainerRequests.0.network": "value",
 		},
 	)
+	generator.AddModification(
+		&api.DynamicDep{
+
+			Key:   "testRequest.testSuites.0.executionMetadata.args",
+			Value: `JSON={"flag":"attempt_wu_id","value":"${schedulingMetadata.schedulingArgs.attempt_wu_id}"}`,
+		},
+		map[string]string{
+			"test.dynamicDeps": "",
+		},
+	)
 
 	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 	if err != nil {

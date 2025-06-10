@@ -233,14 +233,18 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 		td.logger.Println("No results to report: ", results)
 	}
 
-	// Adding all global TradeFed logs to the list of artifacts.
-	artifacts = append(artifacts, filepath.Join(os.Getenv("GLOBAL_LOG_PATH"), tradefedGlobalLogs))
+	if !isAntsPluginEnabled(td.logger, executionMD) {
+		// Adding all global TradeFed logs to the list of artifacts.
+		artifacts = append(artifacts, filepath.Join(os.Getenv("GLOBAL_LOG_PATH"), tradefedGlobalLogs))
 
-	td.logger.Println("Collecting result artifacts to:", resultsDir)
-	for _, artifact := range artifacts {
-		if len(artifact) > 0 {
-			td.moveArtifacts(resultsDir, artifact)
+		td.logger.Println("AnTS plugin disabled, collecting result artifacts to:", resultsDir)
+		for _, artifact := range artifacts {
+			if len(artifact) > 0 {
+				td.moveArtifacts(resultsDir, artifact)
+			}
 		}
+	} else {
+		td.logger.Println("AnTS plugin enabled, not moving artifacts")
 	}
 
 	return allRspn, nil
