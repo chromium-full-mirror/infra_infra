@@ -213,6 +213,20 @@ func TestDetectTestType(t *testing.T) {
 				expectedTestType: "apts",
 			},
 			{
+				name: "CSuite test type by name",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("csuite.SomeTestCase", ""),
+				},
+				expectedTestType: "csuite",
+			},
+			{
+				name: "CSuite test type by tag",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("SomeTestCase", "suite:csuite"),
+				},
+				expectedTestType: "csuite",
+			},
+			{
 				name: "General tests by name",
 				testCaseMetadata: []*api.TestCaseMetadata{
 					createMetadataMessage("general.GenTestCase", ""),
