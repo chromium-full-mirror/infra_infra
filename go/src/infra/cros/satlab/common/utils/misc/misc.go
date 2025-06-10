@@ -15,13 +15,13 @@ import (
 
 	"google.golang.org/protobuf/encoding/prototext"
 
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/models"
 	"go.chromium.org/infra/cros/satlab/common/services/build_service"
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/common/utils/parser"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally.
@@ -206,7 +206,7 @@ func IsCustomBuild(build string) bool {
 }
 
 // TopologyJsonToStr converts PASIT topology in JSON format to string formatted as textproto.
-func TopologyJsonToStr(t *api.PasitHost) (string, error) {
+func TopologyJsonToStr(t *ufspb.Pasit) (string, error) {
 	data, err := prototext.MarshalOptions{Multiline: true}.Marshal(t.ProtoReflect().Interface())
 	if err != nil {
 		return "", err

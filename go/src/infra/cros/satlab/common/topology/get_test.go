@@ -15,8 +15,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"go.chromium.org/chromiumos/config/go/test/lab/api"
-
 	"go.chromium.org/infra/cros/satlab/common/paths"
 	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
@@ -54,7 +52,7 @@ func TestGetTopology_validateArgs(t *testing.T) {
 const testHostname = "satlab-123-host1"
 
 var (
-	ph = &api.PasitHost{
+	ph = &ufspb.Pasit{
 		Hostname: testHostname,
 	}
 	fe = &executor.FakeCommander{FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -79,13 +77,13 @@ func TestGetTopology_TriggerRun(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *api.PasitHost
+		want    *ufspb.Pasit
 		wantErr bool
 	}{
 		{"should work", fields{"", testHostname}, args{context.Background(), fe}, ph, false},
-		{"should fail, invalid args", fields{"", ""}, args{context.Background(), FakeCommanderWithCommandError("")}, &api.PasitHost{}, true},
-		{"should fail, get host id", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.GetHostIdentifierScript)}, &api.PasitHost{}, true},
-		{"should fail, get topology via shivas", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.ShivasCLI)}, &api.PasitHost{}, true},
+		{"should fail, invalid args", fields{"", ""}, args{context.Background(), FakeCommanderWithCommandError("")}, &ufspb.Pasit{}, true},
+		{"should fail, get host id", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.GetHostIdentifierScript)}, &ufspb.Pasit{}, true},
+		{"should fail, get topology via shivas", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.ShivasCLI)}, &ufspb.Pasit{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -99,7 +97,7 @@ func TestGetTopology_TriggerRun(t *testing.T) {
 				return
 			}
 			// Ignore unexported Protobuf fields
-			ignorePBFieldOpts := cmpopts.IgnoreUnexported(api.PasitHost{})
+			ignorePBFieldOpts := cmpopts.IgnoreUnexported(ufspb.Pasit{})
 			if diff := cmp.Diff(got, tt.want, ignorePBFieldOpts); diff != "" {
 				fmt.Println("Diff= ", diff)
 				t.Errorf("GetTopology.TriggerRun() = %v, want %v", got, tt.want)
@@ -129,12 +127,12 @@ func TestGetTopology_getDUTTopology(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *api.PasitHost
+		want    *ufspb.Pasit
 		wantErr bool
 	}{
 		{"should work", fields{"", testHostname}, args{context.Background(), fe, testHostname}, ph, false},
-		{"should fail, get dut info via shivas", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.ShivasCLI), testHostname}, &api.PasitHost{}, true},
-		{"should fail, too many duts returned", fields{"", testHostname}, args{context.Background(), fe2, testHostname}, &api.PasitHost{}, true},
+		{"should fail, get dut info via shivas", fields{"", testHostname}, args{context.Background(), FakeCommanderWithCommandError(paths.ShivasCLI), testHostname}, &ufspb.Pasit{}, true},
+		{"should fail, too many duts returned", fields{"", testHostname}, args{context.Background(), fe2, testHostname}, &ufspb.Pasit{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -154,7 +152,7 @@ func TestGetTopology_getDUTTopology(t *testing.T) {
 	}
 }
 
-func machineLSE(name string, ph *api.PasitHost) *ufsModels.MachineLSE {
+func machineLSE(name string, ph *ufspb.Pasit) *ufsModels.MachineLSE {
 	return &ufsModels.MachineLSE{
 		Name:     name,
 		Hostname: name,
@@ -168,7 +166,7 @@ func machineLSE(name string, ph *api.PasitHost) *ufsModels.MachineLSE {
 								Hostname: name,
 								Pools:    []string{"p1"},
 								Peripherals: &ufspb.Peripherals{
-									PasitHost2: ph,
+									Pasit: ph,
 								},
 							},
 						},
