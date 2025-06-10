@@ -18,8 +18,6 @@
     "cmd": [
       "git",
       "clone",
-      "--depth",
-      "1",
       "https://chromium.googlesource.com/chromium/src",
       "[CACHE]/codesearch_update_submodules_mirror/src"
     ],
@@ -121,8 +119,6 @@
     "cmd": [
       "git",
       "fetch",
-      "--depth",
-      "1",
       "origin",
       "refs/branch-heads/3112:refs/remotes/branch-heads/3112"
     ],
@@ -134,8 +130,6 @@
     "cmd": [
       "git",
       "fetch",
-      "--depth",
-      "1",
       "origin",
       "refs/branch-heads/7103:refs/remotes/branch-heads/7103"
     ],
@@ -147,8 +141,6 @@
     "cmd": [
       "git",
       "fetch",
-      "--depth",
-      "1",
       "origin",
       "refs/branch-heads/7151:refs/remotes/branch-heads/7151"
     ],
@@ -160,8 +152,6 @@
     "cmd": [
       "git",
       "fetch",
-      "--depth",
-      "1",
       "origin",
       "refs/branch-heads/7204:refs/remotes/branch-heads/7204"
     ],

@@ -1997,11 +1997,11 @@ This recipe runs legacy analyzers for the infra repo.
 [DEPS](/recipes/recipes/update_submodules_mirror.py#12): [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
 
 
-&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#346)(api, deps, source_checkout_name, overlays):**
+&mdash; **def [GetSubmodules](/recipes/recipes/update_submodules_mirror.py#342)(api, deps, source_checkout_name, overlays):**
 
-&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#314)(ref):**
+&mdash; **def [RefToRemoteRef](/recipes/recipes/update_submodules_mirror.py#310)(ref):**
 
-&mdash; **def [RefsForLatestMilestones](/recipes/recipes/update_submodules_mirror.py#320)(api):**
+&mdash; **def [RefsForLatestMilestones](/recipes/recipes/update_submodules_mirror.py#316)(api):**
 
 Returns the refs to the branch heads for the latest Milestones.
 

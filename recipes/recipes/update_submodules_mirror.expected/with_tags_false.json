@@ -18,8 +18,6 @@
     "cmd": [
       "git",
       "clone",
-      "--depth",
-      "1",
       "https://chromium.googlesource.com/chromium/src",
       "[CACHE]/codesearch_update_submodules_mirror/src"
     ],
@@ -111,9 +109,7 @@
     "cmd": [
       "git",
       "fetch",
-      "-n",
-      "--depth",
-      "1"
+      "-n"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src",
     "infra_step": true,
