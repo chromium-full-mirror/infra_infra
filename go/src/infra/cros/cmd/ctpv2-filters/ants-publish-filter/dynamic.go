@@ -30,11 +30,50 @@ const (
 	partnerRunKey     = "is_partner_run"
 )
 
-func skipTFUpload(req *api.InternalTestplan, log *log.Logger) {
-	log.Printf("Got AL run, setting skip tradefed upload flag")
-	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
-	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
-	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
+// isPartnerRun  parses a string to determine if it represents a partner run.
+// It returns true only if the string is a valid representation of "true".
+func isPartnerRun(partnerRun string, log *log.Logger) bool {
+	isPartner, err := strconv.ParseBool(partnerRun)
+	if err != nil {
+		log.Printf("Error converting partner run value '%s' to bool: %v. Defaulting to false.", partnerRun, err)
+		return false // Explicitly return false on error
+	}
+
+	if isPartner {
+		log.Println("External partner run detected.")
+	}
+
+	return isPartner
+}
+
+// updateTFUploadState determines whether the Tradefed AnTS upload should be
+// skipped and updates the test plan's execution metadata accordingly.
+//
+// The function checks if the upload feature is enabled and whether the
+// run is for a partner. The upload is skipped if the feature is disabled or if
+// it is a partner run.
+func updateTFUploadState(req *api.InternalTestplan, log *log.Logger, publishMetadata *metadata.PublishAntsMetadata) {
+	isPartner := suiteExecutionMetadataArgValue(req, partnerRunKey)
+	// Skips the upload for partner runs, as they are not supported.
+	skipUpload := !publishMetadata.IsTfPluginEnabled || isPartnerRun(isPartner, log)
+
+	if isPartnerRun(isPartner, log) {
+		// Update TFPluginEnabled so that ants-publish is used upload test results and artifacts.
+		publishMetadata.IsTfPluginEnabled = false
+		log.Printf("Partner run detected; Tradefed AnTS upload is not supported and will be disabled.")
+	}
+	log.Printf("Tradefed AnTS upload enabled: %t. Skip upload flag set to: %t.", publishMetadata.IsTfPluginEnabled, skipUpload)
+
+	metadata := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+
+	if metadata != nil {
+		metadata.Args = append(metadata.GetArgs(), &api.Arg{
+			Flag:  skipTFUploadFlag,
+			Value: strconv.FormatBool(skipUpload),
+		})
+	} else {
+		log.Printf("Execution metadata is nil, skipping update of skipTFUploadFlag.")
+	}
 }
 
 func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
@@ -49,15 +88,15 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 		}
 	}
 
-	if alRun {
-		log.Printf("AL run. Adding ants-publish step and skipping upload through TF plugin.")
-		skipTFUpload(req, log)
-	} else {
+	if !alRun {
 		log.Printf("Skipping ants-publish task.")
 
 		// Since this is non-AL run, return without doing anything.
 		return nil
 	}
+
+	// updateTFUploadState determines whether the Tradefed AnTS upload should be enabled.
+	updateTFUploadState(req, log, metadata)
 
 	antsContainerBuilder := builders.NewContainerBuilder(
 		containerID,  //  ContainerID

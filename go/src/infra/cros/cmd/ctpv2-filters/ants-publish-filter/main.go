@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -32,6 +33,7 @@ type ANTSPublishUpdater struct {
 	InvocationID string
 	WorkUnitID   string
 	AccountID    string
+	UseTfPlugIn  string
 }
 
 func (apu *ANTSPublishUpdater) Init(fs *flag.FlagSet, args []string) error {
@@ -39,6 +41,7 @@ func (apu *ANTSPublishUpdater) Init(fs *flag.FlagSet, args []string) error {
 	fs.StringVar(&apu.InvocationID, "invocation-id", "", "ants invocation id")
 	fs.StringVar(&apu.WorkUnitID, "workunit-id", "", "parent workunit id")
 	fs.StringVar(&apu.AccountID, "account-id", "", "account id")
+	fs.StringVar(&apu.UseTfPlugIn, "use-tf-plugin", "false", "enables TF Ants plugin")
 
 	return fs.Parse(args)
 }
@@ -75,6 +78,13 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetada
 		publishMetadata.AccountId = apu.AccountID
 	}
 
+	publishMetadata.IsTfPluginEnabled = false // Default value
+	if enableTFPlugin, err := strconv.ParseBool(apu.UseTfPlugIn); err == nil {
+		publishMetadata.IsTfPluginEnabled = enableTFPlugin
+	} else {
+		log.Printf("Unable to determine TF plugin state due to: %q, defaulting to false", err)
+	}
+
 	return publishMetadata
 }
 
@@ -96,6 +106,13 @@ func (apu *ANTSPublishUpdater) Executor(req *api.InternalTestplan, log *log.Logg
 	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams, apu.PublishPath, "ants-publish")
 	if err != nil {
 		return req, err
+	}
+
+	// TODO(prasadv) : Enable TF AnTS plugin by default on staging instance.
+	// This will upload tests results using plugin instead of ants-publish.
+	// Remove this once we complete the experiment and enable it for production.
+	if commonParams.Environment == common.LabelStaging || commonParams.Environment == common.Staging.String() {
+		apu.UseTfPlugIn = "true"
 	}
 
 	// Add request to publish using ants-publish container.

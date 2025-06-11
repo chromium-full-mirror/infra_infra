@@ -324,6 +324,12 @@ func (aps *AntsPublishService) removeModulePrefix(moduleName string) string {
 
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
+	//Skip uploading test results using ants-publish when TF plugin is enabled.
+	if aps.metadata.GetIsTfPluginEnabled() {
+		log.Printf("TF AnTS plugin is enabled, skip AnTS-Publish results upload")
+		return nil
+	}
+
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
 	if len(aps.results) == 0 {

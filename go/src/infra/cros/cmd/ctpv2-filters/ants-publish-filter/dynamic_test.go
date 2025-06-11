@@ -21,74 +21,123 @@ func TestGeneratePublishTask(t *testing.T) {
 		du         []*api.UserDefinedDynamicUpdate
 		alRun      bool
 		partnerRun bool
+		tfFlag     bool
 		wantDu     int
-		wantArgs   int
+		wantArg    *api.Arg
 	}{
 		{
 			name: "existingDU",
 			du: []*api.UserDefinedDynamicUpdate{
 				{UpdateAction: &api.UpdateAction{Action: &api.UpdateAction_Insert_{}}},
 			},
-			wantDu: 2,
-			alRun:  true,
+			alRun:   true,
+			tfFlag:  false,
+			wantDu:  2,
+			wantArg: &api.Arg{Flag: skipTFUploadFlag, Value: "true"},
 		},
 		{
-			name:   "missingDU",
-			wantDu: 1,
-			alRun:  true,
+			name:    "missingDU",
+			alRun:   true,
+			tfFlag:  false,
+			wantDu:  1,
+			wantArg: &api.Arg{Flag: skipTFUploadFlag, Value: "true"},
 		},
 		{
 			name: "nonAL",
+			// wantDu defaults to 0, which is correct.
+			// wantArg is nil, which is correct as nothing is added.
 		},
 		{
-			name:     "partner",
-			alRun:    true,
-			wantDu:   1,
-			wantArgs: 2,
+			name:       "partnerTfEnabled",
+			alRun:      true,
+			partnerRun: true,
+			tfFlag:     true,
+			wantDu:     1,
+			wantArg:    &api.Arg{Flag: skipTFUploadFlag, Value: "true"},
+		},
+		{
+			name:       "partnerTfDisabled",
+			alRun:      true,
+			partnerRun: true,
+			tfFlag:     false,
+			wantDu:     1,
+			wantArg:    &api.Arg{Flag: skipTFUploadFlag, Value: "true"},
+		},
+		{
+			name:    "tfEnabled",
+			alRun:   true,
+			tfFlag:  true,
+			wantDu:  1,
+			wantArg: &api.Arg{Flag: skipTFUploadFlag, Value: "false"},
+		},
+		{
+			name:    "tfDisabled",
+			alRun:   true,
+			tfFlag:  false,
+			wantDu:  1,
+			wantArg: &api.Arg{Flag: skipTFUploadFlag, Value: "true"},
 		},
 	}
 
 	log := log.New(os.Stdout, "test", 1)
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var args []*api.Arg
+			var initialArgs []*api.Arg
+			var wantLen int
 			if tc.alRun {
-				args = append(args, &api.Arg{Flag: alRunKey, Value: "true"})
+				initialArgs = append(initialArgs, &api.Arg{Flag: alRunKey, Value: "true"})
+				wantLen = 2 // Starts with 1, will end with 2
+				if tc.partnerRun {
+					initialArgs = append(initialArgs, &api.Arg{Flag: partnerRunKey, Value: "true"})
+					wantLen = 3 // Starts with 2, will end with 3
+				}
 			}
+
+			var execMeta *api.ExecutionMetadata
+			if tc.alRun {
+				execMeta = &api.ExecutionMetadata{Args: initialArgs}
+			}
+
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
-						DynamicUpdates: tc.du,
-						ExecutionMetadata: &api.ExecutionMetadata{
-							Args: args,
-						},
+						DynamicUpdates:    tc.du,
+						ExecutionMetadata: execMeta,
 					},
 				},
 			}
-			m := &metadata.PublishAntsMetadata{}
-			err := GeneratePublishTask(req, m, "path", log)
-			if err != nil {
-				t.Errorf("Unexpected error: %q", err)
+			m := &metadata.PublishAntsMetadata{IsTfPluginEnabled: tc.tfFlag}
+
+			if tc.alRun {
+				if err := GeneratePublishTask(req, m, "path", log); err != nil {
+					t.Fatalf("Unexpected error: %q", err)
+				}
 			}
 
 			du := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
 			if len(du) != tc.wantDu {
-				t.Errorf("Unexpected dynamic updates length . got %d want %d", len(du), tc.wantDu)
+				t.Errorf("Unexpected dynamic updates length: got %d, want %d", len(du), tc.wantDu)
 			}
 
-			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
-			if tc.alRun {
-				if len(gotArgs) != 2 {
-					t.Errorf("Unexpected execution metadata args %v len: got(%d), want(2)", gotArgs, len(gotArgs))
+			var gotArgs []*api.Arg
+			if execMeta != nil {
+				gotArgs = req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+			}
+
+			if !tc.alRun {
+				if len(gotArgs) != 0 {
+					t.Errorf("Expected no args for non-AL run, but got %d", len(gotArgs))
 				}
-				wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
-				if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
-					t.Errorf("Unexpected diff: %s", diff)
-				}
-			} else {
-				if len(gotArgs) != tc.wantArgs {
-					t.Errorf("Unexpected execution metadata args len: got(%d), want(%d)", len(gotArgs), tc.wantArgs)
-				}
+				return
+			}
+
+			if len(gotArgs) != wantLen {
+				t.Fatalf("Unexpected execution metadata args len: got(%d), want(%d)", len(gotArgs), wantLen)
+			}
+
+			lastArg := gotArgs[len(gotArgs)-1]
+			if diff := cmp.Diff(tc.wantArg, lastArg, protocmp.Transform()); diff != "" {
+				t.Errorf("Unexpected diff in the last added arg (-want +got):\n%s", diff)
 			}
 		})
 	}
