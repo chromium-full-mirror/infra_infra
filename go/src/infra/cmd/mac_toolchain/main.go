@@ -313,7 +313,7 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 		kind:                   c.kind,
 		serviceAccountJSON:     c.serviceAccountJSON,
 		packageInstallerOnBots: PackageInstallerOnBots,
-		withRuntime:            c.withRuntime && c.kind == iosKind,
+		withRuntime:            c.withRuntime && (c.kind == iosKind || c.kind == tvosKind),
 		tmpXcodePath:           xcodeTmpApp,
 	}
 	err := installXcode(ctx, installArgs)
