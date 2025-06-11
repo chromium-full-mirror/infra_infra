@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -27,10 +28,13 @@ import (
 
 // GetFileStat reads file information from the labstation.
 func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
+	s.logger.Println("Receive GetFileStat Request")
 	fs, err := fstat(req.GetFilepath())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file status of %s: %w", req.GetFilepath(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to get file status of %s: %w", req.GetFilepath(), err))
 	}
+	s.logger.Println("Served GetFileStat Request Successfully")
 	return &bols.GetFileStatResponse{
 		FileStats: fs,
 	}, nil
@@ -38,17 +42,18 @@ func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest)
 
 // GetFile gets a file from labstation.
 func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
+	s.logger.Println("Receive GetFile Request")
 	fn := req.GetFilename()
 	fileInfo, err := os.Lstat(fn)
 	if err != nil {
-		return fmt.Errorf("failed to stat file: %w", err)
+		return s.logAndReturnError(fmt.Errorf("failed to stat file: %w", err))
 	}
 	// Check if the file mode indicates it's a symbolic link.
 	if fileInfo.Mode()&os.ModeSymlink != 0 {
 		// os.Readlink returns the path the symbolic link points to.
 		resolvedPath, err := os.Readlink(fn)
 		if err != nil {
-			return fmt.Errorf("failed to resolve symbolic link: %w", err)
+			return s.logAndReturnError(fmt.Errorf("failed to resolve symbolic link: %w", err))
 		}
 		// In case the symlink is relative, resolve it to an absolute path
 		// based on the link's directory.
@@ -60,7 +65,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 	}
 	file, err := os.Open(fn)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %w", fn, err)
+		return s.logAndReturnError(fmt.Errorf("failed to open file %s: %w", fn, err))
 	}
 	defer file.Close()
 	data := make([]byte, 1024*1024)
@@ -70,12 +75,13 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to read file %s: %w", fn, err)
+			return s.logAndReturnError(fmt.Errorf("failed to read file %s: %w", fn, err))
 		}
 		stream.Send(&bols.GetFileResponse{
 			Data: data[:n],
 		})
 	}
+	s.logger.Println("Served GetFile Request Successfully")
 	return nil
 }
 
@@ -93,7 +99,7 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			break
 		}
 		if err != nil {
-			return s.logError(fmt.Errorf("failed to receive streaming data: %w", err))
+			return s.logAndReturnError(fmt.Errorf("failed to receive streaming data: %w", err))
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -101,20 +107,20 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			fn = info.GetFilename()
 			dir := filepath.Dir(fn)
 			if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-				return s.logError(fmt.Errorf("failed to create directory %s: %w", dir, err))
+				return s.logAndReturnError(fmt.Errorf("failed to create directory %s: %w", dir, err))
 			}
 			f, err = os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 			if err != nil {
-				return s.logError(fmt.Errorf("failed to open file %s: %w", fn, err))
+				return s.logAndReturnError(fmt.Errorf("failed to open file %s: %w", fn, err))
 			}
 			defer f.Close()
 			s.logger.Println("PutFile Request destination file: ", fn)
 		case req.GetData() != nil:
 			if f == nil {
-				return s.logError(errors.New("data was send before file name"))
+				return s.logAndReturnError(errors.New("data was send before file name"))
 			}
 			if _, err := f.Write(req.GetData()); err != nil {
-				return s.logError(fmt.Errorf("failed to write file %s: %w", fn, err))
+				return s.logAndReturnError(fmt.Errorf("failed to write file %s: %w", fn, err))
 			}
 		}
 	}
@@ -131,28 +137,34 @@ func (s *service) DownloadFile(context.Context, *bols.DownloadFileRequest) (*bol
 
 // RemoveFile removes a file on labstation/container.
 func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (*bols.RemoveFileResponse, error) {
+	s.logger.Println("Receive RemoveFile Request")
 	fn := req.GetFilename()
 	if err := os.Remove(fn); err != nil {
-		return nil, fmt.Errorf("failed to remove file %s: %w", fn, err)
+		return nil, s.logAndReturnError(fmt.Errorf("failed to remove file %s: %w", fn, err))
 	}
+	s.logger.Println("Served RemoveFile Request Successfully")
 	return &bols.RemoveFileResponse{}, nil
 }
 
 // DirInfo reads a directory info from the labstation.
 func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (*bols.GetDirInfoResponse, error) {
+	s.logger.Println("Receive GetDirInfo Request")
 	path := req.GetPath()
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get information on directory %s: %w", path, err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to get information on directory %s: %w", path, err))
 	}
 	var stats []*bols.FileStat
 	for _, e := range entries {
 		stat, err := fstat(e.Name())
 		if err != nil {
-			return nil, fmt.Errorf("failed to get information on %s: %w", e.Name(), err)
+			return nil, s.logAndReturnError(
+				fmt.Errorf("failed to get information on %s: %w", e.Name(), err))
 		}
 		stats = append(stats, stat)
 	}
+	s.logger.Println("Served GetDirInfo Request Successfully")
 	return &bols.GetDirInfoResponse{
 		Info: &bols.DirectoryInfo{
 			Path:      path,
@@ -163,22 +175,28 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 
 // MakeDir makes a directory on the labstation.
 func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.MakeDirResponse, error) {
+	s.logger.Println("Receive MakeDir Request")
 	dirName := req.GetPath()
 	if err := os.MkdirAll(dirName, 0750); err != nil {
-		return nil, fmt.Errorf("failed to make directory %s: %w", dirName, err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to make directory %s: %w", dirName, err))
 	}
+	s.logger.Println("Served MakeDir Request Successfully")
 	return &bols.MakeDirResponse{}, nil
 }
 
 // MakeTempDir makes a directory on the labstation.
 func (s *service) MakeTempDir(ctx context.Context, req *bols.MakeTempDirRequest) (*bols.MakeTempDirResponse, error) {
+	s.logger.Println("Receive MakeTempDir Request")
 	dirName := req.GetDir()
 	pattern := req.GetPattern()
 	path, err := os.MkdirTemp(dirName, pattern)
 	if err != nil {
-		return nil, fmt.Errorf("failed to make temporary directory in %s with pattern %q: %w",
-			dirName, pattern, err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to make temporary directory in %s with pattern %q: %w",
+				dirName, pattern, err))
 	}
+	s.logger.Println("Served MakeTempDir Request Successfully")
 	return &bols.MakeTempDirResponse{
 		Info: &bols.DirectoryInfo{
 			Path: path,
@@ -188,26 +206,33 @@ func (s *service) MakeTempDir(ctx context.Context, req *bols.MakeTempDirRequest)
 
 // RemoveDir removes a directory from labstation/container.
 func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*bols.RemoveDirResponse, error) {
+	s.logger.Println("Receive RemoveDir Request")
 	path := req.GetPath()
 	fi, err := os.Stat(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file status of %s: %w", path, err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to get file status of %s: %w", path, err))
 	}
 	if !fi.IsDir() {
-		return nil, fmt.Errorf("the path %s is not a directory", path)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("the path %s is not a directory", path))
 	}
 	if err := os.RemoveAll(path); err != nil {
-		return nil, fmt.Errorf("failed to remove directory %s: %w", path, err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to remove directory %s: %w", path, err))
 	}
+	s.logger.Println("Served RemoveDir Request Successfully")
 	return &bols.RemoveDirResponse{}, nil
 }
 
 // DMesg returns the output from the dmesg command.
 func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgServer) error {
+	s.logger.Println("Receive DMesg Request")
 	ctx := stream.Context()
 	data, err := exec.CommandContext(ctx, "dmesg", "-H").CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("failed to run dmesg: %s : %w", string(data), err)
+		return s.logAndReturnError(
+			fmt.Errorf("failed to run dmesg: %s : %w", string(data), err))
 	}
 	const size int = 1024 * 1024
 	for len(data) > 0 {
@@ -222,6 +247,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 		})
 		data = data[n:]
 	}
+	s.logger.Println("Served DMesg Request Successfully")
 	return nil
 }
 
@@ -229,6 +255,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 // For most implementation of this service, it will be simple
 // call to "dd <filename> oflag=sync conv=notrunc,nocreat".
 func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServer) error {
+	s.logger.Println("Receive WriteFileByBlock Request")
 	var fn string
 	var byteSize int32
 	var stdin io.WriteCloser
@@ -239,15 +266,18 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 		req, err := stream.Recv()
 		if err == io.EOF {
 			if err := stdin.Close(); err != nil {
-				return fmt.Errorf("failed to close stdin to dd: %w", err)
+				return s.logAndReturnError(
+					fmt.Errorf("failed to close stdin to dd: %w", err))
 			}
 			if err := cmd.Wait(); err != nil {
-				return fmt.Errorf("failed to wait for dd to finish: %w", err)
+				return s.logAndReturnError(
+					fmt.Errorf("failed to wait for dd to finish: %w", err))
 			}
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to receive streaming data: %w", err)
+			return s.logAndReturnError(
+				fmt.Errorf("failed to receive streaming data: %w", err))
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -264,7 +294,8 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 			cmd = exec.CommandContext(ctx, "dd", args...)
 			stdin, err = cmd.StdinPipe()
 			if err != nil {
-				return fmt.Errorf("failed to create stdin to dd: %w", err)
+				return s.logAndReturnError(
+					fmt.Errorf("failed to create stdin to dd: %w", err))
 			}
 		case req.GetData() != nil:
 			if fn == "" {
@@ -272,10 +303,12 @@ func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServe
 			}
 			if _, err := io.Writer.Write(stdin, req.GetData()); err != nil {
 				stdin.Close()
-				return fmt.Errorf("failed to write data to file %s: %w", fn, err)
+				return s.logAndReturnError(
+					fmt.Errorf("failed to write data to file %s: %w", fn, err))
 			}
 		}
 	}
+	s.logger.Println("Served WriteFileByBlock Request Successfully")
 	return nil
 }
 
@@ -289,6 +322,7 @@ func (s *service) ReadFileByBlock(*bols.ReadFileByBlockRequest, bols.BolsService
 
 // RunMount runs the "mount" command on the labstation.
 func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bols.RunMountResponse, error) {
+	s.logger.Println("Receive RunMount Request")
 	var args []string
 	args = append(args, req.GetParams()...)
 	if req.GetSrc() != "" {
@@ -298,24 +332,31 @@ func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bol
 		args = append(args, req.GetDest())
 	}
 	if out, err := exec.CommandContext(ctx, "mount", args...).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to mount %s to %s: %s: %w", req.GetSrc(), req.GetDest(), string(out), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to mount %s to %s: %s: %w", req.GetSrc(), req.GetDest(), string(out), err))
 	}
+	s.logger.Println("Served RunMount Request Successfully")
 	return &bols.RunMountResponse{}, nil
 }
 
 // RunUMount runs the "umount" command on the labstation.
 func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
+	s.logger.Println("Receive RunUMount Request")
 	if out, err := exec.CommandContext(ctx, "umount", req.GetPath()).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to umount %s: %s: %w", req.GetPath(), string(out), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to umount %s: %s: %w", req.GetPath(), string(out), err))
 	}
+	s.logger.Println("Served RunUMount Request Successfully")
 	return &bols.RunUMountResponse{}, nil
 }
 
 // StartServod runs a servod daemon.
 func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
+	s.logger.Println("Receive StartServod Request")
 	port := req.GetStationId().GetServodPort()
 	if err := markInUseFile(port); err != nil {
-		return nil, fmt.Errorf("failed to mark in use file: %w", err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to mark in use file: %w", err))
 	}
 	if getServodStatus(ctx, port) == bols.ServodStatus_SERVOD_RUNNING {
 		// Since servod has already been started, do not need to start again.
@@ -339,12 +380,14 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		args = append(args, "REC_MODE=1")
 	}
 	if out, err := exec.CommandContext(ctx, "start", args...).CombinedOutput(); err != nil {
-		return nil, fmt.Errorf("failed to start servod at %d: %s: %w", port, string(out), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to start servod at %d: %s: %w", port, string(out), err))
 	}
 	if out, err := exec.CommandContext(ctx, "servodtool", "instance", "wait-for-active",
 		"--timeout", "120", "-p", fmt.Sprintf("%d", port)).Output(); err != nil {
 		s.logger.Printf("Failed to check if servod is ready: %s: %v", string(out), err)
 	}
+	s.logger.Println("Served StartServod Request Successfully")
 	return &bols.StartServodResponse{}, nil
 }
 
@@ -355,7 +398,9 @@ func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.St
 
 // GetServodStatus gets the current status of servod.
 func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
+	s.logger.Println("Receive GetServodStatus Request")
 	status := getServodStatus(ctx, req.StationId.GetServodPort())
+	s.logger.Println("Served GetServodStatus Request Successfully")
 	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
@@ -371,42 +416,53 @@ func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.Re
 
 // GetServod gets a servod control value.
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
+	s.logger.Println("Receive GetServod Request")
 	rpsn, err := xmlrpc.GetServod(ctx, "localhost", req.GetStationId().GetServodPort(), req.GetControl())
 	if err != nil {
-		return nil, fmt.Errorf("failed to send get %s request to servod at port %d: %w",
-			req.GetControl(), req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to send get %s request to servod at port %d: %w",
+				req.GetControl(), req.GetStationId().GetServodPort(), err))
 	}
-
+	s.logger.Println("Served GetServod Request Successfully")
 	return rpsn, nil
 }
 
 // SetServod sets value to a servod control.
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
+	s.logger.Println("Receive SetServod Request")
 	rpsn, err := xmlrpc.SetServod(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send set %s request to servod at port %d: %w",
-			req.GetControl(), req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to send set %s request to servod at port %d: %w",
+				req.GetControl(), req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served SetServod Request Successfully")
 	return rpsn, nil
 }
 
 // GetServodVersion reads version of started servod.
 func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
+	s.logger.Println("Receive GetServodVersion Request")
 	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get version of servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to get version of servod at port %d: %w",
+				req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served GetServodVersion Request Successfully")
 	return rpsn, nil
 }
 
 // EchoServod calls echo method of servod.
 func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
+	s.logger.Println("Receive EchoServod Request")
 	rpsn, err := xmlrpc.EchoServod(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send echo request to servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to send echo request to servod at port %d: %w",
+				req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served EchoServod Request Successfully")
 	return rpsn, nil
 }
 
@@ -422,16 +478,20 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 
 // RunFutility run futility tool on labstation.
 func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
+	s.logger.Println("Receive RunFutility Request")
 	if err := util.CheckFutilityParams(req); err != nil {
-		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to validate parameters: %w", err))
 	}
 	cmd := exec.CommandContext(ctx, "futility", req.GetParams()...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("failed to run futility: %s: %w", stderr.String(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to run futility: %s: %w", stderr.String(), err))
 	}
+	s.logger.Println("Served RunFutility Request Successfully")
 	return &bols.RunFutilityResponse{
 		Output: &bols.OutputStream{
 			Stdout: stdout.Bytes(),
@@ -442,16 +502,20 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 // RunFlashEC runs EC firmware flashing from the servo.
 // In most of implementation, it runs flash_ec tool on labstation.
 func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
+	s.logger.Println("Receive RunFlashEC Request")
 	if err := util.CheckFlashECParams(req); err != nil {
-		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to validate parameters: %w", err))
 	}
 	cmd := exec.CommandContext(ctx, "flash_ec", req.GetParams()...)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("failed to run flash_ec: %s: %w", stderr.String(), err)
+		return nil, s.logAndReturnError(
+			fmt.Errorf("failed to run flash_ec: %s: %w", stderr.String(), err))
 	}
+	s.logger.Println("Served RunFlashEC Request Successfully")
 	return &bols.RunFlashECResponse{
 		Output: &bols.OutputStream{
 			Stdout: stdout.Bytes(),
@@ -481,8 +545,19 @@ func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*b
 }
 
 // FindDolosUART finds the UART of the Dolos.
-func (s *service) logError(err error) error {
-	s.logger.Println(err)
+func (s *service) logAndReturnError(err error) error {
+	if s.logger == nil {
+		return err
+	}
+	prefix := ""
+	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller
+	if ok {
+		funcInfo := runtime.FuncForPC(pc)
+		if funcInfo != nil {
+			prefix = fmt.Sprintf("%s:", funcInfo.Name())
+		}
+	}
+	s.logger.Println(prefix, err)
 	return err
 }
 

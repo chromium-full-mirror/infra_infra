@@ -134,7 +134,7 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			break
 		}
 		if err != nil {
-			return fmt.Errorf("failed to receive streaming data: %w", err)
+			return s.logAndReturnErr(fmt.Errorf("failed to receive streaming data: %w", err))
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -189,6 +189,7 @@ func (s *service) RemoveDir(context.Context, *bols.RemoveDirRequest) (*bols.Remo
 }
 
 func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgServer) error {
+	s.logger.Println("Receive DMesg Request")
 	ctx := stream.Context()
 	args := []string{"dmesg", "-H"}
 	c, err := dockerClient(ctx, req.StationId.GetContainerName())
@@ -241,6 +242,7 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 			},
 		})
 	}
+	s.logger.Println("Served DMesg Request Successfully")
 	return nil
 }
 
@@ -261,6 +263,7 @@ func (s *service) RunUMount(context.Context, *bols.RunUMountRequest) (*bols.RunU
 }
 
 func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
+	s.logger.Println("Receive StartServod Request")
 	if err := startServod(ctx,
 		req.GetStationId().GetContainerName(),
 		req.GetBoard(), req.GetModel(), req.GetStationId().GetServoSerial(), req.GetConfig(),
@@ -268,6 +271,7 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		req.GetStationId().GetServodPort(), s.logger); err != nil {
 		return nil, s.logAndReturnErr(fmt.Errorf("fail to start servod: %w", err))
 	}
+	s.logger.Println("Served StartServod Request Successfully")
 	return &bols.StartServodResponse{}, nil
 }
 
@@ -276,14 +280,16 @@ func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.St
 }
 
 func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
+	s.logger.Println("Receive GetServodStatus Request")
 	c, err := docker.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("fail to create docker client: %w", err)
+		return nil, s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
 	}
 	status, err := servodStatus(ctx, c, req.GetStationId().GetContainerName(), req.GetStationId().GetServodPort())
 	if err != nil {
-		return nil, fmt.Errorf("fail to get servod status: %w", err)
+		return nil, s.logAndReturnErr(fmt.Errorf("fail to get servod status: %w", err))
 	}
+	s.logger.Println("Served GetServodStatus Request Successfully")
 	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
@@ -296,39 +302,51 @@ func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.Re
 }
 
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
+	s.logger.Println("Receive GetServod Request")
 	rpsn, err := xmlrpc.GetServod(ctx, req.GetStationId().GetContainerName(),
 		req.GetStationId().GetServodPort(), req.GetControl())
 	if err != nil {
-		return nil, fmt.Errorf("failed to send get %s request to servod at port %d: %w",
-			req.GetControl(), req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to send get %s request to servod at port %d: %w",
+				req.GetControl(), req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served GetServod Request Successfully")
 	return rpsn, nil
 }
 
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
+	s.logger.Println("Receive SetServod Request")
 	rpsn, err := xmlrpc.SetServod(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send set %s request to servod at port %d: %w",
-			req.GetControl(), req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to send set %s request to servod at port %d: %w",
+				req.GetControl(), req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served SetServod Request Successfully")
 	return rpsn, nil
 }
 
 func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
+	s.logger.Println("Receive GetServodVersion Request")
 	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get version of servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to get version of servod at port %d: %w",
+				req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served GetServodVersion Request Successfully")
 	return rpsn, nil
 }
 
 func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
+	s.logger.Println("Receive EchoServod Request")
 	rpsn, err := xmlrpc.EchoServod(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send echo request to servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to send echo request to servod at port %d: %w",
+				req.GetStationId().GetServodPort(), err))
 	}
+	s.logger.Println("Served EchoServod Request Successfully")
 	return rpsn, nil
 }
 
@@ -341,19 +359,24 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 }
 
 func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
+	s.logger.Println("Receive RunFutility Request")
 	if err := util.CheckFutilityParams(req); err != nil {
-		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to validate parameters: %w", err))
 	}
 	args := append([]string{"futility"}, req.GetParams()...)
 	c, err := docker.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("fail to create docker client: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("fail to create docker client: %w", err))
 	}
 	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
 		timeRemaining(ctx))
 	if err != nil {
-		return nil, fmt.Errorf("fail to execute futility command: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("fail to execute futility command: %w", err))
 	}
+	s.logger.Println("Served RunFutility Request Successfully")
 	return &bols.RunFutilityResponse{
 		Output: &bols.OutputStream{
 			Stdout: []byte(stdout),
@@ -361,36 +384,25 @@ func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest)
 		}}, nil
 }
 
-func (s *service) logAndReturnErr(err error) error {
-	if s.logger == nil {
-		return err
-	}
-	prefix := ""
-	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller
-	if ok {
-		funcInfo := runtime.FuncForPC(pc)
-		if funcInfo != nil {
-			prefix = fmt.Sprintf("%s:", funcInfo.Name())
-		}
-	}
-	s.logger.Println(prefix, err)
-	return err
-}
-
 func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
+	s.logger.Println("Receive RunFlashEC Request")
 	if err := util.CheckFlashECParams(req); err != nil {
-		return nil, fmt.Errorf("failed to validate parameters: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to validate parameters: %w", err))
 	}
 	args := append([]string{"flash_ec"}, req.GetParams()...)
 	c, err := docker.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("fail to create docker client: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("fail to create docker client: %w", err))
 	}
 	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
 		timeRemaining(ctx))
 	if err != nil {
-		return nil, fmt.Errorf("fail to execute flash_ec command: %w", err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("fail to execute flash_ec command: %w", err))
 	}
+	s.logger.Println("Served RunFlashEC Request Successfully")
 	return &bols.RunFlashECResponse{
 		Output: &bols.OutputStream{
 			Stdout: []byte(stdout),
@@ -412,6 +424,22 @@ func (s *service) GetDolosStatus(context.Context, *bols.GetDolosStatusRequest) (
 
 func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*bols.FindDolosUARTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindDolosUART not implemented")
+}
+
+func (s *service) logAndReturnErr(err error) error {
+	if s.logger == nil {
+		return err
+	}
+	prefix := ""
+	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller
+	if ok {
+		funcInfo := runtime.FuncForPC(pc)
+		if funcInfo != nil {
+			prefix = fmt.Sprintf("%s:", funcInfo.Name())
+		}
+	}
+	s.logger.Println(prefix, err)
+	return err
 }
 
 func startServod(ctx context.Context, containerName, board, model, serial, config string,
