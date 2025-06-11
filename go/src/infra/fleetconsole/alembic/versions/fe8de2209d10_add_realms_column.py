@@ -1,3 +1,6 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """add realms column
 
 Revision ID: fe8de2209d10
@@ -19,9 +22,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column('Devices', sa.Column('realm', sa.String))
-    pass
+  op.add_column('Devices', sa.Column('realm', sa.String))
+  pass
 
 
 def downgrade() -> None:
-    op.drop_column('Devices', 'realm')
+  op.drop_column('Devices', 'realm')
