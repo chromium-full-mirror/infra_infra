@@ -11140,6 +11140,18 @@ wheel: <
 
 * *universal*
 
+### 2.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/urllib3-py3"
+  version: "version:2.4.0"
+>
+```
+
+
+* *universal*
+
 ## **vcrpy**
 
 ### 4.2.1

@@ -1891,6 +1891,7 @@ SPECS.update({
         Universal('urllib3', '2.0.3',  pyversions=['py3']),
         Universal('urllib3', '2.0.7',  pyversions=['py3']),
         Universal('urllib3', '2.1.0',  pyversions=['py3']),
+        Universal('urllib3', '2.4.0',  pyversions=['py3']),
         Universal('virt-firmware', '23.5', pyversions=['py3']),
         Universal('virtualenv', '20.0.20'),
         Universal('virtualenv', '20.24.2', pyversions=['py3']),
