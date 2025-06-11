@@ -11,6 +11,10 @@ from recipe_engine import recipe_api
 class CodesearchApi(recipe_api.RecipeApi):
   _PROJECT_BROWSER, _PROJECT_OS, _PROJECT_UNSUPPORTED = range(3)
 
+  def __init__(self, **kwargs):
+    super().__init__(**kwargs)
+    self._kythe_dir = None
+
   @property
   def _is_experimental(self) -> bool:
     """Return whether this build is running in experimental mode."""
@@ -83,6 +87,72 @@ class CodesearchApi(recipe_api.RecipeApi):
         self.c.out_path,
     ])
 
+  def ensure_kythe(self):
+    """Ensures kythe is installed using cipd and returns its root directory.
+    """
+    if self._kythe_dir is None:
+      packages_root = self.m.path.start_dir / 'packages'
+      ensure_file = self.m.cipd.EnsureFile().add_package(
+          'infra/3pp/tools/kythe', 'version:3@v0.0.71', 'kythe')
+      self.m.cipd.ensure(packages_root, ensure_file)
+      self._kythe_dir = packages_root / 'kythe'
+    return self._kythe_dir
+
+  def run_rust_project_extractor(self, checkout_dir: config_types.Path):
+    # In package_index, we generate paths relative to the output root.
+    # We'll tell Kythe's Rust extractor that it's the root as well.
+    # Kythe's Rust extractor also needs to know how these outroot-relative
+    # paths are mapped to vnames like how we do it in package_index.
+    # Spec:
+    # https://kythe.io/examples/#:~:text=%7D%0A%20%20%20%7D%0A%20%7D-,VName%20configuration,-Next%2C%20you%20will
+    vnames_config = [
+        {
+            # If the output root is src/out/Default
+            # and source root is src/
+            # Then the expected path of src/foo/bar.rs would be
+            # ../../foo/bar.rs
+            # And the expected vname would be foo/bar.rs
+            'pattern':
+                self.m.path.relpath(
+                    checkout_dir,
+                    self.c.out_path,
+                ) + '/(.*)',
+            'vname': {
+                'path': '@1@'
+            },
+        },
+        {
+            # Chromium puts its generated files under out/ and vname for
+            # generated files should have root set to separate them from other
+            # source files. See b/354949952 for more info.
+            'pattern': '(.*)',
+            'vname': {
+                'root': 'out',
+                'path': '@1@'
+            },
+        },
+    ]
+    vnames_config_json = self.m.json.dumps(vnames_config)
+
+    rust_kzip_path = self.m.path.mkstemp()
+    self.m.step(
+        "extract Rust kzips",
+        [
+            self.ensure_kythe().joinpath('extractors', 'rustproject_extractor'),
+            '--corpus',
+            self.c.CORPUS,
+            '--output',
+            rust_kzip_path,
+            '--vnames_json_path',
+            self.m.raw_io.input_text(vnames_config_json, suffix='.json'),
+            '--root',
+            self.c.out_path,
+            '--project_json',
+            self.c.out_path / 'rust-project.json',
+        ],
+    )
+    return rust_kzip_path
+
   def clone_clang_tools(self, clone_dir):
     """Clone chromium/src clang tools."""
     clang_dir = clone_dir / 'clang'
@@ -105,6 +175,7 @@ class CodesearchApi(recipe_api.RecipeApi):
       run_dirs: Dirs in which to run the clang tool.
       target_architecture: If given, the architecture to transpile for.
     """
+    # TODO(crbug.com/329113288): Don't use self.m.path.checkout_dir
     clang_dir = clang_dir or self.m.path.checkout_dir.joinpath('tools', 'clang')
 
     # Download the clang tool.
@@ -214,6 +285,7 @@ class CodesearchApi(recipe_api.RecipeApi):
     index_pack_kythe_path = self.c.out_path / index_pack_kythe_name
     self._create_kythe_index_pack(
         index_pack_kythe_path,
+        # TODO(crbug.com/329113288): Don't use self.m.path.checkout_dir
         checkout_dir or self.m.path.checkout_dir,
         clang_target_arch=clang_target_arch)
 
