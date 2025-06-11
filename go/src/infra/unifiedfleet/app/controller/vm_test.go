@@ -264,16 +264,16 @@ func TestUpdateVM(t *testing.T) {
 				Name:         "vm-update-2",
 				MachineLseId: "update-host",
 			}
-			_, err := CreateVM(ctx, vm1, nil)
+			resp1, err := CreateVM(ctx, vm1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			resp, err := UpdateVMHost(ctx, vm1, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_DEPLOYING))
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(resp1.GetResourceState()))
 			s, err := state.GetStateRecord(ctx, "vms/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYING))
+			assert.Loosely(t, s.GetState(), should.Equal(resp1.GetResourceState()))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": dhcp.GetIp()})
@@ -285,7 +285,7 @@ func TestUpdateVM(t *testing.T) {
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
 			// VM created & vlan, ip changes
-			assert.Loosely(t, changes, should.HaveLength(4))
+			assert.Loosely(t, changes, should.HaveLength(3))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
@@ -295,18 +295,12 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("vm.ip"))
 			assert.Loosely(t, changes[2].GetOldValue(), should.BeEmpty)
 			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("192.168.40.11"))
-			assert.Loosely(t, changes[3].GetEventLabel(), should.Equal("vm.resource_state"))
-			assert.Loosely(t, changes[3].GetOldValue(), should.Equal("STATE_REGISTERED"))
-			assert.Loosely(t, changes[3].GetNewValue(), should.Equal("STATE_DEPLOYING"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
-			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("state_record.state"))
-			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
-			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
 			// Come from UpdateVM
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -326,7 +320,7 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(2))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-2")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(1))
@@ -358,7 +352,7 @@ func TestUpdateVM(t *testing.T) {
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-update-3")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, changes, should.HaveLength(7))
+			assert.Loosely(t, changes, should.HaveLength(5))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
@@ -370,15 +364,9 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, changes[2].GetOldValue(), should.BeEmpty)
 			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("192.168.40.19"))
 			// From deleting vm's ip
-			assert.Loosely(t, changes[4].GetEventLabel(), should.Equal("vm.vlan"))
-			assert.Loosely(t, changes[4].GetOldValue(), should.Equal("vlan-1"))
+			assert.Loosely(t, changes[4].GetEventLabel(), should.Equal("vm.ip"))
+			assert.Loosely(t, changes[4].GetOldValue(), should.Equal("192.168.40.19"))
 			assert.Loosely(t, changes[4].GetNewValue(), should.BeEmpty)
-			assert.Loosely(t, changes[5].GetEventLabel(), should.Equal("vm.ip"))
-			assert.Loosely(t, changes[5].GetOldValue(), should.Equal("192.168.40.19"))
-			assert.Loosely(t, changes[5].GetNewValue(), should.BeEmpty)
-			assert.Loosely(t, changes[6].GetEventLabel(), should.Equal("vm.resource_state"))
-			assert.Loosely(t, changes[6].GetOldValue(), should.Equal("STATE_DEPLOYING"))
-			assert.Loosely(t, changes[6].GetNewValue(), should.Equal("STATE_REGISTERED"))
 			// log dhcp changes
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-update-3")
 			assert.Loosely(t, err, should.BeNil)
@@ -405,8 +393,8 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(3))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-3")
 			assert.Loosely(t, err, should.BeNil)
-			// 1 create, 1 UpdateVMHost, 1 DeleteVMHost
-			assert.Loosely(t, msgs, should.HaveLength(3))
+			// 1 create, 0 UpdateVMHost, 0 DeleteVMHost
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-3")
 			assert.Loosely(t, err, should.BeNil)
 			// 2 host update

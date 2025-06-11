@@ -149,6 +149,9 @@ func UpdateVM(ctx context.Context, vm *ufspb.VM, mask *field_mask.FieldMask) (*u
 			return errors.Annotate(err, "unable to batch update device labels").Err()
 		}
 
+		if vm.ResourceState == ufspb.State_STATE_UNSPECIFIED {
+			vm.ResourceState = oldVM.GetResourceState()
+		}
 		// update state
 		if err := hc.stUdt.updateStateHelper(ctx, vm.GetResourceState()); err != nil {
 			return errors.Annotate(err, "Fail to update state to vm %s", vm.GetName()).Err()
@@ -195,8 +198,6 @@ func UpdateVMHost(ctx context.Context, newVM *ufspb.VM, nwOpt *ufsAPI.NetworkOpt
 		}
 		if newVM.ResourceState != ufspb.State_STATE_UNSPECIFIED && newVM.ResourceState != vm.ResourceState {
 			vm.ResourceState = newVM.GetResourceState()
-		} else {
-			vm.ResourceState = ufspb.State_STATE_DEPLOYING
 		}
 		if err := hc.stUdt.updateStateHelper(ctx, vm.ResourceState); err != nil {
 			return errors.Annotate(err, "Fail to update state to vm %s", vm.GetName()).Err()
