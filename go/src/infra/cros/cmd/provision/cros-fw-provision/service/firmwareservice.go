@@ -699,6 +699,9 @@ func (fws *FirmwareService) runFutilityViaSSH(ctx context.Context, rwOnly bool, 
 		log.Printf("Futility stderr:\n%s", stderr)
 		return errors.Errorf("CSME_LOCKED: %q", stderr)
 	}
+	if err != nil {
+		err = fmt.Errorf("futility failed: %w\nSTDOUT: %s\nSTDERR: %s", err, out, stderr)
+	}
 	return err
 }
 
