@@ -283,7 +283,7 @@ message ResourceRequest {
   enum Status {
     NOT_STARTED = 0;
     IN_PROGRESS = 1;
-    COMPLETED = 2;
+    COMPLETE = 2;
   }
 
   // The resource name of the resource request.

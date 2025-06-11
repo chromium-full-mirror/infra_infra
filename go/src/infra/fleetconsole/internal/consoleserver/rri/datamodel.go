@@ -114,7 +114,7 @@ func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceReques
 		status := fleetconsolerpc.ResourceRequest_IN_PROGRESS
 		return &status
 	case CompleteStatus:
-		status := fleetconsolerpc.ResourceRequest_COMPLETED
+		status := fleetconsolerpc.ResourceRequest_COMPLETE
 		return &status
 	default:
 		return nil
