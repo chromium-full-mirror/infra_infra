@@ -153,6 +153,31 @@ class CodesearchApi(recipe_api.RecipeApi):
     )
     return rust_kzip_path
 
+  def run_kzip_merge(self, *kzip_inputs):
+    """Merges multiple kzips into a single kzip.
+    The kzips are assumed to all be protobuf-encoded.
+    Note that the package_index tool already performs specialized merging
+    in parallel. This API should only be used where package_index is not
+    adequate, as the merge will be performed as a discrete serial step.
+
+    Args:
+      kzip_inputs: Paths to kzip files to merge.
+    """
+    combined_kzip_path = self.m.path.mkstemp()
+    self.m.step(
+        "merge kzips",
+        [
+            self.ensure_kythe().joinpath('tools', 'kzip'),
+            'merge',
+            '--encoding',
+            'PROTO',
+            '--output',
+            combined_kzip_path,
+            *kzip_inputs,
+        ],
+    )
+    return combined_kzip_path
+
   def clone_clang_tools(self, clone_dir):
     """Clone chromium/src clang tools."""
     clang_dir = clone_dir / 'clang'
