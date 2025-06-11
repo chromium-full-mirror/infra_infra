@@ -343,6 +343,7 @@ message ResourceRequest {
   optional string fulfillment_channel = 37;
   optional string execution_status = 38;
   repeated string resource_groups = 39;
+  optional string resource_request_bug_id = 40;
 }
 
 message CountResourceRequestsRequest {

@@ -117,6 +117,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		FulfillmentChannel:            bigQueryNullableString(row[rri.FulfillmentChannelColumn]),
 		ExecutionStatus:               bigQueryNullableString(row[rri.ExecutionStatusColumn]),
 		ResourceGroups:                bigQueryRepeatedString(row[rri.ResourceGroupsColumn]),
+		ResourceRequestBugId:          bigQueryNullableString(row[rri.ResourceRequestBugIdColumn]),
 	}
 }
 
