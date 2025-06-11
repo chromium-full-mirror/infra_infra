@@ -1,22 +1,51 @@
 #!/bin/bash -e
 
-instance=infra/shivas/linux-amd64
+instances=("infra/shivas/linux-amd64"
+        "infra/shivas/aix-ppc64"
+        "infra/shivas/linux-386"
+        "infra/shivas/linux-amd64"
+        "infra/shivas/linux-arm64"
+        "infra/shivas/linux-armv6l"
+        "infra/shivas/linux-mips64"
+        "infra/shivas/linux-mips64le"
+        "infra/shivas/linux-mipsle"
+        "infra/shivas/linux-ppc64"
+        "infra/shivas/linux-ppc64le"
+        "infra/shivas/linux-s390x"
+        "infra/shivas/mac-amd64"
+        "infra/shivas/mac-arm64"
+        "infra/shivas/windows-386"
+        "infra/shivas/windows-amd64"
+        "infra/shivas/windows-arm64")
+
+instance_ids=()
 
 function get_instance_id() {
-	echo $(cipd describe -version $1 $instance | awk -F ': +' '/Instance ID:/{print $2}')
+	echo $(cipd describe -version $1 $2 | awk -F ': +' '/Instance ID:/{print $2}')
 }
 function get_git_revision() {
-	echo $(cipd describe -version $1 $instance | awk -F ':' '/git_revision/{print $2; exit}')
+	echo $(cipd describe -version $1 $2 | awk -F ':' '/git_revision/{print $2; exit}')
 }
 function get_data() {
-	echo $(get_instance_id $1) $(get_git_revision $1)
+	echo $(get_instance_id $1 $2) $(get_git_revision $1 $2)
 }
 
 echo "Get the latest CIPD and git information..."
-read latest_id latest_git < <(get_data "latest")
-read prod_id prod_git < <(get_data "prod")
-echo "Latest ID: $latest_id"
-echo "Prod ID: $prod_id"
+
+INSTANCE_CHANGE=()
+
+for instance in "${instances[@]}"
+do
+        read instance_id ignore < <(get_data "latest" "${instance}")
+        read old_id ignore < <(get_data "prod" "${instance}")
+        instance_ids+=("$instance_id")
+        INSTANCE_CHANGE+=("$(printf "%s %s => %s" "${instance}" "${old_id}" "${instance_id}")")
+done
+
+INSTANCES=$(printf '%s\n' "${INSTANCE_CHANGE[@]}")
+
+read latest_id latest_git < <(get_data "latest" "infra/shivas/linux-amd64")
+read prod_id prod_git < <(get_data "prod" "infra/shivas/linux-amd64")
 
 git fetch origin main
 changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- .)
@@ -48,37 +77,66 @@ Title:
 Shivas push to prod(${latest_git})
 
 Content:
-Previous CIPD instance id: ${prod_id}
-
-New CIPD instance id: ${latest_id}
 
 Change-list:
 ${changelist}
+
+${INSTANCES}
 EOF
 
 # If you have sendgmr utility installed. The email can just be sent from here
 if [[ $(type -P "sendgmr") ]]; then
 
 BODY=$(cat << EOF
-Content:
-Previous CIPD instance id: ${prod_id}
-
-New CIPD instance id: ${latest_id}
-
 Change-list:
 ${changelist}
 
+${INSTANCES}
 EOF
 )
 
 echo "== Send this email on your behalf [go/sendgmr Need LOAS (gcert)]? [y/n]"
 read -r CONFIRM
 
-if [[ $CONFIRM != "y" ]]; then
-	echo "Aborting the email"
-	exit 0
+if [[ $CONFIRM == "y" ]]; then
+        echo "$BODY" | sendgmr --subject "Shivas push to prod (${latest_git})" --to=ufs-announce
 fi
 
-echo "$BODY" | sendgmr --subject "Shivas push to prod (${latest_git})" --to=ufs-announce
-
 fi
+
+# upload a CL to change this in puppet
+
+# Create the uprev CL.
+WORKDIR=$(mktemp -d /tmp/shivas-push.XXXXXX)
+pushd "$WORKDIR" >/dev/null || (
+	echo "Failed to enter created temp working dir $WORKDIR. Exiting."
+	exit
+)
+
+(
+	git clone --depth 1 https://chrome-internal.googlesource.com/infra/puppet
+) &>/dev/null
+
+cd puppet/puppetm/etc/puppet/hieradata || (
+	echo "Failed to enter clones repository. Exiting."
+	exit 1
+)
+
+for i in "${!instances[@]}"
+do
+        instance=$(echo "${instances[${i}]}" | sed 's/\//\\\//g')
+        sed -i 's/\('"${instance}"':\).*$/\1 '"${instance_ids[${i}]}"'/g' cipd.yaml
+done
+
+git commit -a -F - <<EOF
+shivas: push to prod
+
+$BODY
+
+BUG=None
+EOF
+
+git cl upload -r friedman@google.com,dba@google.com,samdockery@google.com,abesmith@google.com -cc peep-fleet-infra-sw@google.com --commit-description=+
+
+popd
+rm -rf ${WORKDIR}
