@@ -1847,6 +1847,18 @@ wheel: <
 
 * *universal*
 
+### 2025.4.26
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2025.4.26"
+>
+```
+
+
+* *universal*
+
 ## **cffi**
 
 ### 1.15.1.chromium.2

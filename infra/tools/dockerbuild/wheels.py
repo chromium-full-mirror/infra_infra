@@ -1366,6 +1366,7 @@ SPECS.update({
         Universal('certifi', '2023.7.22', pyversions=['py3']),
         Universal('certifi', '2023.11.17', pyversions=['py3']),
         Universal('certifi', '2024.7.4', pyversions=['py3']),
+        Universal('certifi', '2025.4.26', pyversions=['py3']),
         Universal('chardet', '3.0.4'),
         Universal('chardet', '4.0.0'),
         Universal('chardet', '5.2.0', pyversions=['py3']),
