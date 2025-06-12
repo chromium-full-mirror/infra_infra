@@ -243,5 +243,10 @@ adjust the version number below and run:
 ```
 $ zip -r ../experimental_wheel.pkg .
 $ cipd pkg-register ../experimental_wheel.pkg -tag version:1.18.0
+```
 
+If you want to make your experimental packages readable by the bots (so you can
+dry-run), do this:
+```
+cipd acl-edit experimental/username_at_chromium.org/ -reader group:all
 ```
