@@ -290,12 +290,15 @@ class CodesearchApi(recipe_api.RecipeApi):
       checkout_dir: Optional[config_types.Path] = None,
   ) -> config_types.Path:
     """Create the kythe index pack and upload it to google storage.
+    Legacy wrapper around create_kythe_index_pack and upload_kythe_index_pack.
 
     Args:
       commit_hash: Hash of the commit at which we're creating the index pack,
         if None use got_revision.
       commit_timestamp: Timestamp of the commit at which we're creating the
         index pack, in integer seconds since the UNIX epoch.
+      commit_position: The commit position of the project. Required only for
+        the browser project.
       clang_target_arch: Target architecture to cross-compile for.
       checkout_dir: The directory where code is checked out. If not specified,
         use checkout_dir initialized in path module by default.
@@ -303,62 +306,38 @@ class CodesearchApi(recipe_api.RecipeApi):
     Returns:
       Path to the generated index pack.
     """
-    experimental_suffix = '_experimental' if self._is_experimental else ''
+    index_pack_path = self.create_kythe_index_pack(
+        clang_target_arch=clang_target_arch, checkout_dir=checkout_dir)
+    if not self.m.tryserver.is_tryserver:  # pragma: no cover
+      self.upload_kythe_index_pack(
+          index_pack_kythe_path=index_pack_path,
+          commit_hash=commit_hash,
+          commit_timestamp=commit_timestamp,
+          commit_position=commit_position,
+      )
+    return index_pack_path
 
-    index_pack_kythe_base = '%s_%s' % (self.c.PROJECT, self.c.PLATFORM)
-    index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
-    index_pack_kythe_path = self.c.out_path / index_pack_kythe_name
-    self._create_kythe_index_pack(
-        index_pack_kythe_path,
-        # TODO(crbug.com/329113288): Don't use self.m.path.checkout_dir
-        checkout_dir or self.m.path.checkout_dir,
-        clang_target_arch=clang_target_arch)
-
-    if self.m.tryserver.is_tryserver:  # pragma: no cover
-      return index_pack_kythe_path
-
-    index_pack_kythe_name_with_id = ''
-    project_type = self._get_project_type()
-    if project_type == self._PROJECT_BROWSER:
-      assert commit_position, 'invalid commit_position %s' % commit_position
-      index_pack_kythe_name_with_id = '%s_%s_%s+%d%s.kzip' % (
-          index_pack_kythe_base, commit_position, commit_hash, commit_timestamp,
-          experimental_suffix)
-    elif project_type == self._PROJECT_OS:
-      index_pack_kythe_name_with_id = '%s_%s+%d%s.kzip' % (
-          index_pack_kythe_base, commit_hash, commit_timestamp,
-          experimental_suffix)
-    else:  # pragma: no cover
-      assert False, 'Unsupported codesearch project %s' % self.c.PROJECT
-
-    assert self.c.bucket_name, (
-        'Trying to upload Kythe index pack but no google storage bucket name')
-    self._upload_kythe_index_pack(self.c.bucket_name, index_pack_kythe_path,
-                                  index_pack_kythe_name_with_id)
-
-    # Also upload compile_commands and gn_targets for debugging purposes.
-    compdb_name_with_revision = 'compile_commands_%s_%s.json' % (
-        self.c.PLATFORM, commit_position or commit_hash)
-    self._upload_compile_commands_json(self.c.bucket_name,
-                                       compdb_name_with_revision)
-    if project_type == self._PROJECT_BROWSER:
-      gn_name_with_revision = 'gn_targets_%s_%s.json' % (self.c.PLATFORM,
-                                                         commit_position)
-      self._upload_gn_targets_json(self.c.bucket_name, gn_name_with_revision)
-
-    return index_pack_kythe_path
-
-  def _create_kythe_index_pack(self,
-                               index_pack_kythe_path: config_types.Path,
-                               checkout_dir: config_types.Path,
-                               clang_target_arch: Optional[str] = None) -> None:
+  def create_kythe_index_pack(
+      self,
+      clang_target_arch: Optional[str] = None,
+      checkout_dir: Optional[config_types.Path] = None,
+  ) -> config_types.Path:
     """Create the kythe index pack.
 
     Args:
-      index_pack_kythe_path: Path to the Kythe index pack.
-      checkout_dir: The directory where code is checked out.
       clang_target_arch: Target architecture to cross-compile for.
+      checkout_dir: The directory where code is checked out. If not specified,
+        use checkout_dir initialized in path module by default.
+
+    Returns:
+      Path to the generated index pack.
     """
+    index_pack_kythe_base = '%s_%s' % (self.c.PROJECT, self.c.PLATFORM)
+    index_pack_kythe_name = '%s.kzip' % index_pack_kythe_base
+    index_pack_kythe_path = self.c.out_path / index_pack_kythe_name
+
+    # TODO(crbug.com/329113288): Don't use self.m.path.checkout_dir
+    checkout_dir = checkout_dir or self.m.path.checkout_dir
     exec_path = self.m.cipd.ensure_tool("infra/tools/package_index/${platform}",
                                         "latest")
     args = [
@@ -395,23 +374,66 @@ class CodesearchApi(recipe_api.RecipeApi):
     if self.c.BUILD_CONFIG:
       args.extend(['--build_config', self.c.BUILD_CONFIG])
     self.m.step('create kythe index pack', [exec_path] + args)
+    return index_pack_kythe_path
 
-  def _upload_kythe_index_pack(self, bucket_name, index_pack_kythe_path,
-                               index_pack_kythe_name_with_id):
-    """Upload the kythe index pack to google storage.
+  def upload_kythe_index_pack(
+      self,
+      index_pack_kythe_path: config_types.Path,
+      commit_hash: str,
+      commit_timestamp: int,
+      commit_position: Optional[str] = None,
+  ):
+    """Upload the given kythe index pack to google storage.
 
     Args:
-      bucket_name: Name of the google storage bucket to upload to
-      index_pack_kythe_path: Path of the Kythe index pack
-      index_pack_kythe_name_with_revision: Name of the Kythe index pack
-                                           with identifier
+      index_pack_kythe_path: Path to the index pack to upload.
+      commit_hash: Hash of the commit at which we're creating the index pack,
+        if None use got_revision.
+      commit_timestamp: Timestamp of the commit at which we're creating the
+        index pack, in integer seconds since the UNIX epoch.
+      commit_position: The commit position of the project. Required only for
+        the browser project.
+
+    Returns:
+      Path to the generated index pack.
     """
+    experimental_suffix = '_experimental' if self._is_experimental else ''
+    index_pack_kythe_base, _ = self.m.path.splitext(
+        self.m.path.basename(index_pack_kythe_path))
+    index_pack_kythe_name_with_id = ''
+    project_type = self._get_project_type()
+    if project_type == self._PROJECT_BROWSER:
+      assert commit_position, 'invalid commit_position %s' % commit_position
+      index_pack_kythe_name_with_id = '%s_%s_%s+%d%s.kzip' % (
+          index_pack_kythe_base, commit_position, commit_hash, commit_timestamp,
+          experimental_suffix)
+    elif project_type == self._PROJECT_OS:
+      index_pack_kythe_name_with_id = '%s_%s+%d%s.kzip' % (
+          index_pack_kythe_base, commit_hash, commit_timestamp,
+          experimental_suffix)
+    else:  # pragma: no cover
+      assert False, 'Unsupported codesearch project %s' % self.c.PROJECT
+
+    assert self.c.bucket_name, (
+        'Trying to upload Kythe index pack but no google storage bucket name')
     self.m.gsutil.upload(
         name='upload kythe index pack',
         source=index_pack_kythe_path,
-        bucket=bucket_name,
+        bucket=self.c.bucket_name,
         dest='prod/%s' % index_pack_kythe_name_with_id,
         dry_run=self._is_experimental)
+
+    # Also upload compile_commands and gn_targets for debugging purposes.
+    compdb_name_with_revision = 'compile_commands_%s_%s.json' % (
+        self.c.PLATFORM, commit_position or commit_hash)
+    self._upload_compile_commands_json(self.c.bucket_name,
+                                       compdb_name_with_revision)
+    if project_type == self._PROJECT_BROWSER:
+      gn_name_with_revision = 'gn_targets_%s_%s.json' % (self.c.PLATFORM,
+                                                         commit_position)
+      self._upload_gn_targets_json(self.c.bucket_name, gn_name_with_revision)
+
+    return index_pack_kythe_path
 
   def _upload_compile_commands_json(self, bucket_name, destination_filename):
     """Upload the compile_commands.json file to Google Storage.
