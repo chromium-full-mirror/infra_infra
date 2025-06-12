@@ -32,7 +32,7 @@ make run-local-db
 Create a tunnel to the dev alloydb vpc
 
 ```
-./tools/setup_dev_db_tunnel.sh
+./scripts/setup_dev_db_tunnel.sh
 ```
 
 You can now run the web server
@@ -120,7 +120,7 @@ alembic upgrade head
 Create a tunnel to the dev db vpc
 
 ```
-./tools/setup_dev_db_tunnel.sh
+./scripts/setup_dev_db_tunnel.sh
 ```
 
 Run migrations specifying `env=dev`
@@ -137,7 +137,7 @@ gcloud auth application-default login
 Create a tunnel to the prod db vpc
 
 ```
-./tools/setup_prod_db_tunnel.sh
+./scripts/setup_prod_db_tunnel.sh
 ```
 
 Run migrations specifying `env=prod`
