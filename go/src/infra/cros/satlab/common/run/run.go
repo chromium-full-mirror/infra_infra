@@ -56,6 +56,7 @@ type Run struct {
 	Build         string
 	Pool          string
 	Suite         string
+	TargetType    string
 	Tests         []string
 	Testplan      string
 	TestplanLocal string
@@ -621,7 +622,7 @@ func (c *Run) adaptImage() {
 		return
 	}
 	if c.Desktop && c.Build != "" {
-		c.Image = fmt.Sprintf("android-build/build_explorer/artifacts_list/%s/%s-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz", c.Build, c.Board)
+		c.Image = fmt.Sprintf("android-build/build_explorer/artifacts_list/%s/%s-%s/attempts/latest/artifacts/android-desktop_image.bin.gz", c.Build, c.Board, c.TargetType)
 		return
 	}
 	if misc.IsCustomBuild(c.Build) {

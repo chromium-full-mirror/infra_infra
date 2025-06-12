@@ -5,12 +5,16 @@
 package run
 
 import (
+	"fmt"
+
 	"github.com/maruel/subcommands"
 
 	luciflag "go.chromium.org/luci/common/flag"
 
 	"go.chromium.org/infra/cros/satlab/satlab/internal/flagx"
 )
+
+const defaultTargetType = "trunk_staging-userdebug"
 
 // runFlags holds the flags necessary for test execution
 type runFlags struct {
@@ -23,6 +27,7 @@ type runFlags struct {
 	build            string
 	pool             string
 	suite            string
+	targetType       string
 	test             string
 	testplan         string
 	testplanLocal    string
@@ -48,6 +53,7 @@ type runFlags struct {
 func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.image, "image", "", "image to run test against")
 	c.Flags.StringVar(&c.suite, "suite", "", "test suite to execute")
+	c.Flags.StringVar(&c.targetType, "target-type", defaultTargetType, fmt.Sprintf("target type to be used. Default '%s'", defaultTargetType))
 	c.Flags.StringVar(&c.test, "test", "", "individual test to execute")
 	c.Flags.StringVar(&c.testplan, "testplan", "", "path to testplan file")
 	// changing the variable to match with the standard convention
