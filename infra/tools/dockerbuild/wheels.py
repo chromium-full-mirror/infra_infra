@@ -1859,6 +1859,7 @@ SPECS.update({
         Universal('trio', '0.30.0', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
         Universal('trio-websocket', '0.10.3', pyversions=['py3']),
+        Universal('trio-websocket', '0.12.2', pyversions=['py3']),
         Universal('types-PyYAML', '6.0.12.12', pyversions=['py3']),
         Universal(
             'types-backports.ssl-match-hostname', '3.7.4.4', pyversions=['py3']
