@@ -6,10 +6,11 @@ syntax = "proto3";
 
 package fleetconsole;
 
-option go_package = "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
-
-import "google/protobuf/empty.proto";
 import "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc/common_types.proto";
+import "go.chromium.org/infra/fleetconsole/omnilab/omnilab-pubsub.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 
 service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.
@@ -28,69 +29,72 @@ service FleetConsole {
   rpc LogFrontend(LogFrontendRequest) returns (LogFrontendResponse);
 
   // ListDevices managed by Device Manager.
-  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {};
+  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {}
 
   // GetDeviceDimensions provides overview of devices dimensions and their values
   rpc GetDeviceDimensions(google.protobuf.Empty) returns (GetDeviceDimensionsResponse);
 
   // CountDevices provides a count of the devices
-  rpc CountDevices(CountDevicesRequest) returns (CountDevicesResponse) {};
+  rpc CountDevices(CountDevicesRequest) returns (CountDevicesResponse) {}
 
   // RepopulateCache repopulates the cache, meant to be triggered by cron.
-  rpc RepopulateCache(RepopulateCacheRequest) returns (RepopulateCacheResponse) {};
+  rpc RepopulateCache(RepopulateCacheRequest) returns (RepopulateCacheResponse) {}
 
   // PingDB attempts to establish contact with the database and does nothing else.
-  rpc PingDB(PingDBRequest) returns (PingDBResponse) {};
+  rpc PingDB(PingDBRequest) returns (PingDBResponse) {}
 
   // CleanExit just exits the current process.
-  rpc CleanExit(CleanExitRequest) returns (CleanExitResponse) {};
+  rpc CleanExit(CleanExitRequest) returns (CleanExitResponse) {}
 
   // ExportDevicesToCSV exports the devices in the csv format.
-  rpc ExportDevicesToCSV(ExportDevicesToCSVRequest) returns (ExportDevicesToCSVResponse) {};
+  rpc ExportDevicesToCSV(ExportDevicesToCSVRequest) returns (ExportDevicesToCSVResponse) {}
 
   // ************** RESOURCE REQUEST INSIGHTS *********************
 
   // ListResourceRequests returns Resource Requests provided by BigQuery
-  rpc ListResourceRequests(ListResourceRequestsRequest) returns (ListResourceRequestsResponse) {};
+  rpc ListResourceRequests(ListResourceRequestsRequest) returns (ListResourceRequestsResponse) {}
 
   // CountResourceRequests provides counts for RRI summary header
-  rpc CountResourceRequests(CountResourceRequestsRequest) returns (CountResourceRequestsResponse) {};
+  rpc CountResourceRequests(CountResourceRequestsRequest) returns (CountResourceRequestsResponse) {}
 
   // CountResourceRequests provides counts for RRI summary header
-  rpc GetResourceRequestsMultiselectFilterValues(GetResourceRequestsMultiselectFilterValuesRequest) returns (GetResourceRequestsMultiselectFilterValuesResponse) {};
+  rpc GetResourceRequestsMultiselectFilterValues(GetResourceRequestsMultiselectFilterValuesRequest) returns (GetResourceRequestsMultiselectFilterValuesResponse) {}
+
+  // ************** REPAIR METRICS *********************
+  // UpdateAndroidDevices updates the android devices in the database.
+  // Used to test the pubsub message.
+  rpc UpdateAndroidDevices(UpdateAndroidDevicesRequest) returns (UpdateAndroidDevicesResponse) {}
+
+  rpc ListRepairMetrics(ListRepairMetricsRequest) returns (ListRepairMetricsResponse) {}
+
+  rpc CountRepairMetrics(CountRepairMetricsRequest) returns (CountRepairMetricsResponse) {}
+
+  rpc GetRepairMetricsDimensions(google.protobuf.Empty) returns (GetRepairMetricsDimensionsResponse);
 }
 
 // PingRequest intentionally contains nothing.
-message PingRequest {
-}
+message PingRequest {}
 
 // PingResponse intentionally contains nothing.
-message PingResponse {
-}
+message PingResponse {}
 
 // PingBigQueryRequest intentionally contains nothing.
-message PingBigQueryRequest {
-}
+message PingBigQueryRequest {}
 
 // PingBigQueryResponse intentionally contains nothing.
-message PingBigQueryResponse {
-}
+message PingBigQueryResponse {}
 
 // PingDeviceManagerRequest intentionally contains nothing.
-message PingDeviceManagerRequest {
-}
+message PingDeviceManagerRequest {}
 
 // PingDeviceManagerResponse intentionally contains nothing.
-message PingDeviceManagerResponse {
-}
+message PingDeviceManagerResponse {}
 
 // PingUfsRequest intentionally contains nothing.
-message PingUfsRequest {
-}
+message PingUfsRequest {}
 
 // PingUfsResponse intentionally contains nothing.
-message PingUfsResponse {
-}
+message PingUfsResponse {}
 
 message LogFrontendRequest {
   enum Severity {
@@ -362,8 +366,7 @@ message CountResourceRequestsResponse {
   int32 config = 7;
 }
 
-message GetResourceRequestsMultiselectFilterValuesRequest {
-}
+message GetResourceRequestsMultiselectFilterValuesRequest {}
 
 message GetResourceRequestsMultiselectFilterValuesResponse {
   repeated string rr_ids = 1;
@@ -383,4 +386,71 @@ message GetResourceRequestsMultiselectFilterValuesResponse {
   // Contains all unique string values from the 'resource_groups' (repeated) field
   // across all resource requests.
   repeated string resource_groups = 15;
+}
+
+// ************** REPAIR METRICS *********************
+message UpdateAndroidDevicesRequest {
+  mobileharness.infra.monitoring.MonitoredRecord host = 1;
+}
+
+message UpdateAndroidDevicesResponse {}
+
+enum Platform {
+  ANDROID = 0;
+}
+
+message ListRepairMetricsRequest {
+  Platform platform = 1;
+
+  int32 page_size = 2;
+  string page_token = 3;
+  string order_by = 4;
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  string filter = 5;
+}
+
+message RepairMetric {
+  enum Priority {
+    BREACHED = 0;
+    WATCH = 1;
+    DEVICES_REMOVED = 2;
+    MISSING_DATA = 3;
+    NICE = 4;
+  }
+
+  Priority priority = 1;
+  string lab_name = 2;
+  string host_group = 3;
+  string run_target = 4;
+  int32 minimum_repairs = 5;
+  int32 devices_offline = 6;
+  int32 total_devices = 7;
+}
+
+message ListRepairMetricsResponse {
+  repeated RepairMetric repair_metrics = 1;
+
+  string next_page_token = 2;
+}
+
+message CountRepairMetricsRequest {
+  Platform platform = 1;
+
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  string filter = 5;
+}
+
+message CountRepairMetricsResponse {
+  int32 total_hosts = 1;
+  int32 offline_hosts = 2;
+  int32 total_devices = 3;
+  int32 offline_devices = 4;
+}
+
+message GetRepairMetricsDimensionsResponse {
+  message Values {
+    repeated string values = 1;
+  }
+
+  map<string, Values> dimensions = 1;
 }

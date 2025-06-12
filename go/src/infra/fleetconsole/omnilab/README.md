@@ -1,0 +1,2 @@
+This folder contains the proto file copied from [the omnilab github repo](https://github.com/google/device-infra/blob/main/src/devtools/mobileharness/infra/monitoring/proto/monitored_record.proto). This is a temporary solution while we figure out a better solution to fetch the file, more information can be found in the [design doc](https://docs.google.com/document/d/1ZR-TROLsbe-b0BT9isSzHTKmxaYQAGn2v6mXiXJDIWg/edit?tab=t.0#heading=h.2s8ec8g3e1y7) (if you are a googler)
+

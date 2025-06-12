@@ -39,6 +39,10 @@ const (
 	FleetConsole_ListResourceRequests_FullMethodName                       = "/fleetconsole.FleetConsole/ListResourceRequests"
 	FleetConsole_CountResourceRequests_FullMethodName                      = "/fleetconsole.FleetConsole/CountResourceRequests"
 	FleetConsole_GetResourceRequestsMultiselectFilterValues_FullMethodName = "/fleetconsole.FleetConsole/GetResourceRequestsMultiselectFilterValues"
+	FleetConsole_UpdateAndroidDevices_FullMethodName                       = "/fleetconsole.FleetConsole/UpdateAndroidDevices"
+	FleetConsole_ListRepairMetrics_FullMethodName                          = "/fleetconsole.FleetConsole/ListRepairMetrics"
+	FleetConsole_CountRepairMetrics_FullMethodName                         = "/fleetconsole.FleetConsole/CountRepairMetrics"
+	FleetConsole_GetRepairMetricsDimensions_FullMethodName                 = "/fleetconsole.FleetConsole/GetRepairMetricsDimensions"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -75,6 +79,13 @@ type FleetConsoleClient interface {
 	CountResourceRequests(ctx context.Context, in *CountResourceRequestsRequest, opts ...grpc.CallOption) (*CountResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
 	GetResourceRequestsMultiselectFilterValues(ctx context.Context, in *GetResourceRequestsMultiselectFilterValuesRequest, opts ...grpc.CallOption) (*GetResourceRequestsMultiselectFilterValuesResponse, error)
+	// ************** REPAIR METRICS *********************
+	// UpdateAndroidDevices updates the android devices in the database.
+	// Used to test the pubsub message.
+	UpdateAndroidDevices(ctx context.Context, in *UpdateAndroidDevicesRequest, opts ...grpc.CallOption) (*UpdateAndroidDevicesResponse, error)
+	ListRepairMetrics(ctx context.Context, in *ListRepairMetricsRequest, opts ...grpc.CallOption) (*ListRepairMetricsResponse, error)
+	CountRepairMetrics(ctx context.Context, in *CountRepairMetricsRequest, opts ...grpc.CallOption) (*CountRepairMetricsResponse, error)
+	GetRepairMetricsDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -235,6 +246,46 @@ func (c *fleetConsoleClient) GetResourceRequestsMultiselectFilterValues(ctx cont
 	return out, nil
 }
 
+func (c *fleetConsoleClient) UpdateAndroidDevices(ctx context.Context, in *UpdateAndroidDevicesRequest, opts ...grpc.CallOption) (*UpdateAndroidDevicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateAndroidDevicesResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_UpdateAndroidDevices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fleetConsoleClient) ListRepairMetrics(ctx context.Context, in *ListRepairMetricsRequest, opts ...grpc.CallOption) (*ListRepairMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRepairMetricsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_ListRepairMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fleetConsoleClient) CountRepairMetrics(ctx context.Context, in *CountRepairMetricsRequest, opts ...grpc.CallOption) (*CountRepairMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountRepairMetricsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_CountRepairMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fleetConsoleClient) GetRepairMetricsDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRepairMetricsDimensionsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_GetRepairMetricsDimensions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -269,6 +320,13 @@ type FleetConsoleServer interface {
 	CountResourceRequests(context.Context, *CountResourceRequestsRequest) (*CountResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
 	GetResourceRequestsMultiselectFilterValues(context.Context, *GetResourceRequestsMultiselectFilterValuesRequest) (*GetResourceRequestsMultiselectFilterValuesResponse, error)
+	// ************** REPAIR METRICS *********************
+	// UpdateAndroidDevices updates the android devices in the database.
+	// Used to test the pubsub message.
+	UpdateAndroidDevices(context.Context, *UpdateAndroidDevicesRequest) (*UpdateAndroidDevicesResponse, error)
+	ListRepairMetrics(context.Context, *ListRepairMetricsRequest) (*ListRepairMetricsResponse, error)
+	CountRepairMetrics(context.Context, *CountRepairMetricsRequest) (*CountRepairMetricsResponse, error)
+	GetRepairMetricsDimensions(context.Context, *emptypb.Empty) (*GetRepairMetricsDimensionsResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -323,6 +381,18 @@ func (UnimplementedFleetConsoleServer) CountResourceRequests(context.Context, *C
 }
 func (UnimplementedFleetConsoleServer) GetResourceRequestsMultiselectFilterValues(context.Context, *GetResourceRequestsMultiselectFilterValuesRequest) (*GetResourceRequestsMultiselectFilterValuesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetResourceRequestsMultiselectFilterValues not implemented")
+}
+func (UnimplementedFleetConsoleServer) UpdateAndroidDevices(context.Context, *UpdateAndroidDevicesRequest) (*UpdateAndroidDevicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAndroidDevices not implemented")
+}
+func (UnimplementedFleetConsoleServer) ListRepairMetrics(context.Context, *ListRepairMetricsRequest) (*ListRepairMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRepairMetrics not implemented")
+}
+func (UnimplementedFleetConsoleServer) CountRepairMetrics(context.Context, *CountRepairMetricsRequest) (*CountRepairMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountRepairMetrics not implemented")
+}
+func (UnimplementedFleetConsoleServer) GetRepairMetricsDimensions(context.Context, *emptypb.Empty) (*GetRepairMetricsDimensionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRepairMetricsDimensions not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -615,6 +685,78 @@ func _FleetConsole_GetResourceRequestsMultiselectFilterValues_Handler(srv interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_UpdateAndroidDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAndroidDevicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).UpdateAndroidDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_UpdateAndroidDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).UpdateAndroidDevices(ctx, req.(*UpdateAndroidDevicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FleetConsole_ListRepairMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRepairMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).ListRepairMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_ListRepairMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).ListRepairMetrics(ctx, req.(*ListRepairMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FleetConsole_CountRepairMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountRepairMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).CountRepairMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_CountRepairMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).CountRepairMetrics(ctx, req.(*CountRepairMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FleetConsole_GetRepairMetricsDimensions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).GetRepairMetricsDimensions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_GetRepairMetricsDimensions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).GetRepairMetricsDimensions(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -681,6 +823,22 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetResourceRequestsMultiselectFilterValues",
 			Handler:    _FleetConsole_GetResourceRequestsMultiselectFilterValues_Handler,
+		},
+		{
+			MethodName: "UpdateAndroidDevices",
+			Handler:    _FleetConsole_UpdateAndroidDevices_Handler,
+		},
+		{
+			MethodName: "ListRepairMetrics",
+			Handler:    _FleetConsole_ListRepairMetrics_Handler,
+		},
+		{
+			MethodName: "CountRepairMetrics",
+			Handler:    _FleetConsole_CountRepairMetrics_Handler,
+		},
+		{
+			MethodName: "GetRepairMetricsDimensions",
+			Handler:    _FleetConsole_GetRepairMetricsDimensions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
