@@ -431,7 +431,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 						continue
 					}
 					// directly plumb through any other args
-					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: fmt.Sprintf("driverArg: %s", strings.TrimSpace(arg.Key)), Value: strings.TrimSpace(value)})
+					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: fmt.Sprintf("driverArg:%s", strings.TrimSpace(arg.Key)), Value: strings.TrimSpace(value)})
 				}
 			}
 		}
