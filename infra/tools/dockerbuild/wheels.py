@@ -1856,6 +1856,7 @@ SPECS.update({
         Universal('tomlkit', '0.12.3', pyversions=['py3']),
         Universal('trio', '0.20.0', pyversions=['py3']),
         Universal('trio', '0.22.1', pyversions=['py3']),
+        Universal('trio', '0.30.0', pyversions=['py3']),
         Universal('trio-websocket', '0.9.2', pyversions=['py3']),
         Universal('trio-websocket', '0.10.3', pyversions=['py3']),
         Universal('types-PyYAML', '6.0.12.12', pyversions=['py3']),

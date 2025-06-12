@@ -10681,6 +10681,18 @@ wheel: <
 
 * *universal*
 
+### 0.30.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/trio-py3"
+  version: "version:0.30.0"
+>
+```
+
+
+* *universal*
+
 ## **trio-websocket-py3**
 
 ### 0.9.2
