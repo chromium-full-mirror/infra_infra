@@ -125,7 +125,7 @@ class CodesearchApi(recipe_api.RecipeApi):
             # Chromium puts its generated files under out/ and vname for
             # generated files should have root set to separate them from other
             # source files. See b/354949952 for more info.
-            'pattern': '(.*)',
+            'pattern': '([^.].*)',  # crude regex to filter out relative paths
             'vname': {
                 'root': 'out',
                 'path': '@1@'

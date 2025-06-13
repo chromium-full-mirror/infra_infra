@@ -42,7 +42,7 @@ def GenTests(api):
                   'path': '@1@'
               },
           }, {
-              'pattern': '(.*)',
+              'pattern': '([^.].*)',
               'vname': {
                   'path': '@1@',
                   'root': 'out'
