@@ -74,6 +74,7 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 		info, err := common.UFSDeviceInfo(ctx, deviceName, authOpts)
 		if err != nil {
 			c.printer.WriteTextStdout("RPC error: %s", err.Error())
+			return nil
 		}
 		c.printer.WriteTextStdout("%s\n", dutInfoAsBashVariables(info))
 		infoList.DUTs = append(infoList.DUTs, &dutinfopb.DUTInfo{
