@@ -156,6 +156,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 			AssetId: entity.GetAssetId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
+		assert.Loosely(t, err, should.BeNil)
 		want := []string{"Test Asset Name Updated", "Test Asset Description Updated", "active_directory_updated"}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
 		assert.Loosely(t, get, should.Match(want))
@@ -165,6 +166,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		req := &proto.GetAssetResourceRequest{AssetResourceId: updateAssetResponse.GetAssetResources()[0].GetAssetResourceId()}
 
 		readAssetResource, err := assetResourceHanlder.Get(ctx, req)
+		assert.Loosely(t, err, should.BeNil)
 		want = []string{"ResourceId Updated", "Alias Name Updated"}
 		get = []string{readAssetResource.GetResourceId(), readAssetResource.GetAliasName()}
 		assert.Loosely(t, get, should.Match(want))
@@ -439,6 +441,10 @@ func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.A
 	assetResHandler := &AssetResourceHandler{}
 	assetResourceRequest := mockCreateAssetResourceRequest(asset.Asset.AssetId, resource.ResourceId, "win-1")
 	assetResource, err := assetResHandler.Create(ctx, assetResourceRequest)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
 	_, err = getByAssetResourceId(ctx, assetResource.AssetResourceId)
 	if err != nil {
 		return nil, nil, nil, err

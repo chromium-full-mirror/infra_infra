@@ -155,6 +155,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 			ResourceId: entity.GetResourceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
+		assert.Loosely(t, err, should.BeNil)
 		want = []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "windows_system", "image-project-updated", "image-family-updated"}
 		get = []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
 		assert.Loosely(t, get, should.Match(want))

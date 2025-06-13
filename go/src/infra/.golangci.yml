@@ -150,13 +150,6 @@ linters:
       - monorail/endpoints_test.go
       # TODO(gregorynisbet): END copylock issue files.
       # TODO(gregorynisbet): BEGIN ineffective assignment issue files.
-      - appengine/cros/lab_inventory/api/bigquery/scripts/dumpManualRepairPlxToBq.go
-      - appengine/poros/api/service/assetHandler_test.go
-      - appengine/poros/api/service/assetInstanceHandler_test.go
-      - appengine/poros/api/service/assetResourceHandler_test.go
-      - appengine/poros/api/service/resourceHandler_test.go
-      - appengine/poros/taskspb/createasset_handler.go
-      - appengine/rotation-proxy/rotation_proxy_server_test.go
       - chromeperf/pinpoint/cli/analyze.go
       - chromeperf/pinpoint/cli/generate_batch_summary.go
       - cmd/cros_test_platform/internal/execution/testrunner/service/client.go

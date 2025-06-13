@@ -100,6 +100,7 @@ func TestAssetResourceUpdateWithValidData(t *testing.T) {
 			AssetResourceId: entity.GetAssetResourceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
+		assert.Loosely(t, err, should.BeNil)
 		want := []string{"Test AssetId", "Test ResourceId Updated", "Test Alias Name Updated"}
 		get := []string{readEntity.GetAssetId(), readEntity.GetResourceId(), readEntity.GetAliasName()}
 		assert.Loosely(t, get, should.Match(want))

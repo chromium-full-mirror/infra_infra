@@ -114,6 +114,7 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 			AssetInstanceId: entity.GetAssetInstanceId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
+		assert.Loosely(t, err, should.BeNil)
 		want = []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
 		get = []string{readEntity.GetAssetId(), readEntity.GetStatus()}
 		assert.Loosely(t, get, should.Match(want))

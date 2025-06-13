@@ -95,8 +95,8 @@ func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
 		return err
 	}
 
-	cmdArgs := []string{}
-	successStatus := []string{}
+	var cmdArgs []string
+	var successStatus []string
 	if task.Operation == "purge" {
 		cmdArgs = []string{task.Operation, "--builtins", assetFile}
 		successStatus = []string{"STATUS_DESTROYED", "Lab Destroyed Successfully!!\n"}

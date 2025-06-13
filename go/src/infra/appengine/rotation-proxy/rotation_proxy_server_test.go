@@ -298,7 +298,7 @@ func TestGetCurrentOncallEmails(t *testing.T) {
 		assert.Loosely(t, emails, should.Match([]string{"person5@google.com"}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(888, 0))
-		emails, err = getCurrentOncallEmails(ctx, "anotherrotation")
+		_, err = getCurrentOncallEmails(ctx, "anotherrotation")
 		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

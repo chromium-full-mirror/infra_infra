@@ -38,18 +38,24 @@ func main() {
 
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, project)
+	if err != nil {
+		log.Fatalln("Failed to create datastore client", err)
+	}
 
 	// Parse the file
 	r := csv.NewReader(csvfile)
 	var records []*invprotos.DeviceManualRepairRecord
 
 	// Skip headers
-	record, err := r.Read()
+	_, err = r.Read()
+	if err != nil {
+		log.Fatalln("Failed to read CSV header", err)
+	}
 
 	// Iterate through the records
 	for {
 		// Read each record from csv
-		record, err = r.Read()
+		record, err := r.Read()
 		if err == io.EOF {
 			break
 		}
@@ -157,7 +163,7 @@ func createRecordFromCsvRow(ctx context.Context, dsClient *datastore.Client, row
 	record.TimeTaken = int32(timeTaken64)
 
 	var createdTimestamp int64
-	var createdSeconds int64 = 0
+	var createdSeconds int64
 	createdTimestamp, err = strconv.ParseInt(row[27], 10, 64)
 	if err == nil {
 		createdSeconds = createdTimestamp / 1000000
@@ -170,7 +176,7 @@ func createRecordFromCsvRow(ctx context.Context, dsClient *datastore.Client, row
 	// Set CompletedTime based on parsed data. Set CompletedTime to 10/9/2020 6pm
 	// UTC if issue fixed but not completed time available from data.
 	var completedTimestamp int64
-	var completedSeconds int64 = 0
+	var completedSeconds int64
 	completedTimestamp, err = strconv.ParseInt(row[26], 10, 64)
 	if err == nil {
 		completedSeconds = completedTimestamp / 1000000
