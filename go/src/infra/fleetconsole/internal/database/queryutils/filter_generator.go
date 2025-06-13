@@ -6,6 +6,7 @@ package queryutils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/luci/common/data/aip160"
@@ -193,19 +194,19 @@ func (q *QueryBuilder) handleSimpleComparison(restriction *aip160.Restriction, c
 	var argSQL string
 	switch restriction.Comparator {
 	case "=", "<", ">", ">=", "<=":
-		argSQL, err = q.argValue(restriction.Arg)
+		argSQL, err = q.argValue(columnName, restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
 		return fmt.Sprintf("(%s %s %s)", columnName, restriction.Comparator, argSQL), nil
 	case "!=":
-		argSQL, err = q.argValue(restriction.Arg)
+		argSQL, err = q.argValue(columnName, restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", columnName, argSQL), nil
 	case ":": //TODO: this should work as IN on lists
-		argSQL, err = q.likeArgValue(restriction.Arg)
+		argSQL, err = q.likeArgValue(columnName, restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
@@ -286,19 +287,19 @@ func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restrict
 	}
 
 	if argInfo.comparator == "=" {
-		arg, err := q.comparableValue(restriction.Comparable)
+		arg, err := q.comparableValue(argInfo.column.name, restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s = %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == "!=" {
-		arg, err := q.comparableValue(restriction.Comparable)
+		arg, err := q.comparableValue(argInfo.column.name, restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == ":" {
-		arg, err := q.likeComparableValue(restriction.Comparable)
+		arg, err := q.likeComparableValue(argInfo.column.name, restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
@@ -311,20 +312,20 @@ func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restrict
 // argValue returns a SQL expression representing the value of the specified
 // arg.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) argValue(arg *aip160.Arg) (string, error) {
+func (q *QueryBuilder) argValue(columnName string, arg *aip160.Arg) (string, error) {
 	if arg.Composite != nil {
 		return "", fmt.Errorf("composite expressions in arguments are not implemented yet")
 	}
 	if arg.Comparable == nil {
 		return "", fmt.Errorf("missing comparable in argument")
 	}
-	return q.comparableValue(arg.Comparable)
+	return q.comparableValue(columnName, arg.Comparable)
 }
 
 // argValue returns a SQL expression representing the value of the specified
 // comparable.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) comparableValue(comparable *aip160.Comparable) (string, error) {
+func (q *QueryBuilder) comparableValue(columnName string, comparable *aip160.Comparable) (string, error) {
 	if comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -332,14 +333,14 @@ func (q *QueryBuilder) comparableValue(comparable *aip160.Comparable) (string, e
 		return "", fmt.Errorf("fields not implemented yet")
 	}
 
-	return q.bind(comparable.Member.Value), nil
+	return q.bind(columnName, comparable.Member.Value), nil
 }
 
 // likeArgValue returns a SQL expression that, when passed to the
 // right hand side of a LIKE operator, performs substring matching against
 // the value of the argument.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) likeArgValue(arg *aip160.Arg) (string, error) {
+func (q *QueryBuilder) likeArgValue(columnName string, arg *aip160.Arg) (string, error) {
 	if arg.Composite != nil {
 		return "", fmt.Errorf("composite expressions are not allowed as RHS to has (:) operator")
 	}
@@ -347,14 +348,14 @@ func (q *QueryBuilder) likeArgValue(arg *aip160.Arg) (string, error) {
 		return "", fmt.Errorf("missing comparable in the argument")
 	}
 
-	return q.likeComparableValue(arg.Comparable)
+	return q.likeComparableValue(columnName, arg.Comparable)
 }
 
 // likeComparableValue returns a SQL expression that, when passed to the
 // right hand side of a LIKE operator, performs substring matching against
 // the value of the comparable.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) likeComparableValue(comparable *aip160.Comparable) (string, error) {
+func (q *QueryBuilder) likeComparableValue(columnName string, comparable *aip160.Comparable) (string, error) {
 	if comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -362,7 +363,7 @@ func (q *QueryBuilder) likeComparableValue(comparable *aip160.Comparable) (strin
 		return "", fmt.Errorf("fields are not allowed on the RHS of has (:) operator")
 	}
 	// Bind unsanitised user input to a parameter to protect against SQL injection.
-	return q.bind("%" + quoteLike(comparable.Member.Value) + "%"), nil
+	return q.bind(columnName, "%"+quoteLike(comparable.Member.Value)+"%"), nil
 }
 
 // Turns a literal string into an escaped like expression.
@@ -398,9 +399,9 @@ func (q *QueryBuilder) jsonArrayHasComparableValue(comparable *aip160.Comparable
 	fullPath := column.jsonFullPath(fields...)
 	params := make([]string, len(fullPath))
 	for i, field := range fullPath {
-		params[i] = q.bind(field)
+		params[i] = q.bind("json_path_variable_"+strconv.Itoa(i)+":"+column.name, field)
 	}
 
-	value := q.bind(comparable.Member.Value)
+	value := q.bind(column.name, comparable.Member.Value)
 	return fmt.Sprintf("%s ? %s", strings.Join(params, " -> "), value), nil
 }

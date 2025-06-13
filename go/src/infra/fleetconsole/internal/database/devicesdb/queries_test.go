@@ -37,7 +37,7 @@ func TestBuildListDevicesQuery(t *testing.T) {
 			ids:                []string{},
 			realms:             []string{},
 			expectedStatement:  "SELECT id, dut_id, host, port, type, state, labels\nFROM \"Devices\"\nWHERE (realm IS NULL)\nORDER BY id\nLIMIT 10\nOFFSET 0;",
-			expectedParameters: nil,
+			expectedParameters: []any{},
 		},
 		{
 			name:               "list all devices",
@@ -48,7 +48,7 @@ func TestBuildListDevicesQuery(t *testing.T) {
 			ids:                []string{},
 			realms:             []string{},
 			expectedStatement:  "SELECT id, dut_id, host, port, type, state, labels\nFROM \"Devices\"\nWHERE (realm IS NULL)\nORDER BY id\n;",
-			expectedParameters: nil,
+			expectedParameters: []any{},
 		},
 		{
 			name:               "list devices with particular ids and with user having particular realm",

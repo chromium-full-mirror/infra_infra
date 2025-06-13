@@ -11,9 +11,14 @@ import (
 	"strings"
 )
 
+type QueryParameter struct {
+	Name  string
+	Value any
+}
+
 // QueryParameters represents a collection of query parameters.
 type QueryParameters struct {
-	values        []any
+	values        []QueryParameter
 	nextValueName int
 }
 
@@ -168,9 +173,14 @@ func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 		q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
 	}
 
+	parametersStrings := make([]any, len(q.parameters.values))
+	for i, p := range q.parameters.values {
+		parametersStrings[i] = p.Value
+	}
+
 	return &Query{
 		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
-		Parameters: q.parameters.values,
+		Parameters: parametersStrings,
 	}, nil
 }
 
@@ -193,7 +203,7 @@ func (q *QueryBuilder) addInFilter(column string, values []string, allowNull boo
 
 	params := make([]string, len(values))
 	for i, value := range values {
-		params[i] = q.bind(value)
+		params[i] = q.bind(column, value)
 	}
 
 	if len(params) > 0 {
@@ -216,7 +226,7 @@ func (q *QueryBuilder) addInFilter(column string, values []string, allowNull boo
 // bind binds a new query parameter with the given value, and returns
 // the name of the parameter.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) bind(value string) string {
+func (q *QueryBuilder) bind(columnName string, value string) string {
 	var name string
 	if q.sqlLangType == BigQueryLangType {
 		name = "?"
@@ -224,6 +234,9 @@ func (q *QueryBuilder) bind(value string) string {
 		name = fmt.Sprintf("$%d", q.parameters.nextValueName)
 	}
 	q.parameters.nextValueName += 1
-	q.parameters.values = append(q.parameters.values, value)
+	q.parameters.values = append(q.parameters.values, QueryParameter{
+		Name:  columnName,
+		Value: value,
+	})
 	return name
 }

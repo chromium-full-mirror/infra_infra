@@ -19,11 +19,6 @@ func NewColumn(name string) *ColumnBuilder {
 		}}}
 }
 
-func (c *ColumnBuilder) WithExternalName(externalName string) *ColumnBuilder {
-	c.column.ExternalName = externalName
-	return c
-}
-
 func (c *ColumnBuilder) WithColumnType(columnType ColumnType) *ColumnBuilder {
 	c.column.Type = columnType
 	return c

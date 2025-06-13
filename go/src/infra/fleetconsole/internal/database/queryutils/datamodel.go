@@ -11,6 +11,7 @@ type ColumnType int32
 
 const (
 	ColumnTypeString ColumnType = iota
+	ColumnTypeInt64  ColumnType = iota
 	ColumnTypeJSONB
 )
 

@@ -44,8 +44,10 @@ func TestOrderByClause(t *testing.T) {
 		t.Run("order by based on specific label from labels", func(t *ftt.Test) {
 			q, err := NewQueryBuilder(table).WithOrderByClause("labels.`dut-state` desc", "")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, q.parameters.values, should.Match([]any{
-				"labels", "dut-state", "values",
+			assert.Loosely(t, q.parameters.values, should.Match([]QueryParameter{
+				{Name: "labels", Value: "labels"}, //TODO: binding is done differently than in filter generation, the logic could be aligned
+				{Name: "labels", Value: "dut-state"},
+				{Name: "labels", Value: "values"},
 			}))
 			assert.Loosely(t, q.orderByClause, should.Equal("ORDER BY labels -> $1 -> $2 -> $3 DESC"))
 		})

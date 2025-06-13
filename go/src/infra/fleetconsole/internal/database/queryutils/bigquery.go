@@ -4,7 +4,9 @@
 
 package queryutils
 
-import "cloud.google.com/go/bigquery"
+import (
+	"cloud.google.com/go/bigquery"
+)
 
 type BigQueryQuery struct {
 	Statement  string
@@ -34,7 +36,26 @@ func (b *QueryBuilder) ToUnboundBigQueryQuery(client *bigquery.Client) (*bigquer
 	}
 
 	q := client.Query(query.Statement)
-	q.Parameters = convertQueryParameters(query.Parameters)
+
+	bqParams := make([]bigquery.QueryParameter, len(query.Parameters))
+	for i, p := range b.parameters.values {
+		if b.table.ColumnExists(p.Name) && b.table.columnByExternalName[p.Name].Type == ColumnTypeInt64 {
+			bqParams[i] = bigquery.QueryParameter{
+				Value: &bigquery.QueryParameterValue{
+					Type: bigquery.StandardSQLDataType{
+						TypeKind: "INT64",
+					},
+					Value: p.Value,
+				},
+			}
+		} else {
+			bqParams[i] = bigquery.QueryParameter{
+				Value: p.Value,
+			}
+		}
+	}
+
+	q.Parameters = bqParams
 
 	return q, nil
 }

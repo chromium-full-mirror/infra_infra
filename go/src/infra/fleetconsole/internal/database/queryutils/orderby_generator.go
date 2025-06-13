@@ -69,7 +69,7 @@ func (q *QueryBuilder) WithOrderByClause(order, uniqueFieldForDeterminism string
 			fullPath := column.jsonFullPath(fields...)
 			params := make([]string, len(fullPath))
 			for i, field := range fullPath {
-				params[i] = q.bind(field)
+				params[i] = q.bind(column.name, field)
 			}
 
 			// In case of arrays in json it will order by based on the first element

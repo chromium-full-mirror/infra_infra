@@ -90,7 +90,7 @@ func GetResourceRequestsTable(isProd bool) *queryutils.Table {
 		queryutils.NewColumn(CustomerColumn).Build(),
 		queryutils.NewColumn(ResourceGroupColumn).Build(),
 		queryutils.NewColumn(ResourceNameColumn).Build(),
-		queryutils.NewColumn(AcceptedQuantityColumn).Build(),
+		queryutils.NewColumn(AcceptedQuantityColumn).WithColumnType(queryutils.ColumnTypeInt64).Build(),
 		queryutils.NewColumn(CriticalityColumn).Build(),
 		queryutils.NewColumn(RequestApprovalColumn).Build(),
 		queryutils.NewColumn(ResourcePmColumn).Build(),
