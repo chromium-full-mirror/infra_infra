@@ -130,8 +130,6 @@ linters:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
       # TODO(gregorynisbet): remove this exemption too.
-      - ^cros/cmd/cros_test_runner/internal/executors/generic_provision_executor.go$
-      # TODO(gregorynisbet): remove this exemption too.
       - ^cros/cmd/k8s-management/metrics/pod_perf_cmd.go$
       # TODO(gregorynisbet): remove this exemption too.
       - ^cros/internal/branch/helper.go$
@@ -140,10 +138,6 @@ linters:
       # TODO(gregorynisbet): BEGIN copylock issue files.
       - appengine/rotation-proxy/rotation_proxy_server.go
       - cmd/bqexport/test_data/main.go
-      - cros/cmd/cros-tool-runner/internal/v2/templates/placeholder.go
-      - cros/cmd/cros-tool-runner/internal/v2/templates/placeholder_test.go
-      - cros/cmd/cros-tool-runner/internal/v2/templates/template_cros_provision.go
-      - cros/cmd/cros-tool-runner/internal/v2/templates/template_cros_provision_test.go
       - cros/cmd/ctpv2/internal/commands/middle_out_cmd.go
       - cros/lib/buildbucket/properties_test.go
       - libs/fleet/boxster/swarming/convert_test.go

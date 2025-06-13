@@ -22,7 +22,7 @@ type placeholderPopulator interface {
 	// populate takes IpEndpoint template and returns a new IpEndpoint with actual
 	// values populated
 	// InvalidArgument error should be returned if unable to populate.
-	populate(api.IpEndpoint) (api.IpEndpoint, error)
+	populate(*api.IpEndpoint) (*api.IpEndpoint, error)
 }
 
 // Scheme definitions
@@ -59,7 +59,7 @@ func newPopulatorRouter() placeholderPopulator {
 
 // extract returns scheme, a copy of IpEndpoint with address replaced by
 // container name
-func (pr *populatorRouter) extract(endpoint api.IpEndpoint) (string, api.IpEndpoint, error) {
+func (pr *populatorRouter) extract(endpoint *api.IpEndpoint) (string, *api.IpEndpoint, error) {
 	r := regexp.MustCompile(`(?P<Scheme>ctr-[\w-]+)://(?P<ContainerName>.+)`)
 	match := r.FindStringSubmatch(endpoint.Address)
 	if len(match) != 3 {
@@ -67,10 +67,10 @@ func (pr *populatorRouter) extract(endpoint api.IpEndpoint) (string, api.IpEndpo
 	}
 	scheme := match[1]
 	containerName := match[2]
-	return scheme, api.IpEndpoint{Address: containerName, Port: endpoint.Port}, nil
+	return scheme, &api.IpEndpoint{Address: containerName, Port: endpoint.Port}, nil
 }
 
-func (pr *populatorRouter) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
+func (pr *populatorRouter) populate(input *api.IpEndpoint) (*api.IpEndpoint, error) {
 	scheme, updatedEndpoint, err := pr.extract(input)
 	if err != nil {
 		log.Printf("skip unpopulatable input %v", input)
@@ -94,7 +94,7 @@ type containerPortPopulator struct {
 	containerLookup ContainerLookuper
 }
 
-func (p *containerPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
+func (p *containerPortPopulator) populate(input *api.IpEndpoint) (*api.IpEndpoint, error) {
 	ports, err := p.containerLookup.LookupContainerPortBindings(input.Address)
 	if err != nil {
 		return input, err
@@ -105,7 +105,7 @@ func (p *containerPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint,
 	if input.Port != 0 {
 		return input, status.Error(codes.InvalidArgument, "The port number must be 0 to be used with ctr-container-port scheme")
 	}
-	return api.IpEndpoint{Address: input.Address, Port: int32(ports[0].ContainerPort)}, nil
+	return &api.IpEndpoint{Address: input.Address, Port: int32(ports[0].ContainerPort)}, nil
 }
 
 func getPortBindingErrorMessage(numberOfPortBindings int) string {
@@ -124,7 +124,7 @@ type localhostPortPopulator struct {
 	containerLookup ContainerLookuper
 }
 
-func (p *localhostPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint, error) {
+func (p *localhostPortPopulator) populate(input *api.IpEndpoint) (*api.IpEndpoint, error) {
 	ports, err := p.containerLookup.LookupContainerPortBindings(input.Address)
 	if err != nil {
 		return input, err
@@ -144,5 +144,5 @@ func (p *localhostPortPopulator) populate(input api.IpEndpoint) (api.IpEndpoint,
 	if input.Port != 0 {
 		return input, status.Error(codes.InvalidArgument, "The port number must be 0 to be used with ctr-localhost-port scheme")
 	}
-	return api.IpEndpoint{Address: localhostIp, Port: ports[0].HostPort}, nil
+	return &api.IpEndpoint{Address: localhostIp, Port: ports[0].HostPort}, nil
 }

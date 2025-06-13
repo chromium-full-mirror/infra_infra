@@ -23,7 +23,7 @@ func (m *mockLookuper) LookupContainerPortBindings(name string) ([]*api.Containe
 
 func TestExtract_invalid(t *testing.T) {
 	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := labApi.IpEndpoint{Address: "test"}
+	endpoint := &labApi.IpEndpoint{Address: "test"}
 	scheme, _, err := router.extract(endpoint)
 	if scheme != "" {
 		t.Fatalf("scheme should be empty for invalid endpoint")
@@ -35,8 +35,8 @@ func TestExtract_invalid(t *testing.T) {
 
 func TestExtract_containerPort(t *testing.T) {
 	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	scheme, returnedEndpoint, err := router.extract(endpoint)
 	if scheme != "ctr-container-port" {
 		t.Fatalf("scheme does not match")
@@ -49,8 +49,8 @@ func TestExtract_containerPort(t *testing.T) {
 
 func TestExtract_localhostPort(t *testing.T) {
 	router := populatorRouter{containerLookuper: &mockLookuper{}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	scheme, returnedEndpoint, err := router.extract(endpoint)
 	if scheme != "ctr-localhost-port" {
 		t.Fatalf("scheme does not match")
@@ -65,7 +65,7 @@ func TestPopulate_containerPort(t *testing.T) {
 	expectedAddress := "container-name"
 	expectedPort := 4222
 	expectedContainerName := "container-name"
-	expectedEndpoint := labApi.IpEndpoint{
+	expectedEndpoint := &labApi.IpEndpoint{
 		Address: expectedAddress,
 		Port:    int32(expectedPort),
 	}
@@ -77,7 +77,7 @@ func TestPopulate_containerPort(t *testing.T) {
 			}
 			return []*api.Container_PortBinding{{ContainerPort: int32(expectedPort)}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -88,12 +88,12 @@ func TestPopulate_containerPort(t *testing.T) {
 }
 
 func TestPopulate_containerPort_error(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return nil, errors.New("command throw error")
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -104,12 +104,12 @@ func TestPopulate_containerPort_error(t *testing.T) {
 }
 
 func TestPopulate_containerPort_multiplePorts(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return []*api.Container_PortBinding{{ContainerPort: 42}, {ContainerPort: 43}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -120,12 +120,12 @@ func TestPopulate_containerPort_multiplePorts(t *testing.T) {
 }
 
 func TestPopulate_containerPort_nonZeroPortInput(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 1}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 1}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return []*api.Container_PortBinding{{ContainerPort: 42}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 1}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-container-port://container-name", Port: 1}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -135,7 +135,7 @@ func TestPopulate_containerPort_nonZeroPortInput(t *testing.T) {
 	checkEndpoint(t, expectedEndpoint, returnedEndpoint)
 }
 
-func checkEndpoint(t *testing.T, expect labApi.IpEndpoint, actual labApi.IpEndpoint) {
+func checkEndpoint(t *testing.T, expect *labApi.IpEndpoint, actual *labApi.IpEndpoint) {
 	if actual.Address != expect.Address || actual.Port != expect.Port {
 		t.Fatalf("returned endpoint doesn't match\nexpect: %v\nactual: %v",
 			expect, actual)
@@ -146,7 +146,7 @@ func TestPopulate_localhostPort(t *testing.T) {
 	expectedAddress := "localhost"
 	expectedPort := int32(4222)
 	expectedContainerName := "container-name"
-	expectedEndpoint := labApi.IpEndpoint{
+	expectedEndpoint := &labApi.IpEndpoint{
 		Address: expectedAddress,
 		Port:    expectedPort,
 	}
@@ -158,7 +158,7 @@ func TestPopulate_localhostPort(t *testing.T) {
 			}
 			return []*api.Container_PortBinding{{ContainerPort: expectedPort, HostPort: expectedPort, HostIp: "127.0.0.1"}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -169,12 +169,12 @@ func TestPopulate_localhostPort(t *testing.T) {
 }
 
 func TestPopulate_localhostPort_error(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return nil, errors.New("command throw error")
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -185,12 +185,12 @@ func TestPopulate_localhostPort_error(t *testing.T) {
 }
 
 func TestPopulate_localhostPort_portMismatch(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return []*api.Container_PortBinding{{ContainerPort: 42, HostPort: 43}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -201,12 +201,12 @@ func TestPopulate_localhostPort_portMismatch(t *testing.T) {
 }
 
 func TestPopulate_localhostPort_noPorts(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return nil, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -217,12 +217,12 @@ func TestPopulate_localhostPort_noPorts(t *testing.T) {
 }
 
 func TestPopulate_localhostPort_multiplePorts(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 0}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 0}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return []*api.Container_PortBinding{{ContainerPort: 42, HostPort: 42}, {ContainerPort: 43, HostPort: 43}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 0}
 
 	returnedEndpoint, err := router.populate(endpoint)
 
@@ -233,12 +233,12 @@ func TestPopulate_localhostPort_multiplePorts(t *testing.T) {
 }
 
 func TestPopulate_localhostPort_nonZeroPortInput(t *testing.T) {
-	expectedEndpoint := labApi.IpEndpoint{Address: "container-name", Port: 1}
+	expectedEndpoint := &labApi.IpEndpoint{Address: "container-name", Port: 1}
 	router := populatorRouter{containerLookuper: &mockLookuper{
 		portLookupFunc: func(s string) ([]*api.Container_PortBinding, error) {
 			return []*api.Container_PortBinding{{ContainerPort: 42, HostPort: 42}}, nil
 		}}}
-	endpoint := labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 1}
+	endpoint := &labApi.IpEndpoint{Address: "ctr-localhost-port://container-name", Port: 1}
 
 	returnedEndpoint, err := router.populate(endpoint)
 

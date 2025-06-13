@@ -13,32 +13,31 @@ import (
 )
 
 type mockPlaceholderPopulator struct {
-	placeholderPopulator
-	populateFunc func(labApi.IpEndpoint) (labApi.IpEndpoint, error)
+	populateFunc func(*labApi.IpEndpoint) (*labApi.IpEndpoint, error)
 }
 
-func (m *mockPlaceholderPopulator) populate(endpoint labApi.IpEndpoint) (labApi.IpEndpoint, error) {
+func (m *mockPlaceholderPopulator) populate(endpoint *labApi.IpEndpoint) (*labApi.IpEndpoint, error) {
 	return m.populateFunc(endpoint)
 }
 
 func newMockWithError() *mockPlaceholderPopulator {
 	return &mockPlaceholderPopulator{
-		populateFunc: func(endpoint labApi.IpEndpoint) (labApi.IpEndpoint, error) {
+		populateFunc: func(endpoint *labApi.IpEndpoint) (*labApi.IpEndpoint, error) {
 			return endpoint, errors.New("some error")
 		}}
 }
 
 func newMockWithEndpoint(expect *labApi.IpEndpoint) *mockPlaceholderPopulator {
 	return &mockPlaceholderPopulator{
-		populateFunc: func(endpoint labApi.IpEndpoint) (labApi.IpEndpoint, error) {
-			return *expect, nil
+		populateFunc: func(endpoint *labApi.IpEndpoint) (*labApi.IpEndpoint, error) {
+			return expect, nil
 		}}
 }
 
 func TestProcessPlaceholders(t *testing.T) {
 	processor := newCrosProvisionProcessor()
-	expect := labApi.IpEndpoint{Address: "localhost", Port: 12345}
-	processor.placeholderPopulator = newMockWithEndpoint(&expect)
+	expect := &labApi.IpEndpoint{Address: "localhost", Port: 12345}
+	processor.placeholderPopulator = newMockWithEndpoint(expect)
 	request := &api.StartTemplatedContainerRequest{
 		Template: &api.Template{
 			Container: &api.Template_CrosProvision{

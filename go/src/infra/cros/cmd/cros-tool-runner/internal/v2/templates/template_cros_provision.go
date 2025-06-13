@@ -73,14 +73,14 @@ func (p *crosProvisionProcessor) processPlaceholders(request *api.StartTemplated
 	if t.InputRequest.DutServer == nil {
 		return
 	}
-	populatedDutServer, err := p.placeholderPopulator.populate(*t.InputRequest.DutServer)
+	populatedDutServer, err := p.placeholderPopulator.populate(t.InputRequest.DutServer)
 	if err != nil {
 		log.Printf("warning: error %v when processing dut server placeholder %v"+
 			" in cros-provision input request, skipping to process template as is",
 			err, t.InputRequest.DutServer)
 		return
 	}
-	t.InputRequest.DutServer = &populatedDutServer
+	t.InputRequest.DutServer = populatedDutServer
 }
 
 func (p *crosProvisionProcessor) writeInputFile(request *api.StartTemplatedContainerRequest) error {
