@@ -196,6 +196,7 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/ash-chrome-provision-filter/${platform}"),
 			},
+			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
 			Name: "provision-filter",
