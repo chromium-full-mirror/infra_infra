@@ -34,9 +34,6 @@ const bufSize int = 1024 * 1024
 func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
 	s.logger.Printf("Receive GetFileStat request for file %q in container %q", req.GetFilepath(), req.GetStationId().GetContainerName())
 	containerName := req.GetStationId().GetContainerName()
-	if containerName == "" {
-		return nil, s.logAndReturnErr(errors.New("container name is required"))
-	}
 	filePath := req.GetFilepath()
 	if filePath == "" {
 		return nil, s.logAndReturnErr(errors.New("filepath is required"))
@@ -195,8 +192,25 @@ func (s *service) DownloadFile(context.Context, *bols.DownloadFileRequest) (*bol
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadFile not implemented")
 }
 
-func (s *service) RemoveFile(context.Context, *bols.RemoveFileRequest) (*bols.RemoveFileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveFile not implemented")
+func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (*bols.RemoveFileResponse, error) {
+	s.logger.Println("Receive RemoveFile Request for file", req.GetFilename())
+	containerName := req.GetStationId().GetContainerName()
+	filename := req.GetFilename()
+	if filename == "" {
+		return nil, s.logAndReturnErr(errors.New("RemoveFile: file name is required"))
+	}
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("RemoveFile: fail to create docker client: %w", err))
+	}
+
+	args := []string{"rm", filename}
+	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("RemoveFile: failed to execute %q: %w", strings.Join(args, " "), err))
+	}
+
+	s.logger.Println("Served RemoveFile Request Successfully")
+	return &bols.RemoveFileResponse{}, nil
 }
 
 func (s *service) GetDirInfo(context.Context, *bols.GetDirInfoRequest) (*bols.GetDirInfoResponse, error) {

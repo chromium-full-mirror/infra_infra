@@ -30,6 +30,9 @@ func verifyFileAPIs(ctx context.Context, logger *log.Logger, a *args, cl bols.Bo
 	if err := verifyGetFileStat(ctx, logger, a, cl); err != nil {
 		return err
 	}
+	if err := verifyRemoveFile(ctx, logger, a, cl); err != nil {
+		return err
+	}
 	logger.Println("verifyGetFileStat: All file related verifications")
 	return nil
 }
@@ -151,6 +154,53 @@ func verifyPutAndGetFile(ctx context.Context, logger *log.Logger, a *args, cl bo
 	return nil
 }
 
+func verifyRemoveFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient) (err error) {
+	logger.Println("verifyRemoveFile: Verifying RemoveFile API")
+
+	// 1. Create and upload a test file.
+	content := "this file is to be deleted"
+	localFileName := filepath.Join(a.WorkingDir, "data", "remove_me.txt")
+	if err := os.WriteFile(localFileName, []byte(content), 0644); err != nil {
+		return fmt.Errorf("failed to create local test file %s: %w", localFileName, err)
+	}
+	defer os.Remove(localFileName)
+
+	remoteFilePath := "/tmp/remove_me.txt"
+	if err := putFile(ctx, logger, a, cl, localFileName, remoteFilePath); err != nil {
+		return fmt.Errorf("failed to upload test file to %q: %w", remoteFilePath, err)
+	}
+
+	// 2. Verify the file exists remotely before deletion.
+	statReq := &bols.GetFileStatRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Filepath: remoteFilePath,
+	}
+	if _, err := cl.GetFileStat(ctx, statReq); err != nil {
+		return fmt.Errorf("file %q should exist before removal, but GetFileStat failed: %w", remoteFilePath, err)
+	}
+	logger.Printf("verifyRemoveFile: Confirmed remote file %q exists.", remoteFilePath)
+
+	// 3. Remove the remote file.
+	if err := removeFile(ctx, logger, a, cl, remoteFilePath); err != nil {
+		return err
+	}
+
+	// 4. Verify the file no longer exists by checking that GetFileStat now fails.
+	_, err = cl.GetFileStat(ctx, statReq)
+	if err == nil {
+		// Clean up the file if it wasn't removed as expected.
+		removeFile(context.Background(), logger, a, cl, remoteFilePath)
+		return fmt.Errorf("file %q should have been removed, but GetFileStat succeeded", remoteFilePath)
+	}
+	logger.Printf("verifyRemoveFile: Received expected error after removing file, indicating success: %v", err)
+
+	logger.Println("verifyRemoveFile: verification was successful")
+	return nil
+}
+
 func putFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient, src, dest string) error {
 	logger.Printf("Sending PutFile Request src: %s dest: %s servod port: %d servod container %s",
 		src, dest, a.servodPort, a.servodContainer)
@@ -230,6 +280,23 @@ func getFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServi
 		}
 		f.Write(data.GetData())
 	}
+	return nil
+}
+
+func removeFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient, remotePath string) error {
+	logger.Printf("Sending RemoveFile Request for path: %s", remotePath)
+	req := &bols.RemoveFileRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Filename: remotePath,
+	}
+	_, err := cl.RemoveFile(ctx, req)
+	if err != nil {
+		return fmt.Errorf("RemoveFile RPC failed for %s: %w", remotePath, err)
+	}
+	logger.Printf("Successfully sent RemoveFile request for remote file: %s", remotePath)
 	return nil
 }
 
