@@ -22,7 +22,6 @@ import "google/protobuf/timestamp.proto";
 
 option java_package = "com.google.devtools.mobileharness.infra.monitoring.proto";
 option java_outer_classname = "MonitoredRecordProto";
-option go_package = "go.chromium.org/infra/fleetconsole/omnilab/omnilab-pubsub";
 
 message MonitoredRecord {
   // The timestamp when this monitored record is created.
@@ -47,3 +46,6 @@ message Attribute {
   string name = 1;
   string value = 2;
 }
+// FROM HERE ONWARDS IS SPECIFIED BY `fetch-omnilab-proto.sh`
+
+option go_package = "go.chromium.org/infra/fleetconsole/omnilab/omnilab-pubsub";
