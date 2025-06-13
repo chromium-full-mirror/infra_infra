@@ -1878,6 +1878,7 @@ SPECS.update({
         Universal('typing-extensions', '4.0.1', pyversions=['py3']),
         Universal('typing-extensions', '4.3.0', pyversions=['py3']),
         Universal('typing-extensions', '4.12.2', pyversions=['py3']),
+        Universal('typing-extensions', '4.13.2', pyversions=['py3']),
         Universal('typing-inspect', '0.7.1', pyversions=['py3']),
         Universal('tzdata', '2023.4'),
         Universal('unidiff', '0.7.5'),

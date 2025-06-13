@@ -10943,6 +10943,18 @@ wheel: <
 
 * *universal*
 
+### 4.13.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.13.2"
+>
+```
+
+
+* *universal*
+
 ## **typing-inspect-py3**
 
 ### 0.7.1
