@@ -9,6 +9,7 @@ package docker
 import (
 	"context"
 	"io"
+	"os"
 	"time"
 )
 
@@ -24,6 +25,7 @@ type Client interface {
 	IPAddress(ctx context.Context, containerName string) (string, error)
 	CopyTo(ctx context.Context, containerName string, sourcePath, destinationPath string) error
 	CopyFrom(ctx context.Context, containerName string, sourcePath, destinationPath string) error
+	ContainerStatPath(ctx context.Context, containerName string, path string) (PathStat, error)
 	PrintAll(ctx context.Context) error
 }
 
@@ -67,4 +69,12 @@ type ExecResponse struct {
 	ExitCode int
 	Stdout   string
 	Stderr   string
+}
+
+type PathStat struct {
+	Name       string
+	Size       int64
+	Mode       os.FileMode
+	Mtime      time.Time
+	LinkTarget string
 }

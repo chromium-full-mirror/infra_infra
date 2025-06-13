@@ -462,3 +462,22 @@ func escapeSpecialChars(cmd []string) []string {
 	}
 	return escapedCmd
 }
+
+// ContainerStatPath returns information about a file or directory in a container.
+func (d *dockerClient) ContainerStatPath(ctx context.Context, containerName string, path string) (PathStat, error) {
+	stat, err := d.client.ContainerStatPath(ctx, containerName, path)
+	if err != nil {
+		// Check if it's a "not found" error and return a more specific error if so.
+		if client.IsErrNotFound(err) {
+			return PathStat{}, errors.Reason("stat path %q in container %q: path not found", path, containerName).Err()
+		}
+		return PathStat{}, errors.Annotate(err, "stat path %q in container %q", path, containerName).Err()
+	}
+	return PathStat{
+		Name:       stat.Name,
+		Size:       stat.Size,
+		Mode:       stat.Mode,
+		Mtime:      stat.Mtime,
+		LinkTarget: stat.LinkTarget,
+	}, nil
+}

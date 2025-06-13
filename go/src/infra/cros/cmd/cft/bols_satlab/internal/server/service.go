@@ -31,8 +31,35 @@ import (
 
 const bufSize int = 1024 * 1024
 
-func (s *service) GetFileStat(context.Context, *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFileStat not implemented")
+func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest) (*bols.GetFileStatResponse, error) {
+	s.logger.Printf("Receive GetFileStat request for file %q in container %q", req.GetFilepath(), req.GetStationId().GetContainerName())
+	containerName := req.GetStationId().GetContainerName()
+	if containerName == "" {
+		return nil, s.logAndReturnErr(errors.New("container name is required"))
+	}
+	filePath := req.GetFilepath()
+	if filePath == "" {
+		return nil, s.logAndReturnErr(errors.New("filepath is required"))
+	}
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+	}
+	stat, err := c.ContainerStatPath(ctx, containerName, filePath)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to stat path %q in container %q: %w", filePath, containerName, err))
+	}
+
+	s.logger.Println("Served GetFileStat Request Successfully")
+	return &bols.GetFileStatResponse{
+		FileStats: &bols.FileStat{
+			Name:      stat.Name,
+			Path:      filePath,
+			Size:      stat.Size,
+			IsDir:     stat.Mode.IsDir(),
+			IsSymlink: (stat.Mode & os.ModeSymlink) != 0,
+		},
+	}, nil
 }
 
 func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetFileServer) error {
@@ -176,16 +203,49 @@ func (s *service) GetDirInfo(context.Context, *bols.GetDirInfoRequest) (*bols.Ge
 	return nil, status.Errorf(codes.Unimplemented, "method GetDirInfo not implemented")
 }
 
-func (s *service) MakeDir(context.Context, *bols.MakeDirRequest) (*bols.MakeDirResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MakeDir not implemented")
+func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.MakeDirResponse, error) {
+	s.logger.Println("Receive MakeDir Request for path", req.GetPath())
+	containerName := req.GetStationId().GetContainerName()
+	path := req.GetPath()
+	if containerName == "" || path == "" {
+		return nil, s.logAndReturnErr(errors.New("MakeDir: container name and path are required"))
+	}
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("MakeDir: fail to create docker client: %w", err))
+	}
+
+	if err := mkdirInContainer(ctx, c, containerName, path, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("MakeDir: failed to make directory %s in container %s: %w",
+			path, containerName, err))
+	}
+
+	s.logger.Println("Served MakeDir Request Successfully")
+	return &bols.MakeDirResponse{}, nil
 }
 
 func (s *service) MakeTempDir(context.Context, *bols.MakeTempDirRequest) (*bols.MakeTempDirResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MakeTempDir not implemented")
 }
 
-func (s *service) RemoveDir(context.Context, *bols.RemoveDirRequest) (*bols.RemoveDirResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveDir not implemented")
+func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*bols.RemoveDirResponse, error) {
+	s.logger.Println("Receive RemoveDir Request for path", req.GetPath())
+	containerName := req.GetStationId().GetContainerName()
+	path := req.GetPath()
+	if containerName == "" || path == "" {
+		return nil, s.logAndReturnErr(errors.New("RemoveDir: container name and path are required"))
+	}
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("RemoveDir: fail to create docker client: %w", err))
+	}
+	if err := rmdirInContainer(ctx, c, containerName, path, req.GetRemoveAll(), timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("RemoveDir: failed to remove directory: %w", err))
+	}
+
+	s.logger.Println("Served RemoveDir Request Successfully")
+	return &bols.RemoveDirResponse{}, nil
 }
 
 func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgServer) error {
@@ -595,6 +655,20 @@ func mkdirInContainer(ctx context.Context, c docker.Client,
 	}
 	if _, err := c.Exec(ctx, containerName, req); err != nil {
 		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+	}
+	return nil
+}
+
+func rmdirInContainer(ctx context.Context, c docker.Client,
+	containerName, path string, removeAll bool, timeout time.Duration) error {
+	var args []string
+	if removeAll {
+		args = []string{"rm", "-rf", path}
+	} else {
+		args = []string{"rmdir", path}
+	}
+	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeout); err != nil {
+		return fmt.Errorf("failed to execute %q: %w", strings.Join(args, " "), err)
 	}
 	return nil
 }

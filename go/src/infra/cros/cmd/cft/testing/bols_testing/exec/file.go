@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api/bols"
 )
@@ -26,6 +27,10 @@ func verifyFileAPIs(ctx context.Context, logger *log.Logger, a *args, cl bols.Bo
 	if err := verifyPutAndGetBigFile(ctx, logger, a, cl); err != nil {
 		return err
 	}
+	if err := verifyGetFileStat(ctx, logger, a, cl); err != nil {
+		return err
+	}
+	logger.Println("verifyGetFileStat: All file related verifications")
 	return nil
 }
 
@@ -225,5 +230,118 @@ func getFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServi
 		}
 		f.Write(data.GetData())
 	}
+	return nil
+}
+
+func makeDir(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient, remotePath string) error {
+	logger.Printf("Sending MakeDir Request for path: %s", remotePath)
+	req := &bols.MakeDirRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Path: remotePath,
+	}
+	_, err := cl.MakeDir(ctx, req)
+	if err != nil {
+		return fmt.Errorf("MakeDir RPC failed for %s: %w", remotePath, err)
+	}
+	logger.Printf("Successfully created remote directory: %s", remotePath)
+	return nil
+}
+
+func removeDir(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient, remotePath string, removeAll bool) error {
+	logger.Printf("Sending RemoveDir Request for path: %s", remotePath)
+	req := &bols.RemoveDirRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Path:      remotePath,
+		RemoveAll: removeAll,
+	}
+	_, err := cl.RemoveDir(ctx, req)
+	if err != nil {
+		return fmt.Errorf("RemoveDir RPC failed for %s: %w", remotePath, err)
+	}
+	logger.Printf("Successfully removed remote directory: %s", remotePath)
+	return nil
+}
+
+func verifyGetFileStat(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient) (err error) {
+	logger.Println("verifyGetFileStat: Verifying GetFileStat API")
+
+	// 1. Create a remote directory to work in.
+	remoteTestDir := "/tmp/bols-testing-get-stat"
+	if err := makeDir(ctx, logger, a, cl, remoteTestDir); err != nil {
+		return fmt.Errorf("failed to create remote test directory: %w", err)
+	}
+	defer func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		// Remove the directory and its contents.
+		if cleanupErr := removeDir(cleanupCtx, logger, a, cl, remoteTestDir, true); cleanupErr != nil {
+			logger.Printf("WARNING: failed to clean up remote directory %s: %v", remoteTestDir, cleanupErr)
+		}
+	}()
+
+	// 2. Test GetFileStat on the directory.
+	dirStatReq := &bols.GetFileStatRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Filepath: remoteTestDir,
+	}
+	dirStatResp, err := cl.GetFileStat(ctx, dirStatReq)
+	if err != nil {
+		return fmt.Errorf("GetFileStat RPC failed for directory %q: %w", remoteTestDir, err)
+	}
+	if !dirStatResp.GetFileStats().GetIsDir() {
+		return fmt.Errorf("expected %q to be a directory, but IsDir is false", remoteTestDir)
+	}
+	if dirStatResp.GetFileStats().GetPath() != remoteTestDir {
+		return fmt.Errorf("unexpected path for directory stat: got %q, want %q", dirStatResp.GetFileStats().GetPath(), remoteTestDir)
+	}
+	logger.Println("verifyGetFileStat: Directory stat verification successful.")
+
+	// 3. Create a local test file and upload it.
+	content := "hello stat"
+	localFileName := filepath.Join(a.WorkingDir, "data", "stat_test_file.txt")
+	if err := os.WriteFile(localFileName, []byte(content), 0644); err != nil {
+		return fmt.Errorf("failed to create local test file %s: %w", localFileName, err)
+	}
+	defer os.Remove(localFileName)
+
+	remoteFilePath := filepath.Join(remoteTestDir, "stat_test_file.txt")
+	if err := putFile(ctx, logger, a, cl, localFileName, remoteFilePath); err != nil {
+		return fmt.Errorf("failed to upload test file to %q: %w", remoteFilePath, err)
+	}
+
+	// 4. Test GetFileStat on the file.
+	fileStatReq := &bols.GetFileStatRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Filepath: remoteFilePath,
+	}
+	fileStatResp, err := cl.GetFileStat(ctx, fileStatReq)
+	if err != nil {
+		return fmt.Errorf("GetFileStat RPC failed for file %q: %w", remoteFilePath, err)
+	}
+	fileStats := fileStatResp.GetFileStats()
+	if fileStats.GetIsDir() {
+		return fmt.Errorf("expected %q to be a file, but IsDir is true", remoteFilePath)
+	}
+	if fileStats.GetPath() != remoteFilePath {
+		return fmt.Errorf("unexpected path for file stat: got %q, want %q", fileStats.GetPath(), remoteFilePath)
+	}
+	expectedSize := int64(len(content))
+	if fileStats.GetSize() != expectedSize {
+		return fmt.Errorf("unexpected file size: got %d, want %d", fileStats.GetSize(), expectedSize)
+	}
+	logger.Println("verifyGetFileStat: File stat verification successful.")
+
 	return nil
 }
