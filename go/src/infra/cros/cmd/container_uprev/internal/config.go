@@ -442,7 +442,10 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
-			CloudRunConfig: &cloudrun.Config{},
+			CloudRunConfig: &cloudrun.Config{
+				CPU:    "8",
+				Memory: "32Gi",
+			},
 		},
 		{
 			Name: "foil-test",
