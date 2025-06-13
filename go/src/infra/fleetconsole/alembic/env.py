@@ -1,6 +1,8 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import shutil
+import subprocess
 
 from configparser import Error
 from logging.config import fileConfig
@@ -35,7 +37,20 @@ if env == 'local':
 else:
   # Expecting there to be an ssh tunnel to the db.
   # See README.md on how to do that
-  db_uri = "postgresql://postgres:reorg@localhost:5432/console_db"
+  gcloud_path = shutil.which("gcloud")
+  if gcloud_path is None:
+    raise FileNotFoundError("gcloud command not found")
+
+  command: list[str] = [
+      gcloud_path, "secrets", "versions", "access", "latest",
+      f'--project=fleet-console-{env}', "--secret=db-password"
+  ]
+
+  db_password = subprocess.run(command, capture_output=True, text=True)
+  if db_password.returncode != 0:
+    raise RuntimeError(f"Failed to get db password: {db_password.stderr}")
+
+  db_uri = f"postgresql://postgres:{db_password.stdout.strip()}@localhost:5432/console_db"
   config.set_main_option("sqlalchemy.url", db_uri)
 
 
