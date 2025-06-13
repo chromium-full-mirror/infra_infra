@@ -303,8 +303,10 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 					tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))
 				}
 				usbInfo := dutInfo.GetUsbInfo()
-				tags = AppendTags(tags, "power_delivery_port_servo", usbInfo.GetPowerDeliveryPortServo())
-				tags = AppendTags(tags, "power_delivery_port_count", strconv.FormatUint(uint64(usbInfo.GetPowerDeliveryPortCount()), 10))
+				if usbInfo != nil {
+					tags = AppendTags(tags, "power_delivery_port_servo", usbInfo.GetPowerDeliveryPortServo())
+					tags = AppendTags(tags, "power_delivery_port_count", strconv.FormatUint(uint64(usbInfo.GetPowerDeliveryPortCount()), 10))
+				}
 			}
 
 			inventoryInfo := primaryExecInfo.GetInventoryInfo()
@@ -374,6 +376,7 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			tags = configTestMetadataTags(ctx, tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
 			tags = configAVLInfoTags(tags, testCaseInfo.GetAvlInfo())
 			tags = configGSCInfoTags(tags, testCaseInfo.GetGscInfo())
+			tags = configStressTestInfoTags(tags, testCaseInfo.GetStressTestInfo())
 		}
 
 		timeInfo := testRun.TimeInfo
@@ -412,7 +415,7 @@ func convertTestArgsTag(testArgs map[string]string) string {
 	return truncateString(strings.Join(testArgsSlice, " "), maxTagValueBytes)
 }
 
-// configBuildMetaDataTags configs test result tags based on the build metadata.
+// configBuildMetaDataTags configures test result tags based on the build metadata.
 func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.BuildMetadata) []*pb.StringPair {
 	if buildMetadata == nil {
 		return tags
@@ -707,6 +710,20 @@ func configGSCInfoTags(tags []*pb.StringPair, gscInfo *artifactpb.GscInfo) []*pb
 	newTags = AppendTags(newTags, "gsc_tast_version", gscInfo.GetGscTastVersion())
 	newTags = AppendTags(newTags, "gsc_testbed_serial", gscInfo.GetGscTestbedSerial())
 	newTags = AppendTags(newTags, "gsc_testbed_type", gscInfo.GetGscTestbedType())
+
+	return newTags
+}
+
+// configStressTestInfoTags configs test result tags based on the stress test info.
+func configStressTestInfoTags(tags []*pb.StringPair, stressTestInfo *artifactpb.StressTestInfo) []*pb.StringPair {
+	if stressTestInfo == nil {
+		return tags
+	}
+
+	newTags := make([]*pb.StringPair, 0, len(tags)+stressTestInfo.ProtoReflect().Descriptor().Fields().Len())
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "stress_test_iterations", strconv.FormatUint(uint64(stressTestInfo.GetIterations()), 10))
 
 	return newTags
 }

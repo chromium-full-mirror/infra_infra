@@ -219,6 +219,9 @@
                     "gsc_tast_version": "R125-15837.0.0",
                     "gsc_testbed_serial": "123882-0008",
                     "gsc_testbed_type": "gsc_dt_shield"
+                },
+                "stress_test_info": {
+                    "iterations": 10
                 }
             },
             "logs_info":[
