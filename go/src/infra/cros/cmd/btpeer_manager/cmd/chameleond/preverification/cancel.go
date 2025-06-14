@@ -5,6 +5,9 @@
 package preverification
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -22,6 +25,17 @@ func removeFromBundleList(bundles []*labapi.BluetoothPeerChameleondConfig_Chamel
 	return bundles
 }
 
+func cancelPreverification(ctx context.Context, config *labapi.BluetoothPeerChameleondConfig) error {
+	log.Logger.Printf("Removing bundle with commit %s", config.NextChameleondCommit)
+	config.Bundles = removeFromBundleList(config.Bundles, config.NextChameleondCommit)
+	log.Logger.Printf("Removing commit from NextChameleondCommit field")
+	config.NextChameleondCommit = ""
+	log.Logger.Printf("Update nextDutReleaseVersions to []")
+	config.NextDutReleaseVersions = []string{}
+
+	return nil
+}
+
 func cancelCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cancel",
@@ -32,15 +46,15 @@ func cancelCmd() *cobra.Command {
 			// Retrieve the config.
 			releaseManager := release.SharedManagerInstance()
 			config := releaseManager.Config()
-			log.Logger.Printf("Removing bundle with commit %s", config.NextChameleondCommit)
-			config.Bundles = removeFromBundleList(config.Bundles, config.NextChameleondCommit)
-			log.Logger.Printf("Removing commit from NextChameleondCommit field")
-			config.NextChameleondCommit = ""
-			log.Logger.Printf("Update nextDutReleaseVersions to []")
-			config.NextDutReleaseVersions = []string{}
+			err := cancelPreverification(cmd.Context(), config)
+			if err != nil {
+				return fmt.Errorf("failed to cancel pre-verification: %w", err)
+			}
 
-			releaseManager.UpdateConfig(cmd.Context(), config, false)
-
+			_, err = releaseManager.UpdateConfig(cmd.Context(), config, false)
+			if err != nil {
+				return fmt.Errorf("failed to save new bundle updates to config: %w", err)
+			}
 			return nil
 		},
 	}
