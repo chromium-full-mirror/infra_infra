@@ -7,136 +7,281 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
+	"cmp"
+	"context"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"go/format"
 	"log"
+	"net/http"
 	"os"
-	"os/exec"
 	"runtime"
 	"slices"
-	"sync"
 	"time"
 
+	"go.chromium.org/luci/auth"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+	rdbpb "go.chromium.org/luci/resultdb/proto/v1"
+	sauth "go.chromium.org/luci/server/auth"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
+)
+
+var (
+	nBuilds = flag.Int("n", 10, "number of builds to average over")
+	verbose = flag.Bool("v", false, "print extra debug information")
 )
 
 func main() {
-	if _, err := exec.LookPath("go"); err != nil {
-		log.Fatal("'go' command is not found, but it is required:", err)
+	// Validate flags.
+	flag.Parse()
+	if *nBuilds <= 0 {
+		log.Fatal("-n must be a positive integer")
 	}
-	if runtime.GOMAXPROCS(-1) < 16 {
-		log.Fatal("please run on a machine with at least 16 cores")
-	}
-	shards := runtime.GOMAXPROCS(-1) / 16
 
-	// Run `go tool dist test -list` to list all tests.
-	tests, err := goDistTestList(false)
+	// Create authenticated client.
+	ctx := context.Background()
+	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
+		Scopes: append([]string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/gerritcodereview",
+		}, sauth.CloudOAuthScopes...),
+	})
+	hc, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to create authenticated client: %v", err)
 	}
+	lc := NewLUCIClient(hc)
 
-	// Measure test run times.
-	var eg errgroup.Group
-	eg.SetLimit(shards)
+	// Fetch all sharded builders.
+	log.Print("fetching builder list")
+	builders, err := getShardedBuilders(ctx, lc)
+	if err != nil {
+		log.Fatalf("fetching sharded builders: %v", err)
+	}
+	log.Printf("found %d builders", len(builders))
 
-	var testTimesMu sync.Mutex
-	testTimes := make(map[string]time.Duration)
-	for _, testName := range tests {
+	// Fetch all the test timings.
+	//
+	// This slice mirrors builders.
+	if !*verbose {
+		log.Printf("fetching package timings, averaged over %d builds", *nBuilds)
+	}
+	pkgTimes := make([][]pkgTiming, len(builders))
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.SetLimit(runtime.GOMAXPROCS(-1) * 4) // Mostly I/O-bound.
+	for i, b := range builders {
 		eg.Go(func() error {
-			// Run the test.
-			dt, err := goDistTestTime(testName, false)
-			if err != nil {
-				fmt.Printf("FAIL\t%s\t(%v)\n", testName, err)
-				return err
+			if *verbose {
+				log.Printf("%s: fetching package timings", b)
 			}
-			fmt.Printf("ok\t%s\t%.3fs\n", testName, dt.Seconds())
 
-			// Store the result.
-			testTimesMu.Lock()
-			defer testTimesMu.Unlock()
-			testTimes[testName] = dt
-
+			var err error
+			pkgTimes[i], err = fetchPackageTimingsForBuilder(ctx, lc, b, *nBuilds)
+			if err != nil {
+				return fmt.Errorf("failed to fetch package timings for builder %s: %v", b, err)
+			}
 			return nil
 		})
 	}
-
-	// Do the same for any race-mode exclusive tests.
-	raceTests, err := goDistTestList(true)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, testName := range raceTests {
-		if _, ok := testTimes[testName]; ok {
-			// Don't measure tests we've already measured again.
-			continue
-		}
-		eg.Go(func() error {
-			// Run the test.
-			dt, err := goDistTestTime(testName, true)
-			if err != nil {
-				fmt.Printf("FAIL\t%s\t(%v)\n", testName, err)
-				return err
-			}
-			fmt.Printf("ok\t%s\t%.3fs\n", testName, dt.Seconds())
-
-			// Store the result.
-			testTimesMu.Lock()
-			defer testTimesMu.Unlock()
-			testTimes[testName] = dt
-
-			return nil
-		})
-	}
-
-	// Wait for all tests to complete.
 	if err := eg.Wait(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("fetching package timings: %v", err)
 	}
 
-	// Generate a Go file.
-	contents, err := generateWeightsFile(testTimes)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Format it.
-	formattedContents, err := format.Source(contents)
-	if err != nil {
-		log.Printf("generated file:\n%s", contents)
-		log.Fatalf("formatting generated file: %v", err)
-	}
-	// Write it.
-	if err := os.WriteFile("raw.go", formattedContents, 0o644); err != nil {
-		log.Fatal(err)
+	// Write out the file.
+	log.Print("writing weights file")
+	if err := writeWeightsFile(builders, pkgTimes); err != nil {
+		log.Fatalf("writing weights file: %v", err)
 	}
 }
 
-func generateWeightsFile(testTimes map[string]time.Duration) []byte {
-	var buf bytes.Buffer
-
-	// Get a sorted list of all the tests.
-	allTests := make([]string, 0, len(testTimes))
-	for testName := range testTimes {
-		allTests = append(allTests, testName)
-	}
-	slices.Sort(allTests)
-
-	fmt.Fprintln(&buf, header)
-	fmt.Fprintln(&buf, "var goDistTestWeights = map[string]int{")
-	for _, testName := range allTests {
-		weight := int(testTimes[testName].Seconds())
-		if weight <= 1 {
-			// Unnamed tests have an implicit weight of 1.
-			continue
+func getShardedBuilders(ctx context.Context, c *LUCIClient) ([]string, error) {
+	var builders []string
+	var pageToken string
+	for page := 1; ; page++ {
+		resp, err := c.Builders.ListBuilders(ctx, &bbpb.ListBuildersRequest{
+			Project:   "golang",
+			Bucket:    "ci",
+			PageSize:  1000,
+			PageToken: pageToken,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to list page %d of builders: %v", page, err)
 		}
-		fmt.Fprintf(&buf, "\t%q: %d,\n", testName, weight)
+		for _, b := range resp.GetBuilders() {
+			var p golangbuildpb.Inputs
+			err := json.Unmarshal([]byte(b.GetConfig().GetProperties()), &p)
+			if err != nil {
+				return nil, fmt.Errorf("failed to unmarshal builder properties for %s: %v", b.Id, err)
+			}
+			if p.Mode != golangbuildpb.Mode_MODE_COORDINATOR { // Skip non-sharded builders.
+				continue
+			}
+			if p.CoordMode.NumTestShards == 1 { // Skip builders with only one shard.
+				continue
+			}
+			if p.MiscPorts { // Skip misccompile builders.
+				continue
+			}
+			builders = append(builders, b.Id.Builder)
+		}
+		if resp.NextPageToken == "" {
+			break
+		}
+		pageToken = resp.NextPageToken
+	}
+	slices.Sort(builders)
+	return builders, nil
+}
+
+// LUCIClient is a LUCI client.
+type LUCIClient struct {
+	Builders bbpb.BuildersClient
+	Builds   bbpb.BuildsClient
+	ResultDB rdbpb.ResultDBClient
+}
+
+// NewLUCIClient creates a LUCI client.
+//
+// If c is nil, an unauthenticated http.DefaultClient is used,
+// otherwise c is expected to be an authenticated HTTP client.
+//
+// nProc controls concurrency. NewLUCIClient returns an error
+// if nProc is non-positive.
+func NewLUCIClient(c *http.Client) *LUCIClient {
+	return &LUCIClient{
+		Builds: bbpb.NewBuildsClient(&prpc.Client{
+			C:    c,
+			Host: chromeinfra.BuildbucketHost,
+		}),
+		Builders: bbpb.NewBuildersClient(&prpc.Client{
+			C:    c,
+			Host: chromeinfra.BuildbucketHost,
+		}),
+		ResultDB: rdbpb.NewResultDBClient(&prpc.Client{
+			C:    c,
+			Host: chromeinfra.ResultDBHost,
+		}),
+	}
+}
+
+type pkgTiming struct {
+	name     string
+	duration time.Duration
+}
+
+func fetchPackageTimingsForBuilder(ctx context.Context, c *LUCIClient, builder string, n int) ([]pkgTiming, error) {
+	// Fetch the last n successful builds for this builder.
+	pred := &bbpb.BuildPredicate{
+		Builder: &bbpb.BuilderID{Project: "golang", Bucket: "ci", Builder: builder},
+		Status:  bbpb.Status_SUCCESS,
+	}
+	mask, err := fieldmaskpb.New((*bbpb.Build)(nil), "id", "infra")
+	if err != nil {
+		return nil, fmt.Errorf("error creating a build mask: %v", err)
+	}
+	resp, err := c.Builds.SearchBuilds(ctx, &bbpb.SearchBuildsRequest{
+		Predicate: pred,
+		Mask:      &bbpb.BuildMask{Fields: mask},
+		PageSize:  int32(n),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("searching successful builds for builder %s: %v", builder, err)
+	}
+
+	// Fetch all the package test timings.
+	pkgDurations := make(map[string][]time.Duration)
+	for i, b := range resp.Builds {
+		if *verbose {
+			log.Printf("%s: fetch test results for build %d (https://ci.chromium.org/b/%d", builder, i+1, b.Id)
+		}
+		inv := b.GetInfra().GetResultdb().GetInvocation()
+		var pageToken string
+		for page := 1; ; page++ {
+			resp, err := c.ResultDB.QueryTestResults(ctx, &rdbpb.QueryTestResultsRequest{
+				Invocations: []string{inv},
+				// Skip everything with a '.'. This should give us just package-level tests.
+				Predicate: &rdbpb.TestResultPredicate{TestIdRegexp: "[^.]*"},
+				PageSize:  1000,
+				PageToken: pageToken,
+			})
+			if err != nil {
+				return nil, fmt.Errorf("fetching page %d of test results for build %s: %v", page, b.Id, err)
+			}
+			for _, r := range resp.TestResults {
+				pkgDurations[r.TestId] = append(pkgDurations[r.TestId], r.Duration.AsDuration())
+			}
+			if resp.NextPageToken == "" {
+				break
+			}
+			pageToken = resp.NextPageToken
+		}
+	}
+
+	// Aggregate the package durations with a mean.
+	//
+	// TODO(mknyszek): Sort the input and try the median, or maybe the p75 or something.
+	pkgTimes := make([]pkgTiming, 0, len(pkgDurations))
+	for pkg, durations := range pkgDurations {
+		pkgTimes = append(pkgTimes, pkgTiming{name: pkg, duration: mean(durations)})
+	}
+	slices.SortFunc(pkgTimes, func(a, b pkgTiming) int {
+		if a.duration == b.duration {
+			return cmp.Compare(a.name, b.name)
+		}
+		return cmp.Compare(b.duration, a.duration) // Descending order, for humans.
+	})
+	return pkgTimes, nil
+}
+
+func writeWeightsFile(builders []string, timings [][]pkgTiming) error {
+	// Generate a Go file.
+	contents := generateWeightsFile(builders, timings)
+
+	// Format it.
+	formattedContents, err := format.Source(contents)
+	if err != nil {
+		log.Printf("failed to format generated file, see weights.go: %v", err)
+		formattedContents = contents
+	}
+
+	// Write it.
+	if err := os.WriteFile("weights.go", formattedContents, 0o644); err != nil {
+		return fmt.Errorf("writing generated file: %v", err)
+	}
+	return nil
+}
+
+func mean(durations []time.Duration) time.Duration {
+	var sum time.Duration
+	for _, d := range durations {
+		sum += d
+	}
+	return sum / time.Duration(len(durations))
+}
+
+func generateWeightsFile(builders []string, timings [][]pkgTiming) []byte {
+	var buf bytes.Buffer
+	fmt.Fprintln(&buf, header)
+	fmt.Fprintln(&buf, "var allWeights = map[string]map[string]float64{")
+	for i, builder := range builders {
+		fmt.Fprintf(&buf, "\t%q: {\n", builder)
+		for _, pkg := range timings[i] {
+			fmt.Fprintf(&buf, "\t%q: %f,\n", pkg.name, pkg.duration.Seconds())
+		}
+		fmt.Fprintf(&buf, "\t},\n")
 	}
 	fmt.Fprintln(&buf, "}")
 	return buf.Bytes()
 }
 
-const header = `// Copyright 2024 The Chromium Authors
+const header = `// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,58 +289,3 @@ const header = `// Copyright 2024 The Chromium Authors
 
 package testweights
 `
-
-func goDistTestList(race bool) ([]string, error) {
-	testListCmd := exec.Command("go", "tool", "dist", "test", "-list")
-	if race {
-		testListCmd.Args = append(testListCmd.Args, "-race")
-	}
-	// Always run in longtest mode to make sure all tests are visible.
-	testListCmd.Env = append(os.Environ(), "GO_TEST_SHORT=0")
-
-	// Run the command.
-	output, err := testListCmd.Output()
-	if err != nil {
-		return nil, fmt.Errorf("failed to run %q: %v", testListCmd.String(), err)
-	}
-
-	// Parse the output—each line is a test name.
-	var tests []string
-	scanner := bufio.NewScanner(bytes.NewReader(output))
-	for scanner.Scan() {
-		tests = append(tests, scanner.Text())
-	}
-	return tests, nil
-}
-
-func goDistTestTime(testName string, race bool) (time.Duration, error) {
-	// Try to run three times, in case of flakiness.
-	var dt time.Duration
-	var testRunErr error
-	for i := 0; i < 3; i++ {
-		testRunCmd := exec.Command("go", "tool", "dist", "test")
-		if race {
-			testRunCmd.Args = append(testRunCmd.Args, "-race")
-		}
-		testRunCmd.Args = append(testRunCmd.Args, testName)
-
-		// Always run in longtest mode to make sure all tests are visible.
-		// Also, always run with GOMAXPROCS=16. This is important for two reasons.
-		// One, there are some tests that are only enabled if GOMAXPROCS is high
-		// enough, so we don't want to miss them.
-		// And two, most of our builder machines have 16 cores as of this writing,
-		// so this will give slightly more accurate timings. It will still be slightly
-		// wrong for other platforms, but we don't generally shard on those platforms.
-		testRunCmd.Env = append(os.Environ(), "GOMAXPROCS=16", "GO_TEST_SHORT=0")
-
-		// Run the command, and time it.
-		start := time.Now()
-		if err := testRunCmd.Run(); err != nil {
-			testRunErr = fmt.Errorf("failed to run %q: %v", testRunCmd.String(), err)
-			continue
-		}
-		dt = time.Since(start)
-		break
-	}
-	return dt, testRunErr
-}

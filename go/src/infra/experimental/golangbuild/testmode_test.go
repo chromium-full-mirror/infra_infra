@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"slices"
 	"testing"
+
+	"go.chromium.org/infra/experimental/golangbuild/testweights"
 )
 
 func TestShardByHash(t *testing.T) {
@@ -18,23 +20,27 @@ func TestShardByWeight(t *testing.T) {
 	testShardFunc(t, shardTestsByWeight)
 }
 
-type shardFunc func(tests []string, shard testShard) []string
+type shardFunc func(builderName string, tests []string, shard testShard) []string
 
 func testShardFunc(t *testing.T, f shardFunc) {
-	for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
-		t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
-			testShardFuncByN(t, f, n)
+	for _, b := range testweights.SupportedBuilders() {
+		t.Run(fmt.Sprintf("Builder=%s", b), func(t *testing.T) {
+			for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
+				t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
+					testShardFuncByN(t, f, b, n)
+				})
+			}
 		})
 	}
 }
 
-func testShardFuncByN(t *testing.T, f shardFunc, n int) {
+func testShardFuncByN(t *testing.T, f shardFunc, builderName string, n int) {
 	allTests := testNames()
 
 	// Shard all the tests.
 	shardTests := make([][]string, n)
 	for i := range n {
-		shardTests[i] = f(allTests, testShard{shardID: uint32(i), nShards: uint32(n)})
+		shardTests[i] = f(builderName, allTests, testShard{shardID: uint32(i), nShards: uint32(n)})
 	}
 
 	// Concatenate and sort the tests.
@@ -56,6 +62,19 @@ func testShardFuncByN(t *testing.T, f shardFunc, n int) {
 			t.Logf("\t%q", name)
 		}
 		t.Fatal("sharding tests didn't produce original set")
+	}
+
+	// Print balance stats, assuming some accuracy in the weights.
+	sums := make([]float64, n)
+	total := 0.0
+	for shard, tests := range shardTests {
+		for _, test := range tests {
+			sums[shard] += testweights.For(builderName, test)
+		}
+		total += sums[shard]
+	}
+	for shard, sum := range sums {
+		t.Logf("shard %d: %f (%.2f%%)", shard, sum, sum/total*100)
 	}
 }
 

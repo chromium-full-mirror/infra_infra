@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -18,6 +19,7 @@ import (
 	"hash/crc32"
 	"io"
 	"io/fs"
+	"math"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -203,9 +205,9 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 
 	// Determine which tests to run.
 	if _, ok := spec.experiments["golang.shard_by_weight"]; ok {
-		tests = shardTestsByWeight(tests, shard)
+		tests = shardTestsByWeight(spec.builderName, tests, shard)
 	} else {
-		tests = shardTestsByHash(tests, shard)
+		tests = shardTestsByHash(spec.builderName, tests, shard)
 	}
 
 	// Log the tests we're going to run.
@@ -222,7 +224,7 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 // shardTestsByHash filters tests down based on shard. The algorithm it
 // uses to do so splits tests across shards by hashing the names and using
 // the hash to index into the set of shards.
-func shardTestsByHash(tests []string, shard testShard) []string {
+func shardTestsByHash(builderName string, tests []string, shard testShard) []string {
 	var filtered []string
 	for _, name := range tests {
 		if shard.shouldRunTest(name) {
@@ -238,33 +240,49 @@ func shardTestsByHash(tests []string, shard testShard) []string {
 // It then takes the short tests and shards them by hash. This is intended
 // to strike a balance between sharding reproducibility and build latency by
 // sharding work more evenly.
-func shardTestsByWeight(tests []string, shard testShard) []string {
+func shardTestsByWeight(builderName string, tests []string, shard testShard) []string {
+	// First, split off long tests from short tests.
+	type longTest struct {
+		name   string
+		weight float64
+	}
 	var shortTests []string
-	var longTests []string
-	longWeight := 0
+	var longTests []longTest
+	longWeight := float64(0)
 	for _, name := range tests {
-		if weight := testweights.GoDistTest(name); weight > 1 {
+		if weight := testweights.For(builderName, name); weight > 0.5 {
 			longWeight += weight
-			longTests = append(longTests, name)
+			longTests = append(longTests, longTest{name, weight})
 		} else {
 			shortTests = append(shortTests, name)
 		}
 	}
-	target := longWeight / int(shard.nShards)
-	s := 0
-	var shardTotal int
-	var shardBucket []string
-	for _, name := range longTests {
-		shardTotal += testweights.GoDistTest(name)
-		if s == int(shard.shardID) {
-			shardBucket = append(shardBucket, name)
+
+	// Next, greedily allocate tests from smallest to largest, always
+	// placing tests in the least-filled shard.
+	slices.SortFunc(longTests, func(a, b longTest) int {
+		if a.weight == b.weight {
+			return cmp.Compare(a.name, b.name)
 		}
-		if s != int(shard.nShards-1) && shardTotal > target {
-			s++
-			shardTotal = 0
+		return cmp.Compare(b.weight, a.weight) // Descending weight.
+	})
+	shardTotals := make([]float64, shard.nShards)
+	var shardBucket []string
+	for _, test := range longTests {
+		minShard := -1
+		minWeight := math.Inf(1)
+		for shard, weight := range shardTotals {
+			if weight < minWeight {
+				minWeight = weight
+				minShard = shard
+			}
+		}
+		shardTotals[minShard] += test.weight
+		if minShard == int(shard.shardID) {
+			shardBucket = append(shardBucket, test.name)
 		}
 	}
-	return append(shardBucket, shardTestsByHash(shortTests, shard)...)
+	return append(shardBucket, shardTestsByHash(builderName, shortTests, shard)...)
 }
 
 // fetchSubrepo fetches a target golang.org/x repository.
