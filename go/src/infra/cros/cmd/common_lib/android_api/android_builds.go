@@ -16,7 +16,6 @@ import (
 
 const (
 	buildsEndpoint = "https://androidbuildinternal.googleapis.com/android/internal/build/v3/builds"
-	targetType     = "-trunk_staging-userdebug"
 )
 
 // AndroidBuildClient is an interface for android builds API
@@ -43,6 +42,7 @@ type BuildGetRequest struct {
 	Successful         string
 	Board              string
 	BuildAttemptStatus string
+	TargetType         string
 }
 
 // formBuildAPIURL forms a URL with the given base URL and query parameters
@@ -58,7 +58,7 @@ func formBuildAPIURL(req BuildGetRequest) (string, error) {
 	query.Set("maxResults", req.MaxResults)
 	query.Set("sortingType", req.SortingType)
 	query.Set("successful", req.Successful)
-	query.Set("target", req.Board+targetType)
+	query.Set("target", req.Board+req.TargetType)
 	query.Set("buildAttemptStatus", req.BuildAttemptStatus)
 
 	// Make sure the request params values are non-empty, otherwise server throws error.

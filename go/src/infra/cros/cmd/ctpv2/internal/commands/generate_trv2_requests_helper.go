@@ -1421,11 +1421,11 @@ func geBuildTargetsFromPrimaryDeviceInfo(trHelper *TrV2ReqHelper) (string, strin
 	}
 
 	for _, pair := range schedUnit.GetPrimaryTarget().GetSwReq().GetKeyValues() {
-		if buildID != "" && buildTarget != "" {
+		if branch != "" && buildID != "" && buildTarget != "" {
 			break
 		}
 
-		if pair.GetKey() == "branch" {
+		if pair.GetKey() == "al_build_branch" {
 			branch = pair.GetValue()
 		} else if pair.GetKey() == "al_build_id" {
 			buildID = pair.GetValue()

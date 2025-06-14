@@ -237,18 +237,21 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
 	if strings.HasPrefix(gcsPath, "android-build") {
 		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
+		targetType := strings.Replace(buildTarget, board, "", 1)
 		installPath = gcsPath
-		branch, err = buildApi.GetBranchFromBuildID(updater.AndroidAuthHandler, buildGetReq(board, "", buildId))
+		branch, err = buildApi.GetBranchFromBuildID(updater.AndroidAuthHandler, buildGetReq(board, "", buildId, targetType))
 		if err != nil {
 			log.Printf("Error getting branch for build number %s: target: %s %v", buildId, buildTarget, err)
+		} else {
+			log.Printf("Got branch %s from android api for build number: %s\n", branch, buildId)
 		}
-		log.Printf("Got branch %s from android api for build number: %s\n", branch, buildId)
 	} else {
 		branch = getBranch(su, log, commonParams)
+		targetType := "-trunk_staging-userdebug"
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = buildApi.GetLatestGreenBuildNumber(updater.AndroidAuthHandler, buildGetReq(board, branch, ""))
+			latestGreenBuild, err = buildApi.GetLatestGreenBuildNumber(updater.AndroidAuthHandler, buildGetReq(board, branch, "", targetType))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				return err
@@ -258,7 +261,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 		buildId = fmt.Sprint(latestGreenBuild)
 
 		log.Println("Setting build target and latest green build number")
-		buildTarget = board + "-trunk_staging-userdebug"
+		buildTarget = board + targetType
 		installPath = common.GetABOTAPath(buildId, buildTarget, board)
 		log.Printf("InstallPath value: %s", installPath)
 	}
@@ -337,7 +340,7 @@ func applyBuildInfoToTarget(buildId, buildTarget, buildBranch string, target *ap
 }
 
 // buildGetReq constructs a BuildGetRequest for the board.
-func buildGetReq(board string, branch string, buildID string) androidapi.BuildGetRequest {
+func buildGetReq(board string, branch string, buildID string, targetType string) androidapi.BuildGetRequest {
 	return androidapi.BuildGetRequest{
 		BuildID:            buildID,
 		BuildType:          "submitted",
@@ -347,6 +350,7 @@ func buildGetReq(board string, branch string, buildID string) androidapi.BuildGe
 		SortingType:        "creationTimestamp",
 		Successful:         "true",
 		BuildAttemptStatus: "complete",
+		TargetType:         targetType,
 	}
 }
 
