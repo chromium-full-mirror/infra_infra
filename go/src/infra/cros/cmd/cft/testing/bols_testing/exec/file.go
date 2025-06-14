@@ -33,6 +33,9 @@ func verifyFileAPIs(ctx context.Context, logger *log.Logger, a *args, cl bols.Bo
 	if err := verifyRemoveFile(ctx, logger, a, cl); err != nil {
 		return err
 	}
+	if err := verifyGetDirInfo(ctx, logger, a, cl); err != nil {
+		return err
+	}
 	logger.Println("verifyGetFileStat: All file related verifications")
 	return nil
 }
@@ -198,6 +201,86 @@ func verifyRemoveFile(ctx context.Context, logger *log.Logger, a *args, cl bols.
 	logger.Printf("verifyRemoveFile: Received expected error after removing file, indicating success: %v", err)
 
 	logger.Println("verifyRemoveFile: verification was successful")
+	return nil
+}
+
+func verifyGetDirInfo(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient) (err error) {
+	logger.Println("verifyGetDirInfo: Verifying GetDirInfo API")
+
+	// 1. Setup: Create a unique remote test directory.
+	remoteTestDir := fmt.Sprintf("/tmp/bols-testing-getdirinfo-%d", time.Now().UnixNano())
+	if err := makeDir(ctx, logger, a, cl, remoteTestDir); err != nil {
+		return fmt.Errorf("failed to create remote test directory %q: %w", remoteTestDir, err)
+	}
+	defer func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if cleanupErr := removeDir(cleanupCtx, logger, a, cl, remoteTestDir, true); cleanupErr != nil {
+			logger.Printf("WARNING: failed to clean up remote directory %s: %v", remoteTestDir, cleanupErr)
+		}
+	}()
+
+	// 2. Test on an empty directory.
+	logger.Println("verifyGetDirInfo: Testing on empty directory.")
+	dirInfoResp, err := cl.GetDirInfo(ctx, &bols.GetDirInfoRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Path: remoteTestDir,
+	})
+	if err != nil {
+		return fmt.Errorf("GetDirInfo RPC failed for empty directory %q: %w", remoteTestDir, err)
+	}
+	if dirInfoResp.GetInfo().GetPath() != remoteTestDir {
+		return fmt.Errorf("unexpected path in GetDirInfo response: got %q, want %q", dirInfoResp.GetInfo().GetPath(), remoteTestDir)
+	}
+	if len(dirInfoResp.GetInfo().GetFileStats()) != 0 {
+		return fmt.Errorf("expected 0 file stats for an empty directory, got %d", len(dirInfoResp.GetInfo().GetFileStats()))
+	}
+	logger.Println("verifyGetDirInfo: Empty directory test successful.")
+
+	// 3. Setup for a non-empty directory.
+	remoteSubDir := filepath.Join(remoteTestDir, "subdir")
+	if err := makeDir(ctx, logger, a, cl, remoteSubDir); err != nil {
+		return fmt.Errorf("failed to create remote subdirectory %q: %w", remoteSubDir, err)
+	}
+	fileContent := "hello directory"
+	localFileName := filepath.Join(a.WorkingDir, "data", "dirinfo_test.txt")
+	if err := os.WriteFile(localFileName, []byte(fileContent), 0644); err != nil {
+		return fmt.Errorf("failed to create local file %q: %w", localFileName, err)
+	}
+	defer os.Remove(localFileName)
+	remoteFilePath := filepath.Join(remoteTestDir, "dirinfo_test.txt")
+	if err := putFile(ctx, logger, a, cl, localFileName, remoteFilePath); err != nil {
+		return fmt.Errorf("failed to upload file to %q: %w", remoteFilePath, err)
+	}
+
+	// 4. Test on the non-empty directory.
+	logger.Println("verifyGetDirInfo: Testing on non-empty directory.")
+	dirInfoResp, err = cl.GetDirInfo(ctx, &bols.GetDirInfoRequest{
+		StationId: &bols.StationIdentifier{ServodPort: int32(a.servodPort), ContainerName: a.servodContainer},
+		Path:      remoteTestDir,
+	})
+	if err != nil {
+		return fmt.Errorf("GetDirInfo RPC failed for non-empty directory %q: %w", remoteTestDir, err)
+	}
+	if len(dirInfoResp.GetInfo().GetFileStats()) != 2 {
+		return fmt.Errorf("expected 2 file stats, got %d", len(dirInfoResp.GetInfo().GetFileStats()))
+	}
+
+	statsMap := make(map[string]*bols.FileStat)
+	for _, stat := range dirInfoResp.GetInfo().GetFileStats() {
+		statsMap[stat.GetName()] = stat
+	}
+	if _, ok := statsMap["dirinfo_test.txt"]; !ok {
+		return fmt.Errorf("directory listing missing expected file 'dirinfo_test.txt'")
+	}
+	if _, ok := statsMap["subdir"]; !ok {
+		return fmt.Errorf("directory listing missing expected subdirectory 'subdir'")
+	}
+
+	logger.Println("verifyGetDirInfo: verification was successful")
 	return nil
 }
 

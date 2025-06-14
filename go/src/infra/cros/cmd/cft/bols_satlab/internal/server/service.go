@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -213,8 +214,42 @@ func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (
 	return &bols.RemoveFileResponse{}, nil
 }
 
-func (s *service) GetDirInfo(context.Context, *bols.GetDirInfoRequest) (*bols.GetDirInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDirInfo not implemented")
+func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (*bols.GetDirInfoResponse, error) {
+	s.logger.Println("Receive GetDirInfo Request for path", req.GetPath())
+	containerName := req.GetStationId().GetContainerName()
+	path := req.GetPath()
+	if path == "" {
+		return nil, s.logAndReturnErr(errors.New("GetDirInfo: path is required"))
+	}
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: fail to create docker client: %w", err))
+	}
+
+	// Using find  stat is more robust than parsing 'ls -l'.
+	// -maxdepth 1 and -mindepth 1 ensures we only get the immediate contents of the directory.
+	// %F - file type
+	// %s - size in bytes
+	// %n - file name
+	args := []string{"find", path, "-maxdepth", "1", "-mindepth", "1", "-exec", "stat", "--format=%F|%s|%n", "{}", "+"}
+	stdout, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx))
+	if err != nil {
+		// containerExecCmd already annotates the error well enough.
+		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: failed to list directory contents: %w", err))
+	}
+
+	fileStats, err := parseDirInfo(stdout)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: failed to parse directory info: %w", err))
+	}
+
+	s.logger.Println("Served GetDirInfo Request Successfully")
+	return &bols.GetDirInfoResponse{
+		Info: &bols.DirectoryInfo{
+			Path:      path,
+			FileStats: fileStats,
+		},
+	}, nil
 }
 
 func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.MakeDirResponse, error) {
@@ -746,4 +781,46 @@ func extractOneFileFromTarFile(filePath, tarFileName string) error {
 		return fmt.Errorf("failed to copy content from tar file %s to %s: %w", tarFileName, filePath, err)
 	}
 	return outFile.Close()
+}
+
+// parseDirInfo parses the output of `find ... -exec stat --format='%F|%s|%n' {} `
+func parseDirInfo(output string) ([]*bols.FileStat, error) {
+	var stats []*bols.FileStat
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	if len(lines) == 1 && lines[0] == "" {
+		// Handle empty directory case
+		return stats, nil
+	}
+
+	for _, line := range lines {
+		parts := strings.SplitN(line, "|", 3)
+		if len(parts) != 3 {
+			return nil, fmt.Errorf("unexpected stat output format: %q", line)
+		}
+
+		fileTypeStr := parts[0]
+		sizeStr := parts[1]
+		pathStr := parts[2]
+
+		size, err := strconv.ParseInt(sizeStr, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse size %q from line %q: %w", sizeStr, line, err)
+		}
+
+		// The path from stat will handle symlinks correctly for our needs.
+		// e.g., "symlink -> target"
+		nameAndLink := strings.SplitN(pathStr, " -> ", 2)
+		fullPath := nameAndLink[0]
+
+		stat := &bols.FileStat{
+			Name:      filepath.Base(fullPath),
+			Path:      fullPath,
+			Size:      size,
+			IsDir:     fileTypeStr == "directory",
+			IsSymlink: fileTypeStr == "symbolic link",
+		}
+		stats = append(stats, stat)
+	}
+
+	return stats, nil
 }
