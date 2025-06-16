@@ -38,6 +38,8 @@ var (
 		common.VmProvision,
 		common.ServoNexus,
 		common.CpconPublish,
+		common.RdbPublish,
+		common.GcsPublish,
 	}
 )
 
@@ -512,7 +514,7 @@ func BuildPublishContainerRequest(identifier string, publishType api.CrosPublish
 				},
 			},
 		},
-		ContainerImageKey: common.CrosPublish,
+		ContainerImageKey: identifier,
 		DynamicDeps:       deps,
 	}
 }
