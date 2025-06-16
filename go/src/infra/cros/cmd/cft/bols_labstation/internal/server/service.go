@@ -148,7 +148,7 @@ func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (
 
 // DirInfo reads a directory info from the labstation.
 func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (*bols.GetDirInfoResponse, error) {
-	s.logger.Println("Receive GetDirInfo Request")
+	s.logger.Println("Receive GetDirInfo Request for path ", req.GetPath())
 	path := req.GetPath()
 	entries, err := os.ReadDir(path)
 	if err != nil {
@@ -157,10 +157,11 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 	}
 	var stats []*bols.FileStat
 	for _, e := range entries {
-		stat, err := fstat(e.Name())
+		fullPath := filepath.Join(path, e.Name())
+		stat, err := fstat(fullPath)
 		if err != nil {
 			return nil, s.logAndReturnError(
-				fmt.Errorf("failed to get information on %s: %w", e.Name(), err))
+				fmt.Errorf("failed to get information on %s: %w", fullPath, err))
 		}
 		stats = append(stats, stat)
 	}
@@ -217,7 +218,12 @@ func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*b
 		return nil, s.logAndReturnError(
 			fmt.Errorf("the path %s is not a directory", path))
 	}
-	if err := os.RemoveAll(path); err != nil {
+	if req.RemoveAll {
+		err = os.RemoveAll(path)
+	} else {
+		err = os.Remove(path)
+	}
+	if err != nil {
 		return nil, s.logAndReturnError(
 			fmt.Errorf("failed to remove directory %s: %w", path, err))
 	}
@@ -570,11 +576,21 @@ func fstat(path string) (*bols.FileStat, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to check if %s is a symlink: %w", path, err)
 	}
+	isSymLink := lstat.Mode()&os.ModeSymlink == os.ModeSymlink
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		absPath = path
+	}
+	if isSymLink {
+		absPath, _ = filepath.EvalSymlinks(absPath)
+	}
+
 	return &bols.FileStat{
 		Name:      fi.Name(),
+		Path:      absPath,
 		Size:      fi.Size(),
 		IsDir:     fi.IsDir(),
-		IsSymlink: lstat.Mode()&os.ModeSymlink == os.ModeSymlink,
+		IsSymlink: isSymLink,
 	}, nil
 }
 
