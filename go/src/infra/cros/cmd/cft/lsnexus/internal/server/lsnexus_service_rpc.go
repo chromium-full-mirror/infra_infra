@@ -145,6 +145,13 @@ func (s *LsNexus) setServodRequest(ctx context.Context, req *lsnexus.CallServodR
 }
 
 func (s *LsNexus) DownloadServoLogs(ctx context.Context, req *lsnexus.DownloadServoLogsRequest) (*lsnexus.DownloadServoLogsResponse, error) {
+	if err := s.saveServodLogs(ctx); err != nil {
+		s.log("Warning: failed to download servod logs: ", err)
+	}
+	return &lsnexus.DownloadServoLogsResponse{}, nil
+}
+
+func (s *LsNexus) saveServodLogs(ctx context.Context) error {
 	servodLogDir := fmt.Sprintf("/var/log/servod_%d", s.servodPort)
 	destDir := filepath.Join(s.artifactDir, "log",
 		fmt.Sprintf("/servod_%d", s.servodPort))
@@ -152,14 +159,14 @@ func (s *LsNexus) DownloadServoLogs(ctx context.Context, req *lsnexus.DownloadSe
 	src := filepath.Join(servodLogDir, fn)
 	dst := filepath.Join(destDir, fn)
 	if err := s.getFile(ctx, src, dst); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed to get %s: %w", src, err))
+		return fmt.Errorf("failed to get %s: %w", src, err)
 	}
 	if err := s.getFile(ctx, "/var/log/messages", filepath.Join(destDir, "system.log")); err != nil {
 		s.log("Warning: failed to download /var/log/messages: ", err)
 	}
 	s.extractServodMCULogs(destDir)
 	s.downloadServodDMesgLogs(ctx, destDir)
-	return &lsnexus.DownloadServoLogsResponse{}, nil
+	return nil
 }
 
 func (s *LsNexus) logAndReturnErr(err error) error {

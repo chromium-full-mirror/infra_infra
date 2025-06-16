@@ -30,6 +30,11 @@ func (service *LsNexus) Start(ctx context.Context, start *api.GenericStartReques
 		return &api.GenericStartResponse{}, nil
 	}
 
+	if dut.GetChromeos().GetServo().GetState() == labapi.PeripheralState_BROKEN {
+		service.logger.Println("LSNexus will not be operational because here is no working servo")
+		return &api.GenericStartResponse{}, nil
+	}
+
 	// Parse out the request to fill in values for LsNexus.
 	if err := extractStringTo(req, "board", &service.board); err != nil {
 		service.logger.Println("Failed to parse board argument: ", err)
@@ -112,6 +117,17 @@ func (service *LsNexus) Start(ctx context.Context, start *api.GenericStartReques
 	service.logger.Println("servod_port: ", service.servodPort)
 
 	return &api.GenericStartResponse{}, nil
+}
+
+func (service *LsNexus) Stop(ctx context.Context, req *api.GenericStopRequest) (*api.GenericStopResponse, error) {
+	if service.cl == nil {
+		service.logger.Println("LSNexus will not save servod log because there is no BOLS client")
+		return &api.GenericStopResponse{}, nil
+	}
+	if err := service.saveServodLogs(ctx); err != nil {
+		service.logger.Println("Warning: failed to download servod logs: ", err)
+	}
+	return &api.GenericStopResponse{}, nil
 }
 
 func extractStringTo(req map[string]*anypb.Any, key string, to *string) error {

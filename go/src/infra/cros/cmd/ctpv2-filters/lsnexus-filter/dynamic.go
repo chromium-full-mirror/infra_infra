@@ -91,7 +91,7 @@ func insertContainerForChromeos(req *api.InternalTestplan,
 	dutAsAny, _ := anypb.New(&labapi.Dut{})
 
 	// Add the container to the beginning of the test runner execution.
-	containersTask := &api.CrosTestRunnerDynamicRequest_Task{
+	containersStartTask := &api.CrosTestRunnerDynamicRequest_Task{
 		OrderedContainerRequests: []*api.ContainerRequest{container},
 		// Provide a Generic Task with a dynamic identifier to ensure
 		// it is findable by other filters.
@@ -132,10 +132,45 @@ func insertContainerForChromeos(req *api.InternalTestplan,
 		Required: true,
 	}
 
-	insertAt := dynamiccommon.PrependTaskWrapper(dynamiccommon.FindBeginning())
+	// Add the container to the end of the test runner execution to save log.
+	containersEndTask := &api.CrosTestRunnerDynamicRequest_Task{
+		// Provide a Generic Task with a dynamic identifier to ensure
+		// it is findable by other filters.
+		// Example: If VMs cannot run this filter, then VMs need to set
+		// a secondary dynamic update that removes this task for VM targets,
+		// and this requires knowing the dynamic identifier of this task.
+		Task: &api.CrosTestRunnerDynamicRequest_Task_Generic{
+			Generic: &api.GenericTask{
+				DynamicIdentifier: container.GetDynamicIdentifier() + "_task",
+				StopRequest: &api.GenericStopRequest{
+					Message: &api.GenericMessage{
+						Values: map[string]*anypb.Any{
+							"ignoredValue": nil,
+						},
+					},
+				},
+				// Some values cannot be passed in during the filter's execution
+				// because they are not concrete until test runner's execution.
+				// These values must be resolved during test runner execution and
+				// that resolution is defined as Dynamic Dependencies.
+				DynamicDeps: []*api.DynamicDep{
+					{
+						Key:   "serviceAddress",
+						Value: container.GetDynamicIdentifier(),
+					},
+				},
+			},
+		},
+		Required: true,
+	}
+
+	insertAtBeginning := dynamiccommon.PrependTaskWrapper(dynamiccommon.FindBeginning())
+	insertAtEnd := dynamiccommon.PrependTaskWrapper(dynamiccommon.FindFirst(api.FocalTaskFinder_PUBLISH))
 
 	generator := generators.NewInsertGenerator()
-	generator.AddInsertion(containersTask, insertAt)
+	generator.AddInsertion(containersStartTask, insertAtBeginning)
+	generator.AddInsertion(containersEndTask, insertAtEnd)
+
 	dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 }
 
