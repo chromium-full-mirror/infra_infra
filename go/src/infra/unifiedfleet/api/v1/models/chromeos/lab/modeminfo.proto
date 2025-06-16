@@ -23,7 +23,7 @@ message ModemInfo {
   string model_variant = 5;
 }
 
-// Next Tag: 9
+// Next Tag: 13
 enum ModemType {
   MODEM_TYPE_UNSPECIFIED = 0;
   // Unsupported modem
@@ -48,4 +48,6 @@ enum ModemType {
   MODEM_TYPE_RW135 = 10;
   // LCUK54
   MODEM_TYPE_LCUK54 = 11;
+  // RW350
+  MODEM_TYPE_RW350 = 12;
 }

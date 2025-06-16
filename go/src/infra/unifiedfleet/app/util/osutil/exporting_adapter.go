@@ -459,6 +459,8 @@ func setModemInfo(l *inventory.SchedulableLabels, m *chromeosLab.ModemInfo) {
 		t = inventory.ModemType_MODEM_TYPE_RW101
 	case chromeosLab.ModemType_MODEM_TYPE_RW135:
 		t = inventory.ModemType_MODEM_TYPE_RW135
+	case chromeosLab.ModemType_MODEM_TYPE_RW350:
+		t = inventory.ModemType_MODEM_TYPE_RW350
 	case chromeosLab.ModemType_MODEM_TYPE_LCUK54:
 		t = inventory.ModemType_MODEM_TYPE_LCUK54
 	default:
