@@ -371,7 +371,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#472)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#478)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
@@ -405,11 +405,11 @@ Args:
   checkout_dir: The directory where code is checked out. If not specified,
     use checkout_dir initialized in path module by default
 
-&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#181)(self, clone_dir):**
+&mdash; **def [clone\_clang\_tools](/recipes/recipe_modules/codesearch/api.py#187)(self, clone_dir):**
 
 Clone chromium/src clang tools.
 
-&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#284)(self, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None, clang_target_arch: Optional[str]=None, checkout_dir: Optional[config_types.Path]=None):**
+&mdash; **def [create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#290)(self, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None, clang_target_arch: Optional[str]=None, checkout_dir: Optional[config_types.Path]=None):**
 
 Create the kythe index pack and upload it to google storage.
 Legacy wrapper around create_kythe_index_pack and upload_kythe_index_pack.
@@ -428,7 +428,7 @@ Args:
 Returns:
   Path to the generated index pack.
 
-&mdash; **def [create\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#320)(self, clang_target_arch: Optional[str]=None, checkout_dir: Optional[config_types.Path]=None):**
+&mdash; **def [create\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#326)(self, clang_target_arch: Optional[str]=None, checkout_dir: Optional[config_types.Path]=None):**
 
 Create the kythe index pack.
 
@@ -447,7 +447,7 @@ Ensures kythe is installed using cipd and returns its root directory.
 
 &mdash; **def [get\_config\_defaults](/recipes/recipe_modules/codesearch/api.py#25)(self):**
 
-&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#190)(self, clang_dir: Optional[config_types.Path]=None, run_dirs: Optional[Iterable[config_types.Path]]=None, target_architecture: Optional[str]=None):**
+&mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#196)(self, clang_dir: Optional[config_types.Path]=None, run_dirs: Optional[Iterable[config_types.Path]]=None, target_architecture: Optional[str]=None):**
 
 Download and run the clang tool.
 
@@ -456,7 +456,7 @@ Args:
   run_dirs: Dirs in which to run the clang tool.
   target_architecture: If given, the architecture to transpile for.
 
-&mdash; **def [run\_kzip\_merge](/recipes/recipe_modules/codesearch/api.py#156)(self, \*kzip_inputs):**
+&mdash; **def [run\_kzip\_merge](/recipes/recipe_modules/codesearch/api.py#162)(self, \*kzip_inputs):**
 
 Merges multiple kzips into a single kzip.
 The kzips are assumed to all be protobuf-encoded.
@@ -469,7 +469,10 @@ Args:
 
 &mdash; **def [run\_rust\_project\_extractor](/recipes/recipe_modules/codesearch/api.py#101)(self, checkout_dir: config_types.Path):**
 
-&mdash; **def [upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#379)(self, index_pack_kythe_path: config_types.Path, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None):**
+Runs the kythe rust-project.json extractor.
+    
+
+&mdash; **def [upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/api.py#385)(self, index_pack_kythe_path: config_types.Path, commit_hash: str, commit_timestamp: int, commit_position: Optional[str]=None):**
 
 Upload the given kythe index pack to google storage.
 
@@ -1717,10 +1720,10 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/run_kzip_merge.py#19)(api):**
 ### *recipes* / [codesearch:tests/run\_rust\_project\_extractor](/recipes/recipe_modules/codesearch/tests/run_rust_project_extractor.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/run_rust_project_extractor.py#11): [codesearch](#recipe_modules-codesearch), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
+[DEPS](/recipes/recipe_modules/codesearch/tests/run_rust_project_extractor.py#14): [codesearch](#recipe_modules-codesearch), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/run_rust_project_extractor.py#19)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/run_rust_project_extractor.py#27)(api, out_path):**
 ### *recipes* / [codesearch:tests/upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/tests/upload_kythe_index_pack.py)
 
 [DEPS](/recipes/recipe_modules/codesearch/tests/upload_kythe_index_pack.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]

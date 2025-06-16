@@ -99,6 +99,17 @@ class CodesearchApi(recipe_api.RecipeApi):
     return self._kythe_dir
 
   def run_rust_project_extractor(self, checkout_dir: config_types.Path):
+    """Runs the kythe rust-project.json extractor.
+    """
+    # Always expect the outdir to be like src/out/Default
+    # where the source root is src/
+    out_relative = self.m.path.relpath(self.c.out_path, checkout_dir)
+    assert '..' not in out_relative, (
+        'Expected output root to be child of checkout dir')
+    out_root, out_name = self.m.path.split(out_relative)
+    assert out_root == 'out', ('Expected parent of output root to be out/ '
+                               'but got "%s"' % out_root)
+
     # In package_index, we generate paths relative to the output root.
     # We'll tell Kythe's Rust extractor that it's the root as well.
     # Kythe's Rust extractor also needs to know how these outroot-relative
@@ -107,16 +118,11 @@ class CodesearchApi(recipe_api.RecipeApi):
     # https://kythe.io/examples/#:~:text=%7D%0A%20%20%20%7D%0A%20%7D-,VName%20configuration,-Next%2C%20you%20will
     vnames_config = [
         {
-            # If the output root is src/out/Default
-            # and source root is src/
-            # Then the expected path of src/foo/bar.rs would be
+            # Given the outdir src/out/Default,
+            # the expected path of src/foo/bar.rs would be
             # ../../foo/bar.rs
             # And the expected vname would be foo/bar.rs
-            'pattern':
-                self.m.path.relpath(
-                    checkout_dir,
-                    self.c.out_path,
-                ) + '/(.*)',
+            'pattern': '../../(.*)',
             'vname': {
                 'path': '@1@'
             },
@@ -128,7 +134,7 @@ class CodesearchApi(recipe_api.RecipeApi):
             'pattern': '([^.].*)',  # crude regex to filter out relative paths
             'vname': {
                 'root': 'out',
-                'path': '@1@'
+                'path': f'{out_name}/@1@'
             },
         },
     ]
