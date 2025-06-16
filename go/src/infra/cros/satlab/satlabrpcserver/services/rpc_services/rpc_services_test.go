@@ -1227,14 +1227,12 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true, CCDStatus: "Unknown"},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true, CCDStatus: "Opened"},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
@@ -1306,14 +1304,14 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: false, HasTestImage: false},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: false, HasTestImage: false, CCDStatus: "Unknown"},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: false, HasTestImage: false, CCDStatus: "Opened"},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVO_SERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222", mock.Anything, mock.Anything).Return(false, "", nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -1357,6 +1355,8 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 				HasTestImage:  false,
 				State:         "",
 				HasPermission: false,
+				ServoSerial:   "SERVO_SERIAL",
+				CcdStatus:     "Opened",
 			},
 		},
 	}
@@ -1381,15 +1381,13 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true, CCDStatus: "Unknown"},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true, CCDStatus: "Opened"},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("model", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222").Return(false, "", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2").Return(true, "SERVOSERIAL", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222", mock.Anything, mock.Anything).Return(false, "", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(false)
@@ -1461,9 +1459,11 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, mock.Anything).Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2", false).Return("Opened")
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222", false).Return("Unknown")
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVO_SERIAL", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.222", mock.Anything, mock.Anything).Return(false, "", nil)
 
 	s.commandExecutor = shivasTestHelper(false)
 
@@ -1504,6 +1504,7 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 				IsPingable:    false,
 				HasTestImage:  false,
 				HasPermission: false,
+				ServoSerial:   "SERVO_SERIAL",
 			},
 		},
 	}
@@ -1527,14 +1528,12 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, gomock.Any()).Return(nil, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true, CCDStatus: "Unknown"},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true, CCDStatus: "Opened"},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("", errors.New("can't get board"))
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", errors.New("can't get model"))
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
@@ -1611,8 +1610,8 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 	s.commandExecutor = &executor.FakeCommander{
 		Err: errors.New("execute command failed"),
 	}
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2", false).Return("Opened")
+	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222", false).Return("Unknown")
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	req := &pb.ListDutsRequest{}
@@ -2179,14 +2178,12 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 	s.swarmingService.(*services.MockISwarmingService).EXPECT().ListBots(ctx, reqListBot).Return(mockBotList, nil).AnyTimes()
 	s.dutService.(*mk.MockDUTServices).On("GetUSBDevicePaths", ctx).Return([]enumeration.USBDevice{}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
-		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true},
-		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true},
+		{IP: "192.168.231.222", MACAddress: "00:14:3d:14:c4:02", IsPingable: true, HasTestImage: true, CCDStatus: "Unknown"},
+		{IP: "192.168.231.2", MACAddress: "e8:9f:80:83:3d:c8", IsPingable: true, HasTestImage: true, CCDStatus: "Opened"},
 	}, nil)
 	s.dutService.(*mk.MockDUTServices).On("GetBoard", ctx, "192.168.231.2").Return("board", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("model", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
-	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything, mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)

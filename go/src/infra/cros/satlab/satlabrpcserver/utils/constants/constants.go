@@ -67,7 +67,7 @@ var GetModelCommands = []string{
 	"cros_config / name",
 }
 
-const GSCSerialNumberCommand = "timeout 2 trunks_send --sysinfo | grep DEV_ | sed 's/.*://g' | sed 's/0x//g' | tr ' ' '-' | tr 'a-z' 'A-Z' | sed -e 's/^[-]*//'"
+const GSCSerialNumberCommand = "timeout 2 gsctool -a -K dev_ids | sed 's/.*://g' | sed 's/0x//g' | tr ' ' '-' | tr 'a-z' 'A-Z' | sed -e 's/^[-]*//'"
 const ServoUSBConnectorCommand = "timeout 2 cat /sys/bus/usb/devices/*/idVendor | grep -cx 04b4"
 const GetGSCSerialAndServoUSB = "gsc_serial=`" + GSCSerialNumberCommand + "`;" +
 	"servo_usb_count=`" + ServoUSBConnectorCommand + "`;" +

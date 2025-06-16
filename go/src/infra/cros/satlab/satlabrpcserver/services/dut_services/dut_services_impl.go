@@ -29,6 +29,8 @@ import (
 	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
+const unknownCCDStatus = "Unknown"
+
 type ListFirmwareCommandResponse struct {
 	FwId     string                         `json:"fwid"`
 	Model    string                         `json:"model"`
@@ -283,12 +285,17 @@ func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error)
 		hasTestImage := isTestImage(r.Value)
 		// we check the some DUTs which install the stable image but they can
 		// open the ssh connection.
-		result = append(result, Device{IP: r.IP, IsPingable: true, HasTestImage: hasTestImage, MACAddress: macAddress})
+		var hasAndroidDesktopImage bool
+		if !hasTestImage {
+			hasAndroidDesktopImage = d.CheckAndroidDesktop(ctx, r.IP)
+		}
+		ccdStatus := d.GetCCDStatus(ctx, r.IP, hasAndroidDesktopImage)
+		result = append(result, Device{IP: r.IP, IsPingable: true, HasTestImage: hasTestImage, HasADImage: hasAndroidDesktopImage, MACAddress: macAddress, CCDStatus: ccdStatus})
 	}
 
 	for _, r := range inactiveIPs {
 		macAddress := ipToMACMap[r]
-		result = append(result, Device{IP: r, IsPingable: false, HasTestImage: false, MACAddress: macAddress})
+		result = append(result, Device{IP: r, IsPingable: false, HasTestImage: false, HasADImage: false, MACAddress: macAddress})
 	}
 
 	return result, nil
@@ -338,20 +345,31 @@ func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, erro
 }
 
 // GetGSCSerialAndServoUSBCount returns the cr50/ti50 usb connector serial number for the given IP
-func (d *DUTServicesImpl) GetGSCSerialAndServoUSBCount(ctx context.Context, IP string) (*GSCInfo, error) {
-	res, err := d.RunCommandOnIP(ctx, IP, constants.GetGSCSerialAndServoUSB)
-	if err != nil {
-		logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
-		return nil, err
-	}
-
-	if res.Error != nil {
-		logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, res.Error)
-		return nil, res.Error
-	}
-
+func (d *DUTServicesImpl) GetGSCSerialAndServoUSBCount(ctx context.Context, IP string, isAndroidDesktop bool) (*GSCInfo, error) {
 	var gscInfo GSCInfo
-	err = json.Unmarshal([]byte(res.Value), &gscInfo)
+
+	var out string
+	var err error
+	if isAndroidDesktop {
+		out, err = d.RunADBShellCommandOnIP(ctx, IP, constants.GetGSCSerialAndServoUSB)
+		if err != nil {
+			logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
+			return nil, err
+		}
+	} else {
+		res, err := d.RunCommandOnIP(ctx, IP, constants.GetGSCSerialAndServoUSB)
+		if err != nil {
+			logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
+			return nil, err
+		}
+		if res.Error != nil {
+			logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, res.Error)
+			return nil, res.Error
+		}
+		out = res.Value
+	}
+
+	err = json.Unmarshal([]byte(out), &gscInfo)
 	if err != nil {
 		logging.Infof(ctx, "Json decode error while processing gsc serial: %v", err)
 		return nil, err
@@ -360,9 +378,8 @@ func (d *DUTServicesImpl) GetGSCSerialAndServoUSBCount(ctx context.Context, IP s
 }
 
 // GetServoSerial returns the Servo serial number for the given IP
-func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice) (bool, string, error) {
-
-	gscServoInfo, err := d.GetGSCSerialAndServoUSBCount(ctx, IP)
+func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice, isAndroidDesktop bool) (bool, string, error) {
+	gscServoInfo, err := d.GetGSCSerialAndServoUSBCount(ctx, IP, isAndroidDesktop)
 	if err != nil {
 		logging.Infof(ctx, "unable to get gsc serial and servo usb count: %v", err)
 		return false, "", err
@@ -393,24 +410,63 @@ func (d *DUTServicesImpl) GetUSBDevicePaths(ctx context.Context) ([]enumeration.
 	return enumeration.GetAllServoUSBDevices()
 }
 
+// RunADBShellCommandOnIP sends the command to the DUT device and then get the result back
+func (d *DUTServicesImpl) RunADBShellCommandOnIP(ctx context.Context, IP string, command string) (string, error) {
+	defer func() {
+		cmd := exec.CommandContext(ctx, "adb", "disconnect", IP)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			fmt.Printf("Error executing adb disconnect command: %s\n", out)
+		}
+	}()
+	cmd := exec.CommandContext(ctx, "adb", "connect", IP)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error executing adb connect command: %s\n", out)
+	}
+	cmd = exec.CommandContext(ctx, "adb", "-s", IP, "root")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error executing adb root command: %s\n", out)
+	}
+	cmd = exec.CommandContext(ctx, "adb", "-s", IP, "shell", command)
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error executing adb shell command: %s\n", out)
+	}
+	return string(out), err
+}
+
 // GetCCDStatus gets the CCD status from the given IP address. If it the command return empty string,
 // we set it `Unknown` status.
-func (d *DUTServicesImpl) GetCCDStatus(ctx context.Context, address string) (string, error) {
-	res, err := d.RunCommandOnIP(ctx, address, fmt.Sprintf(
-		"%s | grep State | awk '{print $2}'",
-		constants.CCDStatusCommand,
-	))
-	if err != nil {
-		return "", err
-	}
-	if res.Error != nil {
-		return "", res.Error
-	}
-
-	status := strings.TrimSpace(res.Value)
-	if status == "" {
-		return "Unknown", nil
+func (d *DUTServicesImpl) GetCCDStatus(ctx context.Context, address string, hasAndroidDesktopImage bool) string {
+	var output string
+	if hasAndroidDesktopImage {
+		out, err := d.RunADBShellCommandOnIP(ctx, address, constants.CCDStatusCommand)
+		if err != nil {
+			return unknownCCDStatus
+		}
+		output = out
 	} else {
-		return status, nil
+		res, err := d.RunCommandOnIP(ctx, address, constants.CCDStatusCommand)
+		if err != nil || res.Error != nil {
+			return unknownCCDStatus
+		}
+		output = res.Value
 	}
+	re := regexp.MustCompile(`State:\s*(\w+)`)
+	match := re.FindStringSubmatch(output)
+	if len(match) > 1 {
+		return match[1]
+	}
+	return unknownCCDStatus
+}
+
+// CheckAndroidDesktop checks if there is Android Desktop installed on the DUT
+func (d *DUTServicesImpl) CheckAndroidDesktop(ctx context.Context, address string) bool {
+	out, err := d.RunADBShellCommandOnIP(ctx, address, "getprop ro.hardware")
+	if err == nil && strings.Contains(out, "android-desktop") {
+		return true
+	}
+	return false
 }

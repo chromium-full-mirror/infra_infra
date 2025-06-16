@@ -48,14 +48,14 @@ func (m *MockDUTServices) GetModel(ctx context.Context, IP string) (string, erro
 }
 
 // GetGSCSerialAndServoUSBCount gets the Cr50 or Ti50 port serial number on the DUT`
-func (m *MockDUTServices) GetGSCSerialAndServoUSBCount(ctx context.Context, address string) (*dut_services.GSCInfo, error) {
-	args := m.Called(ctx)
+func (m *MockDUTServices) GetGSCSerialAndServoUSBCount(ctx context.Context, address string, isAndroidDesktop bool) (*dut_services.GSCInfo, error) {
+	args := m.Called(ctx, address, isAndroidDesktop)
 	return args.Get(0).(*dut_services.GSCInfo), args.Error(1)
 }
 
 // GetServoSerial gets the Servo serial number for give DUT IP address.
-func (m *MockDUTServices) GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice) (bool, string, error) {
-	args := m.Called(ctx, IP)
+func (m *MockDUTServices) GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice, dutHasADImage bool) (bool, string, error) {
+	args := m.Called(ctx, IP, usbDevices, dutHasADImage)
 	return args.Get(0).(bool), args.String(1), args.Error(2)
 }
 
@@ -66,7 +66,19 @@ func (m *MockDUTServices) GetUSBDevicePaths(ctx context.Context) ([]enumeration.
 }
 
 // GetCCDStatus gets CCD status from the DUT
-func (m *MockDUTServices) GetCCDStatus(ctx context.Context, address string) (string, error) {
+func (m *MockDUTServices) GetCCDStatus(ctx context.Context, address string, hasAndroidDesktopImage bool) string {
+	args := m.Called(ctx, address, hasAndroidDesktopImage)
+	return args.String(0)
+}
+
+// CheckAndroidDesktop checks if there is Android Desktop installed on the DUT
+func (m *MockDUTServices) CheckAndroidDesktop(ctx context.Context, address string) bool {
 	args := m.Called(ctx, address)
+	return args.Get(0).(bool)
+}
+
+// RunADBShellCommandOnIP sends the command to the DUT device and then get the result back
+func (m *MockDUTServices) RunADBShellCommandOnIP(ctx context.Context, IP string, command string) (string, error) {
+	args := m.Called(ctx, IP)
 	return args.String(0), args.Error(1)
 }

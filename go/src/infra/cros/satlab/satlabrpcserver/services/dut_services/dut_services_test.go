@@ -34,7 +34,6 @@ func setupDUTServiceTest(t *testing.T, sshResp string, password string, executor
 	config := createSSHConfig(password)
 	return createDUTService(config, server.GetAddr(), executor)
 }
-
 func createSSHConfig(password string) cssh.ClientConfig {
 	return cssh.ClientConfig{
 		User: "fake_user",
@@ -45,7 +44,6 @@ func createSSHConfig(password string) cssh.ClientConfig {
 		Timeout:         time.Second * 20,
 	}
 }
-
 func createDUTService(config cssh.ClientConfig, address string, executor executor.IExecCommander) DUTServicesImpl {
 	return DUTServicesImpl{
 		config: config,
@@ -58,7 +56,6 @@ func createDUTService(config cssh.ClientConfig, address string, executor executo
 		subnetSearchRe:  regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`),
 	}
 }
-
 func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 	server, err := fake.NewFakeServer(func(session ssh.Session) {
 		_, err := io.WriteString(session, cmdResult)
@@ -67,18 +64,14 @@ func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 			return
 		}
 	})
-
 	if err != nil {
 		t.Fatal("Can't create a fake ssh server")
 	}
-
 	go func() {
 		server.Serve()
 	}()
-
 	// Run the `server.Serve` gorountine and wait for ssh server bring up
 	time.Sleep(time.Millisecond)
-
 	t.Cleanup(func() {
 		if server != nil {
 			err := server.Close()
@@ -91,53 +84,40 @@ func createFakeSSHServer(t *testing.T, cmdResult string) *fake.SSHServer {
 			}
 		}
 	})
-
 	return server
 }
-
 func TestRunCommandOnIpShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{})
-
 	res, err := dutServices.RunCommandOnIP(ctx, "127.0.0.1", "echo")
 	if err != nil {
 		t.Errorf("Run command failed")
 	}
-
 	expected := &models.SSHResult{IP: "127.0.0.1", Value: expectedResponse}
 	if diff := cmp.Diff(expected, res); diff != "" {
 		t.Errorf("Got diff response, Expected %v, Got %v", expected, res)
 	}
 }
-
 func TestRunCommandOnIpsShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{})
-
 	res := dutServices.RunCommandOnIPs(ctx, []string{"127.0.0.1"}, "echo")
-
 	expected := []*models.SSHResult{{IP: "127.0.0.1", Value: expectedResponse}}
 	if diff := cmp.Diff(expected, res); diff != "" {
 		t.Errorf("Got diff response, Expected %v, Got %v", expected, res)
 	}
 }
-
 func TestPingDUTsShouldSuccess(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	// We Set this test run in parallel
 	t.Parallel()
-
 	ctx := context.Background()
-
 	// We fake the command executor
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -145,25 +125,20 @@ func TestPingDUTsShouldSuccess(t *testing.T) {
 		},
 	}
 	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
-
 	input := []string{"192.168.231.2", "192.168.231.3"}
 	res, err := dutServices.pingDUTs(ctx, input)
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
-
 	expectedActiveIPs := []string{"192.168.231.2"}
-
 	if diff := cmp.Diff(expectedActiveIPs, res); diff != "" {
 		t.Errorf("Expected %v, got %v\n", expectedActiveIPs, res)
 	}
 }
-
 func TestFetchLeasesShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	// We Set this test run in parallel
 	t.Parallel()
-
 	// We fake the command executor
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -175,23 +150,19 @@ func TestFetchLeasesShouldWork(t *testing.T) {
 		},
 	}
 	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
-
 	res, err := dutServices.fetchLeasesFile()
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
-
 	expectedActiveIPs := map[string]string{}
 	expectedActiveIPs["192.168.231.221"] = "00:14:3d:14:c4:02"
 	expectedActiveIPs["192.168.231.213"] = "e8:9f:80:83:3d:c8"
 	expectedActiveIPs["192.168.231.163"] = "88:54:1f:0f:5f:dd"
 	expectedActiveIPs["192.168.231.201"] = "e8:9f:80:83:74:fe"
-
 	if diff := cmp.Diff(expectedActiveIPs, res); diff != "" {
 		t.Errorf("Expected %v, got %v\n", expectedActiveIPs, res)
 	}
 }
-
 func getConnectIPsHelper() executor.IExecCommander {
 	return &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -207,21 +178,16 @@ func getConnectIPsHelper() executor.IExecCommander {
 		},
 	}
 }
-
 func Test_GetConnectedIPsAreNotPingableAndWithoutTestImageShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
-
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
-
 	expected := []Device{
 		{
 			IP:           "127.0.0.1",
@@ -230,43 +196,35 @@ func Test_GetConnectedIPsAreNotPingableAndWithoutTestImageShouldWork(t *testing.
 			MACAddress:   "00:14:3d:14:c4:02",
 		},
 	}
-
 	if diff := cmp.Diff(res, expected); diff != "" {
 		t.Errorf("diff: %v\n", diff)
 	}
-
 }
-
 func Test_GetConnectedIPsArePingableButWithoutTestImageShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
 	dutServices.subnetSearchRe = regexp.MustCompile(`(?P<IP>127\.0\.0\.1)`)
-
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
-
 	expected := []Device{
 		{
 			IP:           "127.0.0.1",
 			IsPingable:   true,
 			HasTestImage: false,
+			HasADImage:   false,
 			MACAddress:   "00:14:3d:14:c4:02",
+			CCDStatus:    "Unknown",
 		},
 	}
-
 	if diff := cmp.Diff(res, expected); diff != "" {
 		t.Errorf("diff: %v\n", diff)
 	}
-
 }
-
 func Test_GetConnectedIPsArePingableAndHasTestImageShouldWork(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := `CHROMEOS_RELEASE_TRACK=testimage-channel
@@ -277,102 +235,79 @@ CHROMEOS_RELEASE_VERSION=15709.0.0
 GOOGLE_RELEASE=15709.0.0
 CHROMEOS_RELEASE_UNIBUILD=1
   `
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, getConnectIPsHelper())
 	dutServices.subnetSearchRe = regexp.MustCompile(`(?P<IP>127\.0\.0\.1)`)
-
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
-
 	expected := []Device{
 		{
 			IP:           "127.0.0.1",
 			IsPingable:   true,
 			HasTestImage: true,
+			HasADImage:   false,
 			MACAddress:   "00:14:3d:14:c4:02",
+			CCDStatus:    "Unknown",
 		},
 	}
-
 	if diff := cmp.Diff(res, expected); diff != "" {
 		t.Errorf("diff: %v\n", diff)
 	}
-
 }
-
 func TestGetConnectedIPsShouldFail(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	expectedResponse := "connect success"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, expectedResponse, fake.Password, &executor.FakeCommander{Err: errors.New("execute command failed")})
-
 	res, err := dutServices.GetConnectedIPs(ctx)
 	if err == nil {
 		t.Errorf("Expected should fail")
 	}
-
 	if len(res) > 0 {
 		t.Errorf("Expected empty result, but got: %v", res)
 	}
 }
-
 func Test_GetBoard(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "CHROMEOS_RELEASE_BOARD=brya\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
 	res, err := dutServices.GetBoard(ctx, "127.0.0.1")
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
 	expected := "brya"
-
 	if res != expected {
 		t.Errorf("expected: %v, got: %v\n", expected, res)
 	}
 }
-
 func Test_GetModel(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "model\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
 	res, err := dutServices.GetModel(ctx, "127.0.0.1")
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
 	expected := "model"
-
 	if res != expected {
 		t.Errorf("expected: %v, got: %v\n", expected, res)
 	}
 }
-
 func Test_GetGSCSerialAndServoUSBCountSuccess(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"0880402c-4c1b4b03\",\n  \"servo_usb_count\": 1\n}\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
-	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1")
+	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1", false)
 	if err != nil {
 		t.Errorf("Expected should succes, but got an error: %v\n", err)
 	}
@@ -385,13 +320,10 @@ func Test_GetGSCSerialAndServoUSBCountSuccess(t *testing.T) {
 		t.Errorf("expected: %v, got: %v\n", expectedServoCnt, res.ServoUSBCount)
 	}
 }
-
 func Test_GetGSCSerialAndServoUSBCountCmdError(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	// We fake the command executor
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -399,24 +331,18 @@ func Test_GetGSCSerialAndServoUSBCountCmdError(t *testing.T) {
 		},
 	}
 	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
-
-	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1")
-
+	res, err := dutServices.GetGSCSerialAndServoUSBCount(ctx, "127.0.0.1", false)
 	if err == nil {
 		t.Errorf("Expected an error, but got nil")
 	}
-
 	if res != nil {
 		t.Errorf("expected: nil, got: %#v\n", res)
 	}
-
 }
-
 func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	// We fake the command executor
 	e := &executor.FakeCommander{
 		FakeFn: func(c *exec.Cmd) ([]byte, error) {
@@ -424,56 +350,40 @@ func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
 		},
 	}
 	dutServices := createDUTService(cssh.ClientConfig{}, "127.0.0.1:1", e)
-
-	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1:1", []enumeration.USBDevice{})
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1:1", []enumeration.USBDevice{}, false)
 	if err == nil {
 		t.Errorf("Expected an error, but got nil")
 	}
-
 	if isServoConnected {
 		t.Errorf("Expected Servo Connection false, but got true")
 	}
-
 	if res != "" {
 		t.Errorf("expected: ServoSerial empty, got: %#v\n", res)
 	}
-
 }
-
 func Test_GetServoSerialGscSerialNotFound(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"\",\n  \"servo_usb_count\": 1\n}\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
-	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", []enumeration.USBDevice{})
-
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", []enumeration.USBDevice{}, false)
 	if err != nil {
 		t.Errorf("Expected should success, but got an error: %v\n", err)
 	}
-
 	if isServoConnected {
 		t.Errorf("Expected Servo Connection false, but got true")
 	}
-
 	if res != "" {
 		t.Errorf("expected: ServoSerial empty, got: %#v\n", res)
 	}
-
 }
-
 func Test_GetServoSerialNoServoConnected(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 0\n}\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
 	usbdevices := []enumeration.USBDevice{
 		{
 			Serial:     "dut-serial-1234",
@@ -482,32 +392,24 @@ func Test_GetServoSerialNoServoConnected(t *testing.T) {
 			DeviceType: "cr50",
 		},
 	}
-	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices, false)
 	expectedServo := ""
-
 	if err != nil {
 		t.Errorf("Expected should success, but got an error: %v\n", err)
 	}
-
 	if isServoConnected {
 		t.Errorf("Expected Servo Connection false, but got true")
 	}
-
 	if res != expectedServo {
 		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
 	}
-
 }
-
 func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
 	usbdevices := []enumeration.USBDevice{
 		{
 			Serial:     "dut-serial-1234",
@@ -522,32 +424,24 @@ func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
 			DeviceType: "servo4",
 		},
 	}
-	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices, false)
 	expectedServo := ""
-
 	if err != nil {
 		t.Errorf("Expected should success, but got an error: %v\n", err)
 	}
-
 	if !isServoConnected {
 		t.Errorf("Expected Servo Connection true, but got false")
 	}
-
 	if res != expectedServo {
 		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
 	}
-
 }
-
 func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
 	citest.LocalOnlyBecause(t, "b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-
 	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
 	usbdevices := []enumeration.USBDevice{
 		{
 			Serial:     "dut-serial-1234",
@@ -562,9 +456,8 @@ func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
 			DeviceType: "servo4",
 		},
 	}
-	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices)
+	isServoConnected, res, err := dutServices.GetServoSerial(ctx, "127.0.0.1", usbdevices, false)
 	expectedServo := "servo-serial-1234"
-
 	if err != nil {
 		t.Errorf("Expected should success, but got an error: %v\n", err)
 	}
@@ -573,46 +466,5 @@ func Test_GetServoSerialServoConnectedAndDetected(t *testing.T) {
 	}
 	if res != expectedServo {
 		t.Errorf("expected: ServoSerial %s, got: %s\n", expectedServo, res)
-	}
-
-}
-
-func Test_GetCCDOpenedStatus(t *testing.T) {
-	citest.LocalOnlyBecause(t, "b/394325271")
-	sshResponse := "Opened\n"
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
-	res, err := dutServices.GetCCDStatus(ctx, "127.0.0.1")
-	if err != nil {
-		t.Errorf("Expected should succes, but got an error: %v\n", err)
-	}
-	expected := "Opened"
-
-	if res != expected {
-		t.Errorf("expected: %v, got: %v\n", expected, res)
-	}
-}
-
-func Test_GetCCDUnknownStatus(t *testing.T) {
-	citest.LocalOnlyBecause(t, "b/394325271")
-	sshResponse := "\n"
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
-	dutServices := setupDUTServiceTest(t, sshResponse, fake.Password, getConnectIPsHelper())
-
-	res, err := dutServices.GetCCDStatus(ctx, "127.0.0.1")
-	if err != nil {
-		t.Errorf("Expected should succes, but got an error: %v\n", err)
-	}
-	expected := "Unknown"
-
-	if res != expected {
-		t.Errorf("expected: %v, got: %v\n", expected, res)
 	}
 }

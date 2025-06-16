@@ -17,7 +17,9 @@ type Device struct {
 	MACAddress   string
 	IsPingable   bool
 	HasTestImage bool
+	HasADImage   bool
 	ServoSerial  string
+	CCDStatus    string
 }
 
 // IDUTServices provides the services that regulate the DUTs.
@@ -39,14 +41,20 @@ type IDUTServices interface {
 	GetModel(ctx context.Context, address string) (string, error)
 
 	// GetGSCSerialAndServoUSBCount gets the Cr50 or Ti50 port serial number on the DUT
-	GetGSCSerialAndServoUSBCount(ctx context.Context, address string) (*GSCInfo, error)
+	GetGSCSerialAndServoUSBCount(ctx context.Context, address string, dutHasADImage bool) (*GSCInfo, error)
 
 	// GetServoSerial gets the Servo serial number for given DUT IP address.
-	GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice) (bool, string, error)
+	GetServoSerial(ctx context.Context, IP string, usbDevices []enumeration.USBDevice, dutHasADImage bool) (bool, string, error)
 
 	// GetUSBDevicePaths returns all the USBDevices instance of plugged devices
 	GetUSBDevicePaths(ctx context.Context) ([]enumeration.USBDevice, error)
 
 	// GetCCDStatus gets the status of CCD
-	GetCCDStatus(ctx context.Context, address string) (string, error)
+	GetCCDStatus(ctx context.Context, address string, hasAndroidDesktopImage bool) string
+
+	// RunADBShellCommandOnIP sends the command to the DUT device and then get the result back
+	RunADBShellCommandOnIP(ctx context.Context, address string, command string) (string, error)
+
+	// CheckAndroidDesktop checks if there is Android Desktop installed on the DUT
+	CheckAndroidDesktop(ctx context.Context, address string) bool
 }

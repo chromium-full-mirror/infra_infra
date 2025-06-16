@@ -423,12 +423,31 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 
 		model := cmdResponse.Model
 		currentFirmware := cmdResponse.FwId
-		updateFirmware := "null"
+		newestFirmware := "unknown"
 		if _, ok := cmdResponse.FwUpdate[model]; ok {
-			updateFirmware = cmdResponse.FwUpdate[model].Host.Versions.RW
+			newestFirmware = cmdResponse.FwUpdate[model].Host.Versions.RW
 		}
 		DUTsResponse = append(DUTsResponse, &pb.ConnectedDutFirmwareInfo{
-			Ip: cmdRes.IP, CurrentFirmware: currentFirmware, UpdateFirmware: updateFirmware,
+			Ip: cmdRes.IP, CurrentFirmware: currentFirmware, UpdateFirmware: newestFirmware,
+		})
+	}
+
+	androidDesktopIPs := []string{}
+	for _, d := range devices {
+		if d.IsPingable && d.HasADImage {
+			androidDesktopIPs = append(androidDesktopIPs, d.IP)
+		}
+	}
+	for _, IP := range androidDesktopIPs {
+		out, err := s.dutService.RunADBShellCommandOnIP(ctx, IP, "crossystem fwid")
+		if err != nil {
+			fmt.Printf("Error executing adb shell command: %s\n", out)
+			continue
+		}
+		currentFirmware := out
+		newestFirmware := "unknown" // not supported yet
+		DUTsResponse = append(DUTsResponse, &pb.ConnectedDutFirmwareInfo{
+			Ip: IP, CurrentFirmware: currentFirmware, UpdateFirmware: newestFirmware,
 		})
 	}
 
@@ -1010,13 +1029,10 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 			if dut.Address == device.IP {
 				dut.IsPingable = device.IsPingable
 				dut.HasTestImage = device.HasTestImage
+				dut.HasAndroidDesktopImage = device.HasADImage
 				dut.MacAddress = device.MACAddress
 				enrolledIPs = append(enrolledIPs, dut.Address)
-				ccdStatus, err := s.dutService.GetCCDStatus(ctx, dut.Address)
-				if err != nil {
-					ccdStatus = "Unknown"
-				}
-				dut.CcdStatus = ccdStatus
+				dut.CcdStatus = device.CCDStatus
 			}
 		}
 	}
@@ -1028,50 +1044,55 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 	wg.Wait()
 
 	for _, device := range unenrolledDevices {
-
 		// TODO optimize we don't need to wait for
 		// out dut executing command complete to fetch
 		// the next dut board and model.
 		var servoSerial = ""
 		var board = ""
 		var model = ""
-		var ccdStatus = ""
 		if device.IsPingable && device.HasTestImage {
 			board, err = s.dutService.GetBoard(ctx, device.IP)
 			if err != nil {
-				// Skip when we can't get the board from the CLI.
-				board = ""
+				logging.Errorf(ctx, "Error getting board name")
 			}
 			model, err = s.dutService.GetModel(ctx, device.IP)
 			if err != nil {
-				// Skip when we can't get the model from the CLI.
-				model = ""
+				logging.Errorf(ctx, "Error getting model name")
 			}
-			var isServoConnected = false
-			isServoConnected, servoSerial, err = s.dutService.GetServoSerial(ctx, device.IP, usbDevices)
+		} else if device.IsPingable && device.HasADImage {
+			out, err := s.dutService.RunADBShellCommandOnIP(ctx, device.IP, "getprop ro.product.name")
 			if err != nil {
-				logging.Errorf(ctx, "gRPC Service error: list_duts: failed to find servo serial for %s: %v", device.IP, err)
+				logging.Errorf(ctx, "Error executing adb shell command: %v", err)
 			}
-			// TODO Make UI handle this to display appropriate thing instead of setting it here.
-			if isServoConnected && servoSerial == "" {
-				servoSerial = "NOT DETECTED"
-			}
-			ccdStatus, err = s.dutService.GetCCDStatus(ctx, device.IP)
+			board = strings.TrimRight(out, "\n\t")
+			out, err = s.dutService.RunADBShellCommandOnIP(ctx, device.IP, "getprop vendor.device.product.name")
 			if err != nil {
-				ccdStatus = "Unknown"
+				logging.Errorf(ctx, "Error executing adb shell command: %v", err)
 			}
+			model = strings.TrimRight(out, "\n\t")
 		}
+		var isServoConnected = false
+		isServoConnected, servoSerial, err = s.dutService.GetServoSerial(ctx, device.IP, usbDevices, device.HasADImage)
+		if err != nil {
+			logging.Errorf(ctx, "gRPC Service error: list_duts: failed to find servo serial for %s: %v", device.IP, err)
+		}
+		// TODO Make UI handle this to display appropriate thing instead of setting it here.
+		if isServoConnected && servoSerial == "" {
+			servoSerial = "NOT DETECTED"
+		}
+
 		accessGranted := collection.Contains(grantedBoards, board)
 		duts = append(duts, &pb.Dut{
-			Board:         board,
-			Model:         model,
-			Address:       device.IP,
-			MacAddress:    device.MACAddress,
-			IsPingable:    device.IsPingable,
-			HasTestImage:  device.HasTestImage,
-			ServoSerial:   servoSerial,
-			CcdStatus:     ccdStatus,
-			HasPermission: accessGranted,
+			Board:                  board,
+			Model:                  model,
+			Address:                device.IP,
+			MacAddress:             device.MACAddress,
+			IsPingable:             device.IsPingable,
+			HasTestImage:           device.HasTestImage,
+			ServoSerial:            servoSerial,
+			CcdStatus:              device.CCDStatus,
+			HasPermission:          accessGranted,
+			HasAndroidDesktopImage: device.HasADImage,
 		})
 	}
 
