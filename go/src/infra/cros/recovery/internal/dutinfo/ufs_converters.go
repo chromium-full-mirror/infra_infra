@@ -427,6 +427,7 @@ var modemTypes = map[ufslab.ModemType]tlw.Cellular_ModemType{
 	ufslab.ModemType_MODEM_TYPE_EM060:           tlw.Cellular_MODEM_TYPE_EM060,
 	ufslab.ModemType_MODEM_TYPE_RW101:           tlw.Cellular_MODEM_TYPE_RW101,
 	ufslab.ModemType_MODEM_TYPE_RW135:           tlw.Cellular_MODEM_TYPE_RW135,
+	ufslab.ModemType_MODEM_TYPE_RW350:           tlw.Cellular_MODEM_TYPE_RW350,
 	ufslab.ModemType_MODEM_TYPE_LCUK54:          tlw.Cellular_MODEM_TYPE_LCUK54,
 }
 

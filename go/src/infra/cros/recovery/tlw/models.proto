@@ -557,6 +557,8 @@ message Cellular {
     MODEM_TYPE_RW135 = 10;
     // LCUK54
     MODEM_TYPE_LCUK54 = 11;
+    // RW350
+    MODEM_TYPE_RW350 = 12;
   }
   message ModemInfo {
     ModemType type = 1;

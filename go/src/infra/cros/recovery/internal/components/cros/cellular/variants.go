@@ -26,6 +26,7 @@ const (
 	ModemTypeEM060   = tlw.Cellular_MODEM_TYPE_EM060
 	ModemTypeRW101   = tlw.Cellular_MODEM_TYPE_RW101
 	ModemTypeRW135   = tlw.Cellular_MODEM_TYPE_RW135
+	ModemTypeRW350   = tlw.Cellular_MODEM_TYPE_RW350
 	ModemTypeLCUK54  = tlw.Cellular_MODEM_TYPE_LCUK54
 )
 
@@ -50,6 +51,7 @@ var modemTypeMap = map[string]tlw.Cellular_ModemType{
 	"8":  ModemTypeRW101,
 	"9":  ModemTypeRW135,
 	"10": ModemTypeLCUK54,
+	"11": ModemTypeRW350,
 }
 
 // This list is left as a fallback for older devices and images that do not contain
