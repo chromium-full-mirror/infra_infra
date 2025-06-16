@@ -107,7 +107,10 @@ linters:
       - path: (.+)\.go$
         # Exclude specific error checking patterns
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
-      - path: cmd/cros_test_platform/luciexe/execute/execute_test.go|cros/cmd/cft/dut/cros-dut/dutssh/unix_socket_bridge.go
+      - path: "^(\
+          cmd/cros_test_platform/luciexe/execute/execute_test.go|\
+          cros/cmd/cft/dut/cros-dut/dutssh/unix_socket_bridge.go|\
+        )$"
         # https://staticcheck.dev/docs/checks#S1000
         # Use plain channel send or receive instead of single-case select
         text: "^S1000: "
@@ -124,211 +127,256 @@ linters:
       # TODO(gregorynisbet): Reduce this exclude by cleaning up instances where the context should be passed.
       - linters:
         - noctx
-        path: ^(appengine|cros|cmd|chromeperf|fleetconsole|monorail|tools|tricium)
+        path: "^(\
+          appengine/sheriff-o-matic/som/client/client.go|\
+          appengine/sheriff-o-matic/som/client/crrev.go|\
+          appengine/sheriff-o-matic/som/client/gitiles.go|\
+          appengine/test-results/frontend/revision.go|\
+          appengine/test-results/frontend/revision_test.go|\
+          chromeperf/pinpoint/server/server.go|\
+          cmd/cloudbuildhelper/registry/auth.go|\
+          cmd/cloudbuildhelper/registry/registry.go|\
+          cmd/drone-agent/internal/bot/bot.go|\
+          cmd/ninja_log_trace_viewer/ninja_log_trace_viewer.go|\
+          cros/cmd/caching-backend/downloader/main_test.go|\
+          cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go|\
+          cros/cmd/cft/execution/cros-test/internal/common/ab_dynamic_downloader.go|\
+          cros/cmd/common_lib/android_api/android_builds.go|\
+          cros/cmd/common_lib/ants/gensupport/resumable.go|\
+          cros/cmd/common_lib/common/file.go|\
+          cros/cmd/common_lib/common/scheduke_client.go|\
+          cros/cmd/cros-tool-runner/internal/libsserver/running_lib.go|\
+          cros/cmd/k8s-management/app-roller/main.go|\
+          cros/cmd/kron/common/util.go|\
+          cros/cmd/phosphorus/internal/cmd/fetch-crashes.go|\
+          cros/cmd/provision/common-utils/cache/client.go|\
+          cros/cmd/upload_debug_symbols/builder.go|\
+          cros/hwid/hwid.go|\
+          cros/internal/gerrit/client.go|\
+          cros/karte/cli/checkserver.go|\
+          cros/recovery/internal/components/cros/amt/client.go|\
+          cros/recovery/internal/localtlw/xmlrpc/xmlrpc.go|\
+          cros/servo/xmlrpc/xmlrpc.go|\
+          cros/tlslib/internal/nebraska/nebraska.go|\
+          fleetconsole/internal/commands/ping-ui.go|\
+          monorail/endpoints.go|\
+          tools/vpython/legacy/vpython2.7/luci/venv/venv_resources_test.go|\
+          tricium/functions/metrics/histograms_check.go|\
+        )$"
+      - linters:
+          - govet
+        path: "^(\
+          appengine/rotation-proxy/rotation_proxy_server.go|\
+          cmd/bqexport/test_data/main.go|\
+          cros/cmd/ctpv2/internal/commands/middle_out_cmd.go|\
+          cros/lib/buildbucket/properties_test.go|\
+          libs/fleet/boxster/swarming/convert_test.go|\
+          monorail/endpoints_test.go|\
+        )$"
+      - linters:
+          - ineffassign
+        path: "^(\
+          chromeperf/pinpoint/cli/analyze.go|\
+          chromeperf/pinpoint/cli/generate_batch_summary.go|\
+          cmd/cros_test_platform/internal/execution/testrunner/service/client.go|\
+          cmd/gaedeploy/module/module.go|\
+          cmd/mac_toolchain/package.go|\
+          cmd/package_index/proto.go|\
+          cmd/shivas/internal/experimental/verify_bot_status.go|\
+          cmd/shivas/internal/queen/cmds/queen-push-duts.go|\
+          cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go|\
+          cmd/shivas/internal/ufs/subcmds/vm/get_vm.go|\
+          cr_builder_health/src_config.go|\
+          cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go|\
+          cros/cmd/common_lib/common/filters.go|\
+          cros/cmd/common_lib/commonexecutors/container_manager_executor.go|\
+          cros/cmd/common_lib/secretmanager/secretmanager.go|\
+          cros/cmd/conductor/collect_state.go|\
+          cros/cmd/container_uprev/executions/build_execution.go|\
+          cros/cmd/container_uprev/executions/manual_execution.go|\
+          cros/cmd/container_uprev/internal/docker.go|\
+          cros/cmd/cros_test_runner/analytics/bigquery.go|\
+          cros/cmd/cros_test_runner/internal/commands/build_input_validation_cmd.go|\
+          cros/cmd/cros_test_runner/internal/commands/parse_args_cmd.go|\
+          cros/cmd/cros_test_runner/internal/commands/parse_dut_topology_cmd.go|\
+          cros/cmd/cros_test_runner/internal/commands/process_results_cmd.go|\
+          cros/cmd/cros_test_runner/internal/executors/inv_service_executor.go|\
+          cros/cmd/cros-tool-runner/internal/docker/docker.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/descriptor_parser.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/categoryFlattener.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go|\
+          cros/cmd/lucifer/internal/abortsock/abortsock_test.go|\
+          cros/cmd/manifest_doctor/public_buildspec.go|\
+          cros/cmd/provision/cros-fw-provision/service/firmwareservice.go|\
+          cros/cmd/upload_debug_symbols/builder.go|\
+          cros/internal/branch/helper.go|\
+          cros/internal/branch/parser_test.go|\
+          cros/internal/gs/gs.go|\
+          cros/internal/repo/manifest_test.go|\
+          cros/internal/repoharness/repoharness_test.go|\
+          cros/recovery/karte/karte.go|\
+          cros/satlab/common/services/build_service/build_service_impl.go|\
+          cros/satlab/satlabrpcserver/client/main.go|\
+          cros/satlab/satlabrpcserver/platform/cpu_temperature/cpu_temperature_test.go|\
+          cros/satlab/satlabrpcserver/services/rpc_services/rpc_services.go|\
+          cros/satlab/satlabrpcserver/utils/sized_queue/sized_queue_test.go|\
+          cros/satlab/satlabrpcserver/utils/utils_test.go|\
+          cros/support/bq-insert/main.go|\
+          experimental/crderiveinputs/main.go|\
+          experimental/crderiveinputs/oracle_pin.go|\
+          experimental/crderiveinputs/vpython.go|\
+          experimental/golangbuild/fetch.go|\
+          experimental/golangbuild/steps.go|\
+          experimental/golangbuild/testmode.go|\
+          qscheduler/service/app/state/nodestore/nodestore_test.go|\
+          rts/cmd/rts-chromium/select.go|\
+          rts/cmd/rts-ml-chromium/select.go|\
+          rts/internal/chromium/test_files_test.go|\
+          tools/cloudtail/chan.go|\
+          tools/kitchen/cook.go|\
+          tools/recipe_bundler/cmd_bundle.go|\
+          tools/vpython/legacy/vpython2.7/luci/application/probe.go|\
+          unifiedfleet/app/dumper/nlyte_bq_sync.go|\
+        )$"
+      - linters:
+          - staticcheck
+        path: "^(\
+          cmd/skylab/internal/cmd/internalcmds/stable-version.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/bitarray/bitarray.go|\
+          cros/cmd/kron/subcommands/configs.go|\
+          cros/internal/branch/helper.go|\
+          qscheduler/service/app/state/batchrunner.go\
+        )$"
+      - linters:
+          - unused
+        path: "^(\
+          chromeperf/pinpoint/cli/analyze.go|\
+          chromeperf/pinpoint/cli/diff.go|\
+          chromium/bootstrapper/clients/fakes/gerrit/gerrit_test.go|\
+          cmd/cros_test_platform/internal/cmd/compute-backfill.go|\
+          cmd/cros_test_platform/internal/cmd/enumerate.go|\
+          cmd/cros_test_platform/internal/execution/args/generator.go|\
+          cmd/cros_test_platform/internal/execution/response/invocation.go|\
+          cmd/crosfleet/internal/run/testcommon_test.go|\
+          cmd/crosfleet/internal/run/testcommon.go|\
+          cmd/crosfleet/internal/vm/tunnel.go|\
+          cmd/drone-agent/main.go|\
+          cmd/mac_toolchain/install.go|\
+          cmd/mac_toolchain/package.go|\
+          cmd/mac_toolchain/plist.go|\
+          cmd/mallet/internal/cmd/tasks/ethernet_hook.go|\
+          cmd/mallet/internal/cmd/tasks/ethernethook/extended_gs_client.go|\
+          cmd/shivas/internal/experimental/check_dut_availability_difference.go|\
+          cmd/shivas/internal/ufs/subcmds/attacheddevicehost/update_attached_device_host.go|\
+          cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/add_attached_device_machine.go|\
+          cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/update_attached_device_machine.go|\
+          cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_lse.go|\
+          cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_machine.go|\
+          cmd/shivas/internal/ufs/subcmds/devboard/update_devboard_machine.go|\
+          cmd/shivas/internal/ufs/subcmds/dut/add_dut.go|\
+          cmd/shivas/internal/ufs/subcmds/host/update_host.go|\
+          cmd/shivas/internal/ufs/subcmds/labstation/add_labstation.go|\
+          cmd/shivas/utils/helper.go|\
+          cmd/shivas/utils/location.go|\
+          cmd/shivas/utils/userinput.go|\
+          cmd/skylab/internal/bb/bb.go|\
+          cmd/skylab/internal/cmd/internalcmds/wait-task.go|\
+          cmd/skylab/internal/cmd/meta/version_cipd.go|\
+          cmd/stable_version2/internal/cmd/validateconfig/querygs/querygs_test.go|\
+          cr_builder_health/main.go|\
+          cros/cmd/branch_util/branch_util_test.go|\
+          cros/cmd/branch_util/create.go|\
+          cros/cmd/caching-backend/conf-creator/build_configs.go|\
+          cros/cmd/cft/dut/cros-servod/ssh/config.go|\
+          cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go|\
+          cros/cmd/cft/execution/cros-test/internal/common/ab_dynamic_downloader.go|\
+          cros/cmd/cft/generic/servertemplate/template.go|\
+          cros/cmd/cft/publish/servertemplate/template.go|\
+          cros/cmd/common_lib/commoncommands/container_start_cmd.go|\
+          cros/cmd/common-tls/main.go|\
+          cros/cmd/conductor/collect_test.go|\
+          cros/cmd/cros_test_runner/internal/configs/test_execution_configs.go|\
+          cros/cmd/cros_test_runner/internal/executors/cros_dutvm_executor_test.go|\
+          cros/cmd/cros-tool-runner/internal/docker/docker.go|\
+          cros/cmd/cros-tool-runner/internal/services/services.go|\
+          cros/cmd/cros-tool-runner/internal/services/utils.go|\
+          cros/cmd/cros-tool-runner/internal/tasks/provision.go|\
+          cros/cmd/cros-tool-runner/internal/tasks/testexec.go|\
+          cros/cmd/cros-tool-runner/internal/v2/commands/command.go|\
+          cros/cmd/cros-tool-runner/internal/v2/server/util_test.go|\
+          cros/cmd/ctpv2-filters/al-provision-filter/main.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/advisor/main.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/descriptor.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/deviceproperties.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/decoder/decoder.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/eqcNameGenerator.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/validation.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/test_client/main.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go|\
+          cros/cmd/ctpv2/executions/build_execution.go|\
+          cros/cmd/ctpv2/internal/commands/middle_out_cmd.go|\
+          cros/cmd/fleet-tlw/ufs_test.go|\
+          cros/cmd/ipcpubsub/internal/cmd/common.go|\
+          cros/cmd/k8s-management/app-roller/main_test.go|\
+          cros/cmd/lucifer/audittask.go|\
+          cros/cmd/manifest_doctor/branch_local_manifest.go|\
+          cros/cmd/manifest_doctor/per_project_buildspec_test.go|\
+          cros/cmd/paris/internal/tasks/local_recovery.go|\
+          cros/cmd/phosphorus/internal/cmd/upload-to-gs.go|\
+          cros/cmd/phosphorus/internal/skylab_local_state/cmd/save.go|\
+          cros/cmd/provision/ash-chrome-provision/cli/cft-service-connect.go|\
+          cros/cmd/try/try/release.go|\
+          cros/internal/branch/helper.go|\
+          cros/internal/branch/manifest_repo.go|\
+          cros/internal/branch/parser.go|\
+          cros/internal/buildplan/buildplan.go|\
+          cros/internal/chromeosversion/chromeosversion.go|\
+          cros/internal/generator/test_pruner.go|\
+          cros/internal/repo/manifest.go|\
+          cros/internal/repoharness/repoharness_test.go|\
+          cros/internal/repoharness/repoharness.go|\
+          cros/internal/testutil/testutil_test.go|\
+          cros/karte/internal/frontend/frontend_test.go|\
+          cros/karte/internal/site/site.go|\
+          cros/lab_inventory/datastore/devices.go|\
+          cros/lab_inventory/deviceconfig/deviceconfig_test.go|\
+          cros/lab_inventory/deviceconfig/parser.go|\
+          cros/lab_inventory/utilization/utilization_test.go|\
+          cros/recovery/internal/components/mh/mh_env.go|\
+          cros/satlab/common/services/ufs/ufs_client.go|\
+          cros/satlab/satlab/internal/components/dut/utils.go|\
+          cros/satlab/satlab/internal/servod/start_servod_cmd_test.go|\
+          cros/satlab/satlab/internal/servod/start_servod_cmd.go|\
+          cros/satlab/satlab/internal/subcmds/is_satlab_remote_access.go|\
+          cros/satlab/satlabrpcserver/services/bucket_services/bucket_services_impl.go|\
+          device_manager/internal/frontend/frontend.go|\
+          experimental/crderiveinputs/args.go|\
+          experimental/importcounter/main.go|\
+          fleetconsole/internal/commands/ping_db.go|\
+          fleetconsole/internal/database/devicesdb/deviceDAO.go|\
+          libs/fleet/devicelabel/device_label_registration.go|\
+          libs/skylab/inventory/autotest/labels/basic.go|\
+          libs/skylab/inventory/autotest/labels/pools.go|\
+          libs/skylab/request/request.go|\
+          libs/skylab/worker/worker_test.go|\
+          libs/swarming/task_creator.go|\
+          qscheduler/cmd/qscheduler/internal/cmd/common.go|\
+          qscheduler/qslib/reconciler/reconciler_test.go|\
+          qscheduler/qslib/scheduler/scheduler_run.go|\
+          qscheduler/qslib/scheduler/state.go|\
+          qscheduler/service/app/state/metrics/metrics.go|\
+          rts/cmd/rts-ml-chromium/gen_training_data.go|\
+          rts/cmd/stable-test-exclusion/gen_ste_filters.go|\
+          tools/backuptogs/job.go|\
+          tools/cloudtail/parser.go|\
+          tools/kitchen/update_build_test.go|\
+          tools/kitchen/util.go|\
+          tools/relnotes/relnotes.go|\
+          tools/result_adapter/json.go|\
+        )$"
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
-      # TODO(gregorynisbet): remove this exemption too.
-      - ^cros/cmd/k8s-management/metrics/pod_perf_cmd.go$
-      # TODO(gregorynisbet): remove this exemption too.
-      - ^cros/internal/branch/helper.go$
-      # TODO(gregorynisbet): remove this exemption too.
-      - ^qscheduler/service/app/state/batchrunner.go$
-      # TODO(gregorynisbet): BEGIN copylock issue files.
-      - appengine/rotation-proxy/rotation_proxy_server.go
-      - cmd/bqexport/test_data/main.go
-      - cros/cmd/ctpv2/internal/commands/middle_out_cmd.go
-      - cros/lib/buildbucket/properties_test.go
-      - libs/fleet/boxster/swarming/convert_test.go
-      - monorail/endpoints_test.go
-      # TODO(gregorynisbet): END copylock issue files.
-      # TODO(gregorynisbet): BEGIN ineffective assignment issue files.
-      - chromeperf/pinpoint/cli/analyze.go
-      - chromeperf/pinpoint/cli/generate_batch_summary.go
-      - cmd/cros_test_platform/internal/execution/testrunner/service/client.go
-      - cmd/gaedeploy/module/module.go
-      - cmd/mac_toolchain/package.go
-      - cmd/package_index/proto.go
-      - cmd/shivas/internal/experimental/verify_bot_status.go
-      - cmd/shivas/internal/queen/cmds/queen-push-duts.go
-      - cmd/shivas/internal/ufs/subcmds/peripherals/wifi.go
-      - cmd/shivas/internal/ufs/subcmds/vm/get_vm.go
-      - cr_builder_health/src_config.go
-      - cros/cmd/cft/dut/cros-dut/cli/dutserver.go
-      - cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go
-      - cros/cmd/common_lib/common/filters.go
-      - cros/cmd/common_lib/commonexecutors/container_manager_executor.go
-      - cros/cmd/common_lib/secretmanager/secretmanager.go
-      - cros/cmd/conductor/collect_state.go
-      - cros/cmd/container_uprev/executions/build_execution.go
-      - cros/cmd/container_uprev/executions/manual_execution.go
-      - cros/cmd/container_uprev/internal/docker.go
-      - cros/cmd/cros-tool-runner/internal/docker/docker.go
-      - cros/cmd/cros_test_runner/analytics/bigquery.go
-      - cros/cmd/cros_test_runner/internal/commands/build_input_validation_cmd.go
-      - cros/cmd/cros_test_runner/internal/commands/parse_args_cmd.go
-      - cros/cmd/cros_test_runner/internal/commands/parse_dut_topology_cmd.go
-      - cros/cmd/cros_test_runner/internal/commands/process_results_cmd.go
-      - cros/cmd/cros_test_runner/internal/executors/inv_service_executor.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/descriptor_parser.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/categoryFlattener.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go
-      - cros/cmd/lucifer/internal/abortsock/abortsock_test.go
-      - cros/cmd/manifest_doctor/public_buildspec.go
-      - cros/cmd/provision/cros-fw-provision/service/firmwareservice.go
-      - cros/cmd/upload_debug_symbols/builder.go
-      - cros/internal/branch/parser_test.go
-      - cros/internal/gs/gs.go
-      - cros/internal/repo/manifest_test.go
-      - cros/internal/repoharness/repoharness_test.go
-      - cros/recovery/karte/karte.go
-      - cros/satlab/common/services/build_service/build_service_impl.go
-      - cros/satlab/satlabrpcserver/client/main.go
-      - cros/satlab/satlabrpcserver/platform/cpu_temperature/cpu_temperature_test.go
-      - cros/satlab/satlabrpcserver/services/rpc_services/rpc_services.go
-      - cros/satlab/satlabrpcserver/utils/sized_queue/sized_queue_test.go
-      - cros/satlab/satlabrpcserver/utils/utils_test.go
-      - cros/support/bq-insert/main.go
-      - experimental/crderiveinputs/main.go
-      - experimental/crderiveinputs/oracle_pin.go
-      - experimental/crderiveinputs/vpython.go
-      - experimental/golangbuild/fetch.go
-      - experimental/golangbuild/steps.go
-      - experimental/golangbuild/testmode.go
-      - qscheduler/service/app/state/nodestore/nodestore_test.go
-      - rts/cmd/rts-chromium/select.go
-      - rts/cmd/rts-ml-chromium/select.go
-      - rts/internal/chromium/test_files_test.go
-      - tools/cloudtail/chan.go
-      - tools/kitchen/cook.go
-      - tools/recipe_bundler/cmd_bundle.go
-      - tools/vpython/legacy/vpython2.7/luci/application/probe.go
-      - unifiedfleet/app/dumper/nlyte_bq_sync.go
-      # TODO(gregorynisbet): END ineffective assignment issue files.
-      # TODO(gregorynisbet): BEGIN unused variable/function issue files.
-      - chromeperf/pinpoint/cli/analyze.go
-      - chromeperf/pinpoint/cli/diff.go
-      - chromium/bootstrapper/clients/fakes/gerrit/gerrit_test.go
-      - cmd/cros_test_platform/internal/cmd/compute-backfill.go
-      - cmd/cros_test_platform/internal/cmd/enumerate.go
-      - cmd/cros_test_platform/internal/execution/args/generator.go
-      - cmd/cros_test_platform/internal/execution/response/invocation.go
-      - cmd/crosfleet/internal/run/testcommon.go
-      - cmd/crosfleet/internal/run/testcommon_test.go
-      - cmd/crosfleet/internal/vm/tunnel.go
-      - cmd/drone-agent/main.go
-      - cmd/mac_toolchain/install.go
-      - cmd/mac_toolchain/package.go
-      - cmd/mac_toolchain/plist.go
-      - cmd/mallet/internal/cmd/tasks/ethernet_hook.go
-      - cmd/mallet/internal/cmd/tasks/ethernethook/extended_gs_client.go
-      - cmd/shivas/internal/experimental/check_dut_availability_difference.go
-      - cmd/shivas/internal/ufs/subcmds/attacheddevicehost/update_attached_device_host.go
-      - cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/add_attached_device_machine.go
-      - cmd/shivas/internal/ufs/subcmds/attacheddevicemachine/update_attached_device_machine.go
-      - cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_lse.go
-      - cmd/shivas/internal/ufs/subcmds/devboard/add_devboard_machine.go
-      - cmd/shivas/internal/ufs/subcmds/devboard/update_devboard_machine.go
-      - cmd/shivas/internal/ufs/subcmds/dut/add_dut.go
-      - cmd/shivas/internal/ufs/subcmds/host/update_host.go
-      - cmd/shivas/internal/ufs/subcmds/labstation/add_labstation.go
-      - cmd/shivas/utils/helper.go
-      - cmd/shivas/utils/location.go
-      - cmd/shivas/utils/userinput.go
-      - cmd/skylab/internal/bb/bb.go
-      - cmd/skylab/internal/cmd/internalcmds/wait-task.go
-      - cmd/skylab/internal/cmd/meta/version_cipd.go
-      - cmd/stable_version2/internal/cmd/validateconfig/querygs/querygs_test.go
-      - cr_builder_health/main.go
-      - cros/cmd/branch_util/branch_util_test.go
-      - cros/cmd/branch_util/create.go
-      - cros/cmd/caching-backend/conf-creator/build_configs.go
-      - cros/cmd/cft/dut/cros-servod/ssh/config.go
-      - cros/cmd/cft/dut/cros-servod/xmlrpc/xmlrpc.go
-      - cros/cmd/cft/execution/cros-test/internal/common/ab_dynamic_downloader.go
-      - cros/cmd/cft/generic/servertemplate/template.go
-      - cros/cmd/cft/publish/servertemplate/template.go
-      - cros/cmd/common-tls/main.go
-      - cros/cmd/common_lib/commoncommands/container_start_cmd.go
-      - cros/cmd/conductor/collect_test.go
-      - cros/cmd/cros-tool-runner/internal/docker/docker.go
-      - cros/cmd/cros-tool-runner/internal/services/services.go
-      - cros/cmd/cros-tool-runner/internal/services/utils.go
-      - cros/cmd/cros-tool-runner/internal/tasks/provision.go
-      - cros/cmd/cros-tool-runner/internal/tasks/testexec.go
-      - cros/cmd/cros-tool-runner/internal/v2/commands/command.go
-      - cros/cmd/cros-tool-runner/internal/v2/server/util_test.go
-      - cros/cmd/cros_test_runner/internal/configs/test_execution_configs.go
-      - cros/cmd/cros_test_runner/internal/executors/cros_dutvm_executor_test.go
-      - cros/cmd/ctpv2-filters/al-provision-filter/main.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/advisor/main.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/descriptor.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db/deviceproperties.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/decoder/decoder.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/eqcNameGenerator.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/validation.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/test_client/main.go
-      - cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go
-      - cros/cmd/ctpv2/executions/build_execution.go
-      - cros/cmd/fleet-tlw/ufs_test.go
-      - cros/cmd/ipcpubsub/internal/cmd/common.go
-      - cros/cmd/k8s-management/app-roller/main_test.go
-      - cros/cmd/lucifer/audittask.go
-      - cros/cmd/manifest_doctor/branch_local_manifest.go
-      - cros/cmd/manifest_doctor/per_project_buildspec_test.go
-      - cros/cmd/paris/internal/tasks/local_recovery.go
-      - cros/cmd/phosphorus/internal/cmd/upload-to-gs.go
-      - cros/cmd/phosphorus/internal/skylab_local_state/cmd/save.go
-      - cros/cmd/provision/ash-chrome-provision/cli/cft-service-connect.go
-      - cros/cmd/try/try/release.go
-      - cros/internal/branch/manifest_repo.go
-      - cros/internal/branch/parser.go
-      - cros/internal/buildplan/buildplan.go
-      - cros/internal/chromeosversion/chromeosversion.go
-      - cros/internal/generator/test_pruner.go
-      - cros/internal/repo/manifest.go
-      - cros/internal/repoharness/repoharness.go
-      - cros/internal/repoharness/repoharness_test.go
-      - cros/internal/testutil/testutil_test.go
-      - cros/karte/internal/frontend/frontend_test.go
-      - cros/karte/internal/site/site.go
-      - cros/lab_inventory/datastore/devices.go
-      - cros/lab_inventory/deviceconfig/deviceconfig_test.go
-      - cros/lab_inventory/deviceconfig/parser.go
-      - cros/lab_inventory/utilization/utilization_test.go
-      - cros/recovery/internal/components/mh/mh_env.go
-      - cros/satlab/common/services/ufs/ufs_client.go
-      - cros/satlab/satlab/internal/components/dut/utils.go
-      - cros/satlab/satlab/internal/servod/start_servod_cmd.go
-      - cros/satlab/satlab/internal/servod/start_servod_cmd_test.go
-      - cros/satlab/satlab/internal/subcmds/is_satlab_remote_access.go
-      - cros/satlab/satlabrpcserver/services/bucket_services/bucket_services_impl.go
-      - device_manager/internal/frontend/frontend.go
-      - experimental/crderiveinputs/args.go
-      - experimental/importcounter/main.go
-      - fleetconsole/internal/commands/ping_db.go
-      - fleetconsole/internal/database/devicesdb/deviceDAO.go
-      - libs/fleet/devicelabel/device_label_registration.go
-      - libs/skylab/inventory/autotest/labels/basic.go
-      - libs/skylab/inventory/autotest/labels/pools.go
-      - libs/skylab/request/request.go
-      - libs/skylab/worker/worker_test.go
-      - libs/swarming/task_creator.go
-      - qscheduler/cmd/qscheduler/internal/cmd/common.go
-      - qscheduler/qslib/reconciler/reconciler_test.go
-      - qscheduler/qslib/scheduler/scheduler_run.go
-      - qscheduler/qslib/scheduler/state.go
-      - qscheduler/service/app/state/metrics/metrics.go
-      - rts/cmd/rts-ml-chromium/gen_training_data.go
-      - rts/cmd/stable-test-exclusion/gen_ste_filters.go
-      - tools/backuptogs/job.go
-      - tools/cloudtail/parser.go
-      - tools/kitchen/update_build_test.go
-      - tools/kitchen/util.go
-      - tools/relnotes/relnotes.go
-      - tools/result_adapter/json.go
-      # TODO(gregorynisbet): END unused variable/function issue files.
-
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
