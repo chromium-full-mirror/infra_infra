@@ -176,7 +176,7 @@
           "overlay": "mt8192"
         },
         "kernel": {
-          "version": "6.1"
+          "version": "5.4"
         }
       }
     },
@@ -611,7 +611,7 @@
           "overlay": "adl"
         },
         "kernel": {
-          "version": "5.15"
+          "version": "6.6"
         }
       }
     },
@@ -1121,7 +1121,7 @@
           "overlay": "kbl"
         },
         "kernel": {
-          "version": "6.6"
+          "version": "5.15"
         }
       }
     },
@@ -2141,7 +2141,7 @@
           "overlay": null
         },
         "kernel": {
-          "version": "6.6"
+          "version": "6.12"
         }
       }
     },
@@ -2276,7 +2276,7 @@
           "overlay": "whl"
         },
         "kernel": {
-          "version": "5.10"
+          "version": "4.19"
         }
       }
     },
@@ -2291,7 +2291,7 @@
           "overlay": "whl"
         },
         "kernel": {
-          "version": "4.19"
+          "version": "6.6"
         }
       }
     },
@@ -2681,7 +2681,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "6.6"
+          "version": "5.4"
         }
       }
     },
@@ -2696,7 +2696,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "6.6"
+          "version": "5.4"
         }
       }
     },
@@ -2711,7 +2711,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "6.6"
+          "version": "5.4"
         }
       }
     },
@@ -2726,7 +2726,7 @@
           "overlay": "picasso"
         },
         "kernel": {
-          "version": "6.6"
+          "version": "5.4"
         }
       }
     },

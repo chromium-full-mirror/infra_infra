@@ -2581,6 +2581,36 @@
       "model": "anakin"
     },
     {
+      "device_id": 824,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "skywalker",
+      "model": "anakin360"
+    },
+    {
+      "device_id": 821,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CONVERTIBLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "baze"
+    },
+    {
+      "device_id": 822,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "jye"
+    },
+    {
       "device_id": 811,
       "soc": "MT8189 / MT8189+",
       "form_factor": "CLAMSHELL",
@@ -2591,6 +2621,16 @@
       "model": "obiwan"
     },
     {
+      "device_id": 825,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "DETACHABLE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "padme"
+    },
+    {
       "device_id": 812,
       "soc": "MT8189 / MT8189+",
       "form_factor": "CLAMSHELL",
@@ -2599,6 +2639,16 @@
       "device_type": "DEVICE",
       "build_targets": "skywalker",
       "model": "quigon"
+    },
+    {
+      "device_id": 823,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "CLAMSHELL",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "shaak"
     },
     {
       "device_id": 809,
@@ -3171,6 +3221,16 @@
       "model": "deltan"
     },
     {
+      "device_id": 826,
+      "soc": "MT8189 / MT8189+",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "jedi"
+    },
+    {
       "device_id": 492,
       "soc": "Jasperlake/JSL+",
       "form_factor": "CONVERTIBLE",
@@ -3241,6 +3301,16 @@
       "model": "skywalker"
     },
     {
+      "device_id": 827,
+      "soc": "MT8196P",
+      "form_factor": "NONE",
+      "soc_vendor": "Mediatek",
+      "architecture": "ARM_64",
+      "device_type": "REFERENCE_BOARD",
+      "build_targets": "NONE",
+      "model": "tanjiro"
+    },
+    {
       "device_id": 755,
       "soc": "Twin Lake",
       "form_factor": "NONE",
@@ -3281,16 +3351,6 @@
       "model": "yoruk"
     },
     {
-      "device_id": 272,
-      "soc": "NONE",
-      "form_factor": "NONE",
-      "soc_vendor": "NONE",
-      "architecture": "NONE",
-      "device_type": "DEVICE",
-      "build_targets": "NONE",
-      "model": "ryu"
-    },
-    {
       "device_id": 136,
       "soc": "Ice Lake-Y",
       "form_factor": "CONVERTIBLE",
@@ -3299,6 +3359,16 @@
       "device_type": "DEVICE",
       "build_targets": "dragonegg",
       "model": "dragonegg"
+    },
+    {
+      "device_id": 272,
+      "soc": "NONE",
+      "form_factor": "NONE",
+      "soc_vendor": "NONE",
+      "architecture": "NONE",
+      "device_type": "DEVICE",
+      "build_targets": "NONE",
+      "model": "ryu"
     },
     {
       "device_id": 123,
