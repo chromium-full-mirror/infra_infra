@@ -10,7 +10,6 @@ linters:
     - copyloopvar
     - errorlint
     - gomodguard
-    - govet
     - intrange
     - noctx
   disable:
