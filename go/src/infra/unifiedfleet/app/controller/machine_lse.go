@@ -249,7 +249,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// Check if the Lse field is set in the existing record. If not create one
 		switch oldMachinelse.Lse.(type) {
 		case nil:
-			logging.Errorf(ctx, "UpdateMachineLSE: Found an ambiguios machine lse record. %s", oldMachinelse.GetName())
+			logging.Errorf(ctx, "UpdateMachineLSE: Found an ambiguous machine lse record. %s", oldMachinelse.GetName())
 			// This should not happen. But, if it does happen, Throwing an error would mean
 			// the row has to be deleted and recreated. Instead, add an empty struct instance
 			switch x := machinelse.Lse.(type) {
@@ -263,7 +263,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 				}
 			case nil:
 				// The update is not for anything inside the lse proto. Better log this
-				logging.Errorf(ctx, "UpdateMachineLSE: The ambiguios lse %s is not not resolved", machinelse.GetName())
+				logging.Errorf(ctx, "UpdateMachineLSE: The ambiguous lse %s is not not resolved", machinelse.GetName())
 			default:
 				return errors.Reason("UpdateMachineLSE: Logical error in processing %v type", x).Err()
 			}
@@ -373,13 +373,8 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		logging.Errorf(ctx, "Failed to update entity in datastore: %s", err)
 		return nil, err
 	}
-	if oldMachinelse.GetChromeBrowserMachineLse() != nil {
-		// We fill the machinelse object with its vm objects from vm table
-		setMachineLSE(ctx, machinelse)
-	}
-
 	publishLSEsEvent(ctx, "UpdateMachineLSE", updatedMachinelse)
-
+	setMachineLSE(ctx, machinelse)
 	return machinelse, nil
 }
 
@@ -503,9 +498,7 @@ func GetMachineLSE(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
 	if err != nil {
 		return nil, err
 	}
-	if lse.GetChromeBrowserMachineLse() != nil {
-		setMachineLSE(ctx, lse)
-	}
+	setMachineLSE(ctx, lse)
 	return lse, nil
 }
 
@@ -653,10 +646,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 	}
 	if full && !keysOnly {
 		for _, lse := range lses {
-			// VM info not associated with CrOS machinelses.
-			if lse.GetChromeBrowserMachineLse() != nil {
-				setMachineLSE(ctx, lse)
-			}
+			setMachineLSE(ctx, lse)
 		}
 	}
 
@@ -733,11 +723,10 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 			}
 		}
 
-		vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", id, false)
-		if err != nil {
+		if err := setMachineLSE(ctx, existingMachinelse); err != nil {
 			return err
 		}
-		setVMsToLSE(existingMachinelse, vms)
+		vms := existingMachinelse.GetChromeBrowserMachineLse().GetVms()
 
 		// Delete states
 		var machine *ufspb.Machine
@@ -1190,7 +1179,6 @@ func shouldValidateDeviceConfig(m *ufspb.MachineLSE) bool {
 
 // UpdateMachineLSEHost updates the machinelse host(update ip assignment).
 func UpdateMachineLSEHost(ctx context.Context, machinelseName string, nwOpt *ufsAPI.NetworkOption) (*ufspb.MachineLSE, error) {
-	var oldMachinelse *ufspb.MachineLSE
 	var machinelse *ufspb.MachineLSE
 	var err error
 	f := func(ctx context.Context) error {
@@ -1208,7 +1196,7 @@ func UpdateMachineLSEHost(ctx context.Context, machinelseName string, nwOpt *ufs
 		}
 
 		// this is for logging changes
-		oldMachinelse = proto.Clone(machinelse).(*ufspb.MachineLSE)
+		oldMachinelse := proto.Clone(machinelse).(*ufspb.MachineLSE)
 		if err := setNicIfNeeded(ctx, machinelse, nil, nwOpt); err != nil {
 			return err
 		}
@@ -1235,10 +1223,7 @@ func UpdateMachineLSEHost(ctx context.Context, machinelseName string, nwOpt *ufs
 		logging.Errorf(ctx, "Failed to assign IP to the MachineLSE: %s", err)
 		return nil, err
 	}
-	if oldMachinelse.GetChromeBrowserMachineLse() != nil {
-		// We fill the machinelse object with its vm objects from vm table
-		setMachineLSE(ctx, machinelse)
-	}
+	setMachineLSE(ctx, machinelse)
 	return machinelse, nil
 }
 
@@ -1608,28 +1593,18 @@ func setOutputField(ctx context.Context, machine *ufspb.Machine, lse *ufspb.Mach
 	return nil
 }
 
-func setMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE) {
-	vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", machinelse.GetName(), false)
-	if err != nil {
-		// Just log a warning message and dont fail operation
-		logging.Warningf(ctx, "setMachineLSE - failed to query vms for host %s: %s", machinelse.GetName(), err)
-	}
-	setVMsToLSE(machinelse, vms)
-}
-
-func setVMsToLSE(lse *ufspb.MachineLSE, vms []*ufspb.VM) {
-	if len(vms) <= 0 {
-		return
-	}
-	if lse.GetChromeBrowserMachineLse() == nil {
-		lse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
-			ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-				Vms: vms,
-			},
+// setMachineLSE sets some fields that are stored in other entities
+func setMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE) error {
+	if machinelse.GetChromeBrowserMachineLse() != nil {
+		// We fill the machinelse object with its vm objects from vm table
+		vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", machinelse.GetName(), false)
+		if err != nil {
+			logging.Warningf(ctx, "setMachineLSE - failed to query vms for host %s: %w", machinelse.GetName(), err)
+			return err
 		}
-	} else {
-		lse.GetChromeBrowserMachineLse().Vms = vms
+		machinelse.GetChromeBrowserMachineLse().Vms = vms
 	}
+	return nil
 }
 
 func getHostHistoryClient(m *ufspb.MachineLSE) *HistoryClient {
