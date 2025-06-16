@@ -312,6 +312,7 @@ func (fws *FirmwareService) RestartDut(ctx context.Context, requireServoReset bo
 		log.Printf("[FW Provisioning: Restart DUT] restarting DUT with \"dut-control power_state:reset\" over servo.")
 		servoRestartErr := fws.servoConnection.RunDutControl(ctx, []string{"power_state:reset"})
 		if servoRestartErr == nil {
+			fws.RestartRequired = false
 			if fws.connection != nil {
 				// If SSH connection to DUT was available, wait until it's back up again.
 				return fws.WaitForReconnect(ctx)
@@ -337,6 +338,7 @@ func (fws *FirmwareService) RestartDut(ctx context.Context, requireServoReset bo
 	if fws.connection != nil {
 		log.Printf("[FW Provisioning: Restart DUT] restarting DUT over SSH.")
 		fws.connection.Restart(ctx)
+		fws.RestartRequired = false
 		return fws.WaitForReconnect(ctx)
 	}
 	return errors.New("failed to restart: no SSH connection to the DUT")
@@ -551,6 +553,15 @@ func (fws *FirmwareService) GetVersions() *api.FirmwareProvisionResponse {
 // ActiveFirmwareVersions returns the firmware versions currently running on the DUT.
 func (fws *FirmwareService) ActiveFirmwareVersions(ctx context.Context) (*FirmwareVersions, error) {
 	var versions FirmwareVersions
+	if fws.RestartRequired {
+		// There is a pending update in progress, the active firmware version cannot be trusted.
+		versions.AP.Versions.RO = "reboot_required"
+		versions.AP.Versions.RW = "reboot_required"
+		versions.EC.Versions.RO = "reboot_required"
+		versions.EC.Versions.RW = "reboot_required"
+		versions.EC.Versions.RWHash = "reboot_required"
+		return &versions, nil
+	}
 	// Run crossystem ro_fwid fwid to get AP versions
 	out, err := fws.connection.RunCmd(ctx, "crossystem", []string{"ro_fwid", "fwid"})
 	if err != nil {
@@ -699,6 +710,7 @@ func (fws *FirmwareService) runFutilityViaSSH(ctx context.Context, rwOnly bool, 
 		log.Printf("Futility stderr:\n%s", stderr)
 		return errors.Errorf("CSME_LOCKED: %q", stderr)
 	}
+	log.Printf("Futility STDOUT: %s\nSTDERR: %s", out, stderr)
 	if err != nil {
 		err = fmt.Errorf("futility failed: %w\nSTDOUT: %s\nSTDERR: %s", err, out, stderr)
 	}
