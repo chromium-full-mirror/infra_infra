@@ -109,12 +109,10 @@ func deployActions() map[string]*Action {
 			ExecName:    "cros_has_dev_signed_firmware",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RecoveryActions: []string{
-				"Place REFLASH_FW repair-requests",
-				// "Update FW from fw-image by servo and wait for boot",
-				// "Update firmware with factory mode by host",
-				// // IF DUT failed too boot after reboot then hard rebboot it.
-				// "Cold reset DUT by servo and wait to boot",
-				// "Update firmware with factory mode from host OS",
+				"Fix FW on the DUT to match stable-version and wait to boot",
+				"Update FW from fw-image by servo and wait for boot",
+				// In some case we need reimage the DUT.
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"DUT has expected firmware version": {
