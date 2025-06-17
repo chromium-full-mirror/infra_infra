@@ -145,7 +145,7 @@ func SoftInsertCloudRunExperimentFilterData(ctx context.Context, BQClient *bigqu
 }
 
 type resSchema struct {
-	NormalizedTest string
+	NormalizedTest string `bigquery:"normalized_test"`
 	Duration       float64
 }
 
