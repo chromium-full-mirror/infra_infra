@@ -366,6 +366,11 @@ func TestIngestPostProcessResponses(t *testing.T) {
 		}
 		usbInfoAny, _ := anypb.New(usbInfo)
 
+		stressTestInfo := &artifact.StressTestInfo{
+			Iterations: 10,
+		}
+		stressTestInfoAny, _ := anypb.New(stressTestInfo)
+
 		// Create a post process response proto.
 		postProcessResps := &api.RunActivitiesResponse{
 			Responses: []*api.RunActivityResponse{
@@ -427,6 +432,15 @@ func TestIngestPostProcessResponses(t *testing.T) {
 						},
 					},
 				},
+				{
+					Response: &api.RunActivityResponse_GetStressTestInfoResponse{
+						GetStressTestInfoResponse: &api.GetStressTestInfoResponse{
+							StressTestInfo: map[string]*anypb.Any{
+								"tast.gscdevboard.GSCSysinfo": stressTestInfoAny,
+							},
+						},
+					},
+				},
 			},
 		}
 
@@ -471,6 +485,7 @@ func TestIngestPostProcessResponses(t *testing.T) {
 		assert.That(t, testResult.TestInvocation.PrimaryExecutionInfo.BuildInfo.BuildMetadata, should.Match(wantBuildMetadata))
 		assert.That(t, testResult.TestRuns[0].TestCaseInfo.AvlInfo, should.Match(wantAVL))
 		assert.That(t, testResult.TestInvocation.PrimaryExecutionInfo.DutInfo, should.Match(wantDutInfo))
+		assert.That(t, testResult.TestRuns[0].TestCaseInfo.StressTestInfo, should.Match(stressTestInfo))
 	})
 }
 

@@ -497,6 +497,8 @@ func ingestPostProcessResponses(testResult *artifact.TestResult, postProcessResp
 			populateServoInfo(buildMetadata, resp.GetGetServoInfoResponse())
 		case *api.RunActivityResponse_GetUsbInfoResponse:
 			populateUsbInfo(dutInfo, resp.GetGetUsbInfoResponse())
+		case *api.RunActivityResponse_GetStressTestInfoResponse:
+			populateStressTestInfo(testResult, resp.GetGetStressTestInfoResponse())
 		default:
 			log.Printf("post process response type: %T is not supported", resp.GetResponse())
 		}
@@ -769,4 +771,39 @@ func populateUsbInfo(dutInfo *artifact.DutInfo, usbInfoResp *api.GetUsbInfoRespo
 	dutInfo.UsbInfo = usbInfo
 
 	log.Printf("successfully populated usb info: %#v", usbInfoResp)
+}
+
+// populateStressTestInfo populates stress test info
+func populateStressTestInfo(testResult *artifact.TestResult, stressTestInfoResp *api.GetStressTestInfoResponse) {
+	if stressTestInfoResp == nil {
+		log.Printf("stress test info response is empty")
+		return
+	}
+
+	log.Printf("start to populate stress test info from: %#v", stressTestInfoResp)
+
+	stressTestInfoMap := stressTestInfoResp.GetStressTestInfo()
+	for _, testRun := range testResult.GetTestRuns() {
+		testCaseInfo := testRun.GetTestCaseInfo()
+		testCaseResult := testCaseInfo.GetTestCaseResult()
+		if testCaseResult == nil {
+			continue
+		}
+		testName := testCaseInfo.TestCaseResult.GetTestCaseId().GetValue()
+
+		stressTestInfoAny := stressTestInfoMap[testCaseResult.GetTestCaseId().GetValue()]
+		if stressTestInfoAny == nil || len(stressTestInfoAny.Value) == 0 {
+			continue
+		}
+
+		stressTestInfo := &artifact.StressTestInfo{}
+		opts := proto.UnmarshalOptions{DiscardUnknown: true}
+		if err := anypb.UnmarshalTo(stressTestInfoAny, stressTestInfo, opts); err != nil {
+			log.Printf("failed to unmarshal stress test info: %s", stressTestInfoAny)
+			continue
+		}
+		testCaseInfo.StressTestInfo = stressTestInfo
+
+		log.Printf("successfully populated stress test info: %s for test: %q", testCaseInfo.StressTestInfo, testName)
+	}
 }
