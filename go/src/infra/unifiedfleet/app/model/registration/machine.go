@@ -58,6 +58,7 @@ type MachineEntity struct {
 	MibaRealm        string   `gae:"miba_realm,noindex"` // deprecated
 	GPN              string   `gae:"gpn"`
 	Realm            string   `gae:"realm"`
+	Manufacturer     string   `gae:"manufacturer"`
 	// ufspb.Machine cannot be directly used as it contains pointer.
 	Machine []byte `gae:",noindex"`
 }
@@ -99,14 +100,19 @@ func newMachineEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEn
 	var buildTarget string
 	var deviceType string
 	var model string
+	var phase string
 	if p.GetChromeosMachine() != nil {
 		buildTarget = p.GetChromeosMachine().GetBuildTarget()
 		deviceType = p.GetChromeosMachine().GetDeviceType().String()
 		model = strings.ToLower(p.GetChromeosMachine().GetModel())
+		phase = p.GetChromeosMachine().GetPhase()
 	} else if p.GetAttachedDevice() != nil {
 		buildTarget = p.GetAttachedDevice().GetBuildTarget()
 		deviceType = p.GetAttachedDevice().GetDeviceType().String()
 		model = strings.ToLower(p.GetAttachedDevice().GetModel())
+		phase = strings.ToLower(p.GetAttachedDevice().GetPhase())
+	} else if p.GetServerMachine() != nil {
+		model = strings.ToLower(p.GetServerMachine().GetModel())
 	} else if p.GetDevboard() != nil {
 		deviceType = util.GetDevboardType(p.GetDevboard())
 	}
@@ -138,13 +144,14 @@ func newMachineEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEn
 		Model:            model,
 		BuildTarget:      buildTarget,
 		DeviceType:       deviceType,
-		Phase:            p.GetChromeosMachine().GetPhase(),
+		Phase:            phase,
 		Pool:             poolName,
 		SwarmingServer:   swarmingInstance,
 		Customer:         customer,
 		SecurityLevel:    securityLevel,
 		GPN:              p.GetChromeosMachine().GetGpn(),
 		Realm:            realm,
+		Manufacturer:     p.GetAttachedDevice().GetManufacturer(),
 	}, nil
 }
 
@@ -542,8 +549,10 @@ func GetMachineIndexedFieldName(input string) (string, error) {
 		field = "phase"
 	case util.GPNFilterName:
 		field = "gpn"
+	case util.ManufacturerFilterName:
+		field = "manufacturer"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for machine are serialnumber/kvm/kvmport/rpm/zone/rack/platform/tag/state/model/buildtarget(target)/devicetype/phase/gpn", input)
+		return "", status.Errorf(codes.InvalidArgument, "invalid field name %s - field name for machine are serialnumber/kvm/kvmport/rpm/zone/rack/platform/tag/state/model/buildtarget(target)/devicetype/phase/gpn/man", input)
 	}
 	return field, nil
 }

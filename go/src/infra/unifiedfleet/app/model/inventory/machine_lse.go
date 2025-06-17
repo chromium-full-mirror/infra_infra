@@ -122,6 +122,10 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		rpmType = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitType()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools()
 		hive = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive()
+	} else if p.GetAttachedDeviceLse() != nil {
+		pools = []string{p.GetAttachedDeviceLse().GetHostGroup()}
+	} else if p.GetAndroidHostLse() != nil {
+		pools = []string{p.GetAndroidHostLse().GetHostGroup()}
 	}
 
 	var os []string
@@ -129,6 +133,8 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		os = ufsds.GetOSIndex(p.GetChromeBrowserMachineLse().GetOsVersion().GetValue())
 	} else if p.GetAttachedDeviceLse() != nil {
 		os = ufsds.GetOSIndex(p.GetAttachedDeviceLse().GetOsVersion().GetValue())
+	} else if p.GetAndroidHostLse() != nil {
+		os = ufsds.GetOSIndex(p.GetAndroidHostLse().GetOsVersion().GetValue())
 	}
 
 	// Ownership config for browser bots

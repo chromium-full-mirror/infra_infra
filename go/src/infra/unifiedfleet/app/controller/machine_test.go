@@ -1761,7 +1761,7 @@ func TestListMachines(t *testing.T) {
 		t.Run("List Machines - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListMachines(ctx, 5, "", "invalid=mx-1", false, false)
 			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
+			assert.Loosely(t, err.Error(), should.ContainSubstring("invalid field name invalid"))
 		})
 
 		t.Run("List Machines - filter chromeplatform - happy path", func(t *ftt.Test) {
