@@ -150,7 +150,7 @@ const separator string = "/"
 
 // Namespace namespace to be set by clients in context metadata
 // This will be used to set the actual datastore namespace in the context
-var (
+const (
 	// OSNamespace os namespace to be set in client context metadata. OS data is stored in os namespace in the datastore.
 	OSNamespace = "os"
 	// BrowserNamespace browser namespace to be set in client context metadata. Browser data is stored in default namespace in the datastore.
@@ -158,6 +158,8 @@ var (
 	// OSPartnerNamespace partner namespace to be set in client context metadata. Partner data is stored in partner namespace in the datastore.
 	// This is expected to hold and be accessible to non-Google entities (subject to RPC and zone ACLs) working on ChromeOS.
 	OSPartnerNamespace = "os-partner"
+	// AndroidNamespace android namespace to be set in client context metadata. Android data is stored in android namespace in the datastore.
+	AndroidNamespace = "android"
 	// Namespace key in the incoming context metadata
 	Namespace = "namespace"
 )
@@ -167,6 +169,7 @@ var ClientToDatastoreNamespace = map[string]string{
 	BrowserNamespace:   "",                 // browser data is stored in default namespace
 	OSNamespace:        OSNamespace,        // os data in os namespace
 	OSPartnerNamespace: OSPartnerNamespace, // os partner data is in os partner namespace
+	AndroidNamespace:   AndroidNamespace,   // android data is in android namespace
 }
 
 // ValidClientNamespaceStr returns a valid str list for client namespace(set in incoming context metadata) strings.
@@ -221,6 +224,8 @@ func GetNamespaceFromCtx(ctx context.Context) string {
 		return OSNamespace
 	case outNs == OSPartnerNamespace || datastoreNs == OSPartnerNamespace:
 		return OSPartnerNamespace
+	case outNs == AndroidNamespace || datastoreNs == AndroidNamespace:
+		return AndroidNamespace
 	default:
 		return BrowserNamespace
 	}

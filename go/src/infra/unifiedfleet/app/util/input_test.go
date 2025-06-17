@@ -123,6 +123,10 @@ func TestGetIncomingCtxNamespace(t *testing.T) {
 		md := metadata.Pairs(Namespace, OSPartnerNamespace)
 		assert.Loosely(t, GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), should.Equal(OSPartnerNamespace))
 	})
+	ftt.Run("Test AndroidNamespace is set up", t, func(t *ftt.Test) {
+		md := metadata.Pairs(Namespace, AndroidNamespace)
+		assert.Loosely(t, GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), should.Equal(AndroidNamespace))
+	})
 }
 
 func TestDevicePhaseCoverage(t *testing.T) {
