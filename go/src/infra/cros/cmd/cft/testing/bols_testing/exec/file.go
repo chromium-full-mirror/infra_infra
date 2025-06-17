@@ -33,6 +33,9 @@ func verifyFileAPIs(ctx context.Context, logger *log.Logger, a *args, cl bols.Bo
 	if err := verifyRemoveFile(ctx, logger, a, cl); err != nil {
 		return err
 	}
+	if err := verifyDownloadFile(ctx, logger, a, cl); err != nil {
+		return err
+	}
 	if err := verifyGetDirInfo(ctx, logger, a, cl); err != nil {
 		return err
 	}
@@ -493,5 +496,54 @@ func verifyGetFileStat(ctx context.Context, logger *log.Logger, a *args, cl bols
 	}
 	logger.Println("verifyGetFileStat: File stat verification successful.")
 
+	return nil
+}
+
+func verifyDownloadFile(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient) (err error) {
+	logger.Println("verifyDownloadFile: Verifying DownloadFile API")
+
+	// 1. Define remote destination and test URL.
+	remoteTestDir := "/tmp/bols-testing-download"
+	testURL := "https://storage.googleapis.com/chromiumos-test-assets-public/enterprise/managed_printers.json"
+	expectedFileName := "managed_printers.json"
+	expectedRemotePath := filepath.Join(remoteTestDir, expectedFileName)
+
+	// 2. Defer cleanup of the remote directory.
+	defer func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if cleanupErr := removeDir(cleanupCtx, logger, a, cl, remoteTestDir, true); cleanupErr != nil {
+			logger.Printf("WARNING: failed to clean up remote directory %s: %v", remoteTestDir, cleanupErr)
+		}
+	}()
+
+	// 3. Construct and send the DownloadFile request.
+	req := &bols.DownloadFileRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(a.servodPort),
+			ContainerName: a.servodContainer,
+		},
+		Url:  testURL,
+		Dest: remoteTestDir,
+	}
+
+	logger.Printf("Sending DownloadFile request for URL %q to remote dir %q", testURL, remoteTestDir)
+	resp, err := cl.DownloadFile(ctx, req)
+	if err != nil {
+		return fmt.Errorf("DownloadFile RPC failed: %w", err)
+	}
+
+	// 4. Verify the response and that the file exists remotely.
+	if resp.GetFile() != expectedRemotePath {
+		return fmt.Errorf("DownloadFile response returned unexpected path: got %q, want %q", resp.GetFile(), expectedRemotePath)
+	}
+	logger.Printf("DownloadFile RPC successful, file reported at: %s", resp.GetFile())
+
+	statReq := &bols.GetFileStatRequest{Filepath: expectedRemotePath, StationId: req.StationId}
+	if _, err := cl.GetFileStat(ctx, statReq); err != nil {
+		return fmt.Errorf("GetFileStat failed for downloaded file %q: %w", expectedRemotePath, err)
+	}
+
+	logger.Println("verifyDownloadFile: verification was successful")
 	return nil
 }

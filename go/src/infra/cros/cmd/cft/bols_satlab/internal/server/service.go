@@ -189,8 +189,39 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 	return nil
 }
 
-func (s *service) DownloadFile(context.Context, *bols.DownloadFileRequest) (*bols.DownloadFileResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DownloadFile not implemented")
+func (s *service) DownloadFile(ctx context.Context, req *bols.DownloadFileRequest) (*bols.DownloadFileResponse, error) {
+	s.logger.Println("Receive DownloadFile Request for url", req.GetUrl())
+	containerName := req.GetStationId().GetContainerName()
+	destDir := req.GetDest()
+	url := req.GetUrl()
+	if destDir == "" || url == "" {
+		return nil, s.logAndReturnErr(errors.New("DownloadFile: destination directory, and URL are required"))
+	}
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: fail to create docker client: %w", err))
+	}
+
+	// Ensure destination directory exists.
+	if err := mkdirInContainer(ctx, c, containerName, destDir, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: failed to create destination directory %s: %w", destDir, err))
+	}
+
+	fileName := filepath.Base(url)
+	fullDestPath := filepath.Join(destDir, fileName)
+	args := []string{"curl", "-f", "-L", "-sS", "-o", fullDestPath}
+	for _, header := range req.GetHeaders() {
+		args = append(args, "-H", fmt.Sprintf("%s: %s", header.GetKey(), header.GetValue()))
+	}
+	args = append(args, url)
+
+	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: failed to execute curl: %w", err))
+	}
+
+	s.logger.Println("Served DownloadFile Request Successfully, file at", fullDestPath)
+	return &bols.DownloadFileResponse{File: fullDestPath}, nil
 }
 
 func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (*bols.RemoveFileResponse, error) {
