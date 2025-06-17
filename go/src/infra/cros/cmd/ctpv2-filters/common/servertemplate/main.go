@@ -8,7 +8,6 @@ package servertemplate
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -51,7 +50,6 @@ func startServer(flagSet *flag.FlagSet, executorGenerator ExecutorGeneratorFunc,
 	defer logFile.Close()
 
 	logger := common.NewLogger(logFile)
-	log.SetOutput(logger.Writer())
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
