@@ -675,6 +675,47 @@ func TestCreateMachineLSELabstation(t *testing.T) {
 	})
 }
 
+func TestCreateMachineLseAndroidHost(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ftt.Run("CreateMachineLSEAndroidHost", t, func(t *ftt.Test) {
+		t.Run("Create new AndroidHost machineLSE with existing machines", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name:         "machine-ah-1",
+				SerialNumber: "machine-ah-1-serial",
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+
+			machineLse1 := &ufspb.MachineLSE{
+				Hostname: "machinelse-ah-1",
+				Machines: []string{"machine-ah-1"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{},
+				},
+			}
+			resp, err := CreateMachineLSE(ctx, machineLse1, nil)
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.Match(machineLse1))
+			s, err := state.GetStateRecord(ctx, "hosts/machinelse-ah-1")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+			s, err = state.GetStateRecord(ctx, "machines/machine-ah-1")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
+
+			// Verify the change events
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-ah-1")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse"))
+		})
+	})
+}
+
 func TestUpdateMachineLSEDUT(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
