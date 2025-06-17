@@ -22,7 +22,7 @@ import "go.chromium.org/infra/unifiedfleet/api/v1/models/ownership.proto";
 // Machine refers to the devices or bare metal servers
 // which serves the tests directly.
 //
-// Next Tag: 16
+// Next Tag: 17
 message Machine {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/Machine"
@@ -51,6 +51,8 @@ message Machine {
         AttachedDevice attached_device = 11;
         // Development board, e.g., Andreiboard
         Devboard devboard = 13;
+        // Server machine running a host service
+        ServerMachine server_machine = 16;
     };
     // Record the last update timestamp of this machine (In UTC timezone)
     google.protobuf.Timestamp update_time = 6 [
@@ -166,7 +168,7 @@ enum ChromeOSDeviceType {
 
 // AttachedDevice refers to attached devices in the labs.
 //
-// Next Tag: 5
+// Next Tag: 13
 message AttachedDevice {
   // Manufacturer of the device. E.g. Apple, Samsung.
   string manufacturer = 1;
@@ -176,6 +178,42 @@ message AttachedDevice {
   string build_target = 3;
   // Model of the device aka product in some cases. E.g. Nexus One, GT-I9000
   string model = 4;
+
+  // The following fields are for Android lab use
+  // Eventually, they will be used for other devices and use cases
+  // Phase (eg. PVT, EVT)
+  string phase = 5;
+  // Revision (eg. 1.0, 1.1)
+  string revision = 6;
+  string chip_id = 7;
+  // Device IMEI
+  string imei1 = 8;
+  string imei2 = 9;
+  enum BatteryStatus {
+    BATTERY_STATUS_UNDEFINED = 0;
+    BATTERY_STATUS_PHYSICAL = 1;
+    BATTERY_STATUS_FAKE = 2;
+  }
+  BatteryStatus battery_status = 10;
+  // Storage info for the device
+  message Storage {
+    string manufacturer = 1;
+    // Storage capacity in bytes
+    int64 capacity = 2;
+  }
+  Storage storage = 11;
+  message SIM {
+    enum SIMType {
+      SIM_TYPE_UNDEFINED = 0;
+      SIM_TYPE_NONE = 1;
+      SIM_TYPE_PHYSICAL = 2;
+      SIM_TYPE_ESIM = 3;
+    }
+    repeated SIMType types = 1;
+    // eUICC ID
+    string eid = 12;
+  }
+  SIM sim = 12;
 }
 
 // AttachedDeviceType refers to the different types of device/machine in the
@@ -227,3 +265,24 @@ message Dragonclaw {
   // Fingerprint module ID.
   string fingerprint_id = 1;
 }
+
+// ServerMachine refers to a host device that connects to many testing devices.
+// For now, this only applies to Android lab which connects to many
+// AttachedDevice's
+//
+// Next Tag: 8
+message ServerMachine {
+  string model = 1;
+  // Disk capacity in bytes
+  int64 storage = 2;
+  // Amount of memory in bytes
+  int64 memory = 3;
+  string cpu_type = 4;
+  string drive_model = 5;
+  oneof device {
+    ChromeBrowserMachine chrome_browser_machine = 6;
+    AndroidHostMachine android_host_machine = 7;
+  }
+}
+
+message AndroidHostMachine {}

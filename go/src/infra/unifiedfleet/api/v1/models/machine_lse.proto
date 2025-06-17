@@ -27,12 +27,13 @@ import "go.chromium.org/infra/unifiedfleet/api/v1/models/hwid.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/secret.proto";
 import "go.chromium.org/infra/libs/skylab/inventory/device.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/ownership.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto";
 
 // MachineLSE is the Machine Lab Setup Environment.
 // It refers to the entity in the lab which has Machine(s) associated
 // with it. It also has other components associated with it.
 //
-// Next tag: 28
+// Next tag: 29
 message MachineLSE {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/MachineLSE"
@@ -60,6 +61,7 @@ message MachineLSE {
 
         // AttachedDeviceLSE refers to the attached device LSE to be tracked.
         AttachedDeviceLSE attached_device_lse = 20;
+        AndroidHostLSE android_host_lse = 28;
     }
     // The machines that this LSE is linked to. No machine is linked if it's empty.
     // A machine cannot be linked to multiple LSEs (no use case for now).
@@ -336,10 +338,10 @@ message ChromeOSServerLSE {
     int32 service_port = 2;
 }
 
-// AttachedDeviceLSE refers to the entity in either Chrome OS or Browser lab
-// which is a USB-device.
+// AttachedDeviceLSE refers to the entity in Chrome OS, Browser lab, or Android
+// lab which is a USB-device.
 //
-// Next Tag: 4
+// Next Tag: 8
 message AttachedDeviceLSE {
   // The OS version that is running in the attached device (if applicable). E.g.
   // Android 12, iOS 12.5.3.
@@ -351,6 +353,36 @@ message AttachedDeviceLSE {
   string associated_hostname = 2;
   // The port used of the device that the attached device is attached to.
   string associated_host_port = 3;
+
+  // The following fields are for Android lab use
+  string wlan_mac_address = 4;
+  // automatically set based on MachineHostLSE
+  string host_group = 5;
+  // ICCID associated with an SIM
+  string sim1 = 6;
+  string sim2 = 7;
+}
+
+// AndroidHostLSE refers to an entity which runs a host process.
+// For now, this is limited to the Omnilab host in Android lab
+//
+// Next Tag: 10
+message AndroidHostLSE {
+  OSVersion os_version = 1;
+  DHCPConfig dhcp_config = 2;
+  SwitchInterface switch_interface = 3;
+  // USB hub associated with the machine
+  enum USBHub {
+    USB_HUB_UNDEFINED = 0;
+    USB_HUB_PLUGGABLE = 1; // 14 device capacity
+    USB_HUB_THUNDERSYNC = 2; // 16 device capacity
+  }
+  USBHub usb_hub = 4;
+  string bios_version = 5;
+  string kernel_version = 6;
+  string host_group = 7;
+  repeated string devices = 8;
+  repeated AndroidHostPeripheral peripherals = 9;
 }
 
 // LogicalZone denotes a non-physical entity grouping

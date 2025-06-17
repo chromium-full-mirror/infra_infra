@@ -14,9 +14,10 @@ import "google/api/resource.proto";
 // For Browser machine, lab and rack are the only field to fill in.
 // The fine-grained location is mainly for OS machine as we care about rack,
 // row, shelf.
+//
+// Next Tag: 16
 message Location {
-  reserved 1;
-  reserved "lab";
+  reserved 1; // previous "lab" field
   // Each lab has many aisles.
   // This field refers to the aisle number/name in the lab.
   string aisle = 2;
@@ -52,8 +53,17 @@ message Location {
   int32 lab_id = 11;
 
   // Format: “Room_Name (City,Building,Floor)”. Lab is interchangeable with
-  // Room.
+  // Room. From Nlyte.
   string full_location_name = 12;
+
+  // Lab. Used by lab ops.
+  Lab lab = 13;
+
+  // City. Used by lab ops.
+  string city = 14;
+
+  // Building. Used by lab ops.
+  string building = 15;
 }
 
 // Lab refers to the different Labs under chrome org
@@ -182,4 +192,11 @@ enum Zone {
   // ZONE_SFP_83 - intentionally skipped, botched partner setup
   ZONE_SFP_84 = 98; // "sfp_84" // Zone for SfP assets for partner // Testhaus ID:84;
   ZONE_IAD65_BROWSER = 99; // "iad65_browser" // Zone for datacenter site IAD65
+  ZONE_AT1 = 100; // ATC
+  ZONE_AT2 = 101; // ATC
+  ZONE_AT3 = 102; // ATC
+  ZONE_AT4 = 103; // ATC
+  ZONE_AT5 = 104; // ATC & ACS
+  ZONE_FL1 = 105;
+  ZONE_FL2 = 106;
 }

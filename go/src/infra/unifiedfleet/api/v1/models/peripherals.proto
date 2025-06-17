@@ -234,3 +234,18 @@ message Drac {
     // State of the drac
     State resource_state = 13;
 }
+
+// Peripherals for Android hosts
+//
+// Next Tag: 5
+message AndroidHostPeripheral {
+  string name = 1;
+  string serial_number = 2;
+  enum PeripheralType {
+    PERIPHERAL_TYPE_UNDEFINED = 0;
+    PERIPHERAL_TYPE_THUNDERSYNC = 1;
+    PERIPHERAL_TYPE_MONSOON = 2;
+  }
+  PeripheralType peripheral_type = 3;
+  State resource_state = 4;
+}
