@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"slices"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -1034,8 +1035,9 @@ func validateMachineRegistration(ctx context.Context, machine *ufspb.Machine) er
 	errorMsg.WriteString(fmt.Sprintf("Cannot create machine %s:\n", machine.Name))
 	var nics []*ufspb.Nic
 	var drac *ufspb.Drac
-	if machine.GetChromeBrowserMachine() != nil {
-		// Only check serial number for browser machines. OS machines' serial number is auto-detected.
+	if machine.GetChromeBrowserMachine() != nil || machine.GetAttachedDevice() != nil {
+		// Only check serial number for browser machines and AttachedDevice.
+		// OS machines' serial number is auto-detected.
 		if err := validateUniqueSerial(ctx, machine.GetSerialNumber()); err != nil {
 			return err
 		}
@@ -1046,6 +1048,13 @@ func validateMachineRegistration(ctx context.Context, machine *ufspb.Machine) er
 	// Validate that corresponding asset exists for chromeos machine.
 	if machine.GetChromeosMachine() != nil {
 		resourcesNotFound = append(resourcesNotFound, GetAssetResource(machine.GetName()))
+	}
+
+	if machine.GetAttachedDevice() != nil {
+		sim := machine.GetAttachedDevice().GetSim()
+		if slices.Contains(sim.GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM) != (sim.GetEid() != "") {
+			return status.Errorf(codes.InvalidArgument, "SIM types must include ESIM if and only if SIM EID is set")
+		}
 	}
 
 	// Aggregate resources to check if machine already exists
@@ -1128,8 +1137,9 @@ func validateUpdateMachine(ctx context.Context, oldMachine *ufspb.Machine, machi
 			return err
 		}
 	}
-	// Only check serial number for browser machines. OS machines' serial number is auto-detected.
-	if machine.GetChromeBrowserMachine() != nil && oldMachine.GetSerialNumber() != machine.GetSerialNumber() {
+	// Only check serial number for browser machines and AttachedDevice.
+	// OS machines' serial number is auto-detected.
+	if (machine.GetChromeBrowserMachine() != nil || machine.GetAttachedDevice() != nil) && oldMachine.GetSerialNumber() != machine.GetSerialNumber() {
 		if err := validateUniqueSerial(ctx, machine.GetSerialNumber()); err != nil {
 			return err
 		}

@@ -339,6 +339,90 @@ func TestMachineRegistration(t *testing.T) {
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 		})
 
+		t.Run("Register AttachedDevice machine mismatch sim type and eid", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name: "machine-ad-1",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{
+						Sim: &ufspb.AttachedDevice_SIM{
+							Types: []ufspb.AttachedDevice_SIM_SIMType{ufspb.AttachedDevice_SIM_SIM_TYPE_PHYSICAL},
+							Eid:   "1234",
+						},
+					},
+				},
+			}
+			m, err := MachineRegistration(ctx, machine1)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, m, should.BeNil)
+
+			machine2 := &ufspb.Machine{
+				Name: "machine-ad-2",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{
+						Sim: &ufspb.AttachedDevice_SIM{
+							Types: []ufspb.AttachedDevice_SIM_SIMType{ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM},
+							Eid:   "",
+						},
+					},
+				},
+			}
+			m, err = MachineRegistration(ctx, machine2)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, m, should.BeNil)
+		})
+
+		t.Run("Register AttachedDevice machine with duplicated serial number", func(t *ftt.Test) {
+			existingMachine := &ufspb.Machine{
+				Name:         "machine-ad-with-duplicated-serial",
+				SerialNumber: "duplicated_serial_ad",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+			}
+			_, err := MachineRegistration(ctx, existingMachine)
+			assert.NoErr(t, err)
+
+			machine := &ufspb.Machine{
+				Name:         "machine-ad-123",
+				SerialNumber: "duplicated_serial_ad",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+			}
+			_, err = MachineRegistration(ctx, machine)
+			assert.ErrIsLike(t, err, "contains the same serial number")
+
+			// No changes are recorded as the registration fails
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-ad-123")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
+		})
+
+		t.Run("Register AttachedDevice machine happy path", func(t *ftt.Test) {
+			machine := &ufspb.Machine{
+				Name: "machine-ad-3",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{
+						Sim: &ufspb.AttachedDevice_SIM{
+							Types: []ufspb.AttachedDevice_SIM_SIMType{ufspb.AttachedDevice_SIM_SIM_TYPE_PHYSICAL, ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM},
+							Eid:   "1234",
+						},
+					},
+				},
+			}
+			m, err := MachineRegistration(ctx, machine)
+			assert.NoErr(t, err)
+			assert.Loosely(t, m, should.NotBeNil)
+			assert.Loosely(t, m, should.Match(machine))
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-ad-3")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
+		})
+
 		t.Run("Register machine - permission denied: same realm and no create permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-4",
@@ -436,6 +520,42 @@ func TestUpdateMachine(t *testing.T) {
 			_, err = UpdateMachine(ctx, machineToUpdate, nil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("contains the same serial number"))
+		})
+
+		t.Run("Update AttachedDevicemachine with existing resources, but duplicated serial", func(t *ftt.Test) {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
+			machine1 := &ufspb.Machine{
+				Name:         "machine-ad-update-with-duplicated-serial-1",
+				SerialNumber: "update-duplicated-serial-ad-1",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+				Realm: util.BrowserLabAdminRealm,
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+
+			machine2 := &ufspb.Machine{
+				Name:         "machine-ad-update-with-duplicated-serial-2",
+				SerialNumber: "update-duplicated-serial-ad-2",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+				Realm: util.BrowserLabAdminRealm,
+			}
+			_, err = registration.CreateMachine(ctx, machine2)
+			assert.NoErr(t, err)
+
+			machineToUpdate := &ufspb.Machine{
+				Name:         "machine-ad-update-with-duplicated-serial-1",
+				SerialNumber: "update-duplicated-serial-ad-2",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+				Realm: util.BrowserLabAdminRealm,
+			}
+			_, err = UpdateMachine(ctx, machineToUpdate, nil)
+			assert.ErrIsLike(t, err, "contains the same serial number")
 		})
 
 		t.Run("Update machine with existing resources", func(t *ftt.Test) {
