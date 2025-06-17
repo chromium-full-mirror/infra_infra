@@ -25,17 +25,19 @@ PROPERTIES = {
 
 
 def RunSteps(api, out_path):
-  api.path.checkout_dir = api.path.cache_dir.joinpath('builder', 'src')
+  api.path.checkout_dir = api.path.cache_dir.joinpath('builder')
   api.codesearch.set_config(
       'chromium', PROJECT='chromium', CORPUS='test-corpus')
   api.codesearch.c.out_path = out_path
-  api.codesearch.run_rust_project_extractor(checkout_dir=api.path.checkout_dir)
+  api.codesearch.run_rust_project_extractor(
+      source_dir=api.path.checkout_dir.joinpath('src'))
 
 
 def GenTests(api):
   yield api.test(
       'basic',
-      api.properties(out_path=api.path.checkout_dir.joinpath('out', 'linux-Debug')),
+      api.properties(
+          out_path=api.path.checkout_dir.joinpath('src', 'out', 'linux-Debug')),
       api.post_process(
           StepCommandContains,
           'extract Rust kzips',
@@ -73,7 +75,7 @@ def GenTests(api):
   yield api.test(
       'bad_out_path_wrong_parent',
       api.properties(
-          out_path=api.path.checkout_dir.joinpath('not_out', 'Debug')),
+          out_path=api.path.checkout_dir.joinpath('src', 'not_out', 'Debug')),
       api.expect_exception('AssertionError'),
       api.post_process(
           SummaryMarkdownRE,
@@ -84,7 +86,7 @@ def GenTests(api):
 
   yield api.test(
       'bad_out_path_missing_parent',
-      api.properties(out_path=api.path.checkout_dir.joinpath('Debug')),
+      api.properties(out_path=api.path.checkout_dir.joinpath('src', 'Debug')),
       api.expect_exception('AssertionError'),
       api.post_process(SummaryMarkdownRE,
                        'Expected parent of output root to be out/ but got ""'),
@@ -97,7 +99,7 @@ def GenTests(api):
       api.properties(out_path=api.path.cache_dir),
       api.expect_exception('AssertionError'),
       api.post_process(SummaryMarkdownRE,
-                       'Expected output root to be child of checkout dir'),
+                       'Expected output root to be child of source dir'),
       api.post_process(StatusException),
       api.post_process(DropExpectation),
   )

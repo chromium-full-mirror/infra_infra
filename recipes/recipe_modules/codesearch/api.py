@@ -98,14 +98,14 @@ class CodesearchApi(recipe_api.RecipeApi):
       self._kythe_dir = packages_root / 'kythe'
     return self._kythe_dir
 
-  def run_rust_project_extractor(self, checkout_dir: config_types.Path):
+  def run_rust_project_extractor(self, source_dir: config_types.Path):
     """Runs the kythe rust-project.json extractor.
     """
     # Always expect the outdir to be like src/out/Default
     # where the source root is src/
-    out_relative = self.m.path.relpath(self.c.out_path, checkout_dir)
+    out_relative = self.m.path.relpath(self.c.out_path, source_dir)
     assert '..' not in out_relative, (
-        'Expected output root to be child of checkout dir')
+        'Expected output root to be child of source dir')
     out_root, out_name = self.m.path.split(out_relative)
     assert out_root == 'out', ('Expected parent of output root to be out/ '
                                'but got "%s"' % out_root)

@@ -467,7 +467,7 @@ adequate, as the merge will be performed as a discrete serial step.
 Args:
   kzip_inputs: Paths to kzip files to merge.
 
-&mdash; **def [run\_rust\_project\_extractor](/recipes/recipe_modules/codesearch/api.py#101)(self, checkout_dir: config_types.Path):**
+&mdash; **def [run\_rust\_project\_extractor](/recipes/recipe_modules/codesearch/api.py#101)(self, source_dir: config_types.Path):**
 
 Runs the kythe rust-project.json extractor.
     
