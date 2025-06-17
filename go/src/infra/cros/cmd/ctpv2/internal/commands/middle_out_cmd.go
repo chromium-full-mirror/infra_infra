@@ -897,17 +897,32 @@ func filterToRelevantTests(ctx context.Context, testSet map[string]bool, durs ma
 	return testsWeCareAbout
 }
 
-// shard will divide the list into a list of lists where each item in the list length of maxInShard
+// shard will divide the list into a list of lists where each item in the list length not to exceed maxInShard while balance the test count.
 // eg: [1,2,3,4], maxInShard=2 --> [[1,2], [3,4]]
+// eg: [1,2,3,4,5], maxInShard=4 -> [[1,2,3], [4,5]] not [[1,2,3,4], [5]]
 func shard(alltests []string, maxInShard int) (shards [][]string) {
 	harnessBuckets := bucketByHarness(alltests)
 
 	for _, tests := range harnessBuckets {
 
-		for maxInShard < len(tests) {
-			tests, shards = tests[maxInShard:], append(shards, tests[0:maxInShard:maxInShard])
+		// Ceiling division without float.
+		numShards := (len(tests)-1)/maxInShard + 1
+
+		baseSize := len(tests) / numShards
+		remainder := len(tests) % numShards
+
+		start := 0
+		for range numShards {
+			shardSize := baseSize
+			// Put 1 more item on earlier shards.
+			if remainder > 0 {
+				shardSize++
+				remainder--
+			}
+			end := start + shardSize
+			shards = append(shards, tests[start:end])
+			start = end
 		}
-		shards = append(shards, tests)
 	}
 
 	return shards
