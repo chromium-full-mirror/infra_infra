@@ -436,6 +436,14 @@ func (c *addLabstation) initializeLSEAndAsset(recMap map[string]string) (*labsta
 		pools = c.pools
 	}
 
+	// Check board and model.
+	if board == "" {
+		return nil, fmt.Errorf("board is required: please provide -board or ensure the input file has a non-empty 'board' field")
+	}
+	if model == "" {
+		return nil, fmt.Errorf("model is required: please provide -model or ensure the input file has a non-empty 'model' field")
+	}
+
 	// Check if machine is nil.
 	if len(machines) == 0 || machines[0] == "" {
 		return nil, fmt.Errorf("Cannot create labstation without asset")
