@@ -168,7 +168,7 @@ func setNetwork(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message
 	names := make([]string, len(msgs))
 	entityMap := make(map[string]*ufspb.Drac, len(msgs))
 	for i, r := range msgs {
-		if drac := r.(*ufspb.Drac); drac == nil {
+		if drac := r.(*ufspb.Drac); drac != nil {
 			entities[i] = drac
 			entities[i].Name = ufsUtil.RemovePrefix(drac.Name)
 			names[i] = drac.GetName()

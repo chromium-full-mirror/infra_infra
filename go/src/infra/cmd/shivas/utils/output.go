@@ -719,7 +719,7 @@ func dracFullOutputStrs(m *ufspb.Drac) []string {
 	if t, err := ptypes.Timestamp(m.GetUpdateTime()); err == nil {
 		ts = t.Local().Format(timeFormat)
 	}
-	name := ufsUtil.RemovePrefix(m.Name)
+	name := ufsUtil.RemovePrefix(m.GetName())
 	return []string{
 		name,
 		m.GetMacAddress(),
