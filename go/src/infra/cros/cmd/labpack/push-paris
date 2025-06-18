@@ -1,28 +1,42 @@
 #!/bin/bash -e
 
-instance=chromiumos/infra/labpack/linux-amd64
+labpackInstance=chromiumos/infra/labpack/linux-amd64
+parisInstance=experimental/infra/paris/linux-amd64
+
 
 function get_instance_id() {
-	echo $(cipd describe -version $1 $instance | awk -F ': +' '/Instance ID:/{print $2}')
+	echo $(cipd describe -version $2 $1 | awk -F ': +' '/Instance ID:/{print $2}')
 }
 function get_git_revision() {
-	echo $(cipd describe -version $1 $instance | awk -F ':' '/git_revision/{print $2; exit}')
+	echo $(cipd describe -version $2 $1 | awk -F ':' '/git_revision/{print $2; exit}')
 }
 function get_data() {
-	echo $(get_instance_id $1) $(get_git_revision $1)
+	echo $(get_instance_id $1 $2) $(get_git_revision $1 $2)
 }
 
-echo "Get the latest CIPD and git information..."
-read latest_id latest_git < <(get_data "latest")
-read prod_id prod_git < <(get_data "prod")
+echo "Get the latest labpack CIPD and git information..."
+read labpack_latest_id lapback_latest_git < <(get_data $labpackInstance "latest")
+read labpack_prod_id labpack_prod_git < <(get_data $labpackInstance "prod")
 
 git fetch origin main
-changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- . ../../recovery)
+labpack_changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- . ../../recovery)
+
+
+echo "Get the latest paris CIPD and git information..."
+read paris_latest_id paris_latest_git < <(get_data $parisInstance "latest")
+read paris_prod_id paris_prod_git < <(get_data $parisInstance "prod")
+
+git fetch origin main
+paris_changelist=$(git log refs/remotes/origin/main --oneline ${paris_prod_git}..${paris_latest_git} -- . ../../cmd/paris)
+
 
 cat <<EOF
 The push will includes below changes:
 
-$changelist
+$labpack_changelist
+
+$paris_changelist
+
 
 Are they good? [y/n]
 EOF
@@ -34,8 +48,10 @@ if [[ "${confirm}" != "y" ]]; then
 	exit 1
 fi
 
-cipd set-ref -ref prev-prod -version prod ${instance}
-cipd set-ref -ref prod -version ${latest_id} ${instance}
+cipd set-ref -ref prev-prod -version prod ${labpackInstance}
+cipd set-ref -ref prod -version ${labpack_latest_id} ${labpackInstance}
+cipd set-ref -ref prev-prod -version prod ${parisInstance}
+cipd set-ref -ref prod -version ${paris_latest_id} ${parisInstance}
 
 cat <<EOF
 Don't forget to send out an announcement!
