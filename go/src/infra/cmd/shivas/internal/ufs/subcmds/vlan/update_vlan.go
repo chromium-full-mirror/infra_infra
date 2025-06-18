@@ -106,13 +106,13 @@ func (c *updateVlan) innerRun(a subcommands.Application, args []string, env subc
 	res, err := ic.UpdateVlan(ctx, &ufsAPI.UpdateVlanRequest{
 		Vlan: &vlan,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"desc":         "description",
-			"state":        "resourceState",
-			"reserved_ips": "reserved_ips",
-			"zone":         "zones",
-			"start-ip":     "free_start_ip",
-			"end-ip":       "free_end_ip",
-			"tag":          "tags",
+			"desc":         ufsUtil.DescriptionPath,
+			"state":        ufsUtil.ResourceStatePath,
+			"reserved_ips": ufsUtil.ReservedIpsPath,
+			"zone":         ufsUtil.ZonesPath,
+			"start-ip":     ufsUtil.FreeStartIpPath,
+			"end-ip":       ufsUtil.FreeEndIpPath,
+			"tag":          ufsUtil.TagsPath,
 		}),
 	})
 	if err != nil {

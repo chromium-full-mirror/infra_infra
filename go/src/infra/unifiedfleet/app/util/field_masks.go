@@ -5,7 +5,14 @@
 package util
 
 // Valid Field Paths for Field Mask
-// New field paths should follow: go/proto-field-mask
+//
+// New field paths should generally follow: go/proto-field-mask
+// In theory, the constant value should be the proto field name in snake case,
+// including any nested proto fields. In practice, most of these constant values
+// are the shortest non-ambiguous representation for a given proto field.
+//
+// Some efforts have been made to standardize these field paths.
+// Try to avoid non-standard field paths for new use cases.
 
 const (
 	// Common
@@ -24,7 +31,7 @@ const (
 	PlatformPath          string = "platform"
 	PortNamePath          string = "portName"
 	RackPath              string = "rack"
-	ResourceStatePath     string = "resourceState"
+	ResourceStatePath     string = "resource_state"
 	SerialNumberPath      string = "serial_number"
 	SerialNumberCamelPath string = "serialNumber"
 	SwitchPath            string = "switch"
@@ -35,6 +42,8 @@ const (
 	ZonePath              string = "zone"
 	ZonesPath             string = "zones"
 	ZonesRemovePath       string = "zones.remove"
+	// Non-standard
+	ResourceStateCamelPath string = "resourceState"
 
 	// Location
 	LocationAislePath       string = "location.aisle"
@@ -172,10 +181,12 @@ const (
 	DisplayNamePath string = "displayName"
 
 	// Vlan
-	CidrBlockPath   string = "cidr_block"
+	VlanAddressPath string = "vlan_address"
 	FreeEndIpPath   string = "free_end_ip"
 	FreeStartIpPath string = "free_start_ip"
 	ReservedIpsPath string = "reserved_ips"
+	// Non-standard
+	CidrBlockPath string = "cidr_block"
 
 	// DefaultWifi
 	WifiSecretProjectIdPath  string = "wifi_secret.project_id"

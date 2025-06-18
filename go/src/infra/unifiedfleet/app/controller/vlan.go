@@ -480,26 +480,30 @@ func validateVlanUpdateMask(ctx context.Context, vlan *ufspb.Vlan, mask *field_m
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateVlanUpdateMask - name cannot be updated, delete and create a new vlan instead")
-			case "update_time":
+			case util.VlanAddressPath:
+				fallthrough
+			case util.CidrBlockPath:
+				return status.Error(codes.InvalidArgument, "validateVlanUpdateMask - cidr_block/vlan_address cannot be updated, delete and create a new vlan instead")
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateVlanUpdateMask - update_time cannot be updated, it is a Output only field")
-			case "description":
-			case "resourceState":
-			case "cidr_block":
-				return status.Error(codes.InvalidArgument, "validateVlanUpdateMask - cidr_block cannot be updated, delete and create a new vlan instead")
-			case "tags":
+			case util.DescriptionPath:
+			case util.ResourceStateCamelPath:
+				fallthrough
+			case util.ResourceStatePath:
+			case util.TagsPath:
 				// valid fields, nothing to validate.
-			case "reserved_ips":
-			case "zones":
-			case "free_start_ip":
+			case util.ReservedIpsPath:
+			case util.ZonesPath:
+			case util.FreeStartIpPath:
 				if err := validateFreeIPV4Str(vlan.FreeStartIpv4Str); err != nil {
 					return err
 				}
 				if err := validateIPV4Range(vlan.FreeStartIpv4Str, vlan.FreeEndIpv4Str); err != nil {
 					return err
 				}
-			case "free_end_ip":
+			case util.FreeEndIpPath:
 				if err := validateFreeIPV4Str(vlan.FreeEndIpv4Str); err != nil {
 					return err
 				}
@@ -521,20 +525,22 @@ func processVlanUpdateMask(oldVlan *ufspb.Vlan, vlan *ufspb.Vlan, mask *field_ma
 	// update the fields in the existing/old vlan
 	for _, path := range mask.Paths {
 		switch path {
-		case "description":
+		case util.DescriptionPath:
 			oldVlan.Description = vlan.GetDescription()
-		case "resourceState":
+		case util.ResourceStateCamelPath:
+			fallthrough
+		case util.ResourceStatePath:
 			oldVlan.ResourceState = vlan.GetResourceState()
-		case "reserved_ips":
+		case util.ReservedIpsPath:
 			oldVlan.ReservedIps = mergeIPs(oldVlan.ReservedIps, vlan.GetReservedIps())
-		case "zones":
+		case util.ZonesPath:
 			oldVlan.Zones = mergeZones(oldVlan.GetZones(), vlan.GetZones())
 			setRealmForVlan(oldVlan)
-		case "free_start_ip":
+		case util.FreeStartIpPath:
 			oldVlan.FreeStartIpv4Str = vlan.FreeStartIpv4Str
-		case "free_end_ip":
+		case util.FreeEndIpPath:
 			oldVlan.FreeEndIpv4Str = vlan.FreeEndIpv4Str
-		case "tags":
+		case util.TagsPath:
 			oldVlan.Tags = mergeTags(oldVlan.GetTags(), vlan.GetTags())
 		}
 	}

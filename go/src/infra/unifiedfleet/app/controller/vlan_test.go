@@ -251,8 +251,7 @@ func TestUpdateVlan(t *testing.T) {
 		t.Run("Update vlan - partial update invalid fields", func(t *ftt.Test) {
 			resp, err := UpdateVlan(ctx, mockVlan("update-vlan-0", "2.2.2.2/22"), &field_mask.FieldMask{Paths: []string{"cidr_block"}})
 			assert.Loosely(t, resp, should.BeNil)
-			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring("cidr_block cannot be updated"))
+			assert.ErrIsLike(t, err, "cidr_block/vlan_address cannot be updated")
 		})
 
 		t.Run("Update vlan - fully update cidr_block won't work", func(t *ftt.Test) {
