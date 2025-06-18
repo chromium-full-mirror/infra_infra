@@ -29,10 +29,11 @@ var (
 	PreProcessFilterContainerName        = "pre_process_filter"
 	AutoVMTestShifterFilterContainerName = "autovm_test_shifter_filter"
 	PartnerStagingContainerName          = "partner-staging"
+	LsNexusFilterContainerName           = "lsnexus-filter"
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, LsNexusFilterContainerName}
 )
 
 type FilterAuthInterface interface {

@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -165,13 +164,8 @@ func extractList(req map[string]*anypb.Any, key string) ([]*structpb.Value, erro
 
 func extractDUTTo(req map[string]*anypb.Any, key string, to *labapi.Dut) error {
 	if untyped, ok := req[key]; ok {
-		val := structpb.Value{}
-		if err := untyped.UnmarshalTo(&val); err != nil {
+		if err := untyped.UnmarshalTo(to); err != nil {
 			return err
-		}
-		dutEncoded := val.GetStringValue()
-		if err := protojson.Unmarshal([]byte(dutEncoded), to); err != nil {
-			return fmt.Errorf("failed to unmarshall dut topology: %w", err)
 		}
 	}
 	return nil
