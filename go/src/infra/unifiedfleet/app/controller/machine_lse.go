@@ -89,6 +89,10 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 		// The browser machine lse
 		logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating the ChromeBrowserMachineLSE", x)
 		return createBrowserServer(ctx, machinelse, nwOpt)
+	case *ufspb.MachineLSE_AttachedDeviceLse:
+		// The attached device machine lse
+		logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating the AttachedDeviceMachineLSE", x)
+		return createAttachedDeviceLSE(ctx, machinelse)
 	case *ufspb.MachineLSE_AndroidHostLse:
 		// The android host machine lse
 		logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating the AndroidHostLse", x)
@@ -191,6 +195,60 @@ func createBrowserServer(ctx context.Context, lse *ufspb.MachineLSE, nwOpt *ufsA
 			}
 			hc.LogMachineLSEDeploymentChanges(lseDrCopy, lseDr)
 		}
+
+		if err := hc.stUdt.addLseStateHelper(ctx, lse, machine); err != nil {
+			return errors.Annotate(err, "Fail to update host state").Err()
+		}
+		return hc.SaveChangeEvents(ctx)
+	}
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		logging.Errorf(ctx, "createBrowserServers: %s", err)
+		return nil, err
+	}
+	return lse, nil
+}
+
+func createAttachedDeviceLSE(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.MachineLSE, error) {
+	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Creating attached device. Hostname: %s", lse.Hostname)
+		hc := getHostHistoryClient(lse)
+		machinelses := []*ufspb.MachineLSE{lse}
+
+		// Get machine to get zone and rack info for machinelse table indexing
+		machine, err := GetMachine(ctx, lse.GetMachines()[0])
+		if err != nil {
+			return errors.Annotate(err, "unable to get machine %s", lse.GetMachines()[0]).Err()
+		}
+		// Validate input
+		if err := validateCreateMachineLSE(ctx, lse, nil, machine); err != nil {
+			return errors.Annotate(err, "Validation error - Failed to create MachineLSE").Err()
+		}
+
+		// Copy for logging
+		oldMachine := proto.Clone(machine).(*ufspb.Machine)
+		machine.ResourceState = ufspb.State_STATE_SERVING
+		// Fill the rack/zone OUTPUT only fields for indexing machinelse table/vm table
+		setOutputField(ctx, machine, lse)
+		lse.ResourceState = ufspb.State_STATE_REGISTERED
+
+		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
+			return errors.Annotate(err, "Fail to update machine %s", machine.GetName()).Err()
+		}
+		hc.LogMachineChanges(oldMachine, machine)
+		if _, err := inventory.BatchUpdateMachineLSEs(ctx, machinelses); err != nil {
+			return errors.Annotate(err, "Failed to BatchUpdate MachineLSEs %s", lse.Name).Err()
+		}
+		hc.LogMachineLSEChanges(nil, lse)
+
+		// Create corresponding device labels
+		deviceLabels, err := GetMachineLSELabels(ctx, lse)
+		if err != nil {
+			return errors.Annotate(err, "unable to generate device labels").Err()
+		}
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
+		hc.LogDeviceLabelsChanges(nil, deviceLabels)
 
 		if err := hc.stUdt.addLseStateHelper(ctx, lse, machine); err != nil {
 			return errors.Annotate(err, "Fail to update host state").Err()
