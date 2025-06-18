@@ -50,7 +50,6 @@ type localManifestBrancher struct {
 	chromeosCheckoutPath string
 	minMilestone         int
 	specificBranches     []string
-	projectList          string
 	projects             []string
 	push                 bool
 	workerCount          int
@@ -159,11 +158,6 @@ func (b *localManifestBrancher) Run(a subcommands.Application, args []string, en
 	}
 
 	return 0
-}
-
-type projectInfo struct {
-	name string
-	path string
 }
 
 type firestoreClient interface {

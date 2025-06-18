@@ -13,7 +13,6 @@ import (
 	"time"
 
 	lgs "go.chromium.org/luci/common/gcloud/gs"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	"go.chromium.org/infra/cros/internal/assert"
 	gerrit "go.chromium.org/infra/cros/internal/gerrit"
@@ -59,10 +58,6 @@ const (
 </manifest>`
 )
 
-var (
-	application = GetApplication(chromeinfra.DefaultAuthOptions())
-)
-
 type testConfig struct {
 	projects   map[string][]string
 	otherRepos []string
@@ -70,7 +65,6 @@ type testConfig struct {
 	buildspecs                   map[string]bool
 	branches                     []string
 	buildspecsExists             bool
-	expectedForce                bool
 	watchPaths                   map[string][]string
 	allProjects                  []string
 	noLocalManifestProjects      []string

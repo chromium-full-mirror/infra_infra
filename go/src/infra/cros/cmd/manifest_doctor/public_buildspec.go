@@ -214,6 +214,11 @@ func (b *publicBuildspec) CreatePublicBuildspecs(ctx context.Context, gsClient g
 					continue
 				}
 				buildspec, err = repo.ParseManifest(buildspecData)
+				if err != nil {
+					LogErr(errors.Annotate(err, "failed to parse repo manifest for buildspec %s", internalBuildspec).Err().Error())
+					errs = append(errs, err)
+					continue
+				}
 			}
 			if err != nil {
 				LogErr(errors.Annotate(err, "failed to load internal buildspec %s", internalBuildspec).Err().Error())

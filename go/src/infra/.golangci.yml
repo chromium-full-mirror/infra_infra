@@ -206,7 +206,6 @@ linters:
           cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/categoryFlattener.go|\
           cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/ttcp_classes_category_generator/main.go|\
           cros/cmd/lucifer/internal/abortsock/abortsock_test.go|\
-          cros/cmd/manifest_doctor/public_buildspec.go|\
           cros/cmd/provision/cros-fw-provision/service/firmwareservice.go|\
           cros/cmd/upload_debug_symbols/builder.go|\
           cros/internal/branch/helper.go|\
@@ -319,8 +318,6 @@ linters:
           cros/cmd/ipcpubsub/internal/cmd/common.go|\
           cros/cmd/k8s-management/app-roller/main_test.go|\
           cros/cmd/lucifer/audittask.go|\
-          cros/cmd/manifest_doctor/branch_local_manifest.go|\
-          cros/cmd/manifest_doctor/per_project_buildspec_test.go|\
           cros/cmd/paris/internal/tasks/local_recovery.go|\
           cros/cmd/phosphorus/internal/cmd/upload-to-gs.go|\
           cros/cmd/phosphorus/internal/skylab_local_state/cmd/save.go|\
