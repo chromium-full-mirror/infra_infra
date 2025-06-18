@@ -578,3 +578,41 @@ func deviceSerial(dut *labapi.Dut) (string, error) {
 	// Currently, we assume chromeos device serial is always <ip>:5555.
 	return fmt.Sprintf("%s:5555", crosSSH.Address), nil
 }
+
+// Returns a list of all lsnexus endpoints in a request, both companion and primary.
+func LSNexus(req *api.CrosTestRequest) map[string]string {
+	addresses := make(map[string]string)
+	if req.GetPrimary().GetLsnexusServer() != nil &&
+		req.GetPrimary().GetDut().GetChromeos().GetServo() != nil &&
+		req.GetPrimary().GetDut().GetChromeos().GetServo().GetState() != labapi.PeripheralState_BROKEN {
+		a := lsnexusKey(req.GetPrimary().GetDut().GetChromeos().GetSsh())
+		if a != "" {
+			addresses[a] = address(req.GetPrimary().GetLsnexusServer())
+		}
+	}
+	for _, c := range req.GetCompanions() {
+		if c.GetLsnexusServer() == nil ||
+			c.GetDut().GetChromeos().GetServo() == nil ||
+			c.GetDut().GetChromeos().GetServo().GetState() == labapi.PeripheralState_BROKEN {
+			continue
+		}
+		a := lsnexusKey(c.GetDut().GetChromeos().GetSsh())
+		if a != "" {
+			addresses[a] = address(c.GetLsnexusServer())
+		}
+	}
+	return addresses
+}
+
+func lsnexusKey(endPoint *labapi.IpEndpoint) string {
+	a := fmt.Sprintf("lsnexus_%s", endPoint.GetAddress())
+	return a
+}
+
+func address(endPoint *labapi.IpEndpoint) string {
+	a := endPoint.GetAddress()
+	if endPoint.GetPort() != 0 {
+		a = fmt.Sprintf("%s:%d", a, endPoint.GetPort())
+	}
+	return a
+}

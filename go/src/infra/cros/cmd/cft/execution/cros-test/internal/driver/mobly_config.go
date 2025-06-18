@@ -171,7 +171,8 @@ type ConfigParams struct {
 	StarfishParams paramMap
 }
 
-func NewMoblyConfig(logger *log.Logger, serials []string, metadata []*api.Arg, devices []*labapi.Dut) *MoblyTestConfig {
+func NewMoblyConfig(logger *log.Logger, serials []string, metadata []*api.Arg,
+	devices []*labapi.Dut, lsnexues map[string]string) *MoblyTestConfig {
 	logger.Println("Generating Mobly Test Config")
 	for _, arg := range metadata {
 		logger.Println(arg.Flag, arg.Value)
@@ -196,6 +197,9 @@ func NewMoblyConfig(logger *log.Logger, serials []string, metadata []*api.Arg, d
 		for k, v := range d.params {
 			logger.Println(d, k, v)
 		}
+	}
+	for k, v := range lsnexues {
+		configParams.TestParams[k] = v
 	}
 
 	Controllers := &Controllers{

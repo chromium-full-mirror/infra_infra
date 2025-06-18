@@ -34,7 +34,7 @@ func getTestRunner() string {
 
 func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestCaseMetadata,
 	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
-	servo *labapi.Servo) []string {
+	servo *labapi.Servo, lsnexus *labapi.IpEndpoint) []string {
 
 	cmd := []string{getTestRunner()}
 
@@ -217,6 +217,13 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		cmd = append(cmd,
 			"--invocation-data", fmt.Sprintf("servo.host=%s", servo.ServodAddress.Address),
 			"--invocation-data", fmt.Sprintf("servo.port=%d", servo.ServodAddress.Port),
+		)
+	}
+
+	if lsnexus != nil && servo != nil && servo.GetState() != labapi.PeripheralState_BROKEN {
+		cmd = append(cmd,
+			"--invocation-data", fmt.Sprintf("lsnexus_primary.host=%s", lsnexus.GetAddress()),
+			"--invocation-data", fmt.Sprintf("lsnexus_primary.port=%d", lsnexus.GetPort()),
 		)
 	}
 

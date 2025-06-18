@@ -118,7 +118,7 @@ func detectTestType(tests []*api.TestCaseMetadata) string {
 
 func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestCaseMetadata,
 	serials []string, resultsPath string, metadata *api.ExecutionMetadata, board string, args map[string][]string,
-	model string, servo *labapi.Servo) error {
+	model string, servo *labapi.Servo, lsnexus *labapi.IpEndpoint) error {
 
 	for _, s := range serials {
 		// TODO(b/393175524): Switch back to SetupAdb() after we understand the
@@ -173,13 +173,13 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 	baseArgs := []string{"run", "commandAndExit"}
 	if isNonXtsTest(testType) {
 		baseArgs = append(baseArgs, BuildNonXtsTestCommand(logger, testType, tests,
-			serials, metadata, board, args, model, servo)...)
+			serials, metadata, board, args, model, servo, lsnexus)...)
 	} else if testType == "custom" {
 		baseArgs = append(baseArgs, BuildCustomTestCommand(logger, testType, tests,
-			serials, metadata, board, args, model, servo)...)
+			serials, metadata, board, args, model, servo, lsnexus)...)
 	} else {
 		baseArgs = append(baseArgs, BuildXtsTestCommand(logger, testType, tests,
-			serials, metadata, board, args, model, servo)...)
+			serials, metadata, board, args, model, servo, lsnexus)...)
 	}
 	cmd = exec.Command(getTradefedBinary(), baseArgs...)
 
@@ -214,7 +214,7 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 		chromeOS.GetDutModel().GetBuildTarget(),
 		getArgs(req),
 		chromeOS.GetDutModel().GetModelName(),
-		chromeOS.GetServo())
+		chromeOS.GetServo(), req.GetPrimary().GetLsnexusServer())
 
 	var results *api.CrosTestResponse
 	var artifacts []string

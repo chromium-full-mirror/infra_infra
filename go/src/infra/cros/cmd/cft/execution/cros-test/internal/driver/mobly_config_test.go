@@ -231,6 +231,8 @@ var fullConfig = MoblyTestConfig{
 			TestParams: &TestParams{
 				Params: paramMap{
 					"foo": "bar", "foo2": "bar2",
+					"lsnexus_device1":              "lsnexus_primary",
+					"lsnexus_companiondevice":      "lsnexus_companion_1:2345",
 					"passport_switch_service_host": "10.0.0.2",
 					"passport_switch_service_port": "12345",
 				},
@@ -244,6 +246,8 @@ var fullConfigYaml = `TestBeds:
   TestParams:
     foo: bar
     foo2: bar2
+    lsnexus_companiondevice: lsnexus_companion_1:2345
+    lsnexus_device1: lsnexus_primary
     passport_switch_service_host: 10.0.0.2
     passport_switch_service_port: "12345"
   Controllers:
@@ -380,6 +384,7 @@ func TestGenerateConfigs(t *testing.T) {
 		serials  []string
 		devices  []*labapi.Dut
 		metadata []*api.Arg
+		lsnexues map[string]string
 	}{
 		{
 			name:    "full_config",
@@ -570,13 +575,17 @@ func TestGenerateConfigs(t *testing.T) {
 					},
 				},
 			},
+			lsnexues: map[string]string{
+				"lsnexus_device1":         "lsnexus_primary",
+				"lsnexus_companiondevice": "lsnexus_companion_1:2345",
+			},
 			expected: fullConfig,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			config := NewMoblyConfig(log.Default(), test.serials, test.metadata, test.devices)
+			config := NewMoblyConfig(log.Default(), test.serials, test.metadata, test.devices, test.lsnexues)
 			// Convert to yaml to make it easier to compare.
 			yamlWant, err := yaml.Marshal(&test.expected)
 			if err != nil {

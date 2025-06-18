@@ -74,8 +74,9 @@ func buildMoblyCommand(logger *log.Logger, test *api.TestCaseMetadata) (*exec.Cm
 }
 
 // runMoblyTest executes a Mobly test.
-func runMoblyTest(ctx context.Context, logger *log.Logger, test *api.TestCaseMetadata, serials []string, metadata []*api.Arg, devices []*labapi.Dut) error {
-	config := NewMoblyConfig(logger, serials, metadata, devices)
+func runMoblyTest(ctx context.Context, logger *log.Logger, test *api.TestCaseMetadata,
+	serials []string, metadata []*api.Arg, devices []*labapi.Dut, lsnexues map[string]string) error {
+	config := NewMoblyConfig(logger, serials, metadata, devices, lsnexues)
 	if err := config.Write(logger, "/usr/local/mobly"); err != nil {
 		return fmt.Errorf("generating Mobly config: %w", err)
 	}
@@ -147,7 +148,8 @@ func (md *MoblyDriver) RunTests(ctx context.Context, resultsDir string, req *api
 		resDir := filepath.Join("/tmp", "test", "results", "mobly", test.GetTestCase().GetName())
 		os.Setenv("MOBLY_LOGPATH", resDir)
 
-		if err := runMoblyTest(ctx, md.logger, test, serials, metadata, device.Devices(req)); err != nil {
+		if err := runMoblyTest(ctx, md.logger, test, serials, metadata,
+			device.Devices(req), device.LSNexus(req)); err != nil {
 			return nil, fmt.Errorf("running Mobly test: %w", err)
 		}
 
