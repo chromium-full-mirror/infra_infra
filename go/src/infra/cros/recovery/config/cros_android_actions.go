@@ -179,6 +179,7 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
+				"Has light-provision image",
 				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
@@ -214,6 +215,7 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
+				"Has light-provision image",
 				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
@@ -237,6 +239,17 @@ func androidActions(actions map[string]*Action) {
 		"Run for Android boards": {
 			Docs: []string{
 				"Check that board support AndroidOS",
+			},
+			ExecName: "dut_check_board",
+			ExecExtraArgs: []string{
+				"string_values:brya,corsola,dedede,fatcat,nissa,rauru",
+			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Has light-provision image": {
+			Docs: []string{
+				"Check that board has light-provision image.",
 			},
 			ExecName: "dut_check_board",
 			ExecExtraArgs: []string{
@@ -291,6 +304,7 @@ func androidActions(actions map[string]*Action) {
 				"Verify that devices can boot from USB drive in recovery mode.",
 			},
 			Conditions: []string{
+				"Has light-provision image",
 				"Setup has servo info",
 			},
 			Dependencies: []string{

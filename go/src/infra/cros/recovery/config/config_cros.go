@@ -47,13 +47,15 @@ func CrosVerifyConfig() *Configuration {
 	// remove closing plan as it will be added by default.
 	delete(plans, PlanClosing)
 	plans[PlanCrOSBase] = setAllowFail(crosBasePlan(basePlanTypeVerify), false)
-	return &Configuration{
+	conf := &Configuration{
 		PlanNames: []string{
 			PlanCrOSBase,
 			PlanCrOS,
 		},
 		Plans: plans,
 	}
+	removeRecoveries(conf)
+	return conf
 }
 
 // CrosRepairWithDeepRepairConfig provides config for combination of deep repair + normal repair.
@@ -130,13 +132,15 @@ func MHVerifyConfig() *Configuration {
 	// remove closing plan as it will be added by default.
 	delete(plans, PlanClosing)
 	plans[PlanCrOSBase] = setAllowFail(crosBasePlan(basePlanTypeVerify), false)
-	return &Configuration{
+	conf := &Configuration{
 		PlanNames: []string{
 			PlanCrOSBase,
 			PlanCrOS,
 		},
 		Plans: plans,
 	}
+	removeRecoveries(conf)
+	return conf
 }
 
 // MHRepairWithDeepRepairConfig provides config for combination of deep repair + normal repair.

@@ -2304,6 +2304,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2336,6 +2337,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2444,6 +2446,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2476,6 +2479,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2570,6 +2574,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2602,6 +2607,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2694,6 +2700,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -2994,6 +3001,7 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3231,6 +3239,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3277,6 +3286,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3351,6 +3361,7 @@ plans:
           recoveries:
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3397,6 +3408,7 @@ plans:
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3509,6 +3521,7 @@ plans:
                 - name: Wait to be pingable (long boot) ('cros_ping') (ALWAYS_RUN) (time:'5m0s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -3589,6 +3602,7 @@ plans:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                 - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:

@@ -5468,6 +5468,7 @@ func crosRepairActions() map[string]*Action {
 				"The logic is copy from cros-provision",
 			},
 			Conditions: []string{
+				"Has light-provision image",
 				"Run only on ChromeOS hardware",
 				"Is servod running",
 				"Can become ChromeOS-based",

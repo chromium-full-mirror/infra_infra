@@ -6723,6 +6723,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -6851,6 +6857,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -7151,6 +7163,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -8144,6 +8162,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9080,6 +9104,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9255,6 +9285,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9988,6 +10024,12 @@ plans:
               docs:
                 - Verify that devices can boot from USB drive in recovery mode.
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Setup has servo info (RUN_ONCE)
                   exec_name: dut_servo_host_present
               dependencies:
@@ -10427,6 +10469,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -10555,6 +10603,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -10894,6 +10948,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -11022,6 +11082,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -11334,6 +11400,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -11462,6 +11534,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -11762,6 +11840,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -12755,6 +12839,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -13588,6 +13678,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -13763,6 +13859,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -14018,6 +14120,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -14193,6 +14301,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -14576,6 +14690,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -14880,6 +15000,12 @@ plans:
                 - Run specific install command to install Android OS.
                 - The logic is copy from foil-provision
               conditions:
+                - name: Has light-provision image (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                  docs:
+                    - Check that board has light-provision image.
                 - name: Run only on ChromeOS hardware (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:

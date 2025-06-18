@@ -220,6 +220,7 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                     - name: Install ChromeOS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
+                        - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                         - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -559,6 +560,7 @@ plans:
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install ChromeOS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
+                    - name: Has light-provision image ('dut_check_board') (RUN_ONCE)
                     - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:

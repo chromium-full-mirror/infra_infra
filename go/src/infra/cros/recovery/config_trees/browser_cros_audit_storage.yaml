@@ -737,6 +737,12 @@ plans:
                         - Run specific install command to install ChromeOS.
                         - The logic is copy from cros-provision
                       conditions:
+                        - name: Has light-provision image (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                          docs:
+                            - Check that board has light-provision image.
                         - name: Run only on ChromeOS hardware (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -1935,6 +1941,12 @@ plans:
                     - Run specific install command to install ChromeOS.
                     - The logic is copy from cros-provision
                   conditions:
+                    - name: Has light-provision image (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:brya,corsola,dedede,fatcat,nissa,rauru
+                      docs:
+                        - Check that board has light-provision image.
                     - name: Run only on ChromeOS hardware (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:
