@@ -316,6 +316,12 @@ func isVmlabPoolReq(v1 *test_platform.Request) bool {
 
 // buildSuiteRequest converts a v1 ctp request into a SuiteRequest.
 func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
+	var tags []string
+
+	if v1.GetParams().GetScheduling().GetTrHours() > 0 {
+		tags = append(tags, fmt.Sprintf("tr-hours:%d", v1.GetParams().GetScheduling().GetTrHours()))
+	}
+
 	return &testapi.SuiteRequest{
 		SuiteRequest: &testapi.SuiteRequest_TestSuite{
 			TestSuite: buildTestSuite(v1),
@@ -328,6 +334,7 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		RetryCount:            GetRetryCount(v1),
 		Iterations:            v1.GetTestPlan().GetIterations(),
 		IgnoreVariantCategory: v1.GetTestPlan().GetIgnoreVariantCategory(),
+		Tags:                  tags,
 	}
 }
 

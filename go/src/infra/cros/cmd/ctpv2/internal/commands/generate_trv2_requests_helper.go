@@ -17,10 +17,12 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
@@ -118,7 +120,7 @@ func FakeHwTarget(board, model, variant string) *HwTarget {
 }
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
-func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper, isLED bool) (*buildbucketpb.ScheduleBuildRequest, error) {
+func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper, isLED bool, tags []string) (*buildbucketpb.ScheduleBuildRequest, error) {
 	err := populateHelper(ctx, trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "unable to build up context: ").Err()
@@ -158,6 +160,22 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 		req.ShadowInput = &buildbucketpb.ScheduleBuildRequest_ShadowInput{
 			InheritFromParent: true,
 		}
+	}
+
+	for _, tag := range tags {
+		// If "tr-hours:" is found then set execution timeout of the TestRunner
+		// to its value.
+		//
+		// NOTE: This feature only works in private pools. It'll be ignored
+		// otherwise.
+		if after, found := strings.CutPrefix(tag, "tr-hours:"); found && trHelper.pool != DutPoolQuota {
+			hours, err := strconv.ParseInt(after, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+			req.ExecutionTimeout = durationpb.New(time.Hour * time.Duration(hours))
+		}
+
 	}
 
 	return req, nil

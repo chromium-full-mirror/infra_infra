@@ -1016,7 +1016,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		publishKeys:          publishKeys,
 	}
 
-	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))
+	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()), cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetTags())
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()

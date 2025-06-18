@@ -358,7 +358,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		publishKeys:          publishKeys,
 	}
 
-	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))
+	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()), cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetTags())
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		cmd.ObserveTrReqGenFail(ctx, trReq, key, "unable to build task")
