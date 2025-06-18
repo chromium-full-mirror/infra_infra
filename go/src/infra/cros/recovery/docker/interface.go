@@ -19,6 +19,7 @@ import (
 type Client interface {
 	Pull(ctx context.Context, imageName string, timeout time.Duration) error
 	Start(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error)
+	StartOnly(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error)
 	IsUp(ctx context.Context, containerName string) (bool, error)
 	Remove(ctx context.Context, containerName string, force bool) error
 	Exec(ctx context.Context, containerName string, req *ExecRequest) (*ExecResponse, error)
@@ -60,6 +61,9 @@ type ExecRequest struct {
 	Stdin   io.Reader
 	Stdout  io.Writer
 	Stderr  io.Writer
+	// Execute command in detached mode.
+	// Does not block until the process is finished.
+	Detach bool
 }
 
 // ExecResponse holds result of the execution.

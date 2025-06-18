@@ -137,26 +137,39 @@ func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.
 	return errors.Annotate(err, "pull image").Err()
 }
 
-// StartContainer pull and start container by request.
+// Start pull and start container by request.
 // More details https://docs.docker.com/engine/reference/run/
 func (d *dockerClient) Start(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error) {
-	if containerName == "" {
-		return nil, errors.Reason("start: containerName is not provided").Err()
-	}
 	// Timeouts less than 1 second are too short for docker run to realistically finish.
 	if timeout < time.Second {
 		return nil, errors.Reason("start: timeout %v is less than 1 second", timeout).Err()
 	}
+
 	if err := d.Pull(ctx, req.ImageName, timeout); err != nil {
 		return nil, errors.Reason("start: fail to pull docker image %q", req.ImageName).Err()
 	}
+
+	return d.StartOnly(ctx, containerName, req, timeout)
+}
+
+// StartOnly start container by request.
+// More details https://docs.docker.com/engine/reference/run/
+func (d *dockerClient) StartOnly(ctx context.Context, containerName string, req *ContainerArgs, timeout time.Duration) (*StartResponse, error) {
+	if containerName == "" {
+		return nil, errors.Reason("startonly: containerName is not provided").Err()
+	}
+	// Timeouts less than 1 second are too short for docker run to realistically finish.
+	if timeout < time.Second {
+		return nil, errors.Reason("startonly: timeout %v is less than 1 second", timeout).Err()
+	}
+
 	var portsMapping []string
 	for _, exposePort := range req.ExposePorts {
 		portsMapping = append(portsMapping, fmt.Sprintf("[::]:%s", exposePort))
 	}
 	exposedPorts, portBindings, err := nat.ParsePortSpecs(portsMapping)
 	if err != nil {
-		return nil, errors.Annotate(err, "start: fail parse ports %v", portsMapping).Err()
+		return nil, errors.Annotate(err, "startonly: fail parse ports %v", portsMapping).Err()
 	}
 	config := &container.Config{
 		Image:        req.ImageName,
@@ -174,7 +187,7 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	}
 	c, err := d.client.ContainerCreate(ctx, config, hostConfig, nil, nil, containerName)
 	if err != nil {
-		return nil, errors.Annotate(err, "Fail to pull Docker image: %q", req.ImageName).Err()
+		return nil, errors.Annotate(err, "Fail to create container: %q", req.ImageName).Err()
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -280,13 +293,24 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 		AttachStdout: true,
 		AttachStderr: true,
 		Privileged:   true,
+		Detach:       req.Detach,
 		Cmd:          escapeSpecialChars(req.Cmd), // Escaping special characters in the command
 	}
 	cresp, err := d.client.ContainerExecCreate(ctx, containerName, execConfig)
 	if err != nil {
 		return nil, errors.Annotate(err, "exec container: Fail to create exec command.").Err()
 	}
+
 	execID := cresp.ID
+
+	if req.Detach {
+		if err := d.client.ContainerExecStart(ctx, execID, container.ExecStartOptions{}); err != nil {
+			log.Debugf(ctx, "Failed to start cmd in detached mode")
+			return &ExecResponse{}, err
+		}
+		log.Debugf(ctx, "Detach mode, skip output check")
+		return &ExecResponse{}, nil
+	}
 
 	aresp, err := d.client.ContainerExecAttach(ctx, execID, types.ExecStartCheck{})
 	if err != nil {
