@@ -515,6 +515,13 @@ func GetConfigs() []*UprevConfig {
 			},
 			CloudRunConfig: &cloudrun.Config{},
 		},
+		{
+			Name: "cros-passport",
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 	}
 
 	return CleanConfigs(configs)
