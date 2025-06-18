@@ -112,7 +112,8 @@ func (apu *ANTSPublishUpdater) Executor(req *api.InternalTestplan, log *log.Logg
 	// This will upload tests results using plugin instead of ants-publish.
 	// Remove this once we complete the experiment and enable it for production.
 	if commonParams.Environment == common.LabelStaging || commonParams.Environment == common.Staging.String() {
-		apu.UseTfPlugIn = "true"
+		// Disable TF plugin to fix b/425929951
+		apu.UseTfPlugIn = "false"
 	}
 
 	// Add request to publish using ants-publish container.
