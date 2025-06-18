@@ -13,3 +13,7 @@ import (
 type Service struct {
 	bols.UnimplementedBolsServiceServer
 }
+
+var (
+	DefaultBOLSPort = 9100
+)

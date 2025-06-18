@@ -16,6 +16,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/cft/bols_satlab/internal/server"
 	"go.chromium.org/infra/cros/cmd/cft/bols_satlab/internal/version"
+	"go.chromium.org/infra/cros/lib/bols"
 )
 
 type Runner interface {
@@ -25,7 +26,6 @@ type Runner interface {
 var (
 	ServiceName     = "bols"
 	defaultLogDir   = fmt.Sprintf("/tmp/%s/", ServiceName)
-	defaultPort     = 80
 	helpDescription = `bols_satlab tool
 The tool is allow to communicate with labstation tools and services on the host.
 Commands:
@@ -49,7 +49,8 @@ func parseServer(ctx context.Context, d []string) (Runner, error) {
 	var port int
 	fs := flag.NewFlagSet("Start server", flag.ExitOnError)
 	fs.StringVar(&logPath, "log-path", defaultLogDir, fmt.Sprintf("Path to record execution logs. Default value is %s", defaultLogDir))
-	fs.IntVar(&port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
+	fs.IntVar(&port, "port", bols.DefaultBOLSPort,
+		fmt.Sprintf("Specify the port for the server. Default value %d.", bols.DefaultBOLSPort))
 	if err := fs.Parse(d); err != nil {
 		return nil, errors.Annotate(err, "parse server args").Err()
 	}
