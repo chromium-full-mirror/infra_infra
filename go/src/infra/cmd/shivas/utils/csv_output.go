@@ -26,10 +26,10 @@ func NewCSVWriter() *CSVWriter {
 }
 
 // PrintTSVDracFull prints the full related msg for drac in tsv mode
-func PrintTSVDracFull(drac *ufspb.Drac, dhcp *ufspb.DHCPConfig) {
+func PrintTSVDracFull(drac *ufspb.Drac) {
 	csw := NewCSVWriter()
 	defer csw.Flush()
-	csw.Write(dracFullOutputStrs(drac, dhcp))
+	csw.Write(dracFullOutputStrs(drac))
 }
 
 // PrintTSVHostFull prints the full related msg for host in tsv mode

@@ -54,7 +54,7 @@ var (
 	KvmTitle                   = []string{"KVM Name", "MAC Address", "ChromePlatform", "CapacityPort", "Zone", "Rack", "State", "UpdateTime"}
 	KvmFullTitle               = []string{"KVM Name", "MAC Address", "ChromePlatform", "CapacityPort", "IP", "Vlan", "State", "Zone", "Rack", "UpdateTime"}
 	RpmTitle                   = []string{"RPM Name", "MAC Address", "CapacityPort", "Zone", "Rack", "State", "UpdateTime"}
-	DracTitle                  = []string{"Drac Name", "Display name", "MAC Address", "Switch", "Switch Port", "Password", "Zone", "Rack", "Machine", "UpdateTime"}
+	DracTitle                  = []string{"Drac Name", "Display name", "MAC Address", "Switch", "Switch Port", "IP", "Vlan", "Password", "Zone", "Rack", "Machine", "UpdateTime"}
 	DracFullTitle              = []string{"Drac Name", "MAC Address", "Switch", "Switch Port", "Attached Host", "IP", "Vlan", "Zone", "Rack", "Machine", "UpdateTime"}
 	NicTitle                   = []string{"Nic Name", "MAC Address", "Switch", "Switch Port", "Zone", "Rack", "Machine", "UpdateTime"}
 	BrowserMachineTitle        = []string{"Machine Name", "Serial Number", "Zone", "Rack", "KVM", "KVM Port", "ChromePlatform", "DeploymentTicket", "Description", "State", "Realm", "UpdateTime"}
@@ -714,19 +714,20 @@ func PrintRPMsJSON(res []proto.Message, emit bool) {
 	fmt.Println("]")
 }
 
-func dracFullOutputStrs(m *ufspb.Drac, dhcp *ufspb.DHCPConfig) []string {
+func dracFullOutputStrs(m *ufspb.Drac) []string {
 	var ts string
 	if t, err := ptypes.Timestamp(m.GetUpdateTime()); err == nil {
 		ts = t.Local().Format(timeFormat)
 	}
+	name := ufsUtil.RemovePrefix(m.Name)
 	return []string{
-		ufsUtil.RemovePrefix(m.Name),
+		name,
 		m.GetMacAddress(),
 		m.GetSwitchInterface().GetSwitch(),
 		m.GetSwitchInterface().GetPortName(),
-		dhcp.GetHostname(),
-		dhcp.GetIp(),
-		dhcp.GetVlan(),
+		name,
+		m.GetIp(),
+		m.GetVlan(),
 		ufsUtil.RemoveZonePrefix(m.GetZone()),
 		m.GetRack(),
 		m.GetMachine(),
@@ -735,11 +736,11 @@ func dracFullOutputStrs(m *ufspb.Drac, dhcp *ufspb.DHCPConfig) []string {
 }
 
 // PrintDracFull prints the full related msg for drac
-func PrintDracFull(entities []*ufspb.Drac, dhcps map[string]*ufspb.DHCPConfig) {
+func PrintDracFull(entities []*ufspb.Drac) {
 	defer tw.Flush()
 	for i := range entities {
 		var out string
-		for _, s := range dracFullOutputStrs(entities[i], dhcps[entities[i].GetName()]) {
+		for _, s := range dracFullOutputStrs(entities[i]) {
 			out += fmt.Sprintf("%s\t", s)
 		}
 		fmt.Fprintln(tw, out)
@@ -770,6 +771,8 @@ func dracOutputStrs(pm proto.Message) []string {
 		m.GetMacAddress(),
 		m.GetSwitchInterface().GetSwitch(),
 		m.GetSwitchInterface().GetPortName(),
+		m.GetIp(),
+		m.GetVlan(),
 		m.GetPassword(),
 		ufsUtil.RemoveZonePrefix(m.GetZone()),
 		m.GetRack(),
