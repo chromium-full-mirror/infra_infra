@@ -233,6 +233,19 @@ message Drac {
 
     // State of the drac
     State resource_state = 13;
+
+    // This field only used by Shivas.
+    string vlan = 14 [
+        (google.api.resource_reference) = {
+            type: "unified-fleet-system.appspot.com/Vlan"
+        },
+        (google.api.field_behavior) = OUTPUT_ONLY
+    ];
+    // This field only used by Shivas.
+    // It refers to which ip the Drac is assigned to.
+    string ip = 15 [
+        (google.api.field_behavior) = OUTPUT_ONLY
+    ];
 }
 
 // Peripherals for Android hosts
