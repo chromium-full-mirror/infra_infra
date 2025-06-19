@@ -22,6 +22,7 @@ func verifyServodAPIs(ctx context.Context, logger *log.Logger, a *args, cl bols.
 		StationId: &bols.StationIdentifier{
 			ServodPort:    int32(a.servodPort),
 			ContainerName: a.servodContainer,
+			ServoSerial:   a.servoSerial,
 		},
 		Board: a.board,
 		Model: a.model,
