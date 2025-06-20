@@ -10,7 +10,7 @@ import "go.chromium.org/luci/common/errors"
 func AnnotateEach(imerr errors.MultiError, fmt string, args ...any) errors.MultiError {
 	var merr errors.MultiError
 	for _, err := range imerr {
-		merr = append(merr, errors.Annotate(err, fmt, args...).Err())
+		merr = append(merr, errors.WrapIf(err, fmt, args...))
 	}
 	return merr
 }

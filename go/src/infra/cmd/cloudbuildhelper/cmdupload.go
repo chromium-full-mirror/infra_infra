@@ -264,5 +264,5 @@ func uploadToStorage(ctx context.Context, s storageImpl, obj, digest string, f *
 	}
 
 	uploaded, err := s.Upload(ctx, obj, digest, f)
-	return uploaded, errors.Annotate(err, "failed to upload the tarball").Err()
+	return uploaded, errors.WrapIf(err, "failed to upload the tarball")
 }

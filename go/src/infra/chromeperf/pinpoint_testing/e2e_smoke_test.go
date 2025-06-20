@@ -182,7 +182,7 @@ func waitForServices(ctx context.Context, grpcEndpoint string) error {
 		_, err := client.GetJob(ctx, &proto.GetJobRequest{Name: "jobs/legacy-10000000000000"})
 		status, ok := status.FromError(err)
 		if !ok {
-			return errors.Annotate(err, "unexpected error from GetJob").Err()
+			return errors.Fmt("unexpected error from GetJob: %w", err)
 		}
 		switch code := status.Code(); code {
 		default:

@@ -149,7 +149,7 @@ func (c *Client) TagImage(ctx context.Context, img *Image, tag string) error {
 		return errors.Annotate(err, "failed to authorize the push request").Err()
 	}
 	_, _, err = sendJSONRequest(ctx, req, nil)
-	return errors.Annotate(err, "failed to attach a tag").Err()
+	return errors.WrapIf(err, "failed to attach a tag")
 }
 
 // authorizeRequest appends an authorization header to the request.

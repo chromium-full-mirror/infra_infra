@@ -130,7 +130,7 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 			}
 			fmt.Fprintf(a.GetOut(), "%s\n", storageClient.ExpandName(c.bucket, state.Attrs))
 		}
-		return errors.Annotate(state.Err, "processing gsURL %q", gsURL).Err()
+		return errors.WrapIf(state.Err, "processing gsURL %q", gsURL)
 	}
 
 	d, err := ethernethook.NewSingleTaskDownloader(c.bucket, c.prefix)

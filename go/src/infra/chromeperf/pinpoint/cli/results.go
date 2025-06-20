@@ -195,7 +195,7 @@ func (wjm *waitForJobMixin) waitForJob(
 		}
 		select {
 		case <-ctx.Done():
-			return lastJob, errors.Annotate(ctx.Err(), "polling for job wait cancelled").Err()
+			return lastJob, errors.WrapIf(ctx.Err(), "polling for job wait cancelled")
 		case <-poll.C:
 			// loop back around and retry.
 		}

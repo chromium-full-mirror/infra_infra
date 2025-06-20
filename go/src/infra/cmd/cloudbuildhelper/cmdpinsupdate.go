@@ -111,7 +111,7 @@ func (c *cmdPinsUpdateRun) exec(ctx context.Context) error {
 		return errors.Annotate(err, "failed to resolve pin(s)").Err()
 	}
 	if len(out.Updated) != 0 {
-		return errors.Annotate(writePins(c.pins, pins), "writing pins file").Err()
+		return errors.WrapIf(writePins(c.pins, pins), "writing pins file")
 	}
 	return nil
 }

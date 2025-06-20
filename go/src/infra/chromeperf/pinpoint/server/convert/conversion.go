@@ -379,7 +379,7 @@ func jsonJobToProto(l *jsonJob) (*proto.Job, error) {
 	}
 
 	if len(errs) > 0 {
-		return j, errors.Annotate(errs, "%d error(s) parsing %q", len(errs), j.Name).Err()
+		return j, errors.Fmt("%d error(s) parsing %q: %w", len(errs), j.Name, errs)
 	}
 	return j, nil
 }

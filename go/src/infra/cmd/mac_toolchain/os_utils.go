@@ -49,7 +49,7 @@ func getCurVersion(ctx context.Context) (string, error) {
 func renameDirectory(originDirectoryName string, destinationDirectoryName string) error {
 	// Check if the origin directory exists
 	if _, err := os.Stat(originDirectoryName); os.IsNotExist(err) {
-		return errors.Annotate(err, "Error: origin directory %s does not exist", originDirectoryName).Err()
+		return errors.Fmt("Error: origin directory %s does not exist: %w", originDirectoryName, err)
 	}
 
 	// Check if the destination directory exists

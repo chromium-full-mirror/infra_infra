@@ -92,7 +92,7 @@ func (e *extendedGSClient) LsSmall(ctx context.Context, bucket string, query *st
 	if state.Err == nil || errors.Is(state.Err, iterator.Done) {
 		return out, nil
 	}
-	return nil, errors.Annotate(state.Err, "ls small").Err()
+	return nil, errors.Fmt("ls small: %w", state.Err)
 }
 
 // Expand name takes the name of a bucket and an object or prefix in that bucket and produces a GSUrl.

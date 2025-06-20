@@ -300,7 +300,7 @@ func (s *Deps) Load(blobs SerializedState) error {
 				return errors.Annotate(err, "modules.txt doesn't match original go.mod").Err()
 			}
 			if loadVer, baseVer := loadMod.summary(), baseMod.summary(); loadVer != baseVer {
-				return errors.Annotate(err, "conflict between original and bundled go.mod: %s != %s", loadVer, baseVer).Err()
+				return errors.Fmt("conflict between original and bundled go.mod: %s != %s", loadVer, baseVer)
 			}
 
 			// All good, start collecting packages for this module.

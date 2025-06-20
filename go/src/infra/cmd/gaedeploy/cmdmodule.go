@@ -306,7 +306,7 @@ func prepareForGoDeploy(ctx context.Context, root, modDir string) (newModDir str
 		return "", environ.Env{}, errors.Annotate(err, "failed to calculate rel(%q, %q)", root, dest).Err()
 	}
 	if !filepath.IsLocal(rel) {
-		return "", environ.Env{}, errors.Annotate(err, "refusing to step outside of the tarball: %q", rel).Err()
+		return "", environ.Env{}, errors.Fmt("refusing to step outside of the tarball: %q", rel)
 	}
 	if rel != modDir {
 		logging.Infof(ctx, "Following symlink %q to its destination in %q", modDir, rel)

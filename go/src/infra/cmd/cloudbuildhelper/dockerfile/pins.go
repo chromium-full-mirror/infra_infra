@@ -97,7 +97,7 @@ func WritePins(w io.Writer, p *Pins) error {
 
 %s`, blob)
 
-	return errors.Annotate(err, "failed to write").Err()
+	return errors.WrapIf(err, "failed to write")
 }
 
 // Add adds or updates a pin (which should already be resolved).

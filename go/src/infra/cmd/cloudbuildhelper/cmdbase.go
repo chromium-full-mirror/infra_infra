@@ -362,7 +362,7 @@ func (c *commandBase) writeJSONOutput(r any) error {
 		fmt.Printf("%s\n", b)
 		return nil
 	default:
-		return errors.Annotate(ioutil.WriteFile(c.jsonOutput, b, 0600), "failed to write %q", c.jsonOutput).Err()
+		return errors.WrapIf(ioutil.WriteFile(c.jsonOutput, b, 0600), "failed to write %q", c.jsonOutput)
 	}
 }
 

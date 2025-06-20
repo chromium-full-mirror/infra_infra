@@ -83,7 +83,7 @@ func (c *cmdPinsAddRun) exec(ctx context.Context) error {
 		return errors.Annotate(err, "adding resolved tag").Err()
 	}
 
-	return errors.Annotate(writePins(c.pins, pins), "writing pins file").Err()
+	return errors.WrapIf(writePins(c.pins, pins), "writing pins file")
 }
 
 // readPins reads pins.yaml.
@@ -94,7 +94,7 @@ func readPins(path string) (*dockerfile.Pins, error) {
 	}
 	defer f.Close()
 	pins, err := dockerfile.ReadPins(f)
-	return pins, errors.Annotate(err, "malformed %q", path).Tag(isCLIError).Err()
+	return pins, isCLIError.Apply(errors.WrapIf(err, "malformed %q", path))
 }
 
 // writePins writes pins.yaml.

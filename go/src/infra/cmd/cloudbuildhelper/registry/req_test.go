@@ -26,6 +26,6 @@ func TestErrors(t *testing.T) {
 		assert.Loosely(t, IsManifestUnknown(nil), should.BeFalse)
 		assert.Loosely(t, IsManifestUnknown(&Error{}), should.BeFalse)
 		assert.Loosely(t, IsManifestUnknown(manUnknownErr), should.BeTrue)
-		assert.Loosely(t, IsManifestUnknown(errors.Annotate(manUnknownErr, "blah").Err()), should.BeTrue)
+		assert.Loosely(t, IsManifestUnknown(errors.Fmt("blah: %w", manUnknownErr)), should.BeTrue)
 	})
 }

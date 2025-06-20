@@ -88,7 +88,7 @@ func (d *regexDownloader) FindPaths(ctx context.Context, e *extendedGSClient) er
 	if state.Err == nil || errors.Is(state.Err, iterator.Done) {
 		return nil
 	}
-	return errors.Annotate(state.Err, "regex downloader find paths").Err()
+	return errors.Fmt("regex downloader find paths: %w", state.Err)
 }
 
 // Len returns the length of the stored attributes. A length greater than zero indicates that we succesffully scanned the area described by the query.

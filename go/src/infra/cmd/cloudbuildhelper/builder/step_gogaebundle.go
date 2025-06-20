@@ -537,7 +537,7 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 	}
 	logging.Infof(ctx, "Import path is %q", mainPkg.PkgPath)
 	if mainPkg.Name != "main" {
-		return nil, errors.Annotate(err, "only \"main\" package can be bundled, got %q", mainPkg.Name).Err()
+		return nil, errors.Fmt("only \"main\" package can be bundled, got %q", mainPkg.Name)
 	}
 	if mainPkg.Module != nil {
 		logging.Infof(ctx, "Module is %q at %q", mainPkg.Module.Path, mainPkg.Module.Dir)

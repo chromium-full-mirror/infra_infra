@@ -122,7 +122,7 @@ func (g *getter) parseSuites(controls map[string]io.Reader) ([]*api.AutotestSuit
 		sm, errs := g.parseSuiteControlFn(string(bt))
 		if errs != nil {
 			for _, err := range errs {
-				merr = append(merr, errors.Annotate(err, "parse suite %s", n).Err())
+				merr = append(merr, errors.WrapIf(err, "parse suite %s", n))
 			}
 			continue
 		}
