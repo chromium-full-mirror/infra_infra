@@ -52,51 +52,18 @@ linters:
         # https://staticcheck.dev/docs/checks#QF1003
         # Convert if/else-if chain to tagged switch
         - "-QF1003"
-        # https://staticcheck.dev/docs/checks#QF1006
-        # Lift if + break into loop condition
-        - "-QF1006"
-        # https://staticcheck.dev/docs/checks#QF1007
-        # Merge conditional assignment into variable declaration
-        - "-QF1007"
         # https://staticcheck.dev/docs/checks#QF1008
         # Omit embedded fields from selector expression
         - "-QF1008"
-        # https://staticcheck.dev/docs/checks#QF1012
-        # Use fmt.Fprintf(x, ...) instead of x.Write(fmt.Sprintf(...))
-        - "-QF1012"
-        # https://staticcheck.dev/docs/checks#S1038
-        # Unnecessarily complex way of printing formatted string
-        - "-S1038"
-        # https://staticcheck.dev/docs/checks#SA1006
-        # Printf with dynamic first argument and no further arguments
-        - "-SA1006"
         # https://staticcheck.dev/docs/checks#SA1019
         # Using a deprecated function, variable, constant or field
         - "-SA1019"
-        # https://staticcheck.dev/docs/checks#SA1029
-        # Inappropriate key in call to context.WithValue
-        - "-SA1029"
         # https://staticcheck.dev/docs/checks#SA4006
         # A value assigned to a variable is never read before being overwritten. Forgotten error check or dead code?
         - "-SA4006"
-        # https://staticcheck.dev/docs/checks#SA4010
-        # The result of append will never be observed anywhere
-        - "-SA4010"
-        # https://staticcheck.dev/docs/checks#SA5001
-        # Deferring Close before checking for a possible error
-        - "-SA5001"
-        # https://staticcheck.dev/docs/checks#SA9003
-        # Empty body in an if or else branch
-        - "-SA9003"
         # https://staticcheck.dev/docs/checks#ST1005
         # Incorrectly formatted error string
         - "-ST1005"
-        # https://staticcheck.dev/docs/checks#ST1011
-        # Poorly chosen name for variable of type time.Duration
-        - "-ST1011"
-        # https://staticcheck.dev/docs/checks#ST1012
-        # Poorly chosen name for error variable
-        - "-ST1012"
 
   exclusions:
     # Independently from option `exclude` we use default exclude patterns,
@@ -107,13 +74,171 @@ linters:
       - path: (.+)\.go$
         # Exclude specific error checking patterns
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+      # https://staticcheck.dev/docs/checks#QF1001
+      # could apply De Morgan's law
+      - path: "^(cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/bitarray/bitarray.go|cros/cmd/kron/subcommands/configs.go)$"
+        text: "^QF1001: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#QF1006
+      # Lift if + break into loop condition
+      - path: "^(\
+          build/siso/hashfs/fs_test.go|\
+          build/siso/webui/outdir_handlers.go|\
+          cros/cmd/cft/dut/cros-servod/servod/proxy.go|\
+          cros/cmd/labpack/main.go|\
+        )$"
+        text: "^QF1006: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#QF1007
+      # Merge conditional assignment into variable declaration
+      - path: "^(\
+          appengine/tree-status/main.go|\
+          build/gong/gn/fs/filesystem_utils.go|\
+          cros/cmd/cft/dut/cros-dut/cli/dutserver.go|\
+          cros/cmd/common_lib/commonbuilders/ctp2_builder_helper.go|\
+          cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go|\
+          cros/cmd/provision/cros-fw-provision/service/firmwareservice.go|\
+        )$"
+        text: "^QF1007: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#QF1012
+      # Use fmt.Fprintf(x, ...) instead of x.Write(fmt.Sprintf(...))
+      - path: "^(\
+          appengine/sheriff-o-matic/som/client/test/fakeserver.go|\
+          cros/cmd/caching-backend/downloader/main_test.go|\
+          cros/cmd/cft/common/portdiscovery/portdiscovery.go|\
+          cros/cmd/cft/execution/cros-test/cli/testexecserver_rpc.go|\
+          cros/cmd/common_lib/common/file.go|\
+          cros/cmd/cros_test_runner/internal/commands/parse_env_info_cmd.go|\
+          cros/cmd/ctpv2-filters/common/streaming/server.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/pprinter/json/json.go|\
+          cros/cmd/ctpv2/internal/commands/summarize_cmd.go|\
+          cros/recovery/internal/execs/cros/cros_logs_execs.go|\
+          cros/satlab/satlabrpcserver/models/ccd_session.go|\
+          cros/satlab/satlabrpcserver/utils/utils_test.go|\
+          experimental/buildwheel/build_wheels.go|\
+          unifiedfleet/app/controller/helper.go|\
+        )$"
+        text: "^QF1012: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#S1000
+      # Use plain channel send or receive instead of single-case select
       - path: "^(\
           cmd/cros_test_platform/luciexe/execute/execute_test.go|\
           cros/cmd/cft/dut/cros-dut/dutssh/unix_socket_bridge.go|\
         )$"
-        # https://staticcheck.dev/docs/checks#S1000
-        # Use plain channel send or receive instead of single-case select
         text: "^S1000: "
+      # https://staticcheck.dev/docs/checks#S1038
+      # Unnecessarily complex way of printing formatted string
+      - path: "^(\
+          cmd/crosfleet/internal/meta/version.go|\
+          cmd/skylab/internal/cmd/meta/version.go|\
+          cros/cmd/caching-backend/downloader/main.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/main.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver/solver.go|\
+          cros/cmd/ctpv2-filters/provision-filter/main.go|\
+          cros/internal/chromeosversion/chromeosversion.go|\
+          cros/satlab/common/satlabcommands/satlab_commands_test.go|\
+          cros/satlab/common/utils/expect/expect.go|\
+          cros/satlab/satlabrpcserver/services/rpc_services/rpc_services_test.go|\
+        )$"
+        text: "^S1038: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA1006
+      # Printf with dynamic first argument and no further arguments
+      - path: "^(\
+          cros/cmd/cft/common/portdiscovery/portdiscovery_test.go|\
+          cros/cmd/cft/common/portdiscovery/portdiscovery_unix_test.go|\
+          cros/cmd/cft/publish/commonutils/libs/rdblib/rdb_lib.go|\
+          cros/cmd/ctpv2-filters/common/streaming/auth.go|\
+          cros/satlab/common/dut/initiate_support.go|\
+        )$"
+        text: "^SA1006: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA1029
+      # Inappropriate key in call to context.WithValue
+      - path: "^(\
+          appengine/cr-rev/backend/pubsub/receiver.go|\
+          chromium/compilator_watcher/main_test.go|\
+          cmd/crosfleet/internal/run/testcommon_test.go|\
+          cros/karte/internal/identifiers/idstrategy_test.go|\
+          isolation/nsjail_wrapper/nsjail_test.go|\
+        )$"
+        text: "^SA1029: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA4010
+      # The result of append will never be observed anywhere
+      - path: "^(\
+          appengine/sheriff-o-matic/som/model/model.go|\
+          chromeperf/pinpoint/cli/diff.go|\
+          cmd/package_index/proto.go|\
+          cros/cmd/ctpv2-filters/test-finder/service/service.go|\
+          cros/cmd/k8s-management/liveness-checker/main_test.go|\
+          tools/relnotes/relnotes.go|\
+        )$"
+        text: "^SA4010: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA5001
+      # Deferring Close before checking for a possible error
+      - path: "^(\
+          cros/cmd/caching-backend/downloader/main_test.go|\
+          cros/cmd/common_lib/common/server.go|\
+          cros/cmd/container_uprev/internal/config.go|\
+          cros/cmd/upload_debug_symbols/builder.go|\
+          tools/vpython/cmd/vpython3/main_test.go|\
+        )$"
+        text: "^SA5001: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA9001
+      # defers in this range loop won't run unless the channel gets closed
+      - path: "^(cros/internal/branch/helper.go|qscheduler/service/app/state/batchrunner.go)$"
+        text: "^SA9001: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#SA9003
+      # Empty body in an if or else branch
+      - path: "^(\
+          build/siso/hashfs/fs.go|\
+          chromeperf/pinpoint/cli/config.go|\
+          cmd/vmlab/internal/cmd/leasecmd.go|\
+          cros/cmd/phosphorus/internal/autotest/atutil/hostinfo_test.go|\
+          cros/cmd/phosphorus/internal/tls/background.go|\
+          cros/internal/buildplan/buildplan.go|\
+          cros/satlab/common/dut/add.go|\
+          cros/satlab/common/dut/update.go|\
+          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory/croslab/fleetInventory.go|\
+          experimental/golangbuild/buildspec.go|\
+        )$"
+        text: "^SA9003: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#ST1011
+      # Poorly chosen name for variable of type time.Duration
+      - path: "^(\
+          appengine/test-results/frontend/handlers.go|\
+          chromium/compilator_watcher/main.go|\
+        )$"
+        text: "^ST1011: "
+        linters:
+          - staticcheck
+      # https://staticcheck.dev/docs/checks#ST1012
+      # Error var should have name of the form ErrFoo
+      - path: "^(\
+          cros/satlab/common/utils/errors/errors.go|\
+          cros/satlab/satlabrpcserver/utils/errors.go|\
+        )$"
+        text: "^ST1012: "
+        linters:
+          - staticcheck
       - linters:
         - unused
         # Ignore `_kind` field in struct for datastore.
@@ -236,15 +361,6 @@ linters:
           tools/recipe_bundler/cmd_bundle.go|\
           tools/vpython/legacy/vpython2.7/luci/application/probe.go|\
           unifiedfleet/app/dumper/nlyte_bq_sync.go|\
-        )$"
-      - linters:
-          - staticcheck
-        path: "^(\
-          cmd/skylab/internal/cmd/internalcmds/stable-version.go|\
-          cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/bitarray/bitarray.go|\
-          cros/cmd/kron/subcommands/configs.go|\
-          cros/internal/branch/helper.go|\
-          qscheduler/service/app/state/batchrunner.go\
         )$"
       - linters:
           - unused
