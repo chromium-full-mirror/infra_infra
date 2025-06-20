@@ -22,14 +22,16 @@ func verify(ctx context.Context, logger *log.Logger, a *args) error {
 	if err != nil {
 		return fmt.Errorf("failed to create BOLS client at %s: %w", a.bolsAddr, err)
 	}
+	defer conn.Close()
 	cl := bols.NewBolsServiceClient(conn)
-	if err := verifyFileAPIs(ctx, logger, a, cl); err != nil {
-		return fmt.Errorf("failed to verify file related APIs in BOLS at %s: %w", a.bolsAddr, err)
-	}
+
 	if a.testServod {
 		if err := verifyServodAPIs(ctx, logger, a, cl); err != nil {
 			return fmt.Errorf("failed to verify servod related APIs in BOLS at %s: %w", a.bolsAddr, err)
 		}
+	}
+	if err := verifyFileAPIs(ctx, logger, a, cl); err != nil {
+		return fmt.Errorf("failed to verify file related APIs in BOLS at %s: %w", a.bolsAddr, err)
 	}
 	return nil
 }

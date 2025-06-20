@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -91,15 +92,17 @@ func verifyServodSetGet(ctx context.Context, logger *log.Logger, a *args, cl bol
 	if err != nil {
 		return fmt.Errorf("failed to send get control request to BOLS: %w", err)
 	}
+	// Log the values for easier debugging if there's a mismatch
+	logger.Printf("verifyServodSetGet: Comparing values for control %q. Expected: %q, Got: %q", control, servodValueToString(value), servodValueToString(result))
 	if diff := cmp.Diff(result, value, protocmp.Transform()); diff != "" {
-		return fmt.Errorf("Got unexpected results (-got +want):\n%s", diff)
+		return fmt.Errorf("got unexpected results (-got +want):\n%s", diff)
 	}
 	return nil
 }
 
 func setControl(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsServiceClient,
 	control string, value *bols.ServodValue) error {
-	logger.Printf("Sending SetServodRequest Request for control %s\n", control)
+	logger.Printf("Sending SetServodRequest Request for control %s, value: %s\n", control, servodValueToString(value))
 	req := &bols.SetServodRequest{
 		StationId: &bols.StationIdentifier{
 			ServodPort:    int32(a.servodPort),
@@ -130,6 +133,25 @@ func getControl(ctx context.Context, logger *log.Logger, a *args, cl bols.BolsSe
 	if err != nil {
 		return nil, fmt.Errorf("failed to send SetServodRequest: %w", err)
 	}
-	logger.Printf("Successfully send GetServodRequest Request for control %s\n", control)
+	logger.Printf("Successfully send GetServodRequest Request for control %s, received value: %s\n", control, servodValueToString(rspn.GetValue()))
 	return rspn.GetValue(), nil
+}
+
+// servodValueToString converts a *bols.ServodValue to its string representation.
+func servodValueToString(value *bols.ServodValue) string {
+	if value == nil {
+		return "<nil>"
+	}
+	switch v := value.Value.(type) {
+	case *bols.ServodValue_StringValue:
+		return v.StringValue
+	case *bols.ServodValue_IntValue:
+		return strconv.FormatInt(int64(v.IntValue), 10)
+	case *bols.ServodValue_FloatValue: // Deprecated, but handle for completeness
+		return strconv.FormatFloat(float64(v.FloatValue), 'f', -1, 32)
+	case *bols.ServodValue_DoubleValue:
+		return strconv.FormatFloat(v.DoubleValue, 'f', -1, 64)
+	default:
+		return fmt.Sprintf("<unknown type: %T>", v)
+	}
 }
