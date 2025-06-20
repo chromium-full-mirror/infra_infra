@@ -83,8 +83,6 @@ linters:
       # https://staticcheck.dev/docs/checks#QF1006
       # Lift if + break into loop condition
       - path: "^(\
-          build/siso/hashfs/fs_test.go|\
-          build/siso/webui/outdir_handlers.go|\
           cros/cmd/cft/dut/cros-servod/servod/proxy.go|\
           cros/cmd/labpack/main.go|\
         )$"
@@ -95,7 +93,6 @@ linters:
       # Merge conditional assignment into variable declaration
       - path: "^(\
           appengine/tree-status/main.go|\
-          build/gong/gn/fs/filesystem_utils.go|\
           cros/cmd/cft/dut/cros-dut/cli/dutserver.go|\
           cros/cmd/common_lib/commonbuilders/ctp2_builder_helper.go|\
           cros/cmd/ctpv2/internal/commands/generate_trv2_requests_helper.go|\
@@ -207,7 +204,6 @@ linters:
       # https://staticcheck.dev/docs/checks#SA9003
       # Empty body in an if or else branch
       - path: "^(\
-          build/siso/hashfs/fs.go|\
           chromeperf/pinpoint/cli/config.go|\
           cmd/vmlab/internal/cmd/leasecmd.go|\
           cros/cmd/phosphorus/internal/autotest/atutil/hostinfo_test.go|\
