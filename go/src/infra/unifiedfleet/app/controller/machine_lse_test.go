@@ -713,6 +713,71 @@ func TestCreateMachineLseAndroidHost(t *testing.T) {
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse"))
 		})
+
+		t.Run("Create new AttachedDevice machineLSE with existing machine and AndroidHost", func(t *ftt.Test) {
+			// Set up AndroidHost server host
+			machine1 := &ufspb.Machine{
+				Name:         "machine-ah-2",
+				SerialNumber: "machine-ah-2-serial",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+
+			machineLse1 := &ufspb.MachineLSE{
+				Hostname: "machinelse-ah-2",
+				Machines: []string{"machine-ah-2"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{},
+				},
+			}
+			resp, err := CreateMachineLSE(ctx, machineLse1, nil)
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.Match(machineLse1))
+			s, err := state.GetStateRecord(ctx, "hosts/machinelse-ah-2")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+			s, err = state.GetStateRecord(ctx, "machines/machine-ah-2")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
+
+			// Set up AttachedDevice
+			machine2 := &ufspb.Machine{
+				Name:         "machine-ad-2",
+				SerialNumber: "machine-ad-2-serial",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+			}
+			_, err = registration.CreateMachine(ctx, machine2)
+			assert.NoErr(t, err)
+
+			machineLse2 := &ufspb.MachineLSE{
+				Hostname: "machinelse-ad-2",
+				Machines: []string{"machine-ad-2"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{
+						AssociatedHostname: "machinelse-ah-2",
+					},
+				},
+			}
+			resp, err = CreateMachineLSE(ctx, machineLse2, nil)
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.Match(machineLse2))
+			s, err = state.GetStateRecord(ctx, "hosts/machinelse-ad-2")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+			s, err = state.GetStateRecord(ctx, "machines/machine-ad-2")
+			assert.NoErr(t, err)
+			assert.That(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
+
+			resp, err = inventory.GetMachineLSE(ctx, machineLse1.GetHostname())
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp.GetAndroidHostLse().GetDevices(), should.HaveLength(1))
+			assert.That(t, resp.GetAndroidHostLse().GetDevices()[0], should.Equal(machineLse2.GetHostname()))
+		})
 	})
 }
 
@@ -3384,6 +3449,166 @@ func TestDeleteMachineLSELabstation(t *testing.T) {
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_SERVING.String()))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+		})
+	})
+}
+
+func TestDeleteMachineLSEAndroidHost(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ftt.Run("DeleteMachineLSE for an AndroidHostLse", t, func(t *ftt.Test) {
+		t.Run("Delete machineLSE AndroidHostLse with devices", func(t *ftt.Test) {
+			// Set up Android Host
+			machine1 := &ufspb.Machine{
+				Name: "machine-ah-1",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+			machineLse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-ah-1",
+				Hostname: "machinelse-ah-1",
+				Machines: []string{"machine-ah-1"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{
+						Devices: []string{"machinelse-ad-1"},
+					},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLse1)
+			assert.NoErr(t, err)
+
+			// Set up AttachedDevice
+			machine2 := &ufspb.Machine{
+				Name:         "machine-ad-1",
+				SerialNumber: "machine-ad-1-serial",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+			}
+			_, err = registration.CreateMachine(ctx, machine2)
+			assert.NoErr(t, err)
+			machineLse2 := &ufspb.MachineLSE{
+				Name:     "machinelse-ad-1",
+				Hostname: "machinelse-ad-1",
+				Machines: []string{"machine-ad-1"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{
+						AssociatedHostname: "machinelse-ah-1",
+					},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLse2)
+			assert.NoErr(t, err)
+
+			// Try to delete
+			err = DeleteMachineLSE(ctx, "machinelse-ah-1")
+			assert.ErrIsLike(t, err, "cannot be deleted")
+
+			// No changes beceause deletion fails
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-ah-1")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(0))
+		})
+		t.Run("Delete machineLSE AndroidHostLse with no devices", func(t *ftt.Test) {
+			machine := &ufspb.Machine{
+				Name: "machine-ah-2",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			assert.NoErr(t, err)
+			machineLse := &ufspb.MachineLSE{
+				Name:     "machinelse-ah-2",
+				Hostname: "machinelse-ah-2",
+				Machines: []string{"machine-ah-2"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLse)
+			assert.NoErr(t, err)
+
+			err = DeleteMachineLSE(ctx, "machinelse-ah-2")
+			assert.NoErr(t, err)
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-ah-2")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.That(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.That(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.That(t, changes[0].GetEventLabel(), should.Equal("machine_lse"))
+		})
+		t.Run("Delete machineLSE AttachedDeviceLse from AndroidHostLse", func(t *ftt.Test) {
+			// Set up Android Host
+			machine1 := &ufspb.Machine{
+				Name: "machine-ah-3",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+			machineLse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-ah-3",
+				Hostname: "machinelse-ah-3",
+				Machines: []string{"machine-ah-3"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{
+						Devices: []string{"machinelse-ad-3"},
+					},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLse1)
+			assert.NoErr(t, err)
+
+			// Set up AttachedDevice
+			machine2 := &ufspb.Machine{
+				Name:         "machine-ad-3",
+				SerialNumber: "machine-ad-3-serial",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{},
+				},
+			}
+			_, err = registration.CreateMachine(ctx, machine2)
+			assert.NoErr(t, err)
+			machineLse2 := &ufspb.MachineLSE{
+				Name:     "machinelse-ad-3",
+				Hostname: "machinelse-ad-3",
+				Machines: []string{"machine-ad-3"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{
+						AssociatedHostname: "machinelse-ah-3",
+					},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, machineLse2)
+			assert.NoErr(t, err)
+
+			// Verify AttachedDeviceLse is part of AndroidHostLse
+			resp, err := inventory.GetMachineLSE(ctx, "machinelse-ah-3")
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAndroidHostLse().GetDevices(), should.HaveLength(1))
+			assert.That(t, resp.GetAndroidHostLse().GetDevices()[0], should.Equal("machinelse-ad-3"))
+
+			// Delete AttachedDeviceLse
+			err = DeleteMachineLSE(ctx, "machinelse-ad-3")
+			assert.NoErr(t, err)
+
+			// Verify AndroidHoseLse has no devices
+			resp, err = inventory.GetMachineLSE(ctx, "machinelse-ah-3")
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAndroidHostLse().GetDevices(), should.HaveLength(0))
+
+			// One change recorded for deletion
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-ah-3")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
 		})
 	})
 }

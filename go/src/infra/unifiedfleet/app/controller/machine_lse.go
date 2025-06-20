@@ -231,6 +231,24 @@ func createAttachedDeviceLSE(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb
 		setOutputField(ctx, machine, lse)
 		lse.ResourceState = ufspb.State_STATE_REGISTERED
 
+		// Update from host if needed
+		hostMachineLse, _ := getAndroidHostMachineLSE(ctx, lse.GetAttachedDeviceLse().GetAssociatedHostname())
+		if hostMachineLse != nil {
+			oldHostMachineLse := proto.Clone(hostMachineLse).(*ufspb.MachineLSE)
+			hcHost := getHostHistoryClient(hostMachineLse)
+			if err = appendAttachedDeviceToHost(ctx, lse, hostMachineLse); err != nil {
+				return errors.Annotate(err, "Failed to update host MachineLSE %s", hostMachineLse).Err()
+			}
+			machinelses = append(machinelses, hostMachineLse)
+			hcHost.LogMachineLSEChanges(oldHostMachineLse, hostMachineLse)
+			if err := hcHost.SaveChangeEvents(ctx); err != nil {
+				return err
+			}
+
+			// Assign Host Group based on host
+			lse.GetAttachedDeviceLse().HostGroup = hostMachineLse.GetAndroidHostLse().GetHostGroup()
+		}
+
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "Fail to update machine %s", machine.GetName()).Err()
 		}
@@ -838,6 +856,31 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 			}
 		}
 
+		// Check if it is an AttachedDevice that is linked to a host server
+		// Update corresponding host server
+		if existingMachinelse.GetAttachedDeviceLse().GetAssociatedHostname() != "" {
+			existingHostMachineLse, _ := getAndroidHostMachineLSE(ctx, existingMachinelse.GetAttachedDeviceLse().GetAssociatedHostname())
+			if existingHostMachineLse != nil {
+				oldHostMachineLse := proto.Clone(existingHostMachineLse).(*ufspb.MachineLSE)
+				if err = removeAttachedDeviceEntryFromHost(ctx, existingMachinelse, existingHostMachineLse); err != nil {
+					return errors.Annotate(err, "Failed to update host MachineLSE %s", existingHostMachineLse).Err()
+				}
+
+				// BatchUpdate Host - Using Batch update and not UpdateMachineLSE,
+				// because we cant have nested transaction in datastore
+				_, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{existingHostMachineLse})
+				if err != nil {
+					logging.Errorf(ctx, "Failed to BatchUpdate Host MachineLSE %s", err)
+					return err
+				}
+
+				// log events for host
+				hcHost := getHostHistoryClient(existingHostMachineLse)
+				hcHost.LogMachineLSEChanges(oldHostMachineLse, existingHostMachineLse)
+				hcHost.SaveChangeEvents(ctx)
+			}
+		}
+
 		if err := setMachineLSE(ctx, existingMachinelse); err != nil {
 			return err
 		}
@@ -993,6 +1036,23 @@ func getLabstationMachineLSE(ctx context.Context, labstationMachinelseName strin
 	return getHostMachineLSE(ctx, labstationMachinelseName, "Labstation")
 }
 
+// getLabstationMachineLSE get the Labstation MachineLSE
+func getAndroidHostMachineLSE(ctx context.Context, androidHostMachinelseName string) (*ufspb.MachineLSE, error) {
+	return getHostMachineLSE(ctx, androidHostMachinelseName, "Android Host")
+}
+
+func appendAttachedDeviceToHost(ctx context.Context, device *ufspb.MachineLSE, host *ufspb.MachineLSE) error {
+	existingDevices := host.GetAndroidHostLse().GetDevices()
+	if i := slices.IndexFunc(existingDevices, func(d string) bool {
+		return d == device.GetHostname()
+	}); i == -1 {
+		host.GetAndroidHostLse().Devices = append(existingDevices, device.GetHostname())
+	} else {
+		host.GetAndroidHostLse().Devices[i] = device.GetHostname()
+	}
+	return nil
+}
+
 // appendServoEntryToLabstation append servo entry to the Labstation.
 //
 // servo => Servo to be added to the DUT.
@@ -1139,6 +1199,26 @@ func removeServoEntryFromLabstation(ctx context.Context, servo *chromeosLab.Serv
 		}
 	}
 	logging.Errorf(ctx, "Cannot remove servo %v from labstation %s as it contains no such record. %v", servo, labstation.GetHostname(), servos)
+	return nil
+}
+
+// removeAttachedDeviceEntryFromHost removes AttachedDevice entry from the Host.
+//
+// AttachedDevice => lse of the AttachedDevice
+// host => lse of the host
+func removeAttachedDeviceEntryFromHost(ctx context.Context, device *ufspb.MachineLSE, host *ufspb.MachineLSE) error {
+	if device.GetAttachedDeviceLse() == nil || host.GetAndroidHostLse() == nil {
+		return status.Errorf(codes.Internal, "removeAttachedDeviceEntryFromHost - Invalid use of API")
+	}
+	logging.Warningf(ctx, "Deleting %s", device)
+	devices := host.GetAndroidHostLse().GetDevices()
+	devices = slices.DeleteFunc(devices, func(d string) bool {
+		return d == device.GetHostname()
+	})
+	if len(host.GetAndroidHostLse().Devices) == len(devices) {
+		logging.Errorf(ctx, "Cannot remove AttachedDevice %v from host %s as it contains no such record. %v", device.GetHostname(), host.GetHostname(), devices)
+	}
+	host.GetAndroidHostLse().Devices = devices
 	return nil
 }
 
@@ -1646,6 +1726,23 @@ func validateDeleteMachineLSE(ctx context.Context, existingMachinelse *ufspb.Mac
 			return status.Errorf(codes.FailedPrecondition, errorMsg)
 		}
 	}
+	if existingMachinelse.GetAndroidHostLse() != nil {
+		existingDevices := existingMachinelse.GetAndroidHostLse().GetDevices()
+		nonDeletedDevices := make([]string, 0, len(existingDevices))
+		for _, deviceName := range existingDevices {
+			_, err := inventory.GetMachineLSE(ctx, "device")
+			if err != nil {
+				nonDeletedDevices = append(nonDeletedDevices, deviceName)
+			}
+		}
+		if len(nonDeletedDevices) != 0 {
+			errorMsg := fmt.Sprintf("AndroidHost %s cannot be deleted because "+
+				"there are devices in the AndroidHost that point to other AttachedDevices: %s.",
+				existingMachinelse.GetName(), strings.Join(nonDeletedDevices, ", "))
+			logging.Errorf(ctx, errorMsg)
+			return status.Errorf(codes.FailedPrecondition, errorMsg)
+		}
+	}
 	return nil
 }
 
@@ -1710,7 +1807,8 @@ func setOutputField(ctx context.Context, machine *ufspb.Machine, lse *ufspb.Mach
 
 // setMachineLSE sets some fields that are stored in other entities
 func setMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE) error {
-	if machinelse.GetChromeBrowserMachineLse() != nil {
+	switch machinelse.Lse.(type) {
+	case *ufspb.MachineLSE_ChromeBrowserMachineLse:
 		// We fill the machinelse object with its vm objects from vm table
 		vms, err := inventory.QueryVMByPropertyName(ctx, "host_id", machinelse.GetName(), false)
 		if err != nil {
@@ -1718,6 +1816,11 @@ func setMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE) error {
 			return err
 		}
 		machinelse.GetChromeBrowserMachineLse().Vms = vms
+	case *ufspb.MachineLSE_AttachedDeviceLse:
+		// We set the HostGroup based on the AndroidHostLse, if applicable
+		if host, err := inventory.GetMachineLSE(ctx, machinelse.GetAttachedDeviceLse().GetAssociatedHostname()); err == nil {
+			machinelse.GetAttachedDeviceLse().HostGroup = host.GetAndroidHostLse().GetHostGroup()
+		}
 	}
 	return nil
 }

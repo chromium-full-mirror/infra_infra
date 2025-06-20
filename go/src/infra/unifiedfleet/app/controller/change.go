@@ -332,10 +332,14 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.deployment_ticket", oldData.GetDeploymentTicket(), newData.GetDeploymentTicket())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.description", oldData.GetDescription(), newData.GetDescription())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.logical_zone", oldData.GetLogicalZone(), newData.GetLogicalZone())...)
-	if newData.GetChromeBrowserMachineLse() != nil {
+
+	switch newData.Lse.(type) {
+	case *ufspb.MachineLSE_ChromeBrowserMachineLse:
 		hc.changes = append(hc.changes, logChromeBrowserMachineLse(resourceName, oldData.GetChromeBrowserMachineLse(), newData.GetChromeBrowserMachineLse())...)
-	} else {
+	case *ufspb.MachineLSE_ChromeosMachineLse:
 		hc.changes = append(hc.changes, logChromeOSMachineLse(resourceName, oldData.GetChromeosMachineLse(), newData.GetChromeosMachineLse())...)
+	case *ufspb.MachineLSE_AndroidHostLse:
+		hc.changes = append(hc.changes, logAndroidHostMachineLse(resourceName, oldData.GetAndroidHostLse(), newData.GetAndroidHostLse())...)
 	}
 	if oldDevboard := oldData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); oldDevboard != nil {
 		if newDevboard := newData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); newDevboard != nil {
@@ -763,6 +767,14 @@ func logChromeOSMachineLse(resourceName string, oldData, newData *ufspb.ChromeOS
 	changes = append(changes, logDut(resourceName, oldData.GetDeviceLse().GetDut(), newData.GetDeviceLse().GetDut())...)
 	changes = append(changes, logLabstation(resourceName, oldData.GetDeviceLse().GetLabstation(), newData.GetDeviceLse().GetLabstation())...)
 	changes = append(changes, logSwitchInterface(resourceName, oldData.GetDeviceLse().GetNetworkDeviceInterface(), newData.GetDeviceLse().GetNetworkDeviceInterface())...)
+	return changes
+}
+
+func logAndroidHostMachineLse(resourceName string, oldData, newData *ufspb.AndroidHostLSE) []*ufspb.ChangeEvent {
+	changes := make([]*ufspb.ChangeEvent, 0)
+	changes = append(changes, logCommon(resourceName, "machine_lse.android_host_lse.devices", oldData.GetDevices(), newData.GetDevices())...)
+	changes = append(changes, logCommon(resourceName, "machine_lse.android_host_lse.os_version", oldData.GetOsVersion(), newData.GetOsVersion())...)
+	changes = append(changes, logCommon(resourceName, "machine_lse.android_host_lse.host_group", oldData.GetHostGroup(), newData.GetHostGroup())...)
 	return changes
 }
 
