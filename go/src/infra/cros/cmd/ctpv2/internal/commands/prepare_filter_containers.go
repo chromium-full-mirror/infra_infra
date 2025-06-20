@@ -121,11 +121,11 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	filtersQueue := list.New()
 
 	firestoreDB := common.TestPlatformFireStore
-	if cmd.IsAlRun && cmd.IsPartnerRun {
+	if cmd.IsPartnerRun {
 		firestoreDB = common.PartnerTestPlatformFireStore
 	}
 	for _, filter := range ctpFilters {
-		if cmd.IsAlRun && cmd.IsPartnerRun {
+		if cmd.IsPartnerRun {
 			filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-firestore", firestoreDB)
 		}
 		filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-env", cmd.Environment)

@@ -875,7 +875,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 
 	// Grab correct firestore db name to be used
 	firestoreDBName := common.TestPlatformFireStore
-	if trHelper.isAlRun && trHelper.isPartnerRun {
+	if trHelper.isPartnerRun {
 		firestoreDBName = common.PartnerTestPlatformFireStore
 	}
 
