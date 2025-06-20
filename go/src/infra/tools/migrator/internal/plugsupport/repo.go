@@ -514,7 +514,7 @@ func (r *gitRunner) run(args ...string) {
 			logging.Errorf(r.ctx, "%s", line)
 		}
 	})
-	r.err = errors.Annotate(err, "running git %q", args).Err()
+	r.err = errors.WrapIf(err, "running git %q", args)
 }
 
 func (r *gitRunner) read(args ...string) string {
@@ -536,7 +536,7 @@ func (r *gitRunner) read(args ...string) string {
 	// Ignore exit status of "git config <key>" commands. Non-zero exit code
 	// usually means the config key is absent.
 	if len(args) != 2 || args[0] != "config" {
-		r.err = errors.Annotate(err, "running git %q", args).Err()
+		r.err = errors.WrapIf(err, "running git %q", args)
 	}
 
 	return strings.TrimSpace(buf.String())

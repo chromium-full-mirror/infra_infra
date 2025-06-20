@@ -131,7 +131,7 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 			r.eg.Go(func() error {
 				defer wgReadUpMissing.Done()
 				err := r.readUpMissing(ctx, repo, dir, onlyDirmd)
-				return errors.Annotate(err, "failed to process %q", dir).Err()
+				return errors.WrapIf(err, "failed to process %q", dir)
 			})
 		}
 	}
@@ -148,7 +148,7 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 			for _, dir := range repo.dirs {
 				r.eg.Go(func() error {
 					err := r.ReadGitFiles(ctx, repo, dir, form == dirmdpb.MappingForm_FULL, onlyDirmd)
-					return errors.Annotate(err, "failed to process %q", dir).Err()
+					return errors.WrapIf(err, "failed to process %q", dir)
 				})
 			}
 		}

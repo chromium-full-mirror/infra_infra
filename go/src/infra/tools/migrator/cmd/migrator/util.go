@@ -33,7 +33,7 @@ import (
 func ensureEmptyDirectory(ctx context.Context, path string) error {
 	switch fil, err := os.Open(path); {
 	case os.IsNotExist(err):
-		return errors.Annotate(os.MkdirAll(path, 0777), "creating dir").Err()
+		return errors.WrapIf(os.MkdirAll(path, 0777), "creating dir")
 
 	case err == nil:
 		switch _, err := fil.Readdirnames(1); err {

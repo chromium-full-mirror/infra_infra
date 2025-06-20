@@ -90,7 +90,7 @@ func Find(c context.Context, vers Version, lookPath LookPathFunc) (*Interpreter,
 	}
 
 	// No Python interpreter could be identified.
-	return nil, errors.Annotate(lookErrs.Get(), "no Python found").Err()
+	return nil, errors.WrapIf(lookErrs.Get(), "no Python found")
 }
 
 func findInterpreter(c context.Context, name string, vers Version, lookPath LookPathFunc) (*Interpreter, error) {

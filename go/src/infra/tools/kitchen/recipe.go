@@ -84,7 +84,7 @@ func prepareRecipeRunWorkDir(workdir string) (string, error) {
 		return "", errors.Annotate(err, "could not read dir %q", workdir).Err()
 
 	case hasFiles:
-		return "", errors.Annotate(err, "workdir %q is not empty", workdir).Err()
+		return "", errors.Fmt("workdir %q is not empty", workdir)
 
 	default:
 		return workdir, nil

@@ -54,7 +54,7 @@ func canonicalFSPath(path string) (targetPath string, err error) {
 	case err != nil:
 		return "", err
 	case int(n) > len(finalPathBuf):
-		return "", errors.Annotate(err, "the final path is too long").Err()
+		return "", errors.New("the final path is too long")
 	}
 	finalPath := windows.UTF16PtrToString(&finalPathBuf[0])
 	finalPath = strings.TrimPrefix(finalPath, `\\?\`)

@@ -10,17 +10,17 @@ import (
 )
 
 func InvalidTokenError(err error) error {
-	return errors.Annotate(err, "invalid_page_token").Tag(grpcutil.InvalidArgumentTag).Err()
+	return grpcutil.InvalidArgumentTag.Apply(errors.Fmt("invalid_page_token: %w", err))
 }
 
 func InvalidFilterError(err error) error {
-	return errors.Annotate(err, "invalid_filter").Tag(grpcutil.InvalidArgumentTag).Err()
+	return grpcutil.InvalidArgumentTag.Apply(errors.Fmt("invalid_filter: %w", err))
 }
 
 func InvalidOrderByError(err error) error {
-	return errors.Annotate(err, "invalid_order_by").Tag(grpcutil.InvalidArgumentTag).Err()
+	return grpcutil.InvalidArgumentTag.Apply(errors.Fmt("invalid_order_by: %w", err))
 }
 
 func BadRequest(err error, reason string, args ...any) error {
-	return errors.Annotate(err, reason, args...).Tag(grpcutil.InvalidArgumentTag).Err()
+	return grpcutil.InvalidArgumentTag.Apply(errors.WrapIf(err, reason, args...))
 }

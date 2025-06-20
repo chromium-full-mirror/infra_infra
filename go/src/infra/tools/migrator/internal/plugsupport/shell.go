@@ -90,7 +90,7 @@ func (s *shell) Stat(path string) os.FileInfo {
 	if err == nil {
 		return st
 	}
-	panic(errors.Annotate(err, "Stat(%q)", relpath).Err())
+	panic(errors.Fmt("Stat(%q): %w", relpath, err))
 }
 
 func (s *shell) Run(name string, args ...string) {

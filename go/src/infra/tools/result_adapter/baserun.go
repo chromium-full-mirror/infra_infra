@@ -229,7 +229,7 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 	out, err := r.runTestCmd(ctx, args)
 	ec, ok := exitcode.Get(err)
 	if !ok {
-		return r.done(errors.Annotate(err, "test command failed").Err())
+		return r.done(errors.Fmt("test command failed: %w", err))
 	}
 
 	// Setup auth header for ResultSink before potential uploads.

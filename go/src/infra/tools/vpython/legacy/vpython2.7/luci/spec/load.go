@@ -304,7 +304,7 @@ func (l *Loader) findForScript(path string, isModule bool) (string, error) {
 			}
 
 		default:
-			return "", errors.Annotate(err, "failed to check for spec file at: %s", specPath).Err()
+			return "", errors.WrapIf(err, "failed to check for spec file at: %s", specPath)
 		}
 	}
 }
@@ -409,7 +409,7 @@ func (l *Loader) findCommonWalkingFrom(startDir string) (string, error) {
 
 			default:
 				// Failed to load specification from this file.
-				return "", errors.Annotate(err, "failed to stat common spec file at: %s", checkPath).Err()
+				return "", errors.WrapIf(err, "failed to stat common spec file at: %s", checkPath)
 			}
 		}
 

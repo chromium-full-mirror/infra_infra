@@ -186,7 +186,7 @@ func waitForServices(ctx context.Context, grpcEndpoint string) error {
 		}
 		switch code := status.Code(); code {
 		default:
-			return errors.Annotate(err, "unexpected error code %v returned from GetJobs", code).Err()
+			return errors.WrapIf(err, "unexpected error code %v returned from GetJobs", code)
 		case codes.NotFound:
 			// The fakelegacy service responded with this code, so everything is up!
 			return nil
@@ -196,7 +196,7 @@ func waitForServices(ctx context.Context, grpcEndpoint string) error {
 		}
 		select {
 		case <-ctx.Done():
-			return errors.Annotate(ctx.Err(), "timed out waiting for gRPC service at %v", grpcEndpoint).Err()
+			return errors.WrapIf(ctx.Err(), "timed out waiting for gRPC service at %v", grpcEndpoint)
 		case <-ticker.C:
 			continue
 		}

@@ -476,7 +476,7 @@ func (gr *gitRunner) runGitVersion(c context.Context) (int, error) {
 	if rc, ok := exitcode.Get(err); ok {
 		return rc, nil
 	}
-	return 0, errors.Annotate(err, "failed to execute process").Err()
+	return 0, errors.Fmt("failed to execute process: %w", err)
 }
 
 func (gr *gitRunner) runDirect(c context.Context) (int, error) {
@@ -488,7 +488,7 @@ func (gr *gitRunner) runDirect(c context.Context) (int, error) {
 	if rc, ok := exitcode.Get(err); ok {
 		return rc, nil
 	}
-	return 0, errors.Annotate(err, "failed to execute process").Err()
+	return 0, errors.Fmt("failed to execute process: %w", err)
 }
 
 // Monitor continuously monitors a Reader for expression lines. If one is
