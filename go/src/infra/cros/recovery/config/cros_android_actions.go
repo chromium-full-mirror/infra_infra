@@ -6,6 +6,41 @@ package config
 
 import "google.golang.org/protobuf/types/known/durationpb"
 
+func commonAndroidCriticalActions(canBecomeChromeOS bool) []string {
+	actions := []string{
+		"Android is accessible",
+		"ADB set Android as always awake",
+		"Android: Collect logs",
+		"Read bootId",
+		"Device Uptime",
+	}
+	if canBecomeChromeOS {
+		actions = append(actions,
+			// If al provision failed then it will try to provision to ChroemOS.
+			"Has repair-request for re-provision",
+			"Reset provisioned info",
+		)
+	} else {
+		actions = append(actions,
+			"Android: Has repair-request for re-provision",
+			"Provision to stable-version if required",
+		)
+	}
+	actions = append(actions,
+		"Verify by host that DUT has default GBB flags",
+		"Verify that DUT is not in DEV mode",
+		"Missing HWID",
+		"Match HWID",
+	)
+	if canBecomeChromeOS {
+		actions = append(actions,
+			"Missing serial-number",
+			"Match serial-number",
+		)
+	}
+	return actions
+}
+
 func androidActions(actions map[string]*Action) {
 	am := map[string]*Action{
 		"Android OS checks": {
@@ -15,22 +50,7 @@ func androidActions(actions map[string]*Action) {
 			Conditions: []string{
 				"Is Android based?",
 			},
-			Dependencies: []string{
-				"ADB reconnect",
-				"Android is accessible",
-				"ADB set Android as always awake",
-				"Android: Collect logs",
-				"Read bootId",
-				"Device Uptime",
-				"Has repair-request for re-provision",
-				"Reset provisioned info",
-				"Verify by host that DUT has default GBB flags",
-				"Verify that DUT is not in DEV mode",
-				"Missing HWID",
-				"Match HWID",
-				"Missing serial-number",
-				"Match serial-number",
-			},
+			Dependencies:  append([]string{"ADB reconnect"}, commonAndroidCriticalActions(true)...),
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},

@@ -20,33 +20,27 @@ func crosRepairPlan() *Plan {
 }
 
 func mhRepairPlan() *Plan {
+	criticalActions := []string{
+		"Mark as Android based",
+		"Set CacheService address",
+		"Has repair-request for re-image USB-key",
+		"Has repair-request for reflash-firmware",
+		"Android: Has repair-request for re-image by USB-key",
+		"Android:Device is pingable",
+		"ADB Connect DUT",
+	}
+	criticalActions = append(criticalActions, commonAndroidCriticalActions(false)...)
+	criticalActions = append(criticalActions,
+		"Reset provisioned info",
+		"All repair-requests resolved",
+		"Reset DUT-state reason",
+		"Servo is in WORKING state",
+		"Set state: ready",
+	)
+
 	return &Plan{
-		CriticalActions: []string{
-			"Mark as Android based",
-			"Set CacheService address",
-			"Has repair-request for re-image USB-key",
-			"Has repair-request for reflash-firmware",
-			"Android: Has repair-request for re-image by USB-key",
-			"Android:Device is pingable",
-			"ADB Connect DUT",
-			"Android is accessible",
-			"ADB set Android as always awake",
-			"Android: Collect logs",
-			"Read bootId",
-			"Device Uptime",
-			"Android: Has repair-request for re-provision",
-			"Provision to stable-version if required",
-			"Verify by host that DUT has default GBB flags",
-			"Verify that DUT is not in DEV mode",
-			"Missing HWID",
-			"Match HWID",
-			"Reset provisioned info",
-			"All repair-requests resolved",
-			"Reset DUT-state reason",
-			"Servo is in WORKING state",
-			"Set state: ready",
-		},
-		Actions: crosRepairActions(),
+		CriticalActions: criticalActions,
+		Actions:         crosRepairActions(),
 	}
 }
 
