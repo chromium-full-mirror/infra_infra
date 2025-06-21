@@ -137,9 +137,8 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
 			return errors.New("machines field is empty in json. It is a required parameter for json input.")
 		}
-		if machinelse.GetChromeBrowserMachineLse() == nil && machinelse.GetChromeosMachineLse() == nil &&
-			machinelse.GetAttachedDeviceLse() == nil {
-			return errors.New("json must have one of these fields defined: chromeBrowserMachineLse, chromeosMachineLse, attachedDeviceLse")
+		if machinelse.GetLse() == nil {
+			return errors.New("json must have one of these fields defined: chromeBrowserMachineLse, chromeosMachineLse, attachedDeviceLse, androidHostLse")
 		}
 	} else {
 		machinelse = &ufspb.MachineLSE{}
