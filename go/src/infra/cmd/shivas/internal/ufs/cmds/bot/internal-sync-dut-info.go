@@ -15,7 +15,6 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
 	"go.chromium.org/infra/cmd/shivas/site"
@@ -81,10 +80,6 @@ func (c *syncDUTInfoRun) innerRun(a subcommands.Application, args []string, env 
 	if len(args) != 1 {
 		return cmdlib.NewUsageError(c.Flags, "exactly one DUT hostname must be provided")
 	}
-	if h := c.uploadHealthStatus; h != "" && h != "healthy" && h != "unhealthy" {
-		return cmdlib.NewUsageError(c.Flags, "health status can only be [healthy|unhealthy]")
-	}
-
 	ctx := cli.GetContext(a, c, env)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
@@ -114,16 +109,6 @@ func (c *syncDUTInfoRun) innerRun(a subcommands.Application, args []string, env 
 }
 
 func (c *syncDUTInfoRun) uploadHealth(ctx context.Context, a subcommands.Application, dutID string) error {
-	if c.uploadHealthStatus == "" {
-		return nil
-	}
-	state := dutstate.Ready
-	if c.uploadHealthStatus == "unhealthy" {
-		state = dutstate.NeedsManualRepair
-	}
-	if err := dutstate.Update(ctx, c.ufs, dutID, state); err != nil {
-		return errors.Annotate(err, "upload health status %q of %q to UFS", c.uploadHealthStatus, dutID).Err()
-	}
 	return nil
 }
 
