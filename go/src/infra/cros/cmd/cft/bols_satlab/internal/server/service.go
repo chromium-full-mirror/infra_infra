@@ -28,6 +28,7 @@ import (
 	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
 	"go.chromium.org/infra/cros/recovery/docker"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	servod_xmlrpc "go.chromium.org/infra/cros/servo/xmlrpc"
 )
 
 const bufSize int = 1024 * 1024
@@ -433,12 +434,21 @@ func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatus
 	return &bols.GetServodStatusResponse{Status: status}, nil
 }
 
-func (s *service) HWInitServod(context.Context, *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HWInitServod not implemented")
-}
+// HWInitServod calls hwinit of servod by delegating to the xmlrpc package.
+func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
+	s.logger.Println("Receive HWInitServod Request")
 
-func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.ReadServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadServod not implemented")
+	// Call the HWInitServod function from the xmlrpc package.
+	// This function already knows how to handle the StationIdentifier to determine
+	// the host (container name or localhost) and port.
+	port := int(req.GetStationId().GetServodPort())
+	container := req.GetStationId().GetContainerName()
+	if err := xmlrpc.HWInitServod(ctx, servod_xmlrpc.New(container, port)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to execute hwinit on servod via xmlrpc client: %w", err))
+	}
+
+	s.logger.Println("Served HWInitServod Request Successfully")
+	return &bols.HWInitServodResponse{}, nil
 }
 
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {

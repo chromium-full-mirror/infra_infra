@@ -86,6 +86,21 @@ func EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoSer
 	return &bols.EchoServodResponse{Result: val}, nil
 }
 
+// HWInitServod calls the "hwinit" method of servod.
+func HWInitServod(ctx context.Context, cl *xmlrpc.XMLRpc) error {
+	// "hwinit" typically doesn't take a control name or value.
+	call, err := servodValueToXMLRequest("hwinit", "", nil)
+	if err != nil {
+		// This should ideally not happen if servodValue is nil and control is empty.
+		return fmt.Errorf("failed to create XML-RPC call for hwinit: %w", err)
+	}
+
+	if _, err := cl.Execute(ctx, call); err != nil {
+		return fmt.Errorf("failed to execute hwinit on servod: %w", err)
+	}
+	return nil
+}
+
 func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 	if params == nil {
 		return nil, nil
@@ -150,17 +165,30 @@ func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 }
 
 func servodValueToXMLRequest(method, control string, servodValue *bols.ServodValue) (xmlrpc.Call, error) {
-	switch servodValue.GetValue().(type) {
-	case *bols.ServodValue_StringValue:
-		v := servodValue.GetStringValue()
-		return xmlrpc.NewCall(method, control, v), nil
-	case *bols.ServodValue_DoubleValue:
-		v := servodValue.GetDoubleValue()
-		return xmlrpc.NewCall(method, control, v), nil
-	case *bols.ServodValue_IntValue:
-		v := servodValue.GetIntValue()
-		return xmlrpc.NewCall(method, control, int(v)), nil
-	default:
-		return xmlrpc.Call{}, fmt.Errorf("unsupport type %T", servodValue.GetValue())
+	if servodValue == nil {
+		// If servodValue is nil, call NewCall without the value part.
+		if control == "" {
+			return xmlrpc.NewCall(method), nil
+		}
+		return xmlrpc.NewCall(method, control), nil
 	}
+
+	// If servodValue is not nil, extract the actual value.
+	var v interface{}
+	switch sv := servodValue.GetValue().(type) {
+	case *bols.ServodValue_StringValue:
+		v = sv.StringValue
+	case *bols.ServodValue_DoubleValue:
+		v = sv.DoubleValue
+	case *bols.ServodValue_IntValue:
+		v = int(sv.IntValue) // xmlrpc.NewCall expects int for integer types
+	default:
+		return xmlrpc.Call{}, fmt.Errorf("unsupported type %T", servodValue.GetValue())
+	}
+
+	// Call NewCall, including control if it's not empty.
+	if control == "" {
+		return xmlrpc.NewCall(method, v), nil
+	}
+	return xmlrpc.NewCall(method, control, v), nil
 }

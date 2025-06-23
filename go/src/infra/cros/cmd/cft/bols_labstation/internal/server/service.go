@@ -25,6 +25,7 @@ import (
 
 	"go.chromium.org/infra/cros/lib/bols/util"
 	"go.chromium.org/infra/cros/lib/bols/xmlrpc"
+	servod_xmlrpc "go.chromium.org/infra/cros/servo/xmlrpc"
 )
 
 // GetFileStat reads file information from the labstation.
@@ -424,13 +425,20 @@ func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatus
 }
 
 // HWInitServod calls hwinit of servod.
-func (s *service) HWInitServod(context.Context, *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HWInitServod not implemented")
-}
+func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
+	s.logger.Println("Receive HWInitServod Request")
 
-// ReadServod read a servod control documentation.
-func (s *service) ReadServod(context.Context, *bols.ReadServodRequest) (*bols.ReadServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadServod not implemented")
+	// Call the HWInitServod function from the xmlrpc package.
+	// This function handles the StationIdentifier to determine the host
+	// (which will default to "localhost" if req.GetStationId().GetContainerName() is empty)
+	// and port.
+	port := int(req.GetStationId().GetServodPort())
+	if err := xmlrpc.HWInitServod(ctx, servod_xmlrpc.New("localhost", port)); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to execute hwinit on servod via xmlrpc client: %w", err))
+	}
+
+	s.logger.Println("Served HWInitServod Request Successfully")
+	return &bols.HWInitServodResponse{}, nil
 }
 
 // GetServod gets a servod control value.
