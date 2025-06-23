@@ -159,6 +159,8 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 
 			_, _ = adb.AdbShellCmd([]string{"setprop", "persist.sys.test_harness", "0"}, s, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
 
+			_, _ = adb.AdbShellCmd([]string{"echo", "demo", ">", "/sys/power/wake_unlock"}, s, logger, adb.DefaultRetryAttempts, adb.DefaultCommandSeconds)
+
 			if err := adb.TeardownAdb(logger, s); err != nil {
 				logger.Printf("Failed to tear down adb connection to %s: %s", s, err)
 			}
