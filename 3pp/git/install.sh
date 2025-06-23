@@ -109,4 +109,6 @@ export LIBS
 # Look to Debian packaging definitions and git's INSTALL file for examples/info.
 make configure
 ./configure --host="$CROSS_TRIPLE" --prefix="$PREFIX" --with-libpcre2
-make install "-j$(nproc)"
+
+# avoid include <sys/random.h> for getrandom().
+make install "-j$(nproc)" CSPRNG_METHOD=""

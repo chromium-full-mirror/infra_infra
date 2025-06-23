@@ -9,6 +9,15 @@ create {
   build {
     no_toolchain: true
     tool: "tools/cpython38"
+    tool: "tools/sed"
+  }
+}
+
+create {
+  platform_re: "windows-.*"
+  build {
+    no_toolchain: true
+    tool: "tools/cpython38"
   }
 }
 

@@ -31,6 +31,10 @@ if [[ $_3PP_PLATFORM =~ windows-.*  ]]; then
       GCLOUD_BIN="$GCLOUD_BIN".cmd
 fi
 
+# We don't want to install the python to the host system.
+sed -i '/python_manager.PromptAndInstallPythonOnMac()/d' \
+       './google-cloud-sdk/lib/googlecloudsdk/core/updater/update_manager.py'
+
 "$GCLOUD_BIN" components install -q \
     alpha \
     beta \
