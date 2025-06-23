@@ -6931,6 +6931,18 @@ wheel: <
 
 * *universal*
 
+### 0.13.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/perfetto-py3"
+  version: "version:0.13.1"
+>
+```
+
+
+* *universal*
+
 ## **pexpect**
 
 ### 4.8.0.chromium.1
