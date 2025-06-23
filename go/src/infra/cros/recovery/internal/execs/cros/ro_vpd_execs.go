@@ -249,7 +249,7 @@ func matchROVPDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 			return errors.Annotate(err, "cannot read RO_VPD key").Err()
 		}
 		if value != v {
-			return errors.Annotate(err, "RO_VPD had a bad value").Err()
+			return errors.New("RO_VPD had a bad value")
 		}
 	}
 	log.Infof(ctx, "RO_VPD values are correct")
@@ -280,7 +280,7 @@ func setVPDValueExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("set VPD value by key %q: value is empty", key).Err()
 	}
 	err := vpd.Set(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), key, value)
-	return errors.Annotate(err, "set VPD value %q:%q", key, value).Err()
+	return errors.WrapIf(err, "set VPD value %q:%q", key, value)
 }
 
 // checkVPDValueExec checks VPD to read and present of value by provided key.
@@ -313,7 +313,7 @@ func setRandomStableDeviceSecretExec(ctx context.Context, info *execs.ExecInfo) 
 	value := hex.EncodeToString(bytes)
 
 	err := vpd.Set(ctx, info.DefaultHostAccess(), info.GetExecTimeout(), key, value)
-	return errors.Annotate(err, "set VPD value %q:%q", key, value).Err()
+	return errors.WrapIf(err, "set VPD value %q:%q", key, value)
 }
 
 func init() {

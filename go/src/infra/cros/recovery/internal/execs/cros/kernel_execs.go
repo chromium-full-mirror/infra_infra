@@ -43,7 +43,7 @@ func kernelBootPriorityPersistExec(ctx context.Context, info *execs.ExecInfo) er
 // switchKernelBootPriorityExec switch kernel priority.
 func switchKernelBootPriorityExec(ctx context.Context, info *execs.ExecInfo) error {
 	err := kernel.SwitchKernelPriority(ctx, info.NewRunner(info.GetDut().Name))
-	return errors.Annotate(err, "switch kernel boot priority").Err()
+	return errors.WrapIf(err, "switch kernel boot priority")
 }
 
 func init() {

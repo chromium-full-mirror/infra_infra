@@ -65,7 +65,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	log.Debugf(ctx, "Cros provision OS image path: %s", req.SystemImagePath)
 	err := info.GetAccess().Provision(ctx, req)
-	return errors.Annotate(err, "cros provision").Err()
+	return errors.WrapIf(err, "cros provision")
 }
 
 // Download image to the USB-drive.
@@ -125,7 +125,7 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("servo_usb_replacement_reason", "read-only"))
 		servoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
-	return errors.Annotate(err, "download image to usb-drive").Err()
+	return errors.WrapIf(err, "download image to usb-drive")
 }
 
 func downloadProvisionImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -169,7 +169,7 @@ func downloadProvisionImageToUSBExec(ctx context.Context, info *execs.ExecInfo) 
 		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("servo_usb_replacement_reason", "read-only"))
 		servo.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 	}
-	return errors.Annotate(err, "download image to usb-drive").Err()
+	return errors.WrapIf(err, "download image to usb-drive")
 }
 
 const (
@@ -238,7 +238,7 @@ func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) err
 	}
 	log.Debugf(ctx, "Provision camerabox tablet with image path: %s", req.SystemImagePath)
 	err = info.GetAccess().Provision(ctx, req)
-	return errors.Annotate(err, "provision camerabox tablet").Err()
+	return errors.WrapIf(err, "provision camerabox tablet")
 }
 
 func init() {

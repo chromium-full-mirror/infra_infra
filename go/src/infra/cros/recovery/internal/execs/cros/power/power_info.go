@@ -99,7 +99,7 @@ func (p *powerSupplyInfo) IsBatterySupportedState() (bool, error) {
 	case strings.HasPrefix(state, batteryStateFull):
 		return true, nil
 	}
-	return false, errors.Annotate(err, "battery supported state: unknown state %q", state).Err()
+	return false, errors.Fmt("battery supported state: unknown state %q", state)
 }
 
 // IsBatteryDischarging confirms the DUT's battery is discharging.

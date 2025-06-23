@@ -26,7 +26,7 @@ func flexSetAMTPowerStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Reason("flex set AMT power state: failed to create client").Err()
 	}
-	return errors.Annotate(client.SetPowerState(ctx, newState), "flex set AMT power state").Err()
+	return errors.WrapIf(client.SetPowerState(ctx, newState), "flex set AMT power state")
 }
 
 // Configure and return an AMTClient.
@@ -68,7 +68,7 @@ func flexAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) error 
 		return errors.Reason("flex AMT responds to ping: failed to create client").Err()
 	}
 	// Make up to 90 one-second pings.
-	return errors.Annotate(client.Ping(90), "flex AMT responds to ping").Err()
+	return errors.WrapIf(client.Ping(90), "flex AMT responds to ping")
 }
 
 func init() {

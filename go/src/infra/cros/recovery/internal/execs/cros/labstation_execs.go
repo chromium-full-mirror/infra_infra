@@ -32,7 +32,7 @@ const (
 func cleanTmpOwnerRequestExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	_, err := run(ctx, time.Minute, "crossystem clear_tpm_owner_request=1")
-	return errors.Annotate(err, "clear tpm owner request").Err()
+	return errors.WrapIf(err, "clear tpm owner request")
 }
 
 // validateUptime validate that host is up for more than a threshold

@@ -123,7 +123,7 @@ func hasEnoughFreeIndexNodesExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Annotate(convertErr, "has enough storage index nodes: convert stateful path min kilo nodes").Err()
 	}
 	err := linux.PathHasEnoughValue(ctx, info.DefaultRunner(), info.GetActiveResource(), path, linux.SpaceTypeInode, pathMinKiloIndexNodes*1000)
-	return errors.Annotate(err, "has enough storage index nodes").Err()
+	return errors.WrapIf(err, "has enough storage index nodes")
 }
 
 // hasEnoughStorageSpacePercentageExec confirms the given path has at least the percentage of free space specified by the actionArgs arguments.

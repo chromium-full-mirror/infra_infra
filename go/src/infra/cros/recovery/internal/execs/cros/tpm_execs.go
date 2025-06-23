@@ -26,7 +26,7 @@ func matchDevTPMKernelVersionExec(ctx context.Context, info *execs.ExecInfo) err
 		return nil
 	}
 	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_kernver", "0x00010001")
-	return errors.Annotate(err, "match dev tpm kernel version").Err()
+	return errors.WrapIf(err, "match dev tpm kernel version")
 }
 
 // matchDevTPMFirmwareVersionExec verifies dev's tpm firmware version is match to expected value.
@@ -40,7 +40,7 @@ func matchDevTPMFirmwareVersionExec(ctx context.Context, info *execs.ExecInfo) e
 		return nil
 	}
 	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_fwver", "0x00010001")
-	return errors.Annotate(err, "match dev tpm firmware version").Err()
+	return errors.WrapIf(err, "match dev tpm firmware version")
 }
 
 // isTPMPresentExec confirms that the given DUT's TPM is present.
@@ -51,7 +51,7 @@ func isTPMPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "tpm present").Err()
 	}
 	_, readErr := ReadCryptoHomeStatusInfo(ctx, rawOutput)
-	return errors.Annotate(readErr, "tpm present: cannot read crypto home status info").Err()
+	return errors.WrapIf(readErr, "tpm present: cannot read crypto home status info")
 }
 
 // isTPMInGoodStatusExec confirms that the given DUT's TPM is in good state.

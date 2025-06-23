@@ -55,7 +55,7 @@ func auditWiFiExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	if execs.SSHErrorInternal.In(err) || execs.SSHErrorCLINotFound.In(err) {
 		wifi.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
-		return errors.Annotate(err, "audit wifi").Err()
+		return errors.Fmt("audit wifi: %w", err)
 	}
 	if wifi.GetChipName() != "" {
 		// If wifi chip is not detected, but was expected by setup info then we
@@ -67,7 +67,7 @@ func auditWiFiExec(ctx context.Context, info *execs.ExecInfo) error {
 		wifi.State = tlw.HardwareState_HARDWARE_NOT_DETECTED
 	}
 	log.Infof(ctx, "set wifi state to be: %s", wifi.State)
-	return errors.Annotate(err, "audit wifi").Err()
+	return errors.WrapIf(err, "audit wifi")
 }
 
 func init() {
