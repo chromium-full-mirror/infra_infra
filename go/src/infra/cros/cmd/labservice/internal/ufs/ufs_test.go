@@ -165,12 +165,14 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 														Type:     "USBC",
 														ParentId: "chromeosX-rackX-rowY-hostN",
 														ChildId:  "1912901",
+														Tags:     []string{"TAG_A", "TAG_B"},
 													},
 													{
 														Type:     "USBC",
 														ParentId: "1912901",
 														ChildId:  "dock_1",
 														Speed:    100000,
+														Tags:     []string{"TAG_A"},
 													},
 													{
 														Type:     "HDMI",
@@ -463,12 +465,14 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 									Type:     "USBC",
 									ParentId: "chromeosX-rackX-rowY-hostN",
 									ChildId:  "1912901",
+									Tags:     []string{"TAG_A", "TAG_B"},
 								},
 								{
 									Type:     "USBC",
 									ParentId: "1912901",
 									ChildId:  "dock_1",
 									Speed:    100000,
+									Tags:     []string{"TAG_A"},
 								},
 								{
 									Type:     "HDMI",

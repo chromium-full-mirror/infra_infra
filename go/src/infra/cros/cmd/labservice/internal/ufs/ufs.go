@@ -262,6 +262,7 @@ func getPasit(in *lab.Pasit) *labapi.PasitHost {
 				ChildId:    c.GetChildId(),
 				Speed:      c.GetSpeed(),
 				Type:       c.GetType(),
+				Tags:       c.GetTags(),
 			},
 		)
 	}
