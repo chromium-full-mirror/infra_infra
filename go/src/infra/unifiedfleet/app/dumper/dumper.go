@@ -86,7 +86,7 @@ func dumpChangeEvent(ctx context.Context) (err error) {
 	defer func() {
 		dumpChangeEventTick.Add(ctx, 1, err == nil)
 	}()
-	ctx = logging.SetLevel(ctx, logging.Info)
+	ctx = logging.SetLevel(ctx, logging.Debug)
 	logging.Debugf(ctx, "Dumping change event to BQ")
 	return exportToBQ(ctx, dumpChangeEventHelper)
 }
