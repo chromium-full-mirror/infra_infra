@@ -3695,6 +3695,26 @@ plans:
                         - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                 - name: Simple reboot ('cros_simple_reboot') (ALWAYS_RUN)
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+        - name: Missing serial-number ('sample_fail')
+          conditions:
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+            - name: Run only in main lab ('sample_fail')
+              conditions:
+                - name: Run only on Satlab ('dut_regex_name_match')
+            - name: Is serial-number empty ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is serial-number known ('dut_has_serial_number') (ALWAYS_RUN)
+          dependencies:
+            - name: 'Set state: needs_deploy (''dut_set_state'')'
+        - name: Match serial-number (Allow to fail) ('cros_match_serial_number_inventory')
+          conditions:
+            - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+            - name: Is serial-number known ('dut_has_serial_number') (ALWAYS_RUN)
+          recoveries:
+            - name: Restore serial-number ('cros_restore_serial_number')
+              dependencies:
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+                - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
         - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')

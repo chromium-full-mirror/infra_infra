@@ -15354,6 +15354,81 @@ plans:
                   exec_name: sample_sleep
                   exec_args:
                     - sleep:1
+        - name: Missing serial-number
+          exec_name: sample_fail
+          docs:
+            - Verify if device missing serial number because deployment was skipped.
+          conditions:
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+            - name: Run only in main lab
+              exec_name: sample_fail
+              docs:
+                - Verify that DUT name is in main lab.
+              conditions:
+                - name: Run only on Satlab
+                  exec_name: dut_regex_name_match
+                  exec_args:
+                    - regex:^satlab
+                  docs:
+                    - Verify that DUT name is belong Satlab.
+            - name: Is serial-number empty (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - 'Check whether the DUT information includes its '
+                - serial number.
+              conditions:
+                - name: Is serial-number known (ALWAYS_RUN)
+                  exec_name: dut_has_serial_number
+                  docs:
+                    - 'Check whether the DUT information includes its '
+                    - serial number.
+          dependencies:
+            - name: 'Set state: needs_deploy'
+              exec_name: dut_set_state
+              exec_args:
+                - state:needs_deploy
+              docs:
+                - The action set devices with request to be redeployed.
+        - name: Match serial-number (Allow to fail)
+          exec_name: cros_match_serial_number_inventory
+          docs:
+            - Match serial number to value in inventory
+          conditions:
+            - name: Run only on ChromeOS hardware (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+            - name: Is serial-number known (ALWAYS_RUN)
+              exec_name: dut_has_serial_number
+              docs:
+                - 'Check whether the DUT information includes its '
+                - serial number.
+          recoveries:
+            - name: Restore serial-number
+              exec_name: cros_restore_serial_number
+              docs:
+                - Restore serial number from inventory to the host
+              dependencies:
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Run only on ChromeOS based DUT (ALWAYS_RUN)
+                  exec_name: cros_is_not_android_based
+                  docs:
+                    - Check if device is marked as ChromeOS based
         - name: Reset provisioned info (ALWAYS_RUN)
           exec_name: cros_reset_provision_info
           docs:

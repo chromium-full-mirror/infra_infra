@@ -31,13 +31,9 @@ func commonAndroidCriticalActions(canBecomeChromeOS bool) []string {
 		"Verify that DUT is not in DEV mode",
 		"Missing HWID",
 		"Match HWID",
+		"Missing serial-number",
+		"Match serial-number",
 	)
-	if canBecomeChromeOS {
-		actions = append(actions,
-			"Missing serial-number",
-			"Match serial-number",
-		)
-	}
 	return actions
 }
 
