@@ -121,7 +121,7 @@ func (c *runTestCmd) innerRun(ctx context.Context, a subcommands.Application, ar
 		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
 	}
 	result, err := testexec.Run(ctx, req, crosTestContainer, crosDUTContainer, c.dockerKeyFile)
-	return result, errors.Annotate(err, "inner run: failed to run tests").Err()
+	return result, errors.WrapIf(err, "inner run: failed to run tests")
 }
 
 // readTestRequest reads the jsonproto at path input request data.
@@ -134,7 +134,7 @@ func readTestRequest(p string) (*api.CrosToolRunnerTestRequest, error) {
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "inner run: read test request %q", p).Err()
+	return in, errors.WrapIf(err, "inner run: read test request %q", p)
 }
 
 // saveTestOutput saves output data to the file.

@@ -116,7 +116,7 @@ func main() {
 				return watchDMLease(ctx, lg, leaseID, pool)
 			})
 			err = eg.Wait()
-			return errors.Annotate(err, "main").Err()
+			return errors.WrapIf(err, "main")
 		},
 	)
 	log.Printf("Labpack done!")
@@ -218,7 +218,7 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 		res.FailReason = ""
 		return nil
 	}
-	return errors.Annotate(errors.MultiError(resultErrors), "run recovery").Err()
+	return errors.Fmt("run recovery: %w", errors.MultiError(resultErrors))
 }
 
 // getLeaseID gets the ID of the current lease from the build state.
@@ -270,7 +270,7 @@ func checkLeaseAlreadyExpired(
 	}
 
 	_, err := extender(ctx, leaseID, 0)
-	return errors.Annotate(err, "early check").Err()
+	return errors.WrapIf(err, "early check")
 }
 
 // watchDMLease watches the Device Manager lease associated with this build for

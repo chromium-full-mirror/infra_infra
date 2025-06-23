@@ -103,7 +103,7 @@ func (c *runTestFinderCmd) innerRun(ctx context.Context, a subcommands.Applicati
 		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
 	}
 	result, err := testfinder.Run(ctx, req, crosTestFinderContainer, c.dockerKeyFile)
-	return result, errors.Annotate(err, "inner run: failed to find tests").Err()
+	return result, errors.WrapIf(err, "inner run: failed to find tests")
 }
 
 // readTestFinderRequest reads the jsonproto at path input request data.
@@ -116,7 +116,7 @@ func readTestFinderRequest(p string) (*api.CrosToolRunnerTestFinderRequest, erro
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "inner run: read test finder request %q", p).Err()
+	return in, errors.WrapIf(err, "inner run: read test finder request %q", p)
 }
 
 // saveTestFinderOutput saves output data to the file.

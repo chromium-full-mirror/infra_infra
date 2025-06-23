@@ -35,7 +35,7 @@ func callFuncWithTimeout(ctx context.Context, timeout time.Duration, cb ctxFunc)
 	}()
 	select {
 	case <-ctxTimeout.Done():
-		return interrupted, errors.Annotate(ctxTimeout.Err(), "deadline exceeded").Err()
+		return interrupted, errors.WrapIf(ctxTimeout.Err(), "deadline exceeded")
 	case e := <-ch:
 		return completed, e
 	}

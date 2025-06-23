@@ -107,5 +107,5 @@ func readTestFinderOutput(filePath string) (*api.CrosTestFinderResponse, error) 
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, out)
-	return out, errors.Annotate(err, "read output").Err()
+	return out, errors.WrapIf(err, "read output")
 }

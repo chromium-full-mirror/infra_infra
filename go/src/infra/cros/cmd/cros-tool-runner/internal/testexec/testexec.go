@@ -75,8 +75,8 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 
 	for _, dut := range duts {
 		crosDUTDirForDut := path.Join(crosDUTDir, dut.Id.GetValue())
-		if os.MkdirAll(crosDUTDirForDut, 0755) != nil {
-			return nil, errors.Annotate(err, "run test: failed to create cros-dut directory %s", crosDUTDirForDut).Err()
+		if err := os.MkdirAll(crosDUTDirForDut, 0755); err != nil {
+			return nil, errors.Fmt("run test: failed to create cros-dut directory %s: %w", crosDUTDirForDut, err)
 		}
 		log.Printf("Run test: created the cros-dut artifact directory %s", crosDUTDirForDut)
 	}
@@ -164,7 +164,7 @@ func readTestOutput(filePath string) (*api.CrosTestResponse, error) {
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, out)
-	return out, errors.Annotate(err, "read output").Err()
+	return out, errors.WrapIf(err, "read output")
 }
 
 // prepareTestResponse prepares a response for test execution.

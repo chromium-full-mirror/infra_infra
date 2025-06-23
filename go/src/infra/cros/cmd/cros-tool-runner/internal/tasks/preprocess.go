@@ -90,7 +90,7 @@ func (c *preProcessCmd) innerRun(ctx context.Context, a subcommands.Application,
 		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
 	}
 	result, err := preprocess.Run(ctx, req, preProcessContainer, c.dockerKeyFile)
-	return result, errors.Annotate(err, "inner run: failed to find tests").Err()
+	return result, errors.WrapIf(err, "inner run: failed to find tests")
 }
 
 // readPreProcessRequest reads the jsonproto at path input request data.

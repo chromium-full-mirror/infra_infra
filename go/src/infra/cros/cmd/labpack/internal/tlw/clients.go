@@ -101,5 +101,5 @@ func httpClient(ctx context.Context) (*http.Client, error) {
 	}
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, o)
 	c, err := a.Client()
-	return c, errors.Annotate(err, "create http client").Err()
+	return c, errors.WrapIf(err, "create http client")
 }

@@ -32,7 +32,7 @@ func readContainersMetadata(p string) (*build_api.ContainerMetadata, error) {
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "read container metadata %q", p).Err()
+	return in, errors.WrapIf(err, "read container metadata %q", p)
 }
 
 func findContainer(cm *build_api.ContainerMetadata, lookupKey, name string) (*build_api.ContainerImageInfo, error) {

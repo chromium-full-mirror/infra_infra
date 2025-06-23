@@ -151,7 +151,7 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 	err = g.Wait()
 	// Read all generated results for the output.
 	out.Responses = append(out.Responses, provisionResults...)
-	return out, errors.Annotate(err, "inner run").Err()
+	return out, errors.WrapIf(err, "inner run")
 }
 
 func isEmptyEndPoint(i *labapi.IpEndpoint) bool {
@@ -168,7 +168,7 @@ func readProvisionRequest(p string) (*api.CrosToolRunnerProvisionRequest, error)
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "read provision request %q", p).Err()
+	return in, errors.WrapIf(err, "read provision request %q", p)
 }
 
 // saveOutput saves output data to the file.

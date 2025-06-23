@@ -28,7 +28,7 @@ import (
 func createLogger(ctx context.Context, logDir string, level logging.Level) (context.Context, logger.Logger, error) {
 	const callDepth = 2
 	newCtx, log, err := logger.NewLogger(ctx, callDepth, logDir, level, logger.DefaultFormat, true)
-	return newCtx, log, errors.Annotate(err, "init logger").Err()
+	return newCtx, log, errors.WrapIf(err, "init logger")
 }
 
 // printInputs prints input params.
@@ -46,7 +46,7 @@ func printInputs(ctx context.Context, input *lab.LabpackInput) (err error) {
 		return errors.Annotate(err, "failed to marshal proto").Err()
 	}
 	_, err = req.Write(msg)
-	return errors.Annotate(err, "failed to write message").Err()
+	return errors.WrapIf(err, "failed to write message")
 }
 
 // describeEnvironment describes the environment where labpack is being run.
@@ -56,7 +56,7 @@ func describeEnvironment(stderr io.Writer) error {
 	// DescriptionCommand writes its contents to stdout, so wire it up to stderr.
 	command.Stdout = stderr
 	err := command.Run()
-	return errors.Annotate(err, "describe environment").Err()
+	return errors.WrapIf(err, "describe environment")
 }
 
 // setupContextNamespace sets namespace to the context for UFS client.
@@ -73,5 +73,5 @@ func getTaskDir() (string, error) {
 		return wDir, errors.Annotate(err, "get task dir").Err()
 	}
 	absPath, err := filepath.Abs(wDir)
-	return absPath, errors.Annotate(err, "get task dir").Err()
+	return absPath, errors.WrapIf(err, "get task dir")
 }
