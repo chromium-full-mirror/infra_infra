@@ -160,7 +160,7 @@ func WithStdin() tcexec.ProcessOption {
 }
 
 func (u *LocalUFSEnv) Close() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	if err := u.comp.Down(ctx, compose.RemoveOrphans(true)); err != nil {
 		return fmt.Errorf("failed to tear down compose stack: %v", err)
