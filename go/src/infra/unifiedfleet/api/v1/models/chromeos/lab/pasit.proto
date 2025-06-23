@@ -35,6 +35,8 @@ message Pasit {
     float speed = 4;
     // The physical port type/technology, e.g. "USBA", "USBC", "HDMI".
     string type = 5;
+    // Tags associated with the connection, e.g. "DOCK", "DOCKLESS", "DAISY_CHAIN" see go/pasit-multi-topology.
+    repeated string tags = 6;
   }
 
   // A single device/component in the testbed.
