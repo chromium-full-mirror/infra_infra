@@ -70,7 +70,7 @@ func UpdateCrossystem(ctx context.Context, run components.Runner, cmd string, va
 		return errors.Annotate(err, "update crossystem value").Err()
 	}
 	if check {
-		return errors.Annotate(MatchCrossystemValueToExpectation(ctx, run, cmd, val), "update crossystem value").Err()
+		return errors.WrapIf(MatchCrossystemValueToExpectation(ctx, run, cmd, val), "update crossystem value")
 	}
 	return nil
 }

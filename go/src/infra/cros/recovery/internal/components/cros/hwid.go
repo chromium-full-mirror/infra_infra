@@ -18,8 +18,8 @@ import (
 func HostHWID(ctx context.Context, dut *tlw.Dut, timeout time.Duration, run components.Runner) (string, error) {
 	if dut.GetChromeos().GetIsAndroidBased() {
 		hwid, err := run(ctx, timeout, "getprop", "ro.boot.product.hardware.id")
-		return hwid, errors.Annotate(err, "host HWID").Err()
+		return hwid, errors.WrapIf(err, "host HWID")
 	}
 	hwid, err := run(ctx, timeout, "crossystem hwid")
-	return hwid, errors.Annotate(err, "host HWID").Err()
+	return hwid, errors.WrapIf(err, "host HWID")
 }

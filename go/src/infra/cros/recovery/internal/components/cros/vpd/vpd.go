@@ -46,7 +46,7 @@ func readValue(ctx context.Context, ha components.HostAccess, partition string, 
 func Set(ctx context.Context, ha components.HostAccess, timeout time.Duration, key, value string) error {
 	cmd := fmt.Sprintf("vpd -s %s=%s", key, value)
 	_, err := ha.Run(ctx, timeout, cmd)
-	return errors.Annotate(err, "set vpd for %q:%q", key, value).Err()
+	return errors.WrapIf(err, "set vpd for %q:%q", key, value)
 }
 
 // IsEnrollmentInClean checks that the device's is not in enrollment state.

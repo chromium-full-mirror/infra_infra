@@ -81,7 +81,7 @@ func RunFirmwareUpdater(ctx context.Context, req *FirmwareUpdaterRequest, run co
 	}
 	out, err := run(ctx, req.UpdaterTimeout, "chromeos-firmwareupdate", args...)
 	log.Debugf("Run firmware updater stdout:\n%s", out)
-	return errors.Annotate(err, "run firmware update").Err()
+	return errors.WrapIf(err, "run firmware update")
 }
 
 // DisableWriteProtect disables software-controlled write-protect for both FPROMs, and install the RO firmware
@@ -93,7 +93,7 @@ func DisableWriteProtect(ctx context.Context, run components.Runner, log logger.
 	}
 	out, err := run(ctx, timeout, "flashrom", "-p", fprom, "--wp-disable", "--wp-range=0,0")
 	log.Debugf("Disable writeProtection stdout:\n%s", out)
-	return errors.Annotate(err, "disable write-protect %q", fprom).Err()
+	return errors.WrapIf(err, "disable write-protect %q", fprom)
 }
 
 // ReadFirmwareKeysFromHost read AP keys from the host.

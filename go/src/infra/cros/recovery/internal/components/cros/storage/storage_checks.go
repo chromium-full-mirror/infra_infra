@@ -55,7 +55,7 @@ func ParseSMARTInfo(ctx context.Context, rawOutput string) (*storageSMART, error
 	return &storageSMART{
 		StorageType:  storageType,
 		StorageState: storageState,
-	}, errors.Annotate(err, "parse smart info").Err()
+	}, errors.WrapIf(err, "parse smart info")
 }
 
 type storageStateFunc func(context.Context, []string) (StorageState, error)

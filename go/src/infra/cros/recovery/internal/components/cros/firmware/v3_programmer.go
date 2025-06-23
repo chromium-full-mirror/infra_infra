@@ -100,7 +100,7 @@ func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string,
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, cmd)
 	p.log.Debugf("Program EC output: \n%s", out)
-	return errors.Annotate(err, "program ec").Err()
+	return errors.WrapIf(err, "program ec")
 }
 
 // ProgramAP programs AP firmware to devices by servo.
@@ -139,13 +139,13 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)
-	return errors.Annotate(err, "program ap").Err()
+	return errors.WrapIf(err, "program ap")
 }
 
 // Prepare programmer for actions.
 func (p *v3Programmer) Prepare(ctx context.Context) error {
 	err := p.setServodState(ctx)
-	return errors.Annotate(err, "prepare").Err()
+	return errors.WrapIf(err, "prepare")
 }
 
 func (p *v3Programmer) setServodState(ctx context.Context) error {
@@ -273,14 +273,14 @@ func gbbToInt(hex string) (int, error) {
 // isFileExist checks is provided file exists.
 func isFileExist(ctx context.Context, filepath string, run components.Runner) error {
 	_, err := run(ctx, 30*time.Second, "test", "-f", filepath)
-	return errors.Annotate(err, "if file exist: file %q does not exist", filepath).Err()
+	return errors.WrapIf(err, "if file exist: file %q does not exist", filepath)
 }
 
 // isToolPresent checks if tool is installed on the host.
 func isToolPresent(ctx context.Context, toolName string, run components.Runner) error {
 	cmd := fmt.Sprintf("which %s", toolName)
 	_, err := run(ctx, 30*time.Second, cmd)
-	return errors.Annotate(err, "tool %s is not found", toolName).Err()
+	return errors.WrapIf(err, "tool %s is not found", toolName)
 }
 
 // needsCSMEUnlock looks at the image at imagePath, and returns true if csme_unlock is supported.

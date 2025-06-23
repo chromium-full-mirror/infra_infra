@@ -123,7 +123,7 @@ func (g *ProdClient) DownloadWithGsutil(ctx context.Context, gsPath gs.Path, loc
 	if err := cmdRunner.RunCommand(ctx, &stdoutBuf, &stderrBuf, cwd, "gsutil", cmd...); err != nil {
 		if strings.Contains(stderrBuf.String(), "404") && strings.Contains(stderrBuf.String(), "does not exist") ||
 			strings.Contains(stderrBuf.String(), "No URLs matched") {
-			return errors.Annotate(shared.ErrObjectNotExist, "download (%s)", stderrBuf.String()).Err()
+			return errors.Fmt("download (%s): %w", stderrBuf.String(), shared.ErrObjectNotExist)
 		}
 		return errors.Fmt("download (%s): %w", stderrBuf.String(), err)
 	}

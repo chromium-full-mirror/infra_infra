@@ -45,5 +45,5 @@ func SetGBBByServo(ctx context.Context, gbb string, timeout time.Duration, run c
 	}
 	const setGbbCmd = "futility gbb --servo_port %d --set --flags %s"
 	_, err := run(ctx, timeout, fmt.Sprintf(setGbbCmd, servod.Port(), gbb))
-	return errors.Annotate(err, "set GBB by servo").Err()
+	return errors.WrapIf(err, "set GBB by servo")
 }

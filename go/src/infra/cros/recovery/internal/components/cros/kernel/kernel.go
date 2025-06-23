@@ -84,11 +84,11 @@ func IsKernelPriorityChanged(ctx context.Context, run components.Runner) (bool, 
 	getKernelBootPriority := func(k *KernelInfo) (int, error) {
 		v, kErr := run(ctx, time.Minute, fmt.Sprintf("cgpt show -n -i %d -P %s", k.kernelPartition, diskBlock))
 		if kErr != nil {
-			return 0, errors.Annotate(err, "kernel boot priority %q", k.name).Err()
+			return 0, errors.Fmt("kernel boot priority %q: %w", k.name, kErr)
 		}
 		p, kErr := strconv.ParseInt(v, 10, 32)
 		if kErr != nil {
-			return 0, errors.Annotate(err, "kernel boot priority %q: parse %q", k.name, v).Err()
+			return 0, errors.Fmt("kernel boot priority %q: parse %q: %w", k.name, v, kErr)
 		}
 		return int(p), nil
 	}
@@ -118,7 +118,7 @@ func SwitchKernelPriority(ctx context.Context, run components.Runner) error {
 		return errors.Annotate(err, "switch kernel priority").Err()
 	}
 	_, err = run(ctx, time.Minute, "cgpt", "prioritize", "-i", strconv.Itoa(nextKernel.kernelPartition), diskBlock)
-	return errors.Annotate(err, "switch kernel priority").Err()
+	return errors.WrapIf(err, "switch kernel priority")
 }
 
 const bootIDFile = "/proc/sys/kernel/random/boot_id"

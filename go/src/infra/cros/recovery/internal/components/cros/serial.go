@@ -18,8 +18,8 @@ import (
 func HostSerial(ctx context.Context, dut *tlw.Dut, timeout time.Duration, run components.Runner) (string, error) {
 	if dut.GetChromeos().GetIsAndroidBased() {
 		hwid, err := run(ctx, timeout, "getprop", "ro.serialno")
-		return hwid, errors.Annotate(err, "host serial-number").Err()
+		return hwid, errors.WrapIf(err, "host serial-number")
 	}
 	hwid, err := run(ctx, timeout, "vpd -g serial_number")
-	return hwid, errors.Annotate(err, "host serial-number").Err()
+	return hwid, errors.WrapIf(err, "host serial-number")
 }
