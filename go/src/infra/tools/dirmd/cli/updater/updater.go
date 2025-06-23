@@ -22,7 +22,6 @@ import (
 )
 
 var includedSubRepos = []string{
-	"native_client",
 	"third_party/angle",
 	"third_party/catapult",
 	"third_party/cros_system_api",
