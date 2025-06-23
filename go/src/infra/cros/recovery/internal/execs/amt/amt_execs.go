@@ -50,7 +50,7 @@ func healthCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	// Use this as a health check for now, since it implicity verifies that we can
 	// authenticate and get responses to our requests.
 	_, err = client.GetPowerState(ctx)
-	return errors.Annotate(err, "flex AMT is not healthy").Err()
+	return errors.WrapIf(err, "flex AMT is not healthy")
 }
 
 // amtManagerNotPresentExec checks if the AMT manager is absent.
@@ -93,7 +93,7 @@ func amtManagerAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) 
 		return errors.Reason("flex AMT responds to ping: failed to create client").Err()
 	}
 	// Make up to 90 one-second pings.
-	return errors.Annotate(client.Ping(90), "flex AMT responds to ping").Err()
+	return errors.WrapIf(client.Ping(90), "flex AMT responds to ping")
 }
 
 func init() {

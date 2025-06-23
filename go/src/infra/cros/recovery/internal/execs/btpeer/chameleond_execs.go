@@ -165,7 +165,7 @@ func installExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs
 	}
 	btpeerScopeState.Chameleond.InstalledCommit = installedCommit
 	if !strings.EqualFold(installedCommit, expectedCommit) {
-		return errors.Annotate(err, "newly installed bundle (commit %q) does not match expected bundle (commit %q)", installedCommit, expectedCommit).Err()
+		return errors.Fmt("newly installed bundle (commit %q) does not match expected bundle (commit %q)", installedCommit, expectedCommit)
 	}
 	log.Debugf(ctx, "Successfully installed expected chameleond bundle (commit %q) to btpeer", expectedCommit)
 	return nil

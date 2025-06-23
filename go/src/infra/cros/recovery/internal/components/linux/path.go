@@ -169,7 +169,7 @@ func StorageUtilizationReportOfFilesInDir(ctx context.Context, runner components
 			continue
 		}
 		if len(duDataRow) != 2 {
-			return "", errors.Annotate(err, "log report of files in dir: failed to parse du output: expected %d data columns, got %d", 2, len(duDataRow)).Err()
+			return "", errors.Fmt("log report of files in dir: failed to parse du output: expected %d data columns, got %d", 2, len(duDataRow))
 		}
 		fileBytesStr := duDataRow[0]
 		filePath := duDataRow[1]
@@ -287,7 +287,7 @@ func fetchResidingPartitionSizeInfo(ctx context.Context, runner execs.Runner, di
 	if pInfo.totalUsableBytes == 0 {
 		// Should not ever happen, but through an error here to avoid unexpected
 		// divide by zero from bad df output.
-		return nil, errors.Annotate(err, "fetch residing partition size: zero totalUsableBytes").Err()
+		return nil, errors.New("fetch residing partition size: zero totalUsableBytes")
 	}
 	pInfo.usagePercent = (float64(pInfo.usedBytes) / float64(pInfo.totalUsableBytes)) * 100.0
 	return pInfo, nil

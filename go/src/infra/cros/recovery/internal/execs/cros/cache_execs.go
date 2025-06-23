@@ -47,7 +47,7 @@ func cacheDownloadCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		cache.RecordCacheAccessFailure(ctx, downloadPath, responseCode)
 	}
-	return errors.Annotate(err, "cache download check").Err()
+	return errors.WrapIf(err, "cache download check")
 }
 
 const (
@@ -75,7 +75,7 @@ func cacheAddressDetectionkExec(ctx context.Context, info *execs.ExecInfo) error
 	}
 	client := labapi.NewInventoryServiceClient(conn)
 	if client == nil {
-		return errors.Annotate(err, "cache address detection: fail to crceate client").Err()
+		return errors.New("cache address detection: fail to create client")
 	}
 	stream, err := client.GetDutTopology(ctx,
 		&labapi.GetDutTopologyRequest{

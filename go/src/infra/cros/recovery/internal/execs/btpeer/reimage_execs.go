@@ -103,7 +103,7 @@ func disableInitrdExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	// Check that the initrd message is not in dmesg.
 	if _, err := runner.Run(ctx, 30*time.Second, "dmesg -T | grep \"initrd\""); err == nil {
-		return errors.Annotate(err, "disable initrd: failed to verify initrd is disabled on device after reboot").Err()
+		return errors.New("disable initrd: failed to verify initrd is disabled on device after reboot")
 	}
 
 	return nil
@@ -382,7 +382,7 @@ func hasPartitionsWithLabelsExec(ctx context.Context, info *execs.ExecInfo) erro
 		log.Infof(ctx, "Found device: %q with label: %q", label, device)
 	}
 	if expectMatch {
-		return errors.Annotate(err, "has partitions with labels: failed to confirm that partitions with all labels exist as expected (expect_match=true)").Err()
+		return errors.WrapIf(err, "has partitions with labels: failed to confirm that partitions with all labels exist as expected (expect_match=true)")
 	}
 	if err == nil {
 		return errors.Reason("has partitions with labels: device not expected to have partitions with all labels (expect_match=false)").Err()

@@ -225,7 +225,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 			// Return error to report for step and metrics but stop from return to parent.
 			forgiveError = true
 		}
-		return nil, actionFailCache, errors.Annotate(aErr, "run action %q: (cached)", actionName).Err()
+		return nil, actionFailCache, errors.Fmt("run action %q: (cached): %w", actionName, aErr)
 	}
 	if r.args != nil && r.metricSaver != nil {
 		var metricKind string
@@ -404,7 +404,7 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 	}()
 	select {
 	case err := <-cw:
-		return errors.Annotate(err, "run exec %q with timeout %s", a.ExecName, timeout).Err()
+		return errors.WrapIf(err, "run exec %q with timeout %s", a.ExecName, timeout)
 	case <-ctx.Done():
 		log.Infof(ctx, "Run exec %q with timeout %s: exited due to timeout", a.ExecName, timeout)
 		return errors.Reason("run exec %q with timeout %s: exited due to timeout", a.ExecName, timeout).Err()

@@ -135,13 +135,13 @@ func UpdateUSBVisibility(ctx context.Context, v USBVisible, servod components.Se
 	switch v {
 	case USBVisibleOff:
 		err := servod.Set(ctx, "image_usbkey_pwr", "off")
-		return errors.Annotate(err, "update usb visibility").Err()
+		return errors.WrapIf(err, "update usb visibility")
 	case USBVisibleDUT:
 		err := servod.Set(ctx, "image_usbkey_direction", "dut_sees_usbkey")
-		return errors.Annotate(err, "update usb visibility").Err()
+		return errors.WrapIf(err, "update usb visibility")
 	case USBVisibleHost:
 		err := servod.Set(ctx, "image_usbkey_direction", "servo_sees_usbkey")
-		return errors.Annotate(err, "update usb visibility").Err()
+		return errors.WrapIf(err, "update usb visibility")
 	default:
 		return errors.Reason("update usb visibility: unsupported %v option", v).Err()
 	}

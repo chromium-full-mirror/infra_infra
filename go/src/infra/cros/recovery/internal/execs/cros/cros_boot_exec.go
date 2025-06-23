@@ -22,7 +22,7 @@ import (
 // isBootedFromExternalStorageExec verify that device has been booted from external storage.
 func isBootedFromExternalStorageExec(ctx context.Context, info *execs.ExecInfo) error {
 	err := storage.IsBootedFromExternalStorage(ctx, info.NewRunner(info.GetDut().Name))
-	return errors.Annotate(err, "is booted from external storage").Err()
+	return errors.WrapIf(err, "is booted from external storage")
 }
 
 // readBootIdExec reads bootId of the host.

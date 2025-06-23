@@ -32,5 +32,5 @@ func MountDrive(ctx context.Context, run components.Runner, mountPath, srcPath s
 // UnmountDrive unmounts a drive from host.
 func UnmountDrive(ctx context.Context, run components.Runner, mountPath string) error {
 	_, err := run(ctx, minRunTimeout, "umount", mountPath)
-	return errors.Annotate(err, "unmount drive %q", mountPath).Err()
+	return errors.WrapIf(err, "unmount drive %q", mountPath)
 }

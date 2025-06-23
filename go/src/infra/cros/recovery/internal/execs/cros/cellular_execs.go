@@ -518,7 +518,7 @@ func auditCellularModemExec(ctx context.Context, info *execs.ExecInfo) error {
 		return nil
 	}
 
-	err = errors.Annotate(err, "audit cellular modem").Err()
+	err = errors.Fmt("audit cellular modem: %w", err)
 	if execs.SSHErrorInternal.In(err) {
 		c.ModemState = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return err
