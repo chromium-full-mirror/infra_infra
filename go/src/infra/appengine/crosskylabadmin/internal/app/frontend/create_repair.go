@@ -169,7 +169,7 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 			logging.Errorf(ctx, "scheduke attempt %d/%d failed with error %s", attemptNumber, schedukeRetries, err)
 		}
 	}
-	return url, errors.Annotate(err, "create repair task").Err()
+	return url, errors.WrapIf(err, "create repair task")
 }
 
 // DUTRoutingInfo is all the deterministic information about a DUT that is necessary to decide

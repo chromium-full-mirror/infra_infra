@@ -38,7 +38,7 @@ func findVersion(ctx context.Context, key keys.Builder) (*lab_platform.StableVer
 		return entity.Version, nil
 	}
 	logging.Infof(ctx, "Find recovery version: no version for key=%q: %s", key, err.Error())
-	return nil, errors.Annotate(err, "find recovery version").Err()
+	return nil, errors.Fmt("find recovery version: %w", err)
 }
 
 // FindVersion find a stable-version from datastore.

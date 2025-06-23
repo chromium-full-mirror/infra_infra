@@ -111,12 +111,12 @@ func (r *createModelRun) writeModel(ctx context.Context, dir string) error {
 
 	eg.Go(func() error {
 		err := r.writeFileGraphModel(ctx, filepath.Join(dir, "git-file-graph"))
-		return errors.Annotate(err, "failed to write file graph model").Err()
+		return errors.WrapIf(err, "failed to write file graph model")
 	})
 
 	eg.Go(func() error {
 		err := r.writeTestFileSet(ctx, filepath.Join(dir, "test-files.jsonl"))
-		return errors.Annotate(err, "failed to write test file set").Err()
+		return errors.WrapIf(err, "failed to write test file set")
 	})
 
 	return eg.Wait()
@@ -138,12 +138,12 @@ func (r *createModelRun) writeFileGraphModel(ctx context.Context, dir string) er
 
 	eg.Go(func() error {
 		err := r.writeFileGraph(ctx, filepath.Join(dir, "graph.fg"))
-		return errors.Annotate(err, "failed to write file graph").Err()
+		return errors.WrapIf(err, "failed to write file graph")
 	})
 
 	eg.Go(func() error {
 		err := r.writeStrategyConfig(ctx, filepath.Join(dir, "config.json"))
-		return errors.Annotate(err, "failed to write strategy config").Err()
+		return errors.WrapIf(err, "failed to write strategy config")
 	})
 
 	return eg.Wait()

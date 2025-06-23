@@ -153,17 +153,17 @@ func (r *createModelRun) writeModel(ctx context.Context, dir string) error {
 
 	eg.Go(func() error {
 		err := r.writeFileGraphModel(ctx, filepath.Join(dir, "git-file-graph"))
-		return errors.Annotate(err, "failed to write file graph model").Err()
+		return errors.WrapIf(err, "failed to write file graph model")
 	})
 
 	eg.Go(func() error {
 		err := r.writeTestFileSet(ctx, filepath.Join(dir, "test-files.jsonl"))
-		return errors.Annotate(err, "failed to write test file set").Err()
+		return errors.WrapIf(err, "failed to write test file set")
 	})
 
 	eg.Go(func() error {
 		err := r.writeCurrentStability(ctx, filepath.Join(dir, "test-stability.jsonl"))
-		return errors.Annotate(err, "failed to write test stability set").Err()
+		return errors.WrapIf(err, "failed to write test stability set")
 	})
 
 	return eg.Wait()

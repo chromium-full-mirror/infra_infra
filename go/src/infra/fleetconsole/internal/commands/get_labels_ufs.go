@@ -65,5 +65,5 @@ func (c *getLabelsUFSCommand) innerRun(ctx context.Context, a subcommands.Applic
 		return errors.Annotate(err, "GetLabelsUFS").Err()
 	}
 	showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "GetLabelsUFS").Err()
+	return nil
 }

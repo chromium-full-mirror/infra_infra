@@ -66,7 +66,7 @@ func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application
 			return errors.Annotate(err, "ping (default)").Err()
 		}
 		showProto(a.GetOut(), resp)
-		return errors.Annotate(err, "ping (default)").Err()
+		return nil
 	case "direct":
 		ufsClient, err := ufsclients.NewUFSClientFromCLI(ctx, ufsclient.UfsProdURL, &c.AuthFlags, nil)
 		if err != nil {
@@ -79,7 +79,7 @@ func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application
 			return errors.Annotate(err, "ping (direct)").Err()
 		}
 		showProto(a.GetOut(), resp)
-		return errors.Annotate(err, "ping (direct)").Err()
+		return nil
 	}
 	return fmt.Errorf("bad mode %q", c.mode)
 }

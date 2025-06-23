@@ -115,7 +115,7 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 			exe, cmd, err = bootstrap.DownloadPackages(ctx, bootstrapInput, opts.packagesRoot, map[string]chan<- string{
 				bootstrap.DepotToolsId: depotToolsCh,
 			})
-			return errors.Annotate(err, "failed to download necessary packages").Err()
+			return errors.WrapIf(err, "failed to download necessary packages")
 		})
 
 		group.Go(func() error {

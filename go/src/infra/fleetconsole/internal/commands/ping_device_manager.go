@@ -65,7 +65,7 @@ func (c *pingDeviceManagerCommand) innerRun(ctx context.Context, a subcommands.A
 			return errors.Annotate(err, "ping (default)").Err()
 		}
 		showProto(a.GetOut(), resp)
-		return errors.Annotate(err, "ping (default)").Err()
+		return nil
 	case "direct":
 		client, err := dmClient(ctx, devicemanagerclient.DMProdURL, c.AuthFlags)
 		if err != nil {

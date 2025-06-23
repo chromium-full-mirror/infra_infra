@@ -142,21 +142,21 @@ func (r *selectRun) loadInput(ctx context.Context) error {
 	gitGraphDir := filepath.Join(r.ModelDir, "git-file-graph")
 	eg.Go(func() error {
 		err := r.LoadGraph(filepath.Join(gitGraphDir, "graph.fg"))
-		return errors.Annotate(err, "failed to load file graph").Err()
+		return errors.WrapIf(err, "failed to load file graph")
 	})
 	eg.Go(func() error {
 		err := r.LoadStrategy(filepath.Join(gitGraphDir, "config.json"))
-		return errors.Annotate(err, "failed to load eval results").Err()
+		return errors.WrapIf(err, "failed to load eval results")
 	})
 
 	eg.Go(func() (err error) {
 		err = r.LoadTestFileSet(filepath.Join(r.ModelDir, "test-files.jsonl"))
-		return errors.Annotate(err, "failed to load test files set").Err()
+		return errors.WrapIf(err, "failed to load test files set")
 	})
 
 	eg.Go(func() (err error) {
 		err = r.LoadChangedFiles()
-		return errors.Annotate(err, "failed to load changed files").Err()
+		return errors.WrapIf(err, "failed to load changed files")
 	})
 
 	return eg.Wait()
