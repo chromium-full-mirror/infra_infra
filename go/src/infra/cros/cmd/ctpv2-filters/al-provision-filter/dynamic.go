@@ -134,7 +134,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 					},
 					{
 						PartitionName: "vendor_dlkm_a",
-						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "vendor_dlkm.img"),
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "vendor_dlkm.flatten.img"),
 					},
 					{
 						PartitionName: "vendor_boot_a",
