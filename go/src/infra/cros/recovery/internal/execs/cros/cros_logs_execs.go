@@ -67,7 +67,7 @@ func dmesgExec(ctx context.Context, info *execs.ExecInfo) error {
 	f := filepath.Join(logRoot, "dmesg")
 	log.Debugf(ctx, "dmesg path to safe: %s", f)
 	err = os.WriteFile(f, []byte(output), defaultFilePermissions)
-	return errors.Annotate(err, "dmesg exec").Err()
+	return errors.WrapIf(err, "dmesg exec")
 }
 
 // copyToLogsExec grabs a file or directory from the host and copy to
@@ -198,7 +198,7 @@ func createLogCollectionInfoExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Annotate(err, "create log collection info").Err()
 	}
 	_, err = infoFile.WriteString(fmt.Sprintf("Retrieved the prior logs at %q\n", time.Now()))
-	return errors.Annotate(err, "create log collection info").Err()
+	return errors.WrapIf(err, "create log collection info")
 }
 
 // confirmFileNotExistsExec confirms that the file mentioned in the
@@ -220,7 +220,7 @@ func confirmFileNotExistsExec(ctx context.Context, info *execs.ExecInfo) error {
 		return nil
 	}
 	log.Debugf("Confirm File Not Exists: cannot determine whether the file %q exists or not.", infoFilePath)
-	return errors.Annotate(err, "confirm file not exists").Err()
+	return errors.Fmt("confirm file not exists: %w", err)
 }
 
 // verboseShillLogsExec enables/disables verbose shill logs.

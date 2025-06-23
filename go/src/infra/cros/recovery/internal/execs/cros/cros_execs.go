@@ -176,14 +176,14 @@ func readOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 func isDefaultBootFromDiskExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	err := cros.MatchCrossystemValueToExpectation(ctx, run, "dev_default_boot", "disk")
-	return errors.Annotate(err, "default boot from disk").Err()
+	return errors.WrapIf(err, "default boot from disk")
 }
 
 // isNotInDevModeExec confirms that the host is not in dev mode.
 func isNotInDevModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	err := cros.MatchCrossystemValueToExpectation(ctx, run, "devsw_boot", "0")
-	return errors.Annotate(err, "not in dev mode").Err()
+	return errors.WrapIf(err, "not in dev mode")
 }
 
 // hasDefaultGBBFlagsByHostExec checks that device has default GBB flags.
@@ -395,7 +395,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
 	const setGbbCmd = "futility gbb --set --flash --flags %s"
 	_, err := run(ctx, runTimeout, fmt.Sprintf(setGbbCmd, gbbHex))
-	return errors.Annotate(err, "cros set GBB flags").Err()
+	return errors.WrapIf(err, "cros set GBB flags")
 }
 
 // crosSwitchToSecureModeExec disables booting into dev-mode on the DUT.
@@ -422,7 +422,7 @@ func updateCrossystemExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	checkAfterUpdate := argsMap.AsBool(ctx, "check_after_update", false)
 	run := info.NewRunner(info.GetDut().Name)
-	return errors.Annotate(cros.UpdateCrossystem(ctx, run, command, val, checkAfterUpdate), "update crossystem").Err()
+	return errors.WrapIf(cros.UpdateCrossystem(ctx, run, command, val, checkAfterUpdate), "update crossystem")
 }
 
 // logTypeCStatus logs the type-C status from the DUT's perspective.

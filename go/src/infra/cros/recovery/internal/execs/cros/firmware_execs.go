@@ -102,7 +102,7 @@ func runDisableFPROMWriteProtectExec(ctx context.Context, info *execs.ExecInfo) 
 	am := info.GetActionArgs(ctx)
 	fprom := am.AsString(ctx, "fprom", "")
 	err := firmware.DisableWriteProtect(ctx, run, info.NewLogger(), info.GetExecTimeout(), fprom)
-	return errors.Annotate(err, "disable fprom: %q write-protect", fprom).Err()
+	return errors.WrapIf(err, "disable fprom: %q write-protect", fprom)
 }
 
 func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {

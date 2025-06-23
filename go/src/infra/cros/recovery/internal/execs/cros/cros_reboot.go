@@ -19,12 +19,12 @@ func simpleRebootExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetChromeos().GetIsAndroidBased() {
 		// Trigger ADB reboot.
 		_, err := adb.Exec(ctx, info.GetDut(), timeout, "reboot")
-		return errors.Annotate(err, "adb command").Err()
+		return errors.WrapIf(err, "adb command")
 	}
 	// trigger rebot from the host for ChromeOS.
 	run := info.NewBackgroundRunner(info.GetDut().Name)
 	_, err := run(ctx, info.GetExecTimeout(), "reboot")
-	return errors.Annotate(err, "simple reboot").Err()
+	return errors.WrapIf(err, "simple reboot")
 }
 
 func init() {

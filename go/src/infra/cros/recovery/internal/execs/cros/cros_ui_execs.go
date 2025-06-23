@@ -25,7 +25,7 @@ func stopSartUIExec(ctx context.Context, info *execs.ExecInfo) error {
 	if execs.SSHErrorLinuxTimeout.In(err) {
 		// Timeout Running the command.
 		log.Debugf(ctx, "Got timeout when stop ui/start ui. DUT might crash.")
-		return errors.Annotate(err, "stop start ui").Err()
+		return errors.Fmt("stop start ui: %w", err)
 	} else if err != nil {
 		log.Debugf(ctx, "Not Critical: %s", err)
 	}

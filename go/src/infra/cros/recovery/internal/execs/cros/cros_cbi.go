@@ -33,7 +33,7 @@ func restoreCBIContentsFromUFS(ctx context.Context, info *execs.ExecInfo) error 
 	}
 
 	err = cbi.WriteCBIContents(ctx, runner, cbiLocation, info.GetChromeos().GetCbi())
-	return errors.Annotate(err, "restore CBI contents from UFS").Err()
+	return errors.WrapIf(err, "restore CBI contents from UFS")
 }
 
 // invalidateCBICache clears the current CBI cache to ensure that any existing
@@ -42,7 +42,7 @@ func restoreCBIContentsFromUFS(ctx context.Context, info *execs.ExecInfo) error 
 func invalidateCBICache(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.GetDut().Name)
 	err := cbi.InvalidateCBICache(ctx, runner)
-	return errors.Annotate(err, "invalidate CBI cache").Err()
+	return errors.WrapIf(err, "invalidate CBI cache")
 }
 
 // ufsContainsCBIContents returns nil if CBI Contents were previously stored for

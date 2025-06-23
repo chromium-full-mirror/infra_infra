@@ -35,14 +35,14 @@ const (
 // @param region: "RW" or "RO"
 func GetCr50FwVersion(ctx context.Context, r execs.Runner, region CR50Region) (string, error) {
 	fwVersion, err := cr50FWComponent(ctx, r, region, findFWVersionRegexp)
-	return fwVersion, errors.Annotate(err, "get cr50 fw version").Err()
+	return fwVersion, errors.WrapIf(err, "get cr50 fw version")
 }
 
 // GetCr50FwKeyID gets the cr 50 firmware RO/RW key id based on the region parameter.
 // @param region: "RW" or "RO"
 func GetCr50FwKeyID(ctx context.Context, r execs.Runner, region CR50Region) (string, error) {
 	fwVersion, err := cr50FWComponent(ctx, r, region, findFWKeyIdRegexp)
-	return fwVersion, errors.Annotate(err, "get cr 50 fw key id").Err()
+	return fwVersion, errors.WrapIf(err, "get cr 50 fw key id")
 }
 
 const (

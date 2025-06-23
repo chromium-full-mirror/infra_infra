@@ -73,16 +73,17 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 			info.GetDut().State = dutstate.NeedsReplacement
 			info.GetDut().DutStateReason = issueReason
 			log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-			newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag)
+			err := retry.LoopBreakTag.Apply(
+				errors.Fmt("install from usb drive in recovery mode: storage needs replacement: %w", err))
 			if actionArgs.AsBool(ctx, "allowed_abort_plan", true) {
-				newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+				err = execs.PlanAbortTag.Apply(err)
 			}
-			return newAnnotator.Err()
+			return err
 		} else {
 			log.Debugf(ctx, "Detected storage issue: %s", issueReason)
 		}
 	}
-	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
+	return errors.WrapIf(err, "run install os after boot from USB-drive")
 }
 
 // installFromUSBDriveInRecoveryModeExec re-installs a test image from USB.

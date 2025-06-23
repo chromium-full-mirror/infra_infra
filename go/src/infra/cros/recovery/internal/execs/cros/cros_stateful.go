@@ -18,7 +18,7 @@ func matchStatefulWithOSExec(ctx context.Context, info *execs.ExecInfo) error {
 	// TODO(b:232147693): Implement target logic. More detail in the bug.
 	run := info.DefaultRunner()
 	_, err := run(ctx, time.Minute, "true")
-	return errors.Annotate(err, "match stateful with OS").Err()
+	return errors.WrapIf(err, "match stateful with OS")
 }
 
 func init() {

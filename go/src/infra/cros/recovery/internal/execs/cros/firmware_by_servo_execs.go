@@ -108,7 +108,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		req.ECTarget = info.GetChromeos().GetFirmwareInfo().GetEcTarget()
 	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
-	return errors.Annotate(err, "%s", mn).Err()
+	return errors.WrapIf(err, "%s", mn)
 }
 
 // defaultFwFolderPath provides default path to directory used for firmware extraction.
@@ -121,7 +121,7 @@ func disableSoftwareWriteProtectionByServo(ctx context.Context, info *execs.Exec
 	runner := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	servodPort := int(info.GetChromeos().GetServo().GetServodPort())
 	err := firmware.DisableSoftwareWriteProtectionByServo(ctx, runner, servodPort, info.GetExecTimeout())
-	return errors.Annotate(err, "disable software write protection").Err()
+	return errors.WrapIf(err, "disable software write protection")
 }
 
 func init() {
