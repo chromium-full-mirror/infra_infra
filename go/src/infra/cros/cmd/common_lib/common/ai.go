@@ -7,7 +7,6 @@ package common
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
@@ -20,6 +19,7 @@ const (
 	// models
 	Gemini15Flash = "gemini-1.5-flash"
 	Gemini20Flash = "gemini-2.0-flash"
+	Gemini25Flash = "gemini-2.5-flash"
 	// CTPContext is the context for model
 	CTPContext = "CTP orchestrates tests on versioned board/model OS images using hermetic test runners. It receives requests specifying test suites and target images as scheduling targets."
 	// CTPTopLevelPrompt is prompt used to identify/summarize issue for CTP execution
@@ -33,17 +33,17 @@ func AISummarize(ctx context.Context, context string, prompt string, apiKey stri
 	// TODO: generate API_KEY for TSE project and store in Secrets Manager
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
-		log.Fatal(err)
-		return "", err
+		logging.Infof(ctx, "Failed to create Gemini AI client: %v", err)
+		return "", fmt.Errorf("failed to create Gemini AI client: %w", err)
 	}
 	defer client.Close()
 
 	// TODO: Allow use of other and more recent models reather than just one.
-	model := client.GenerativeModel(Gemini20Flash)
+	model := client.GenerativeModel(Gemini25Flash)
 	resp, err := model.GenerateContent(ctx, genai.Text("context: \n"+context+"\n"+"prompt: \n"+prompt))
 	if err != nil {
-		log.Fatal(err)
-		return "", err
+		logging.Infof(ctx, "Gemini API GenerateContent call failed: %v", err)
+		return "", fmt.Errorf("Gemini API content generation failed: %w", err)
 	}
 	response := ""
 
@@ -55,6 +55,7 @@ func AISummarize(ctx context.Context, context string, prompt string, apiKey stri
 			}
 		}
 	}
+	// Apply pretty formatting if requested.
 	if prettyFormat {
 		response = format(response)
 	}
