@@ -172,6 +172,32 @@ func insertContainerForChromeos(req *api.InternalTestplan,
 	generator.AddInsertion(containersEndTask, insertAtEnd)
 
 	dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+
+	// Attach the ls nexus container to its corresponding device in cros-test.
+	attachLsNexusContainerToCrosTestDevice(req, log, container.GetDynamicIdentifier(), *count)
+}
+
+func attachLsNexusContainerToCrosTestDevice(req *api.InternalTestplan, log *log.Logger, identifier string, count int) {
+	generator := generators.NewModifyGenerator(dynamiccommon.FindByDynamicIdentifier(common.CrosTest))
+
+	key := "testRequest.primary.lsnexusServer"
+	if count != 0 {
+		key = fmt.Sprintf("testRequest.companions.%d.lsnexusServer", count-1)
+	}
+	generator.AddModification(
+		&api.DynamicDep{
+			Key:   key,
+			Value: identifier,
+		},
+		map[string]string{
+			"test.dynamicDeps": "",
+		},
+	)
+
+	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+	if err != nil {
+		log.Printf("Error while modifying test request, %s", err)
+	}
 }
 
 // createContainerForDevice will create a container for Chromeos devices.
