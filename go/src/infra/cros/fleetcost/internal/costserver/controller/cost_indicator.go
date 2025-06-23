@@ -133,7 +133,7 @@ func getCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, u
 		return nil, nil
 	}
 
-	return nil, errors.Annotate(datastore.ErrNoSuchEntity, "error looking up %q", attribute.ErrorHint).Err()
+	return nil, errors.Fmt("error looking up %q: %w", attribute.ErrorHint, datastore.ErrNoSuchEntity)
 }
 
 // getCostIndicatorValueDirectly gets the value of a cost indicator.

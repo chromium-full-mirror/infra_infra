@@ -202,5 +202,5 @@ func UpdateCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity,
 
 // DeleteCostIndicatorEntity deletes a cost indicator entity.
 func DeleteCostIndicatorEntity(ctx context.Context, entity *CostIndicatorEntity) error {
-	return errors.Annotate(datastore.Delete(ctx, entity), "delete cost indicator").Err()
+	return errors.WrapIf(datastore.Delete(ctx, entity), "delete cost indicator")
 }

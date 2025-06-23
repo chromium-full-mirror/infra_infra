@@ -99,5 +99,5 @@ func (c *deleteCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		return errors.Annotate(err, "delete cost result").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "delete cost result").Err()
+	return errors.WrapIf(err, "delete cost result")
 }

@@ -88,7 +88,7 @@ func structPBToTestRunnerRequest(from *structpb.Value) (*runner.Request, error) 
 	}
 	request, ok := res.(*runner.Request)
 	if !ok {
-		return nil, errors.Annotate(err, "struct PB to TestRunner request").Err()
+		return nil, errors.New("struct PB to TestRunner request: not a runner.Request")
 	}
 	return request, nil
 }
@@ -101,7 +101,7 @@ func extractTestRunnerResult(rs *structpb.Value) (*runner.Result, error) {
 		}
 		result, ok := pb.(*runner.Result)
 		if !ok {
-			return nil, errors.Annotate(err, "extract TestRunner Build Data").Err()
+			return nil, errors.New("extract TestRunner Build Data: not a runner.Result")
 		}
 		return result, nil
 	}

@@ -88,5 +88,5 @@ func (c *persistToBigqueryCommand) innerRun(ctx context.Context, a subcommands.A
 		return errors.Annotate(err, "persist to bigquery").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "persist to bigquery").Err()
+	return errors.WrapIf(err, "persist to bigquery")
 }

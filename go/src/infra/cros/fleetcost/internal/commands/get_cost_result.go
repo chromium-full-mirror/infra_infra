@@ -105,5 +105,5 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 	}
 	c.commonFlags.VerboseLog(a, "RPC call succeeded")
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "get cost result").Err()
+	return errors.WrapIf(err, "get cost result")
 }

@@ -537,7 +537,7 @@ func uploadCrash(ctx context.Context, config *phosphorus.FetchCrashesStep, crash
 		return "", errors.Annotate(err, "uploading crash").Err()
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return "", errors.Annotate(err, "server returned %s", resp.Status).Err()
+		return "", errors.Fmt("server returned %s", resp.Status)
 	}
 	var id strings.Builder
 	if _, err := io.Copy(&id, resp.Body); err != nil {

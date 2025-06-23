@@ -304,7 +304,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		DevHostProxyAddresses: c.devHostProxyAddresses,
 	}
 	if uErr := in.UseConfigFile(c.configFile); uErr != nil {
-		return errors.Annotate(err, "local recovery").Err()
+		return errors.Fmt("local recovery: %w", uErr)
 	}
 	if err = recovery.Run(ctx, in); err != nil {
 		return errors.Annotate(err, "local recovery").Err()
@@ -325,7 +325,7 @@ func (c *localRecoveryRun) getLogRoot() (string, error) {
 		return logRoot, errors.Annotate(err, "get log root").Err()
 	}
 	err = os.MkdirAll(logRoot, 0755)
-	return logRoot, errors.Annotate(err, "get log root").Err()
+	return logRoot, errors.WrapIf(err, "get log root")
 }
 
 // recoveryLogger represents local recovery logger implementation.
@@ -347,7 +347,7 @@ func (c *localRecoveryRun) createLogger(ctx context.Context, logDir string) (*re
 	l := &recoveryLogger{}
 	_, log, err := logger.NewLogger(ctx, callDepth, logDir, stdLevel, logger.DefaultFormat, c.generateLogFiles)
 	l.log = log
-	return l, errors.Annotate(err, "create logger").Err()
+	return l, errors.WrapIf(err, "create logger")
 }
 
 // Close log resources.

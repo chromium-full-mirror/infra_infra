@@ -44,7 +44,7 @@ func RunGit(gitRepo string, cmd []string) (CommandOutput, error) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 	err := CommandRunnerImpl.RunCommand(ctx, &stdoutBuf, &stderrBuf, gitRepo, "git", cmd...)
 	cmdOutput := CommandOutput{stdoutBuf.String(), stderrBuf.String()}
-	return cmdOutput, errors.Annotate(err, cmdOutput.Stderr).Err()
+	return cmdOutput, errors.WrapIf(err, cmdOutput.Stderr)
 }
 
 // RunGitIgnoreOutput runs the specified git command in the specified repo a
@@ -127,7 +127,7 @@ func GetGitRepoRevision(cwd, branch string) (string, error) {
 		branch = NormalizeRef(branch)
 	}
 	output, err := RunGit(cwd, []string{"rev-parse", branch})
-	return strings.TrimSpace(output.Stdout), errors.Annotate(err, output.Stderr).Err()
+	return strings.TrimSpace(output.Stdout), errors.WrapIf(err, output.Stderr)
 }
 
 // IsReachable determines whether one commit ref is reachable from another.

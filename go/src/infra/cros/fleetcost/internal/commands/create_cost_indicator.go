@@ -123,5 +123,5 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		return errors.Annotate(err, "create cost indicator command").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "create cost indicator command").Err()
+	return errors.WrapIf(err, "create cost indicator command")
 }

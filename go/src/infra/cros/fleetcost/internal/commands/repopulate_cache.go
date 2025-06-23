@@ -83,5 +83,5 @@ func (c *repopulateCacheCommand) innerRun(ctx context.Context, a subcommands.App
 		return errors.Annotate(err, "repopulate cache").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "repopulate cache").Err()
+	return errors.WrapIf(err, "repopulate cache")
 }

@@ -78,5 +78,5 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 		return errors.Annotate(err, "ping").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "ping").Err()
+	return errors.WrapIf(err, "ping")
 }

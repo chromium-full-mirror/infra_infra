@@ -156,5 +156,5 @@ func (c *updateCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		return errors.Annotate(err, "update cost indicator command").Err()
 	}
 	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "update cost indicator command").Err()
+	return errors.WrapIf(err, "update cost indicator command")
 }
