@@ -378,7 +378,7 @@ func GetCftServiceMetadataFromFile(ctx context.Context, metadataFilePath string,
 
 	logging.Infof(ctx, "filefound: %v, remainingretrycount: %v, timeout: %v", fileFound, retryCount, timeout)
 	if !fileFound {
-		return nil, errors.Annotate(err, "error while retrieving service metadata: ").Err()
+		return nil, errors.Fmt("error while retrieving service metadata: %w", err)
 	}
 
 	fileContentsMap, err := GetFileContentsInMap(ctx, metadataFilePath, CftServiceMetadataLineContentSeparator, fileLog)

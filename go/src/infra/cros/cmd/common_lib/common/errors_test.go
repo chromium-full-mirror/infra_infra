@@ -24,7 +24,7 @@ func TestIsTestRunnerError(t *testing.T) {
 		t.Errorf("TestRunnerError [%v] won't unwrap correctly (got [%v], want [%v])", tre, tre.Unwrap(), original)
 	}
 
-	wrapped := fmt.Errorf("wrapped again: %w", lucierrs.Annotate(lucierrs.Append(errors.New("bar error"), fmt.Errorf("wrapped error: %w", tre)), "annotated err").Err())
+	wrapped := fmt.Errorf("wrapped again: %w", lucierrs.Fmt("annotated err: %w", lucierrs.Append(errors.New("bar error"), fmt.Errorf("wrapped error: %w", tre))))
 	var unwrappedTRE *TestRunnerError
 	if ok := lucierrs.As(wrapped, &unwrappedTRE); !ok {
 		t.Errorf("wrapped error [%v] not unwrapping to TestRunnerError", wrapped)

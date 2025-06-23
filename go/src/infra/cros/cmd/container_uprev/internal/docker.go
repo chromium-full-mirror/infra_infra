@@ -156,7 +156,7 @@ func buildAndPush(ctx context.Context, imageCache *sync.Map, repo *Repository, d
 	// Tag to match repository info.
 	stdout, _, innerErr := tagImage(ctx, localname, fullname)
 	if innerErr != nil {
-		innerErr = errors.Annotate(err, "failed to push image").Err()
+		innerErr = errors.Fmt("failed to push image: %w", innerErr)
 		err = errors.Append(err, innerErr)
 		return
 	}
@@ -164,14 +164,14 @@ func buildAndPush(ctx context.Context, imageCache *sync.Map, repo *Repository, d
 	// Push image to the repository.
 	stdout, _, innerErr = pushImage(ctx, fullname)
 	if innerErr != nil {
-		innerErr = errors.Annotate(err, "failed to push image").Err()
+		innerErr = errors.Fmt("failed to push image: %w", innerErr)
 		err = errors.Append(err, innerErr)
 		return
 	}
 
 	sha, innerErr := extractDigestFromPushOutput(stdout)
 	if innerErr != nil {
-		innerErr = errors.Annotate(err, "name").Err()
+		innerErr = errors.Fmt("name: %w", innerErr)
 		err = errors.Append(err, innerErr)
 		return
 	}

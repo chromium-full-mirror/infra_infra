@@ -91,5 +91,5 @@ func readPreProcessInput(filePath string) (*api.FilterFlakyResponse, error) {
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, out)
-	return out, errors.Annotate(err, "read output").Err()
+	return out, errors.WrapIf(err, "read output")
 }

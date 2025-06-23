@@ -103,7 +103,7 @@ func readPreProcessRequest(p string) (*api.CrosToolRunnerPreTestRequest, error) 
 
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "inner run: read pre-process request %q", p).Err()
+	return in, errors.WrapIf(err, "inner run: read pre-process request %q", p)
 }
 
 // savePreProcessOutput saves output data to the file.

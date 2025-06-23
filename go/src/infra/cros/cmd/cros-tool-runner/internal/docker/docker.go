@@ -300,7 +300,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		log.Println("Runing Blocking Docker Run")
 		so, se, err := common.RunWithTimeout(ctx, cmd, time.Hour, block)
 		common.PrintToLog(fmt.Sprintf("Run docker image %q", d.Name), so, se)
-		return so, errors.Annotate(err, "run docker image %q: %s", d.Name, se).Err()
+		return so, errors.WrapIf(err, "run docker image %q: %s", d.Name, se)
 	} else {
 		log.Println("Runing Non-Blocking Docker Run")
 
@@ -312,10 +312,8 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		cmd.Start()
 		d.Stdoutbuf = &stdoutbuf
 		d.Stderrbuf = &stderrbuf
-		return "", errors.Annotate(err, "run docker image %q: %s", d.Name, "").Err()
-
+		return "", errors.Fmt("run docker image %q: %s", d.Name, "")
 	}
-
 }
 
 // envvars sets the needed environment variables for the container.

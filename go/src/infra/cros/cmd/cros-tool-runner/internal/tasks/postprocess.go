@@ -87,7 +87,7 @@ func (c *postProcessCmd) innerRun(ctx context.Context, a subcommands.Application
 		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
 	}
 	result, err := postprocess.Run(ctx, req, crosDutContainer, postProcessContainer, c.dockerKeyFile)
-	return result, errors.Annotate(err, "inner run: failed to find tests").Err()
+	return result, errors.WrapIf(err, "inner run: failed to find tests")
 }
 
 // readPostProcessRequest reads the jsonproto at path input request data.
@@ -99,7 +99,7 @@ func readPostProcessRequest(p string) (*api.CrosToolRunnerPostTestRequest, error
 	}
 	umrsh := common.JsonPbUnmarshaler()
 	err = umrsh.Unmarshal(r, in)
-	return in, errors.Annotate(err, "inner run: read post-process request %q", p).Err()
+	return in, errors.WrapIf(err, "inner run: read post-process request %q", p)
 }
 
 // savePostProcessOutput saves output data to the file.

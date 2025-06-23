@@ -75,7 +75,7 @@ func fetchFileFromURL(ctx context.Context, c clientThatSendsRequests, url string
 		return nil, errors.Annotate(err, "fetch file %q: read body", url).Err()
 	}
 	bs, err := base64.StdEncoding.DecodeString(string(data))
-	return bs, errors.Annotate(err, "fetch file %q: decode data", url).Err()
+	return bs, errors.WrapIf(err, "fetch file %q: decode data", url)
 }
 
 // sendHTTPRequestWithRetries sends the given request with the given HTTP

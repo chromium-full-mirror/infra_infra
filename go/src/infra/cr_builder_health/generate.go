@@ -68,7 +68,7 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 	}
 
 	if len(srcConfigs) == 0 {
-		return errors.Annotate(err, "Get Src Config").Err()
+		return errors.Fmt("Get Src Config: %w", err)
 	}
 
 	rows, err := getMetrics(ctx, bqClient, input)

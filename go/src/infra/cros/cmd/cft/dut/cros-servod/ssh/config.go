@@ -292,7 +292,7 @@ func (s *section) parseProxyCommand(tokens []string) error {
 			}
 			rootCAs := x509.NewCertPool()
 			if ok := rootCAs.AppendCertsFromPEM(pem); !ok {
-				return errors.Annotate(err, "parse SSH ProxyCommand").Err()
+				return errors.New("parse SSH ProxyCommand: AppendCertsFromPEM not ok")
 			}
 			s.proxy.config.RootCAs = rootCAs
 		case "-connect":

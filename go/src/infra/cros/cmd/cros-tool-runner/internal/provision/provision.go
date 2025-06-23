@@ -167,7 +167,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 		res.Out.Outcome = &api.CrosProvisionResponse_Failure{
 			Failure: f,
 		}
-		res.Err = errors.Annotate(err, "run provision").Err()
+		res.Err = errors.New("run provision")
 	} else {
 		res.Out.Outcome = &api.CrosProvisionResponse_Success{
 			Success: &api.InstallSuccess{},
@@ -189,5 +189,5 @@ func readProvisionOutput(filePath string) (*api.CrosProvisionResponse, error) {
 	err = umrsh.Unmarshal(r, out)
 
 	log.Printf("cros-provision response:" + out.String())
-	return out, errors.Annotate(err, "read output").Err()
+	return out, errors.WrapIf(err, "read output")
 }

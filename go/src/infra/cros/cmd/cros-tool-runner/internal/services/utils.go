@@ -104,7 +104,7 @@ func createProvisionInput(state *api.CrosProvisionRequest, dir string) error {
 	log.Printf("cros-provision request:" + state.String())
 
 	err = f.Close()
-	return errors.Annotate(err, "create input").Err()
+	return errors.WrapIf(err, "create input")
 }
 
 func getAddr(i *labapi.IpEndpoint) string {

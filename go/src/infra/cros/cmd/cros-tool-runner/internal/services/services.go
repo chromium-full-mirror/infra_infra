@@ -172,7 +172,7 @@ func CreateDutServicesForHostNetwork(ctx context.Context, image *build_api.Conta
 	for _, dut := range duts {
 		dutID := dut.Id.GetValue()
 		if dut.CacheServer == nil {
-			return nil, errors.Annotate(err, "create dut services for host network: cache server must be specified in DUT %s", dutID).Err()
+			return nil, errors.Fmt("create dut services for host network: cache server must be specified in DUT %s", dutID)
 		}
 		logDir := path.Join(dir, dutID)
 		d, err := startDutService(ctx, p, r, dutID, "host", dut.CacheServer, dutEndPoint(dut), 0, logDir, t)
@@ -421,7 +421,7 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 		address := line[index+len(searchStr):]
 		index = strings.LastIndex(address, ":")
 		if index < 0 {
-			return 0, errors.Annotate(err, "fail to get port from line %q in file %s", line, dutServerLogFileName).Err()
+			return 0, errors.Fmt("fail to get port from line %q in file %s", line, dutServerLogFileName)
 		}
 		portStr := address[index+1:]
 		return strconv.Atoi(portStr)
