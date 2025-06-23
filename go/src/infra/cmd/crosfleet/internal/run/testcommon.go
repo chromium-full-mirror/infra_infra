@@ -80,6 +80,7 @@ type testCommonFlags struct {
 	release                string
 	qsAccount              string
 	releaseRetryUrgent     bool
+	skipProvisioning       bool
 	maxRetries             int
 	repeats                int
 	priority               int64
@@ -172,6 +173,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
 	}
+	f.BoolVar(&c.skipProvisioning, "skip-provisioning", false, "Skip provisioning DUT with image.")
 }
 
 // validateAndAutocompleteFlags returns any errors after validating the CLI
@@ -500,6 +502,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		SecondaryBoards:     l.cliFlags.secondaryBoards,
 		SecondaryImages:     l.cliFlags.secondaryImages,
 		SecondaryModels:     l.cliFlags.secondaryModels,
+		SkipProvisioning:    l.cliFlags.skipProvisioning,
 		TestPlan:            l.testPlan,
 		TestRunnerBuildTags: testRunnerTags,
 		TimeoutMins:         l.cliFlags.timeoutMins,
