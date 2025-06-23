@@ -2144,6 +2144,7 @@ func updatePASIT(ctx context.Context, p *chromeosLab.Peripherals) {
 				ChildId:    c.GetChildId(),
 				Speed:      c.GetSpeed(),
 				Type:       c.GetType(),
+				Tags:       c.GetTags(),
 			},
 		)
 	}

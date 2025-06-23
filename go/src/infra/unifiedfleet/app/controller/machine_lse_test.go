@@ -2988,6 +2988,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 						ParentId: "chromeosX-rackX-rowY-hostN",
 						ChildId:  "dock_1",
 						Speed:    10000,
+						Tags:     []string{"TAG1", "TAG2", "TAG3"},
 					},
 				},
 			}
@@ -3023,6 +3024,12 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, c.GetParentId(), should.Equal("chromeosX-rackX-rowY-hostN"))
 			assert.Loosely(t, c.GetChildId(), should.Equal("dock_1"))
 			assert.Loosely(t, c.GetSpeed(), should.Equal(10000.0))
+
+			tags := c.GetTags()
+			assert.Loosely(t, len(tags), should.Equal(3))
+			assert.Loosely(t, tags[0], should.Equal("TAG1"))
+			assert.Loosely(t, tags[1], should.Equal("TAG2"))
+			assert.Loosely(t, tags[2], should.Equal("TAG3"))
 		})
 	})
 }
