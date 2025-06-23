@@ -52,7 +52,7 @@ func (c *EnableChargeLimitCommand) Execute(log *log.Logger) error {
 		// If the job is already running, somebody else probably started it between
 		// the time we stopped it and when we tried to start it again. In that case
 		// the goal has succeeded, because it was restarted.
-		if !strings.Contains(stdout, "start: Job is already running") {
+		if !strings.Contains(stdout, "start: Job is already running") && !strings.Contains(stdout, "powerd start/running, process") {
 			return fmt.Errorf("failed to start powerd: %w: %s", err, stdout)
 		}
 	}
