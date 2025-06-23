@@ -34137,6 +34137,22 @@ plans:
                   dependencies:
                     - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
                     - name: Run only on ChromeOS based DUT ('cros_is_not_android_based') (ALWAYS_RUN)
+            - name: 'Android: RO Firmware matches the recovery-version (Allow to fail) (''cros_is_on_stable_firmware_version'')'
+              conditions:
+                - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+                - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Device not in MP Signed AP FW pool ('dut_not_in_pool') (RUN_ONCE)
+                - name: Check stable firmware version exists ('has_stable_version_fw_version')
+                  conditions:
+                    - name: Run only on ChromeOS hardware ('dut_check_board') (RUN_ONCE)
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Pools required to manage FW on the device ('dut_not_in_pool') (RUN_ONCE)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Servo is in WORKING state ('servo_match_state')

@@ -33,6 +33,7 @@ func commonAndroidCriticalActions(canBecomeChromeOS bool) []string {
 		"Match HWID",
 		"Missing serial-number",
 		"Match serial-number",
+		"Android: RO Firmware matches the recovery-version",
 	)
 	return actions
 }
@@ -420,6 +421,25 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"device_type:dut",
 				"human_readable:false",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Android: RO Firmware matches the recovery-version": {
+			Docs: []string{
+				"Check if the version of RO firmware on DUT matches the stable firmware version.",
+			},
+			Conditions: []string{
+				"Run only on ChromeOS hardware",
+				"Has a stable-version service",
+				"Device not in MP Signed AP FW pool",
+				"Check stable firmware version exists",
+				"Recovery version has OS image path",
+				"Is recovery-version has firmware image path",
+				"Pools required to manage FW on the device",
+			},
+			ExecName: "cros_is_on_stable_firmware_version",
+			ExecExtraArgs: []string{
+				"target:ro",
 			},
 			AllowFailAfterRecovery: true,
 		},

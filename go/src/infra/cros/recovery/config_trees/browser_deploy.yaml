@@ -130710,6 +130710,74 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
+            - name: 'Android: RO Firmware matches the recovery-version (Allow to fail)'
+              exec_name: cros_is_on_stable_firmware_version
+              exec_args:
+                - target:ro
+              docs:
+                - Check if the version of RO firmware on DUT matches the stable firmware version.
+              conditions:
+                - name: Run only on ChromeOS hardware (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Has a stable-version service (RUN_ONCE)
+                  exec_name: has_stable_version_service_path
+                  docs:
+                    - Verify if we have access to the service provided access to the stable version
+                - name: Device not in MP Signed AP FW pool (RUN_ONCE)
+                  exec_name: dut_not_in_pool
+                  exec_args:
+                    - mp_firmware_testing
+                  docs:
+                    - Verify that DUT is not in the pool that requires MP signed AP firmware.
+                    - The firmware validation only applies to dev signed AP firmware
+                    - currently. Depending on how widespread MP signed AP firmware
+                    - testing is, we could add a parallel validation for MP AP firmware.
+                - name: Check stable firmware version exists
+                  exec_name: has_stable_version_fw_version
+                  docs:
+                    - Check the DUT has model specific firmware stable_version configured.
+                    - Flex device are exampted from this check as they don't run cros firmware
+                  conditions:
+                    - name: Run only on ChromeOS hardware (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
+                - name: Recovery version has OS image path
+                  exec_name: has_stable_version_cros_image
+                  docs:
+                    - Verify that recovery version has OS image path.
+                  dependencies:
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
+                - name: Is recovery-version has firmware image path
+                  exec_name: has_stable_version_fw_image
+                  docs:
+                    - Verify that recovery version has firmware image path.
+                  dependencies:
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
+                - name: Pools required to manage FW on the device (RUN_ONCE)
+                  exec_name: dut_not_in_pool
+                  exec_args:
+                    - no_fw_ro_check
+                  docs:
+                    - Verify that device we check in the pool which not required fw management.
         - name: All repair-requests resolved
           exec_name: dut_has_no_repair_requests
           docs:
