@@ -77,5 +77,5 @@ func (c *persistSingleActionRun) innerRun(ctx context.Context, a subcommands.App
 	marshalIndent := jsonpb.Marshaler{
 		Indent: "  ",
 	}
-	return errors.Annotate(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON").Err()
+	return errors.WrapIf(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON")
 }

@@ -83,5 +83,5 @@ func (c *persistActionRangeRun) innerRun(ctx context.Context, a subcommands.Appl
 	if err != nil {
 		return errors.Annotate(err, "persist action range").Err()
 	}
-	return errors.Annotate(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON").Err()
+	return errors.WrapIf(marshalIndent.Marshal(a.GetErr(), res), "marshal JSON")
 }

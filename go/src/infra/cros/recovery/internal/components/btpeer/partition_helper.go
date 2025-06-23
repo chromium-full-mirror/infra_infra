@@ -459,7 +459,7 @@ func (p *partitionHelper) GetFreeSpace(ctx context.Context) (int64, error) {
 	}
 
 	if len(partitions) == 0 {
-		return 0, errors.Annotate(err, "get free space: no partitions found").Err()
+		return 0, errors.New("get free space: no partitions found")
 	}
 
 	last := partitions[len(partitions)-1]

@@ -187,7 +187,7 @@ func run(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Durat
 	if err != nil {
 		err = errors.Reason("failed execute command %q, finished with error: %d", fullCmd, err).Err()
 	}
-	return response, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
+	return response, errors.WrapIf(err, "exec adb command %q", fullCmd)
 }
 
 func adbClient(ctx context.Context, dut *tlw.Dut) (api.ADBServiceClient, error) {

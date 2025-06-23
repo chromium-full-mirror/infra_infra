@@ -125,7 +125,7 @@ func (g *ProdClient) DownloadWithGsutil(ctx context.Context, gsPath gs.Path, loc
 			strings.Contains(stderrBuf.String(), "No URLs matched") {
 			return errors.Annotate(shared.ErrObjectNotExist, "download (%s)", stderrBuf.String()).Err()
 		}
-		return errors.Annotate(err, "download (%s)", stderrBuf.String()).Err()
+		return errors.Fmt("download (%s): %w", stderrBuf.String(), err)
 	}
 	f, err := os.Create(localPath)
 	if err != nil {

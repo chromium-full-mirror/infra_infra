@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag/stacktag"
 )
 
 // Options wraps retry options.
@@ -50,7 +51,7 @@ func DoWithRetry(ctx context.Context, retryOpts Options, doFunc DoFunc) error {
 		}
 		select {
 		case <-ctx.Done():
-			return errors.Annotate(err, ctx.Err().Error()).Err()
+			return stacktag.Capture(errors.Join(err, ctx.Err()), 0)
 		case <-time.After(d):
 			err = doFunc()
 			if err == nil {
@@ -59,5 +60,5 @@ func DoWithRetry(ctx context.Context, retryOpts Options, doFunc DoFunc) error {
 			log.Printf("DoWithRetry [%d]: %v", i, err)
 		}
 	}
-	return errors.Annotate(err, "failed after %d retries", retryOpts.Retries).Err()
+	return errors.WrapIf(err, "failed after %d retries", retryOpts.Retries)
 }

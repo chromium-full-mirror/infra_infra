@@ -81,5 +81,5 @@ func (c *listActionsRun) innerRun(ctx context.Context, a subcommands.Application
 		return errors.Annotate(err, "inner run").Err()
 	}
 	fmt.Fprintf(a.GetOut(), "%s\n", string(b))
-	return errors.Annotate(err, "inner run").Err()
+	return nil
 }

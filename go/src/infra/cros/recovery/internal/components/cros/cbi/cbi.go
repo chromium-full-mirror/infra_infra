@@ -86,7 +86,7 @@ func GetCBILocation(ctx context.Context, run components.Runner) (*CBILocation, e
 	}
 
 	cbiLocation, err := buildCBILocation(locateCBIOutput)
-	return cbiLocation, errors.Annotate(err, "get CBI location").Err()
+	return cbiLocation, errors.WrapIf(err, "get CBI location")
 }
 
 // buildCBILocation creates a CBILocation struct from the text output of an
@@ -175,7 +175,7 @@ func WriteCBIContents(ctx context.Context, run components.Runner, cbiLocation *C
 // anything unexpected occurs.
 func InvalidateCBICache(ctx context.Context, run components.Runner) error {
 	invalidateCacheResponse, err := run(ctx, transferDelay, invalidateCBICacheCommand)
-	return errors.Annotate(err, "invalidate CBI cache: %s", invalidateCacheResponse).Err()
+	return errors.WrapIf(err, "invalidate CBI cache: %s", invalidateCacheResponse)
 }
 
 // parseBytesFromCBIContents reads <numBytesToRead> number of bytes from the

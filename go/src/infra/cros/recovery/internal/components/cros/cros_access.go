@@ -25,7 +25,7 @@ const (
 // IsPingable checks whether the resource is pingable
 func IsPingable(ctx context.Context, count int, ping components.Pinger) error {
 	err := ping(ctx, count)
-	return errors.Annotate(err, "is pingable").Err()
+	return errors.WrapIf(err, "is pingable")
 }
 
 // IsNotPingable checks whether the resource is not pingable
@@ -40,7 +40,7 @@ func IsNotPingable(ctx context.Context, count int, ping components.Pinger) error
 // IsSSHable checks whether the resource is sshable
 func IsSSHable(ctx context.Context, run components.Runner, timeout time.Duration) error {
 	_, err := run(ctx, timeout, "true")
-	return errors.Annotate(err, "is sshable").Err()
+	return errors.WrapIf(err, "is sshable")
 }
 
 // IsFileSystemWritable confirms the stateful file systems are writable.

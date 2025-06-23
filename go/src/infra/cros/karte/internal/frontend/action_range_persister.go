@@ -72,7 +72,7 @@ func insertBatch(ctx context.Context, a *actionRangePersistOptions, ents []*Acti
 		valueSavers = append(valueSavers, ent.ConvertToValueSaver())
 	}
 	f := a.bq.getInserter("entities", "actions")
-	return errors.Annotate(f(ctx, valueSavers), "insert batch").Err()
+	return errors.WrapIf(f(ctx, valueSavers), "insert batch")
 }
 
 // insertObservationBatch inserts a batch of observations into BigQuery.
@@ -85,7 +85,7 @@ func insertObservationBatch(ctx context.Context, a *actionRangePersistOptions, e
 		valueSavers = append(valueSavers, ent.ConvertToValueSaver())
 	}
 	f := a.bq.getInserter("entities", "observations")
-	return errors.Annotate(f(ctx, valueSavers), "insert batch").Err()
+	return errors.WrapIf(f(ctx, valueSavers), "insert batch")
 }
 
 // persistActions persists all the actions corresponding to our attached query to bigquery.

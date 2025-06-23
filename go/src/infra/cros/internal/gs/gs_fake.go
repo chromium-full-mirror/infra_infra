@@ -46,7 +46,7 @@ func (f *FakeClient) Download(gsPath gs.Path, localPath string) error {
 		f.T.Fatalf("unexpected download of file %s", gsPath)
 	}
 	if data == nil {
-		return errors.Annotate(shared.ErrObjectNotExist, "download").Err()
+		return errors.Fmt("download: %w", shared.ErrObjectNotExist)
 	}
 	assert.NilError(f.T, ioutil.WriteFile(localPath, data, 0644))
 	return nil
@@ -58,7 +58,7 @@ func (f *FakeClient) DownloadWithGsutil(_ context.Context, gsPath gs.Path, local
 		f.T.Fatalf("unexpected download of file %s", gsPath)
 	}
 	if data == nil {
-		return errors.Annotate(shared.ErrObjectNotExist, "download").Err()
+		return errors.Fmt("download: %w", shared.ErrObjectNotExist)
 	}
 	assert.NilError(f.T, ioutil.WriteFile(localPath, data, 0644))
 	return nil

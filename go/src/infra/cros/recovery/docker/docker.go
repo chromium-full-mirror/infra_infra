@@ -134,7 +134,7 @@ func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(res)
 	log.Debugf(ctx, "Run docker pull %q: stdout: %v", imageName, buf.String())
-	return errors.Annotate(err, "pull image").Err()
+	return nil
 }
 
 // Start pull and start container by request.
@@ -256,7 +256,7 @@ func (d *dockerClient) Remove(ctx context.Context, containerName string, force b
 	log.Debugf(ctx, "Removing container %q, using force:%v", containerName, force)
 	o := container.RemoveOptions{Force: force}
 	err := d.client.ContainerRemove(ctx, containerName, o)
-	return errors.Annotate(err, "docker remove container  %s", containerName).Err()
+	return errors.WrapIf(err, "docker remove container  %s", containerName)
 }
 
 // Run executes command on running container.

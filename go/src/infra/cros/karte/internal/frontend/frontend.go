@@ -126,7 +126,7 @@ func InstallServices(k KarteFrontend, srv grpc.ServiceRegistrar) {
 				&kartepb.PersistToBigqueryRequest{},
 			)
 			err = grpcutil.WrapIfTransient(err)
-			err = errors.Annotate(err, "persist to bq cron").Err()
+			err = errors.WrapIf(err, "persist to bq cron")
 			return err
 		},
 	)
