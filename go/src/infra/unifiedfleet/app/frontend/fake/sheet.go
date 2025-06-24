@@ -7,7 +7,7 @@ package fake
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"google.golang.org/api/sheets/v4"
 
@@ -29,7 +29,7 @@ func (sc *SheetClient) Get(ctx context.Context, sheetID string, ranges []string)
 
 // SheetData returns the fake sheet get API response for other testers
 func SheetData(path string) (*sheets.Spreadsheet, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

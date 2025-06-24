@@ -7,7 +7,7 @@ package fake
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"google.golang.org/grpc"
 
@@ -69,7 +69,7 @@ func (gc *GitTilesClient) DownloadFile(ctx context.Context, req *gitiles.Downloa
 
 // GitData mocks a git file content based on a given filepath
 func GitData(path string) (string, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}

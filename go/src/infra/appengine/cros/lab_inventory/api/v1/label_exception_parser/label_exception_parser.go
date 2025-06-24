@@ -7,7 +7,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 
 	"go.chromium.org/luci/common/errors"
@@ -23,7 +23,7 @@ type board struct {
 }
 
 func parseArc(path string) (map[string]bool, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Annotate(err, "load arc json %s", path).Err()
 	}
@@ -42,7 +42,7 @@ func parseArc(path string) (map[string]bool, error) {
 }
 
 func parseBoards(path string) ([]string, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Annotate(err, "load existing boards json file %s", path).Err()
 	}

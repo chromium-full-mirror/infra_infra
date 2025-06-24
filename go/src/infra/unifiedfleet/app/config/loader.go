@@ -7,7 +7,7 @@ package config
 import (
 	"context"
 	"flag"
-	"io/ioutil"
+	"os"
 	"sync/atomic"
 	"time"
 
@@ -43,7 +43,7 @@ func (l *Loader) Load(ctx context.Context) (*Config, error) {
 		return nil, errors.Reason("-config-path is required").Err()
 	}
 
-	b, err := ioutil.ReadFile(l.ConfigPath)
+	b, err := os.ReadFile(l.ConfigPath)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to open the config file").Err()
 	}

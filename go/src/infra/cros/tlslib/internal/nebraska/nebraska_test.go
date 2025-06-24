@@ -10,7 +10,6 @@ package nebraska
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -62,7 +61,7 @@ func TestNebraska_ParsePortFile(t *testing.T) {
 			if runtimeRoot == "" {
 				t.Fatalf("no -runtime-root specified in the command line: %#v", cmdline)
 			}
-			err := ioutil.WriteFile(path.Join(runtimeRoot, "port"), port, 0644)
+			err := os.WriteFile(path.Join(runtimeRoot, "port"), port, 0644)
 			if err != nil {
 				t.Fatalf("create fake port file: %s", err)
 			}
@@ -93,7 +92,7 @@ func TestNebraska_Close(t *testing.T) {
 			if runtimeRoot == "" {
 				t.Fatalf("no -runtime-root specified in the command line: %#v", cmdline)
 			}
-			err := ioutil.WriteFile(path.Join(runtimeRoot, "port"), port, 0644)
+			err := os.WriteFile(path.Join(runtimeRoot, "port"), port, 0644)
 			if err != nil {
 				t.Fatalf("create fake port file: %s", err)
 			}

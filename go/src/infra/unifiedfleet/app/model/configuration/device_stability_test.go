@@ -6,7 +6,7 @@ package configuration
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -22,7 +22,7 @@ func TestDeviceStability(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	ftt.Run("Test Device Stability", t, func(t *ftt.Test) {
-		b, err := ioutil.ReadFile("test_device_stability.cfg")
+		b, err := os.ReadFile("test_device_stability.cfg")
 		assert.Loosely(t, err, should.BeNil)
 		unmarshaller := &jsonpb.Unmarshaler{AllowUnknownFields: false}
 		var dsList dut.DeviceStabilityList

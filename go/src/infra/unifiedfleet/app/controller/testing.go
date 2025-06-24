@@ -7,7 +7,7 @@ package controller
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"os"
 
 	"github.com/golang/protobuf/jsonpb"
 
@@ -62,7 +62,7 @@ func initializeMockAuthDB(ctx context.Context, id identity.Identity, realm strin
 }
 
 func useTestingCfg(ctx context.Context) context.Context {
-	c, err := ioutil.ReadFile("test_config.cfg")
+	c, err := os.ReadFile("test_config.cfg")
 	if err != nil {
 		return ctx
 	}

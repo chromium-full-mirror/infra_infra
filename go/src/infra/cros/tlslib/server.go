@@ -12,10 +12,10 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	net_url "net/url"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -468,7 +468,7 @@ func (s *Server) wiringClient() tls.WiringClient {
 }
 
 func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
-	key, err := ioutil.ReadFile(keyfile)
+	key, err := os.ReadFile(keyfile)
 	if err != nil {
 		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}

@@ -7,7 +7,7 @@ package util
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -41,7 +41,7 @@ func ExecuteRequest(ctx context.Context, hc *http.Client, req *http.Request, val
 		return err
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			logging.Debugf(ctx, "fail to read resp.Body: %s", err)
 		}
@@ -52,7 +52,7 @@ func ExecuteRequest(ctx context.Context, hc *http.Client, req *http.Request, val
 			Body:       string(body),
 		}
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("unable to read the body for %s: %w", req.URL, err)
 	}

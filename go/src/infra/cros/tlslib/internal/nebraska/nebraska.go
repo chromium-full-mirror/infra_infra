@@ -13,7 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -97,7 +97,7 @@ func (n *Server) UpdateConfig(c Config) error {
 	}
 	defer rsp.Body.Close()
 	if rsp.StatusCode != http.StatusOK {
-		msg, err := ioutil.ReadAll(rsp.Body)
+		msg, err := io.ReadAll(rsp.Body)
 		if err != nil {
 			return fmt.Errorf("update Nebraska config: %w", err)
 		}
@@ -136,7 +136,7 @@ func (n *Server) start(ctx context.Context, gsPathPrefix string, payloads []*tls
 	if err != nil {
 		return fmt.Errorf("start Nebraska: %w", err)
 	}
-	n.runtimeRoot, err = ioutil.TempDir(rootTmpDir, "nebraska_runtime_")
+	n.runtimeRoot, err = os.MkdirTemp(rootTmpDir, "nebraska_runtime_")
 	if err != nil {
 		return fmt.Errorf("start Nebraska: create runtime root: %w", err)
 	}
@@ -183,7 +183,7 @@ func (n *Server) Close() error {
 	if err := os.RemoveAll(n.metadataDir); err != nil {
 		errs = append(errs, fmt.Sprintf("remove Nebraska metadata dir: %s", err))
 	}
-	nLog, err := ioutil.ReadFile(n.logfile())
+	nLog, err := os.ReadFile(n.logfile())
 	if err != nil {
 		log.Printf("Cannot read %s log: %s", n.proc, err)
 	} else {
@@ -235,7 +235,7 @@ func readFileOrTimeout(ctx context.Context, filepath string) (string, error) {
 	for {
 		select {
 		case <-t.C:
-			if cnt, err := ioutil.ReadFile(filepath); err == nil {
+			if cnt, err := os.ReadFile(filepath); err == nil {
 				return string(cnt), nil
 			}
 		case <-ctx.Done():
@@ -251,7 +251,7 @@ type env struct {
 func (e env) DownloadMetadata(ctx context.Context, gsPathPrefix string, payloads []*tls.FakeOmaha_Payload, dir string) (string, error) {
 	paths := metadataGSPaths(gsPathPrefix, payloads)
 	log.Printf("New Nebraska: metadata to download: %#v", paths)
-	metadataDir, err := ioutil.TempDir(dir, "AU_metadata_")
+	metadataDir, err := os.MkdirTemp(dir, "AU_metadata_")
 	if err != nil {
 		return "", fmt.Errorf("download metadata: %w", err)
 	}
