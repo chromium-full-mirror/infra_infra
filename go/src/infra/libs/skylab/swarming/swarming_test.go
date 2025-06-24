@@ -55,12 +55,9 @@ func TestSwarmingCallWithRetries_AnnotatedTransientFailure(t *testing.T) {
 	f := func() error {
 		defer func() { count++ }()
 		if count == 0 {
-			return errors.Annotate(
-				&googleapi.Error{
-					Code: http.StatusInternalServerError, // 500
-				},
-				"some context",
-			).Err()
+			return errors.Fmt("some context: %w", &googleapi.Error{
+				Code: http.StatusInternalServerError, // 500
+			})
 		}
 		return nil
 	}

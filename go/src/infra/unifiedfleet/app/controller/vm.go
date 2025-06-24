@@ -534,7 +534,7 @@ func getMachineForHost(ctx context.Context, lseName string) (*ufspb.Machine, err
 		return nil, errors.Annotate(err, "Fail to get host by %s", lseName).Err()
 	}
 	if len(lse.GetMachines()) == 0 {
-		return nil, errors.Annotate(err, "No machine for the host %s", lse.GetName()).Err()
+		return nil, errors.Fmt("No machine for the host %s", lse.GetName())
 	}
 	//Get Machine
 	machine, err := registration.GetMachine(ctx, lse.GetMachines()[0])

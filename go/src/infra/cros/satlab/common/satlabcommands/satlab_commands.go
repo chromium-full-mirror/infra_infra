@@ -55,7 +55,7 @@ func GetDockerHostBoxIdentifier(ctx context.Context, executor executor.IExecComm
 	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.GetHostIdentifierScript))
 	// Immediately normalize the satlab prefix to lowercase. It will save a lot of
 	// trouble later.
-	return strings.ToLower(misc.TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
+	return strings.ToLower(misc.TrimOutput(out)), errors.WrapIf(err, "get host identifier")
 }
 
 // parseOutput parse the raw data "<value>\\n"

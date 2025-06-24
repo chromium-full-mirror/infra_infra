@@ -73,7 +73,7 @@ func (a *Asset) exists(ctx context.Context, executor executor.IExecCommander, w 
 
 	if err != nil {
 		logging.Errorf(ctx, "failed to check that asset exists: %s", err.Error())
-		return false, errors.Annotate(e.HandleExitError(err), "add asset").Err()
+		return false, errors.Fmt("add asset: %w", e.HandleExitError(err))
 	}
 	logging.Infof(ctx, "asset check successful: %s", string(stdout))
 

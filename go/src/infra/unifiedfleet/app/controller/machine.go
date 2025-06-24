@@ -752,7 +752,7 @@ func DeleteMachine(ctx context.Context, id string) error {
 		// 1. Get the machine
 		machine, err := registration.GetMachine(ctx, id)
 		if status.Code(err) == codes.Internal {
-			return errors.Annotate(err, "failed to get machine %s", id).Err()
+			return errors.Fmt("failed to get machine %s: %w", id, err)
 		}
 		if machine == nil {
 			return status.Errorf(codes.NotFound, ufsds.NotFound)

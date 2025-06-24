@@ -63,7 +63,7 @@ func (r *Rack) exists(ctx context.Context, executor executor.IExecCommander, w i
 
 	if err != nil {
 		logging.Errorf(ctx, "failed to check rack exists: %s", err.Error())
-		return false, errors.Annotate(e.HandleExitError(err), "add rack").Err()
+		return false, errors.Fmt("add rack: %w", e.HandleExitError(err))
 	}
 	logging.Infof(ctx, "checking rack exists successful: %s", string(stdout))
 

@@ -50,7 +50,7 @@ func (p *PSRequest) DecodeMessage() ([]byte, error) {
 }
 
 // PublishHaRTAssetInfoRequest sends a request for asset info update for given assets
-func PublishHaRTAssetInfoRequest(ctx context.Context, assets []string) (err error) {
+func PublishHaRTAssetInfoRequest(ctx context.Context, assets []string) error {
 	// Create a pubsub topic for publish to HaRT for update
 	conf := config.Get(ctx).GetHart()
 	batchSize := int(conf.GetBatchSize()) // Convert uint32 to int.
@@ -71,6 +71,9 @@ func PublishHaRTAssetInfoRequest(ctx context.Context, assets []string) (err erro
 	// Topic's publish methods creates a few go routines. Call stop before returning.
 	defer top.Stop()
 
+	// Accumulate all error messages to a single error.
+	var errs []error
+
 	for i := 0; i < len(assets); i += batchSize {
 		msg := &ufspb.AssetInfoRequest{}
 		if (i + batchSize) <= len(assets) {
@@ -80,8 +83,7 @@ func PublishHaRTAssetInfoRequest(ctx context.Context, assets []string) (err erro
 		}
 		data, e := proto.Marshal(msg)
 		if e != nil {
-			// Append error messages to a single error.
-			err = errors.Annotate(err, "Failed to marshal message %v: %v", msg, e.Error()).Err()
+			errs = append(errs, errors.Fmt("Failed to marshal message %v: %w", msg, e))
 			continue
 		}
 		result := top.Publish(ctx, &pubsub.Message{
@@ -90,10 +92,10 @@ func PublishHaRTAssetInfoRequest(ctx context.Context, assets []string) (err erro
 		// Wait until the transaction is completed
 		s, e := result.Get(ctx)
 		if e != nil {
-			// Append error messages to a single error.
-			err = errors.Annotate(err, "PubSub req %v failed: %s", s, e.Error()).Err()
+			errs = append(errs, errors.Fmt("PubSub req %v failed: %s", s, e))
 			continue
 		}
 	}
-	return
+
+	return errors.Join(errs...)
 }

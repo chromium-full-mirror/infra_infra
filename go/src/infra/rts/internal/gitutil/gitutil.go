@@ -131,7 +131,7 @@ func Exec(context string) func(args ...string) (out string, err error) {
 		cmd.Stderr = &stderr
 		outBytes, err := cmd.Output()
 		out := strings.TrimSuffix(string(outBytes), "\n")
-		return out, errors.Annotate(err, "git %q failed; output: %q", args, stderr.Bytes()).Err()
+		return out, errors.WrapIf(err, "git %q failed; output: %q", args, stderr.Bytes())
 	}
 }
 

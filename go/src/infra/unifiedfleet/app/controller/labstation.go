@@ -48,7 +48,7 @@ func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Machin
 			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "")
 			rpmFieldsAllFull := (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() != "")
 			if !rpmFieldsAllEmpty && !rpmFieldsAllFull {
-				return errors.Annotate(err, "Validation error - Must specify RPM host and outlet").Err()
+				return errors.New("Validation error - Must specify RPM host and outlet")
 			}
 		}
 

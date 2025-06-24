@@ -29,7 +29,7 @@ func LooksLikeSatlabRemoteAccessContainer() (bool, error) {
 		// Semi-happy path, we successfully determined that we're not in a satlab remote access container.
 		return false, nil
 	}
-	return false, errors.Annotate(err, "looks like satlab remote access container").Err()
+	return false, errors.Fmt("looks like satlab remote access container: %w", err)
 }
 
 // LooksLikeSatlabDevice returns whether a hostname or botID appears to be a satlab-managed device.

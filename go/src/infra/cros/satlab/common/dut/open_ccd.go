@@ -447,11 +447,11 @@ func (c *CCDOpenRun) prepareTerminal(port string) error {
 		_, _, err := c.goexpectSession.Expect(reCcd, 1*time.Second)
 		return err
 	}
-	if err := tryConsole(checkTerminalReady); err == nil {
-		return errors.Annotate(err, "wait for terminal ready").Err()
+	if err := tryConsole(checkTerminalReady); err != nil {
+		return errors.Fmt("wait for terminal ready: %w", err)
 	}
-	if err := tryConsole(checkGSCPrompt); err == nil {
-		return errors.Annotate(err, "wait for gsc serial prompt").Err()
+	if err := tryConsole(checkGSCPrompt); err != nil {
+		return errors.Fmt("wait for gsc serial prompt: %w", err)
 	}
 	return nil
 }

@@ -144,7 +144,7 @@ func (w *DirWriter) WriteDir(ctx context.Context, srcDir string, dstDir gs.Path)
 		merr = append(merr, err)
 	}
 	if len(merr) > 0 {
-		return errors.Annotate(merr, "writing dir %s to %s", srcDir, dstDir).Err()
+		return errors.Fmt("writing dir %s to %s: %w", srcDir, dstDir, merr)
 	}
 	return nil
 }

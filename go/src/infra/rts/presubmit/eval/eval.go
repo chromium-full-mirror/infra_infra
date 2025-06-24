@@ -126,7 +126,7 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 	eg.Go(func() error {
 		defer close(rejC)
 		err := readRejections(ctx, e.Rejections, rejC)
-		return errors.Annotate(err, "failed to read rejection records").Err()
+		return errors.WrapIf(err, "failed to read rejection records")
 	})
 
 	res := &evalpb.Results{}
@@ -239,7 +239,7 @@ func (e *Eval) evaluateEfficiency(ctx context.Context, strategy Strategy, res *e
 	eg.Go(func() error {
 		defer close(recordC)
 		err := readTestDurations(ctx, e.Durations, recordC)
-		return errors.Annotate(err, "failed to read test duration records").Err()
+		return errors.WrapIf(err, "failed to read test duration records")
 	})
 
 	records := int64(0)

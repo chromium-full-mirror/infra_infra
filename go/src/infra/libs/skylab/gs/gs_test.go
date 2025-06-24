@@ -192,12 +192,9 @@ func TestExtractCloudErrorCode(t *testing.T) {
 		},
 		{
 			name: "LUCI wrapped cloud error",
-			in: errors.Annotate(
-				&googleapi.Error{
-					Code: 403,
-				},
-				"something",
-			).Err(),
+			in: errors.Fmt("something: %w", &googleapi.Error{
+				Code: 403,
+			}),
 			cloudErr: &googleapi.Error{
 				Code: 403,
 			},

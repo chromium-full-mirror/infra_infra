@@ -44,7 +44,7 @@ func (nu *networkUpdater) logChanges(changes []*ufspb.ChangeEvent, msg *history.
 func (nu *networkUpdater) deleteDHCPHelper(ctx context.Context) error {
 	dhcp, err := configuration.GetDHCPConfig(ctx, nu.Hostname)
 	if util.IsInternalError(err) {
-		return errors.Annotate(err, "Fail to query dhcp for host %s", nu.Hostname).Tag(grpcutil.FailedPreconditionTag).Err()
+		return grpcutil.FailedPreconditionTag.Apply(errors.Fmt("Fail to query dhcp for host %s: %w", nu.Hostname, err))
 	}
 	if err == nil && dhcp != nil {
 		if err := nu.deleteHostHelper(ctx, dhcp); err != nil {

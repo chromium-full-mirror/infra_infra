@@ -365,7 +365,7 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 	commitsh := ""
 	if vals, ok := filterMap[inventory.CommitSh]; ok {
 		if len(vals) != 1 {
-			return nil, "", errors.Annotate(err, "Can only specify one commitsh for returning configs").Err()
+			return nil, "", errors.New("Can only specify one commitsh for returning configs")
 		}
 		commitsh = strings.TrimSpace(vals[0].(string))
 		// Delete the commitsh from filterMap as we don't need it anymore

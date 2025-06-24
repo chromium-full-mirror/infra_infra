@@ -69,7 +69,7 @@ func (d *DUT) check(ctx context.Context, executor executor.IExecCommander, w io.
 
 	if err != nil {
 		logging.Errorf(ctx, "failed to check DUT exists: %s", err.Error())
-		return false, errors.Annotate(e.HandleExitError(err), "add dut").Err()
+		return false, errors.Fmt("add dut: %w", e.HandleExitError(err))
 	}
 	logging.Infof(ctx, "checking DUT exists successful: %s", string(stdout))
 
