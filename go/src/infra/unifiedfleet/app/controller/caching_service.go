@@ -134,11 +134,11 @@ func processCachingServiceUpdateMask(ctx context.Context, oldCs *ufspb.CachingSe
 	// Update the fields in the existing/old CachingService.
 	for _, path := range mask.Paths {
 		switch path {
-		case "port":
+		case ufsUtil.PortPath:
 			oldCs.Port = cs.GetPort()
-		case "zones":
+		case ufsUtil.ZonesPath:
 			oldCs.Zones = mergeZones(oldCs.GetZones(), cs.GetZones())
-		case "zones.remove":
+		case ufsUtil.ZonesRemovePath:
 			var zs []ufspb.Zone
 		next:
 			for _, v := range oldCs.GetZones() {
@@ -150,23 +150,23 @@ func processCachingServiceUpdateMask(ctx context.Context, oldCs *ufspb.CachingSe
 				zs = append(zs, v)
 			}
 			oldCs.Zones = zs
-		case "serving_subnet":
+		case ufsUtil.ServingSubnetPath:
 			oldCs.ServingSubnet = cs.GetServingSubnet()
-		case "serving_subnets":
+		case ufsUtil.ServingSubnetsPath:
 			oldCs.ServingSubnets = mergeTags(oldCs.GetServingSubnets(), cs.GetServingSubnets())
-		case "serving_subnets.remove":
+		case ufsUtil.ServingSubnetsRemovePath:
 			oldSubnets := oldCs.GetServingSubnets()
 			for _, s := range cs.GetServingSubnets() {
 				oldSubnets = ufsUtil.RemoveStringEntry(oldSubnets, s)
 			}
 			oldCs.ServingSubnets = oldSubnets
-		case "primary_node":
+		case ufsUtil.PrimaryNodePath:
 			oldCs.PrimaryNode = cs.GetPrimaryNode()
-		case "secondary_node":
+		case ufsUtil.SecondaryNodePath:
 			oldCs.SecondaryNode = cs.GetSecondaryNode()
-		case "state":
+		case ufsUtil.StatePath:
 			oldCs.State = cs.GetState()
-		case "description":
+		case ufsUtil.DescriptionPath:
 			oldCs.Description = cs.GetDescription()
 		}
 	}
@@ -196,20 +196,20 @@ func validateCachingServiceUpdateMask(ctx context.Context, cs *ufspb.CachingServ
 		// Validate the give field mask.
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateCachingServiceUpdateMask - name cannot be updated, delete and create a CachingService instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateCachingServiceUpdateMask - update_time cannot be updated, it is a output only field")
-			case "port":
-			case "zones":
-			case "zones.remove":
-			case "serving_subnet":
-			case "serving_subnets":
-			case "serving_subnets.remove":
-			case "primary_node":
-			case "secondary_node":
-			case "state":
-			case "description":
+			case ufsUtil.PortPath:
+			case ufsUtil.ZonesPath:
+			case ufsUtil.ZonesRemovePath:
+			case ufsUtil.ServingSubnetPath:
+			case ufsUtil.ServingSubnetsPath:
+			case ufsUtil.ServingSubnetsRemovePath:
+			case ufsUtil.PrimaryNodePath:
+			case ufsUtil.SecondaryNodePath:
+			case ufsUtil.StatePath:
+			case ufsUtil.DescriptionPath:
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateCachingServiceUpdateMask - unsupported update mask path %q", path)

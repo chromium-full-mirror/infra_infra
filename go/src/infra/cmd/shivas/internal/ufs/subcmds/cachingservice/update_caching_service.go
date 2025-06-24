@@ -111,15 +111,15 @@ func (c *updateCachingService) innerRun(a subcommands.Application, args []string
 	res, err := ic.UpdateCachingService(ctx, &ufsAPI.UpdateCachingServiceRequest{
 		CachingService: &cs,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"port":              "port",
-			"zones":             "zones",
-			"zones-to-remove":   "zones.remove",
-			"subnets":           "serving_subnets",
-			"subnets-to-remove": "serving_subnets.remove",
-			"primary":           "primary_node",
-			"secondary":         "secondary_node",
-			"state":             "state",
-			"desc":              "description",
+			"port":              ufsUtil.PortPath,
+			"zones":             ufsUtil.ZonesPath,
+			"zones-to-remove":   ufsUtil.ZonesRemovePath,
+			"subnets":           ufsUtil.ServingSubnetsPath,
+			"subnets-to-remove": ufsUtil.ServingSubnetsRemovePath,
+			"primary":           ufsUtil.PrimaryNodePath,
+			"secondary":         ufsUtil.SecondaryNodePath,
+			"state":             ufsUtil.StatePath,
+			"desc":              ufsUtil.DescriptionPath,
 		}),
 	})
 	if err != nil {
