@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -359,7 +358,7 @@ func TestVirtualEnv(t *testing.T) {
 }
 
 func loadJSON(path string, dst any) error {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return errors.Annotate(err, "failed to open file").Err()
 	}

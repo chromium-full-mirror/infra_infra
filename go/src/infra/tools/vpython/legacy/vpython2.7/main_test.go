@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -82,7 +81,7 @@ func runStartupOverhead(b *testing.B, spec string) {
 	}
 	os.Setenv(vpythonTestBinaryEnv, self)
 
-	td, err := ioutil.TempDir(b.TempDir(), "vpython")
+	td, err := os.MkdirTemp(b.TempDir(), "vpython")
 	if err != nil {
 		b.Fatalf("could not get executable path: %s", err)
 	}
@@ -180,7 +179,7 @@ type testCase struct {
 func loadTestCases(t *testing.T, self string) []testCase {
 	var testCases []testCase
 	testCaseErrors := 0
-	fis, err := ioutil.ReadDir(testDataDir)
+	fis, err := os.ReadDir(testDataDir)
 	if err != nil {
 		t.Fatalf("could not read test directory %q: %v", testDataDir, err)
 	}
@@ -194,7 +193,7 @@ func loadTestCases(t *testing.T, self string) []testCase {
 		base := script[:len(script)-len(ext)]
 		outputPath := base + ".output"
 
-		content, err := ioutil.ReadFile(outputPath)
+		content, err := os.ReadFile(outputPath)
 		if err != nil && !os.IsNotExist(err) {
 			t.Errorf("could not load output for %q at %q: %v", script, outputPath, err)
 			testCaseErrors++
@@ -257,7 +256,7 @@ func (tc *testCase) run(t *testing.T, env environ.Env) {
 	t.Parallel()
 
 	ftt.Run(fmt.Sprintf(`Testing %q`, tc), t, func(t *ftt.Test) {
-		td, err := ioutil.TempDir(t.TempDir(), "vpython")
+		td, err := os.MkdirTemp(t.TempDir(), "vpython")
 		assert.Loosely(t, err, should.BeNil)
 		defer func() {
 			if err := filesystem.RemoveAll(td); err != nil {

@@ -10,7 +10,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -49,7 +48,7 @@ func mainImpl(ctx context.Context) error {
 	os.Setenv(selfTestEnvvar, "1")
 
 	// Create a temporary directory, then run stuff in it.
-	root, err := ioutil.TempDir("", "vpythonsmoketest")
+	root, err := os.MkdirTemp("", "vpythonsmoketest")
 	if err != nil {
 		return err
 	}

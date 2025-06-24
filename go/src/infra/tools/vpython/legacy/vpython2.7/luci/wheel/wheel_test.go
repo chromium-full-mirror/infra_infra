@@ -16,7 +16,7 @@ package wheel
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -183,7 +183,7 @@ func TestWriteRequirementsFile(t *testing.T) {
 			wheelCryptography})
 		assert.Loosely(t, err, should.BeNil)
 
-		content, err := ioutil.ReadFile(req)
+		content, err := os.ReadFile(req)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, content, should.Resemble([]byte(""+
 			"MarkupSafe==0.23\n"+
