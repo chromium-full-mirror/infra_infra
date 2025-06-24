@@ -209,11 +209,11 @@ func processNicUpdateMask(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic
 	// update the fields in the existing/old nic
 	for _, path := range mask.Paths {
 		switch path {
-		case "machine":
+		case ufsUtil.MachinePath:
 			oldNic.Machine = nic.GetMachine()
-		case "macAddress":
+		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 			oldNic.MacAddress = nic.GetMacAddress()
-		case "switch":
+		case ufsUtil.SwitchInterfaceSwitchPath, ufsUtil.SwitchPath:
 			if oldNic.GetSwitchInterface() == nil {
 				oldNic.SwitchInterface = &ufspb.SwitchInterface{
 					Switch: nic.GetSwitchInterface().GetSwitch(),
@@ -221,7 +221,7 @@ func processNicUpdateMask(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic
 			} else {
 				oldNic.GetSwitchInterface().Switch = nic.GetSwitchInterface().GetSwitch()
 			}
-		case "portName":
+		case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.PortNameCamelPath:
 			if oldNic.GetSwitchInterface() == nil {
 				oldNic.SwitchInterface = &ufspb.SwitchInterface{
 					PortName: nic.GetSwitchInterface().GetPortName(),
@@ -229,9 +229,9 @@ func processNicUpdateMask(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic
 			} else {
 				oldNic.GetSwitchInterface().PortName = nic.GetSwitchInterface().GetPortName()
 			}
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldNic.Tags = mergeTags(oldNic.GetTags(), nic.GetTags())
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldNic.ResourceState = nic.GetResourceState()
 		}
 	}
@@ -415,28 +415,27 @@ func validateNicUpdateMask(ctx context.Context, nic *ufspb.Nic, mask *field_mask
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateNicUpdateMask - name cannot be updated, delete and create a new nic instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateNicUpdateMask - update_time cannot be updated, it is a Output only field")
-			case "switch":
+			case ufsUtil.PortNameCamelPath, ufsUtil.SwitchPath:
 				fallthrough
-			case "portName":
+			case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.SwitchInterfaceSwitchPath:
 				// Check switch interface validity in processNicUpdateMask later.
 				if nic.GetSwitchInterface() == nil {
 					return status.Error(codes.InvalidArgument, "validateNicUpdateMask - switch interface cannot be empty/nil.")
 				}
-			case "machine":
+			case ufsUtil.MachinePath:
 				if nic.GetMachine() == "" {
 					status.Error(codes.InvalidArgument, "validateNicUpdateMask - machine cannot be empty")
 				}
-			case "macAddress":
+			case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 				if err := validateMacAddress(ctx, nic.GetName(), nic.GetMacAddress()); err != nil {
 					return err
 				}
-			case "tags":
-				// valid fields, nothing to validate.
-			case "resourceState":
+			case ufsUtil.TagsPath:
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateNicUpdateMask - unsupported update mask path %q", path)

@@ -123,12 +123,12 @@ func (c *updateNic) innerRun(a subcommands.Application, args []string, env subco
 	res, err := ic.UpdateNic(ctx, &ufsAPI.UpdateNicRequest{
 		Nic: &nic,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"machine":     "machine",
-			"mac":         "macAddress",
-			"state":       "resourceState",
-			"switch":      "switch",
-			"switch-port": "portName",
-			"tag":         "tags",
+			"machine":     ufsUtil.MachinePath,
+			"mac":         ufsUtil.MacAddressPath,
+			"state":       ufsUtil.ResourceStatePath,
+			"switch":      ufsUtil.SwitchInterfaceSwitchPath,
+			"switch-port": ufsUtil.SwitchInterfacePortNamePath,
+			"tag":         ufsUtil.TagsPath,
 		}),
 	})
 	if err != nil {
