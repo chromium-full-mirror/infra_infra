@@ -532,7 +532,7 @@ message Cellular {
   string carrier = 2;
   // Model variant.
   string model_variant = 3;
-  
+
   // Type of modem hardware.
   enum ModemType {
     MODEM_TYPE_UNSPECIFIED = 0;
@@ -1155,6 +1155,7 @@ message Pasit {
       HEADPHONE = 9;
       SPEAKER = 10;
       IP_POWER = 11;
+      USB_TESTER = 12;
     }
 
     // Information on the power capabilities of the device.
