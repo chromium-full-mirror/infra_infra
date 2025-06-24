@@ -2438,10 +2438,11 @@ message AttachedDeviceData {
   models.chromeos.lab.DutState dut_state = 3;
 }
 
-// Next Tag: 2
+// Next Tag: 4
 message BrowserDeviceData {
   models.MachineLSE host = 1;
   models.VM vm = 2;
+  models.StateRecord state_record = 3;
 }
 
 message CheckFleetTestsPolicyRequest {
