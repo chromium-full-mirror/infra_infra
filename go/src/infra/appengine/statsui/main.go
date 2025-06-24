@@ -6,7 +6,7 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/grpc/codes"
@@ -40,7 +40,7 @@ func main() {
 }
 
 func setupDataSourceClient(ctx context.Context) (*datasources.Client, error) {
-	yaml, err := ioutil.ReadFile("datasources.yaml")
+	yaml, err := os.ReadFile("datasources.yaml")
 	if err != nil {
 		return nil, err
 	}

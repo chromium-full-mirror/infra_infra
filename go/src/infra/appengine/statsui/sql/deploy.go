@@ -6,7 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -165,7 +164,7 @@ var scheduleRegex = regexp.MustCompile(`--schedule:([^\n]+)\n`)
 func scheduledQueries(files []string) ([]scheduledQuery, error) {
 	queries := make([]scheduledQuery, 0, len(files))
 	for _, file := range files {
-		bytes, err := ioutil.ReadFile(file)
+		bytes, err := os.ReadFile(file)
 		if err != nil {
 			return nil, err
 		}
