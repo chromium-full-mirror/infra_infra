@@ -11,7 +11,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -125,7 +124,7 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 		return nil, err
 	}
 
-	featuresFile, err := ioutil.TempFile(predictions_dir, "PsFeatures_thread*.csv")
+	featuresFile, err := os.CreateTemp(predictions_dir, "PsFeatures_thread*.csv")
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +198,7 @@ func fileInferMlModel(ctx context.Context, rows []*mlExample, modelDir string) (
 		return nil, err
 	}
 
-	fileText, err := ioutil.ReadFile(predictionsFileName)
+	fileText, err := os.ReadFile(predictionsFileName)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -60,7 +59,7 @@ func (r *BaseSelectRun) ValidateFlags() error {
 
 // loadStrategy initializes r.strategy fields, except r.strategy.Graph.
 func (r *BaseSelectRun) LoadStrategy(cfgFileName string) error {
-	cfgBytes, err := ioutil.ReadFile(cfgFileName)
+	cfgBytes, err := os.ReadFile(cfgFileName)
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -208,7 +207,7 @@ func (r *createModelRun) writeStrategyConfig(ctx context.Context, fileName strin
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(fileName, cfgBytes, 0777)
+	return os.WriteFile(fileName, cfgBytes, 0777)
 }
 
 // writeTestFileSet writes the test file set in Chromium to the file.

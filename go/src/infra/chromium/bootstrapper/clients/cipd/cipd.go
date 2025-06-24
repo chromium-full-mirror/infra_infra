@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -123,7 +122,7 @@ func (c defaultClient) Ensure(ctx context.Context, serviceUrl, cipdRoot string, 
 		ensureContents.WriteString(fmt.Sprintf("%s %s\n", pkg.Name, pkg.Version))
 	}
 	ensureFile := "cipd.ensure"
-	if err := ioutil.WriteFile(ensureFile, []byte(ensureContents.String()), 0440); err != nil {
+	if err := os.WriteFile(ensureFile, []byte(ensureContents.String()), 0440); err != nil {
 		return nil, errors.Annotate(err, "failed to write out CIPD ensure file").Err()
 	}
 
@@ -136,7 +135,7 @@ func (c defaultClient) Ensure(ctx context.Context, serviceUrl, cipdRoot string, 
 		return nil, errors.Annotate(err, "cipd ensure failed").Err()
 	}
 
-	jsonOutContents, err := ioutil.ReadFile(jsonOutFile)
+	jsonOutContents, err := os.ReadFile(jsonOutFile)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read json output for cipd ensure").Err()
 	}

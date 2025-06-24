@@ -5,7 +5,6 @@
 package gitutil
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -30,7 +29,7 @@ func TestGit(t *testing.T) {
 	}
 
 	ftt.Run(`Git`, t, func(t *ftt.Test) {
-		tmpd, err := ioutil.TempDir("", "filegraph_git")
+		tmpd, err := os.MkdirTemp("", "filegraph_git")
 		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(tmpd)
 
@@ -45,7 +44,7 @@ func TestGit(t *testing.T) {
 		git(tmpd)("init")
 
 		fooPath := filepath.Join(tmpd, "foo")
-		err = ioutil.WriteFile(fooPath, []byte("hello"), 0777)
+		err = os.WriteFile(fooPath, []byte("hello"), 0777)
 		assert.Loosely(t, err, should.BeNil)
 
 		// Run in fooBar context.

@@ -11,7 +11,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,7 +52,7 @@ func parseFlags() options {
 
 func getBuild(ctx context.Context, input io.Reader) (*buildbucketpb.Build, error) {
 	logging.Infof(ctx, "reading build input")
-	data, err := ioutil.ReadAll(input)
+	data, err := io.ReadAll(input)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read build input").Err()
 	}

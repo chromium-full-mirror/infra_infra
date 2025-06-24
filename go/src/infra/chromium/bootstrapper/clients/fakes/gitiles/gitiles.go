@@ -7,7 +7,6 @@ package gitiles
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -260,7 +259,7 @@ func (c *Client) DownloadDiff(ctx context.Context, request *gitilespb.DownloadDi
 		return nil, err
 	}
 
-	tmp, err := ioutil.TempDir("", "")
+	tmp, err := os.MkdirTemp("", "")
 	util.PanicOnError(err)
 
 	git := func(args ...string) string {

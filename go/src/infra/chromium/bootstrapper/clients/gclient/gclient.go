@@ -9,7 +9,6 @@ package gclient
 import (
 	"context"
 	stderrors "errors"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -38,13 +37,13 @@ func NewClientForTesting() (*Client, error) {
 }
 
 func (c *Client) GetDep(ctx context.Context, depsContents, depPath string) (string, error) {
-	d, err := ioutil.TempDir("", "")
+	d, err := os.MkdirTemp("", "")
 	if err != nil {
 		return "", err
 	}
 
 	f := path.Join(d, "DEPS")
-	if err := ioutil.WriteFile(f, []byte(depsContents), 0644); err != nil {
+	if err := os.WriteFile(f, []byte(depsContents), 0644); err != nil {
 		return "", err
 	}
 

@@ -6,7 +6,6 @@ package git
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -27,7 +26,7 @@ func TestGraphCache(t *testing.T) {
 		ctx = memlogger.Use(ctx)
 
 		t.Run(`empty file is cache-miss`, func(t *ftt.Test) {
-			tmpd, err := ioutil.TempDir("", "filegraph_git")
+			tmpd, err := os.MkdirTemp("", "filegraph_git")
 			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tmpd)
 

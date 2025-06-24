@@ -7,7 +7,6 @@ package bootstrap
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -17,7 +16,7 @@ import (
 )
 
 func patchFile(ctx context.Context, filePath, contents, diff string) (string, error) {
-	d, err := ioutil.TempDir("", "")
+	d, err := os.MkdirTemp("", "")
 	if err != nil {
 		return "", err
 	}
@@ -27,7 +26,7 @@ func patchFile(ctx context.Context, filePath, contents, diff string) (string, er
 		return "", err
 	}
 	f := path.Join(d, filePath)
-	if err := ioutil.WriteFile(f, []byte(contents), 0644); err != nil {
+	if err := os.WriteFile(f, []byte(contents), 0644); err != nil {
 		return "", err
 	}
 
@@ -47,7 +46,7 @@ func patchFile(ctx context.Context, filePath, contents, diff string) (string, er
 		return "", err
 	}
 
-	newContents, err := ioutil.ReadFile(f)
+	newContents, err := os.ReadFile(f)
 	if err != nil {
 		return "", err
 	}
