@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -89,7 +88,7 @@ func (c *epClient) call(ctx context.Context, method, urlSuffix string, request, 
 
 	// Check HTTP status code.
 	if res.StatusCode != http.StatusOK {
-		text, _ := ioutil.ReadAll(io.LimitReader(res.Body, 1024))
+		text, _ := io.ReadAll(io.LimitReader(res.Body, 1024))
 		err := fmt.Errorf("unexpected status %q. Response: %s", res.Status, text)
 		if res.StatusCode == http.StatusNotFound || res.StatusCode > 500 {
 			// Cloud Endpoints often flake with HTTP 404.

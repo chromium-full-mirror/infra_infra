@@ -6,7 +6,7 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -47,7 +47,7 @@ func TestDashboard(t *testing.T) {
 					Request: makeGetRequest(c),
 					Params:  makeParams("path", "/"),
 				})
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
@@ -67,7 +67,7 @@ func TestDashboard(t *testing.T) {
 					Params:  makeParams("path", "/"),
 				})
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
@@ -85,7 +85,7 @@ func TestDashboard(t *testing.T) {
 					Params:  makeParams("path", "/"),
 				})
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
