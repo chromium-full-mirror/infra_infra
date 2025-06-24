@@ -268,10 +268,10 @@ func (c *updateVM) validateArgs() error {
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
 		}
-		if _, err := utils.ConvertToBytes(c.memory); err != nil {
+		if _, err := utils.ConvertToBytes(c.memory); err != nil && c.memory != utils.ClearFieldValue {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -memory flag was used incorrectly: %w", err)
 		}
-		if _, err := utils.ConvertToBytes(c.storage); err != nil {
+		if _, err := utils.ConvertToBytes(c.storage); err != nil && c.storage != utils.ClearFieldValue {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage flag was used incorrectly: %w", err)
 		}
 	} else {
