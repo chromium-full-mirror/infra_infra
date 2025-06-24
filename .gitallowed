@@ -8,3 +8,6 @@
 
 # this is a public secret -- it is the ID for skylab, crosfleet, mallet, stableversion2, and others
 446450136466-mj75ourhccki9fffaq8bc1e50di315po.apps.googleusercontent.com
+
+# this is a public secret used in go/src/infra/cmd/drone-agent/internal/tokman/tokman_test.go
+ya29.Gl1uB45Ecullaaaaaaaaa
