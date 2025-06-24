@@ -132,7 +132,7 @@ func (g *GetDUT) TriggerRun(
 	out, err := executor.Output(command)
 
 	if err != nil {
-		return nil, errors.Annotate(e.HandleExitError(err), "get dut").Err()
+		return nil, errors.Fmt("get dut: %w", e.HandleExitError(err))
 	}
 
 	res := []*ufsModels.MachineLSE{}

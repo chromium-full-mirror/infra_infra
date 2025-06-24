@@ -40,7 +40,7 @@ func ByDut(ctx context.Context, dut *tlw.Dut) (Data, error) {
 	}
 	pools := dut.ExtraAttributes[tlw.ExtraAttributePools]
 	v, err := version(ctx, dut.Name, versionType, dut.GetBoard(), dut.GetModel(), pools)
-	return v, errors.Annotate(err, "version by dut").Err()
+	return v, errors.WrapIf(err, "version by dut")
 }
 
 // ByResource finds version by resource in correlation with version-type by finding board, model and pools infos.
@@ -73,7 +73,7 @@ func ByResource(ctx context.Context, versionType Type, dut *tlw.Dut, resource st
 		return nil, errors.Reason("version by resource: unsupported version-type: %s", versionType).Err()
 	}
 	v, err := version(ctx, resource, versionType, board, model, dut.GetPools())
-	return v, errors.Annotate(err, "version by resource").Err()
+	return v, errors.WrapIf(err, "version by resource")
 }
 
 // ByDetails finds version by board, model and pools info.
@@ -84,7 +84,7 @@ func ByDetails(ctx context.Context, versionType Type, deviceName, board, model s
 		}
 	}
 	v, err := version(ctx, deviceName, versionType, board, model, pools)
-	return v, errors.Annotate(err, "version by details").Err()
+	return v, errors.WrapIf(err, "version by details")
 }
 
 func version(ctx context.Context, deviceName string, versionType Type, board, model string, pools []string) (rData Data, _ error) {

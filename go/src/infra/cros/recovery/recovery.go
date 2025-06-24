@@ -97,7 +97,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		}
 	}
 	if len(errs) > 0 {
-		return errors.Annotate(errors.MultiError(errs), "run recovery").Err()
+		return errors.Fmt("run recovery: %w", errors.MultiError(errs))
 	}
 	return nil
 }
@@ -147,7 +147,7 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 		errs = append(errs, err)
 	}
 	if len(errs) > 0 {
-		return errors.Annotate(errors.MultiError(errs), "run recovery").Err()
+		return errors.Fmt("run recovery: %w", errors.MultiError(errs))
 	}
 	return nil
 }
@@ -166,7 +166,7 @@ func retrieveResources(ctx context.Context, args *RunArgs) (resources []string, 
 		defer func() { i.Dedent() }()
 	}
 	resources, err = args.Access.ListResourcesForUnit(ctx, args.UnitName)
-	return resources, errors.Annotate(err, "retrieve resources").Err()
+	return resources, errors.WrapIf(err, "retrieve resources")
 }
 
 // loadConfiguration loads and verifies a configuration.
@@ -531,7 +531,7 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 		return nil
 	}
 	err := engine.Run(ctx, planName, plan, execArgs, planResourceMetricSaver)
-	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
+	return errors.WrapIf(err, "run plan %q for %q", planName, execArgs.ResourceName)
 }
 
 // collectResourcesForPlan collect resource names for supported plan.
@@ -667,7 +667,7 @@ func (a *RunArgs) UseConfigFile(path string) error {
 	}
 	cr, oErr := os.Open(path)
 	a.configReader = cr
-	return errors.Annotate(oErr, "use config file").Err()
+	return errors.WrapIf(oErr, "use config file")
 }
 
 // initMetricSaver creates metricSaver implementation to save metrics with the original context.
@@ -699,7 +699,7 @@ func (a *RunArgs) initMetricSaver(ctx context.Context) {
 		metric.SwarmingTaskID = a.SwarmingTaskID
 		metric.BuildbucketID = a.BuildbucketID
 		err := a.Metrics.Create(ctx, metric)
-		return errors.Annotate(err, "metric saver").Err()
+		return errors.WrapIf(err, "metric saver")
 	}
 }
 

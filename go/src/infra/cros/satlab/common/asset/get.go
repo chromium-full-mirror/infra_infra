@@ -81,7 +81,7 @@ func (g *GetAsset) TriggerRun(
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := executor.CombinedOutput(command)
 	if err != nil {
-		return nil, errors.Annotate(e.HandleExitError(err), "get asset").Err()
+		return nil, errors.Fmt("get asset: %w", e.HandleExitError(err))
 	}
 
 	var res []*ufsModels.Asset

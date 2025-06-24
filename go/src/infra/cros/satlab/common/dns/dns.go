@@ -147,8 +147,7 @@ func SetDNSFileContent(content string) error {
 		"dns:/etc/dut_hosts/hosts",
 	}
 	err = exec.Command(args[0], args[1:]...).Run()
-	return errors.Annotate(err, fmt.Sprintf("set backup dns file content: running %s", strings.Join(args, " "))).
-		Err()
+	return errors.WrapIf(err, fmt.Sprintf("set backup dns file content: running %s", strings.Join(args, " ")))
 }
 
 // ForceReloadDNSMasqProcess sends the hangup signal to the dnsmasq process inside the dns container
@@ -163,7 +162,7 @@ func ForceReloadDNSMasqProcess() error {
 		"/usr/bin/killall -HUP dnsmasq",
 	}
 	err := exec.Command(args[0], args[1:]...).Run()
-	return errors.Annotate(err, "hup dns process").Err()
+	return errors.WrapIf(err, "hup dns process")
 }
 
 // EnsureRecords ensures that the given DNS records in question are up to date with respect to
@@ -239,8 +238,7 @@ func writeBackup(content string) error {
 		"dns:/etc/dut_hosts/hosts.BAK",
 	}
 	err = exec.Command(args[0], args[1:]...).Run()
-	return errors.Annotate(err, fmt.Sprintf("set backup dns file content: running %s", strings.Join(args, " "))).
-		Err()
+	return errors.WrapIf(err, "set backup dns file content: running `%s`", strings.Join(args, " "))
 }
 
 // makeNewContent takes in existing hostfile-like string and outputs a hostfile-like string with changes in newRecords

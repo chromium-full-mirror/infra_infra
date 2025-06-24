@@ -91,7 +91,7 @@ func provision(ctx context.Context, tlw tlw_server.Server, run *runner, req *tlw
 			return errors.Annotate(err, "provision: failed to check if KVM enabled on this device").Err()
 		}
 		if !kvmEnabled {
-			return errors.Annotate(err, "provision: KVM is not enabled on this device, provisioning it again will not help (repair needs to cold reboot this device)").Err()
+			return errors.New("provision: KVM is not enabled on this device, provisioning it again will not help (repair needs to cold reboot this device)")
 		}
 	}
 
@@ -164,7 +164,7 @@ func provision(ctx context.Context, tlw tlw_server.Server, run *runner, req *tlw
 	// Provision miniOS.
 	select {
 	case <-ctx.Done():
-		return errors.Annotate(err, "provision: timed out before provisioning DLCs").Err()
+		return errors.Fmt("provision: timed out before provisioning DLCs: %w", ctx.Err())
 	default:
 	}
 
@@ -198,7 +198,7 @@ func runCmd(c *ssh.Client, cmd string) error {
 	log.Printf("Running command: %s", cmd)
 	// Always run commands under /bin/bash.
 	err = s.Run("/bin/bash -")
-	return errors.Annotate(err, "runCmd: failed to run command").Err()
+	return errors.WrapIf(err, "runCmd: failed to run command")
 }
 
 // runCmdRetry is runCmd with retries with context.

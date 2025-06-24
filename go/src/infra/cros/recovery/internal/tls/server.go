@@ -46,7 +46,7 @@ func (t *tlsServer) Provision(ctx context.Context, sshProvider ssh.SSHProvider, 
 		t.tlw,
 		run,
 		req)
-	return errors.Annotate(err, "provision").Err()
+	return errors.WrapIf(err, "provision")
 }
 
 // CacheForDut queries the underlying TLW server to find a healthy devserver
@@ -57,5 +57,5 @@ func (t *tlsServer) CacheForDut(ctx context.Context, imageURL, dutName string) (
 		return "", errors.Reason("CacheForDut: tlw is not provided").Err()
 	}
 	url, err := t.tlw.CacheForDut(ctx, imageURL, dutName)
-	return url, errors.Annotate(err, "CacheForDut").Err()
+	return url, errors.WrapIf(err, "CacheForDut")
 }

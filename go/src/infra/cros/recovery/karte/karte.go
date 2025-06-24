@@ -68,7 +68,7 @@ func (c *client) Create(ctx context.Context, action *metrics.Action) error {
 	}
 	action.Name = karteResp.GetName()
 	err = c.createObservations(ctx, action.Name, action.Observations...)
-	return errors.Annotate(err, "create").Err()
+	return errors.WrapIf(err, "create")
 }
 
 // createObservations creates observations in karte.
