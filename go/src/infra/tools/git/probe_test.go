@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -36,7 +35,7 @@ func TestResolveSelf(t *testing.T) {
 	}
 
 	ftt.Run(`With a temporary directory`, t, func(t *ftt.Test) {
-		tdir, err := ioutil.TempDir(t.TempDir(), "resolve_self")
+		tdir, err := os.MkdirTemp(t.TempDir(), "resolve_self")
 		assert.Loosely(t, err, should.BeNil)
 		// Set up a base probe.
 		probe := SystemProbe{
@@ -76,7 +75,7 @@ func TestSystemProbe(t *testing.T) {
 	}
 
 	ftt.Run(`With a fake PATH setup`, t, func(t *ftt.Test) {
-		tdir, err := ioutil.TempDir(t.TempDir(), "system_probe")
+		tdir, err := os.MkdirTemp(t.TempDir(), "system_probe")
 		assert.Loosely(t, err, should.BeNil)
 
 		c := baseTestContext()
@@ -87,7 +86,7 @@ func TestSystemProbe(t *testing.T) {
 			if err := os.MkdirAll(dir, 0755); err != nil {
 				t.Fatalf("Failed to create base directory [%s]: %s", dir, err)
 			}
-			if err := ioutil.WriteFile(path, []byte("fake"), 0755); err != nil {
+			if err := os.WriteFile(path, []byte("fake"), 0755); err != nil {
 				t.Fatalf("Failed to create executable: %s", err)
 			}
 			return

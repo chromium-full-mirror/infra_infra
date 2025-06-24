@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -110,7 +110,7 @@ func TestGitCommand(t *testing.T) {
 	}
 
 	ftt.Run(`Using a test setup for "Git" command`, t, func(t *ftt.Test) {
-		tdir, err := ioutil.TempDir(t.TempDir(), "git_command")
+		tdir, err := os.MkdirTemp(t.TempDir(), "git_command")
 		assert.Loosely(t, err, should.BeNil)
 
 		var in testAgentRequest
@@ -160,7 +160,7 @@ func TestGitCommand(t *testing.T) {
 			// present, it is expected to be valid.
 			switch _, err = os.Stat(ta.outPath); {
 			case err == nil:
-				resp, err := ioutil.ReadFile(ta.outPath)
+				resp, err := os.ReadFile(ta.outPath)
 				if err != nil {
 					t.Fatalf("Failed to read agent JSON response: %s", err)
 				}
@@ -602,7 +602,7 @@ func makeTestAgent(inPath string) *testAgent {
 
 func (ta *testAgent) readRequest() error {
 	// Read in our request.
-	d, err := ioutil.ReadFile(ta.inPath)
+	d, err := os.ReadFile(ta.inPath)
 	if err != nil {
 		return errors.Annotate(err, "failed to read input params").Err()
 	}
@@ -668,7 +668,7 @@ func (ta *testAgent) run(c context.Context, args []string) int {
 func (ta *testAgent) processRequest(c context.Context, args []string, rc *int) error {
 	if ta.in.ReadStdin {
 		var err error
-		if ta.out.Stdin, err = ioutil.ReadAll(os.Stdin); err != nil {
+		if ta.out.Stdin, err = io.ReadAll(os.Stdin); err != nil {
 			return errors.Annotate(err, "failed to read STDIN").Err()
 		}
 	}
@@ -723,7 +723,7 @@ func (it *countingRetryIterator) Next(context.Context, error) time.Duration {
 }
 
 func atomicWriteJSON(obj any, path string) (err error) {
-	fd, err := ioutil.TempFile(filepath.Dir(path), filepath.Base(path))
+	fd, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path))
 	if err != nil {
 		return errors.Annotate(err, "failed to create output tempfile").Err()
 	}

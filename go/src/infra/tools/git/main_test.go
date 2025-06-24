@@ -7,7 +7,7 @@ package main
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -33,7 +33,7 @@ func TestMain(t *testing.T) {
 		env := environ.New(nil)
 		runMain := func(c context.Context, args ...string) int {
 			args = append([]string{executable}, args...)
-			return mainImpl(c, args, env, bytes.NewReader(nil), ioutil.Discard, ioutil.Discard)
+			return mainImpl(c, args, env, bytes.NewReader(nil), io.Discard, io.Discard)
 		}
 
 		t.Run(`When run in check mode, returns "1".`, func(t *ftt.Test) {
