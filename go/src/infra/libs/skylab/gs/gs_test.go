@@ -7,7 +7,6 @@ package gs
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -66,7 +65,7 @@ type testFixture struct {
 func newTestFixture(t *testing.T) (*testFixture, func()) {
 	t.Helper()
 
-	tmp, err := ioutil.TempDir("", "phosphorus")
+	tmp, err := os.MkdirTemp("", "phosphorus")
 	if err != nil {
 		t.Fatalf("Failed to create temporary directory")
 	}
