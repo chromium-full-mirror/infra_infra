@@ -7,7 +7,7 @@ package utils
 import (
 	"encoding/csv"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -20,7 +20,7 @@ func IsCSVFile(filename string) bool {
 
 // ParseMCSVFile parse a mcsv file and return the records as 2D string slice
 func ParseMCSVFile(specsFile string) ([][]string, error) {
-	rawText, err := ioutil.ReadFile(specsFile)
+	rawText, err := os.ReadFile(specsFile)
 	if err != nil {
 		return nil, err
 	}

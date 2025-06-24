@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
@@ -2219,7 +2218,7 @@ func getAllChromePlatforms(ctx context.Context, ic UfleetAPI.FleetClient) map[in
 
 // ParseJSONFile parses json input from the user provided file.
 func ParseJSONFile(jsonFile string, pm proto.Message) error {
-	rawText, err := ioutil.ReadFile(jsonFile)
+	rawText, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return errors.Annotate(err, "parse json file").Err()
 	}

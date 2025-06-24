@@ -6,7 +6,7 @@ package swarming
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -36,7 +36,7 @@ func parseDutAttribute(t *ftt.Test, protoText string) api.DutAttribute {
 func TestConvertAll(t *testing.T) {
 	t.Parallel()
 
-	b, err := ioutil.ReadFile("test_flat_config.cfg")
+	b, err := os.ReadFile("test_flat_config.cfg")
 	if err != nil {
 		t.Fatalf("Error reading test FlatConfig: %s", err)
 	}
@@ -197,7 +197,7 @@ func TestConvertAll(t *testing.T) {
 func TestGetLabelValues(t *testing.T) {
 	t.Parallel()
 
-	b, err := ioutil.ReadFile("test_flat_config.cfg")
+	b, err := os.ReadFile("test_flat_config.cfg")
 	if err != nil {
 		t.Fatalf("Error reading test FlatConfig: %s", err)
 	}
@@ -350,7 +350,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 	t.Parallel()
 
-	b, err := ioutil.ReadFile("test_flat_config.cfg")
+	b, err := os.ReadFile("test_flat_config.cfg")
 	if err != nil {
 		t.Fatalf("Error reading test FlatConfig: %s", err)
 	}
@@ -374,7 +374,7 @@ func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 func TestGetProtoExistence(t *testing.T) {
 	t.Parallel()
 
-	b, err := ioutil.ReadFile("test_flat_config.cfg")
+	b, err := os.ReadFile("test_flat_config.cfg")
 	if err != nil {
 		t.Fatalf("Error reading test FlatConfig: %s", err)
 	}

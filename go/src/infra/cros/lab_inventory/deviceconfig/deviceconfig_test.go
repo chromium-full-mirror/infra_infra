@@ -6,7 +6,7 @@ package deviceconfig
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -293,7 +293,7 @@ func (gc *fakeGitClient) GetFile(ctx context.Context, path string) (string, erro
 	if path != "generated/configs.jsonproto" {
 		return "", nil
 	}
-	b, err := ioutil.ReadFile("test_device_config_v2.jsonproto")
+	b, err := os.ReadFile("test_device_config_v2.jsonproto")
 	if err != nil {
 		return "", err
 	}
@@ -306,7 +306,7 @@ func (gc *fakeGitClient) SwitchProject(ctx context.Context, project string) erro
 }
 
 func (gsClient *fakeGSClient) GetFile(ctx context.Context, path string) ([]byte, error) {
-	b, err := ioutil.ReadFile("test_program_configs.json")
+	b, err := os.ReadFile("test_program_configs.json")
 	if err != nil {
 		return []byte{}, err
 	}

@@ -6,7 +6,7 @@ package deviceconfig
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/payload"
@@ -21,7 +21,7 @@ func TestParseConfigBundle(t *testing.T) {
 	ftt.Run("Test config bundle parsing", t, func(t *ftt.Test) {
 		var payloads payload.ConfigBundleList
 		// Refer to https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/test/project/fake/fake/config.star for unittest check
-		b, err := ioutil.ReadFile("test_device_config_v2.jsonproto")
+		b, err := os.ReadFile("test_device_config_v2.jsonproto")
 		assert.Loosely(t, err, should.BeNil)
 		err = luciproto.UnmarshalJSONWithNonStandardFieldMasks([]byte(b), &payloads)
 		assert.Loosely(t, err, should.BeNil)
