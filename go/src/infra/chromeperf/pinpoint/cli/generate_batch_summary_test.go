@@ -16,7 +16,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -35,7 +34,7 @@ func validateFile(t testing.TB, path, expected string) {
 	_, err := os.Stat(path)
 	assert.Loosely(t, err, should.BeNil)
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	assert.Loosely(t, err, should.BeNil)
 	fmt.Println("Actual:\n" + string(content) + "\n\n")
 	fmt.Println("Expected:\n" + expected + "\n\n")
@@ -84,7 +83,7 @@ func TestGenerateCSVsFromBatch(t *testing.T) {
 		summarizer := generateBatchSummary{}
 		summarizer.baseCommandRun.workDir = "testdata/generate-batch-summary-artifacts"
 
-		csvDir, err := ioutil.TempDir("", "tmp_batch_analyze")
+		csvDir, err := os.MkdirTemp("", "tmp_batch_analyze")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -107,7 +106,7 @@ func TestGenerateCSVsFromBatch(t *testing.T) {
 				",,,pval,Median (A),Median (B),pval,Median (A),Median (B),pval,Median (A),Median (B),pval,Median (A),Median (B)\n"+
 				"https://pinpoint-dot-chromeperf.appspot.com/job/15865492320000,android-pixel2-perf,Amazon,0.241588,356.00000,403.00000,0.481251,309.44700,323.92100,NaN,0.00000,0.00000,NaN,0.00000,0.00000\n")
 
-		content, err := ioutil.ReadFile("testdata/generate-batch-summary-raw-expected.csv")
+		content, err := os.ReadFile("testdata/generate-batch-summary-raw-expected.csv")
 		assert.Loosely(t, err, should.BeNil)
 		validateFile(t, filepath.Join(csvDir, "raw.csv"), string(content))
 	})

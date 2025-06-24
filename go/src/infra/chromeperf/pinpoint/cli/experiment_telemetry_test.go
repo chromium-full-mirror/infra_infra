@@ -7,7 +7,6 @@ package cli
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -125,7 +124,7 @@ func TestBatchKickoff(t *testing.T) {
 		c := &fakePinpointClient{}
 
 		var err error
-		runner.baseCommandRun.workDir, err = ioutil.TempDir("", "tmp")
+		runner.baseCommandRun.workDir, err = os.MkdirTemp("", "tmp")
 		runner.initialAttemptCount = int(testInitialAttemptCount)
 		runner.priority = int(testPriority)
 		assert.Loosely(t, err, should.BeNil)
@@ -189,7 +188,7 @@ func TestBatchKickoff(t *testing.T) {
 		jobs_filename := filepath.Join(runner.baseCommandRun.workDir, "batch.txt")
 		_, err = os.Stat(jobs_filename)
 		assert.Loosely(t, err, should.BeNil)
-		content, err := ioutil.ReadFile(jobs_filename)
+		content, err := os.ReadFile(jobs_filename)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, cmp.Equal(string(content), "4242\n4242\n4242\n4242\n4242\n4242\n"), should.BeTrue)
 	})
