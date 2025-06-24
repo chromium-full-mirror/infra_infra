@@ -6,7 +6,11 @@ package execs
 
 import (
 	"context"
+	"time"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
+	"go.chromium.org/infra/cros/recovery/internal/components"
 	"go.chromium.org/infra/cros/recovery/logger"
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
@@ -22,19 +26,21 @@ func (ei *ExecInfo) GetLogRoot() string {
 }
 
 // CopyFrom copies files from resource to localhost.
-func (ei *ExecInfo) CopyFrom(ctx context.Context, resourceName, srcFile, destDir string) error {
+func (ei *ExecInfo) CopyFrom(ctx context.Context, runner components.Runner, resourceName, srcFile, destDir string, timeout time.Duration) error {
 	return ei.runArgs.Access.CopyFileFrom(ctx, &tlw.CopyRequest{
 		Resource:        resourceName,
 		PathSource:      srcFile,
 		PathDestination: destDir,
-	})
+		Timeout:         durationpb.New(timeout),
+	}, runner)
 }
 
 // CopyDirectoryFrom copies a directory from resource to localhost.
-func (ei *ExecInfo) CopyDirectoryFrom(ctx context.Context, resourceName, srcDir, destDir string) error {
+func (ei *ExecInfo) CopyDirectoryFrom(ctx context.Context, runner components.Runner, resourceName, srcDir, destDir string, timeout time.Duration) error {
 	return ei.runArgs.Access.CopyDirectoryFrom(ctx, &tlw.CopyRequest{
 		Resource:        resourceName,
 		PathSource:      srcDir,
 		PathDestination: destDir,
-	})
+		Timeout:         durationpb.New(timeout),
+	}, runner)
 }

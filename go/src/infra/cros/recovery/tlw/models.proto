@@ -1030,6 +1030,8 @@ message CopyRequest {
   string path_source = 2;
   // Path to destination file or directory.
   string path_destination = 3;
+  // Timeout for copy operation
+  google.protobuf.Duration timeout = 4;
 }
 
 // CallServodRequest represents data to run command on servod.

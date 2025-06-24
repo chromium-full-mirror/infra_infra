@@ -15,9 +15,11 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
 	"go.chromium.org/infra/cros/recovery/internal/log"
 	"go.chromium.org/infra/cros/recovery/tlw"
@@ -47,8 +49,8 @@ const (
 // local machine where the source directory will be copied. The
 // destination path is the directory within which the source directory
 // will be copied.
-func CopyDirectoryFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
-	if err := copyFromHelper(ctx, provider, req, true); err != nil {
+func CopyDirectoryFrom(ctx context.Context, runner components.Runner, req *tlw.CopyRequest) error {
+	if err := copyFromHelper(ctx, runner, req, true); err != nil {
 		return errors.Annotate(err, "copy directory from").Err()
 	}
 	return nil
@@ -60,8 +62,8 @@ func CopyDirectoryFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.C
 // on the local machine where the source file will be copied. The
 // destination path is just the directory name, and does not include
 // the filename.
-func CopyFileFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
-	if err := copyFromHelper(ctx, provider, req, false); err != nil {
+func CopyFileFrom(ctx context.Context, runner components.Runner, req *tlw.CopyRequest) error {
+	if err := copyFromHelper(ctx, runner, req, false); err != nil {
 		return errors.Annotate(err, "copy file from").Err()
 	}
 	return nil
@@ -73,7 +75,7 @@ func CopyFileFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 // destination directory on the remote device where the source
 // directory will be copied.
 func CopyDirectoryTo(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
-	if err := validateInputParams(ctx, provider, req); err != nil {
+	if err := validateInputParams(ctx, provider, nil, req); err != nil {
 		return errors.Annotate(err, "copy directory to").Err()
 	}
 	if err := ensureDirExists(ctx, req.PathSource, false); err != nil {
@@ -90,7 +92,7 @@ func CopyDirectoryTo(ctx context.Context, provider ssh.SSHProvider, req *tlw.Cop
 // local machine, and the complete path of the destination directory
 // on the remote device where the source file will be copied.
 func CopyFileTo(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
-	if err := validateInputParams(ctx, provider, req); err != nil {
+	if err := validateInputParams(ctx, provider, nil, req); err != nil {
 		return errors.Annotate(err, "copy file to").Err()
 	}
 	if err := checkFileExists(ctx, req.PathSource); err != nil {
@@ -215,38 +217,13 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 // the remote machine that needs to be copied to destination on the
 // local machine. The function can handle both, a single file, as well
 // as a single directory, as the source.
-func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest, isDir bool) error {
-	if err := validateInputParams(ctx, provider, req); err != nil {
+func copyFromHelper(ctx context.Context, clientRunner components.Runner, req *tlw.CopyRequest, isDir bool) error {
+	if err := validateInputParams(ctx, nil, clientRunner, req); err != nil {
 		return errors.Annotate(err, "copy from helper").Err()
 	}
 	if err := ensureDirExists(ctx, req.PathDestination, true); err != nil {
 		return errors.Annotate(err, "copy from helper").Err()
 	}
-	addr := req.Resource
-	// If the host address here contains a ':', it already contains
-	// the port. Hence, we don't need to join the host and the port
-	// for such a case.
-	if ok := strings.Contains(addr, ":"); !ok {
-		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
-	}
-	client, err := provider.Get(ctx, addr)
-	if err != nil {
-		return errors.Annotate(err, "copy from helper: failed to get client for %q from pool", addr).Err()
-	}
-	defer func() {
-		if err := client.Close(); err != nil {
-			// TODO(b:270462604): Delete the log after finish migration.
-			log.Debugf(ctx, "SSH client closed with error: %s", err)
-		} else {
-			// TODO(b:270462604): Delete the log after finish migration.
-			log.Debugf(ctx, "SSH client closed!")
-		}
-	}()
-	session, err := client.NewSession()
-	if err != nil {
-		return errors.Annotate(err, "copy from helper: failed to create SSH session").Err()
-	}
-	defer func() { session.Close() }()
 
 	remoteSrc := req.PathSource
 	remoteFileName := filepath.Base(remoteSrc)
@@ -257,11 +234,13 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 	// the source file. This ensures that the tar archive includes
 	// paths relative only to this directory.
 	rCmd := fmt.Sprintf("%s -c --mode='a+rw' --gzip -C %s %s", tarCmd, filepath.Dir(remoteSrc), remoteFileName)
-	p, err := session.StdoutPipe()
-	if err != nil {
-		return errors.Annotate(err, "copy from helper: error with obtaining the stdout pipe").Err()
+
+	timeout := 30 * time.Minute
+	if req.GetTimeout().IsValid() {
+		timeout = req.Timeout.AsDuration()
 	}
-	if sErr := session.Start(rCmd); sErr != nil {
+	stdout, sErr := clientRunner(ctx, timeout, rCmd)
+	if sErr != nil {
 		return errors.Annotate(sErr, "copy from helper: error with starting the remote command %q", rCmd).Err()
 	}
 
@@ -277,7 +256,7 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 	// the '-C' flag changes the working directory to tmpDir and
 	// ensures that the output is placed there.
 	lCmd := exec.CommandContext(ctx, tarCmd, "-x", "--gzip", "-C", tmpDir)
-	lCmd.Stdin = p
+	lCmd.Stdin = strings.NewReader(stdout)
 	if err := lCmd.Run(); err != nil {
 		return errors.Annotate(err, "copy from helper: error with running the local command").Err()
 	}
@@ -315,9 +294,9 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 	return nil
 }
 
-func validateInputParams(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
-	if provider == nil {
-		return errors.New("validate input params: SSH provider is not initialized")
+func validateInputParams(ctx context.Context, provider ssh.SSHProvider, runner components.Runner, req *tlw.CopyRequest) error {
+	if provider == nil && runner == nil {
+		return errors.New("validate input params: SSH provider or runner should be provided")
 	} else if req.Resource == "" {
 		return errors.New("validate input params: resource is empty")
 	} else if req.PathSource == "" {

@@ -149,6 +149,8 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	} else {
 		log.Debugf("Planning to collect logs since %v", startTime)
 	}
+	argMap := info.GetActionArgs(ctx)
+	timeout := argMap.AsDuration(ctx, "copy_timeout", 30, time.Minute)
 	for _, lf := range strings.Split(output, "\n") {
 		t, err := extractTimeFromServoLog(lf, log)
 		if err != nil {
@@ -163,7 +165,7 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 		srcFile := filepath.Join(servoLogsDir, lf)
 		log.Infof("Try to collect servod log %q!", srcFile)
-		if err := info.CopyFrom(ctx, resource, srcFile, servoLogDir); err != nil {
+		if err := info.CopyFrom(ctx, run, resource, srcFile, servoLogDir, timeout); err != nil {
 			log.Debugf("Collect servod logs: fail to copy file %q to logs! Error: %v", srcFile, err)
 		}
 	}

@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // Access represent TLW level to access to the devices and inventory.
@@ -37,11 +38,11 @@ type Access interface {
 	// CopyFileTo copies file to remote device from local.
 	CopyFileTo(ctx context.Context, req *CopyRequest) error
 	// CopyFileFrom copies file from remote device to local.
-	CopyFileFrom(ctx context.Context, req *CopyRequest) error
+	CopyFileFrom(ctx context.Context, req *CopyRequest, runner components.Runner) error
 	// CopyDirectoryTo copies directory to remote device from local, recursively.
 	CopyDirectoryTo(ctx context.Context, req *CopyRequest) error
 	// CopyDirectoryFrom copies directory from remote device to local, recursively.
-	CopyDirectoryFrom(ctx context.Context, req *CopyRequest) error
+	CopyDirectoryFrom(ctx context.Context, req *CopyRequest, runner components.Runner) error
 	// RunRPMAction performs power action on RPM outlet per request.
 	RunRPMAction(ctx context.Context, req *RunRPMActionRequest) error
 	// ListResourcesForUnit provides list of resources names related to target unit.

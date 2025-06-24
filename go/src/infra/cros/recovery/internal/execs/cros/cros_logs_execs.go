@@ -116,15 +116,16 @@ func copyToLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	if _, err := run(ctx, time.Minute, "test", testCmdFlag, srcPath); err != nil {
 		return errors.Annotate(err, "copy to logs: the src_file:%q does not exist", srcPath).Err()
 	}
+	timeout := argMap.AsDuration(ctx, "copy_timeout", 30, time.Minute)
 	if isDir {
 		log.Debugf(ctx, "Copy to Logs: Attempting to collect the logs from %q to %q", srcPath, logRoot)
-		if err := info.CopyDirectoryFrom(ctx, resource, srcPath, logRoot); err != nil {
+		if err := info.CopyDirectoryFrom(ctx, run, resource, srcPath, logRoot, timeout); err != nil {
 			return errors.Annotate(err, "copy to logs").Err()
 		}
 	} else {
 		destDir := logRoot
 		log.Debugf(ctx, "Copy to Logs: Attempting to collect the logs from %q to %q!", srcPath, destDir)
-		if err := info.CopyFrom(ctx, resource, srcPath, destDir); err != nil {
+		if err := info.CopyFrom(ctx, run, resource, srcPath, destDir, timeout); err != nil {
 			return errors.Annotate(err, "copy to logs").Err()
 		}
 	}
@@ -162,9 +163,10 @@ func collectCrashDumpsExec(ctx context.Context, info *execs.ExecInfo) error {
 		argMap := info.GetActionArgs(ctx)
 		cleanUp := argMap.AsBool(ctx, "clean", true)
 		timeout := argMap.AsDuration(ctx, "cleanup_timeout", 10, time.Second)
+		copyTimeout := argMap.AsDuration(ctx, "copy_timeout", 30, time.Minute)
 		for _, f := range orphans {
 			log.Debugf(ctx, "Collect Crash Dumps Exec: Attempting to collect orphan file %q", f)
-			if err := info.CopyFrom(ctx, info.GetDut().Name, f, infoDir); err != nil {
+			if err := info.CopyFrom(ctx, run, info.GetDut().Name, f, infoDir, copyTimeout); err != nil {
 				log.Debugf(ctx, "Collect Crash Dumps Exec: (non-critical) error %s while copying %q to %q", err.Error(), f, infoDir)
 			}
 			if cleanUp {

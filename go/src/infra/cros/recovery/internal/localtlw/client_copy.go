@@ -10,6 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components"
 	tlwio "go.chromium.org/infra/cros/recovery/internal/localtlw/io"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
 	"go.chromium.org/infra/cros/recovery/internal/log"
@@ -40,7 +41,7 @@ func (c *tlwClient) CopyFileTo(ctx context.Context, req *tlw.CopyRequest) error 
 }
 
 // CopyFileFrom copies file from remote device to local.
-func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mainErr error) {
+func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest, runner components.Runner) (mainErr error) {
 	if vErr := validateCopyRequest(req); vErr != nil {
 		return errors.Annotate(vErr, "copy file from").Err()
 	}
@@ -64,10 +65,11 @@ func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mai
 		mainErr = d.CopyFrom(ctx, containerName, req.PathSource, req.PathDestination)
 	} else {
 		// Use dirrect copy if hosts support SSH.
-		mainErr = tlwio.CopyFileFrom(ctx, c.sshProvider, &tlw.CopyRequest{
+		mainErr = tlwio.CopyFileFrom(ctx, runner, &tlw.CopyRequest{
 			Resource:        localproxy.BuildAddr(req.Resource),
 			PathSource:      req.PathSource,
 			PathDestination: req.PathDestination,
+			Timeout:         req.Timeout,
 		})
 	}
 	return errors.WrapIf(mainErr, "copy file from %q", req.Resource)
@@ -82,13 +84,14 @@ func (c *tlwClient) CopyDirectoryTo(ctx context.Context, req *tlw.CopyRequest) e
 }
 
 // CopyDirectoryFrom copies directory from remote device to local, recursively.
-func (c *tlwClient) CopyDirectoryFrom(ctx context.Context, req *tlw.CopyRequest) error {
+func (c *tlwClient) CopyDirectoryFrom(ctx context.Context, req *tlw.CopyRequest, runner components.Runner) error {
 	// TODO (vkjoshi@): Need to add support for containerized
 	// servo-hosts, analogous to that in CopyFileFrom.
-	if err := tlwio.CopyDirectoryFrom(ctx, c.sshProvider, &tlw.CopyRequest{
+	if err := tlwio.CopyDirectoryFrom(ctx, runner, &tlw.CopyRequest{
 		Resource:        localproxy.BuildAddr(req.Resource),
 		PathSource:      req.PathSource,
 		PathDestination: req.PathDestination,
+		Timeout:         req.Timeout,
 	}); err != nil {
 		return errors.Annotate(err, "copy directory from").Err()
 	}
