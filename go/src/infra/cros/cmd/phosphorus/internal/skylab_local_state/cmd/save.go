@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -232,7 +231,7 @@ func sealResultsDir(dir string) error {
 	if !os.IsNotExist(err) {
 		return fmt.Errorf("seal results dir %s: encountered corrupted file %s", dir, tsFile)
 	}
-	if err := ioutil.WriteFile(tsFile, ts, 0666); err != nil {
+	if err := os.WriteFile(tsFile, ts, 0666); err != nil {
 		return errors.Annotate(err, "seal results dir %s", dir).Err()
 	}
 	return nil

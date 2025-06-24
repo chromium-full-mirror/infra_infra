@@ -10,7 +10,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -334,7 +333,7 @@ func writeIndividualCrash(ctx context.Context, info *tlsapi.CrashInfo, crashBlob
 
 	for _, b := range crashBlobs {
 		path := filepath.Join(crashDir, b.Filename)
-		if err := ioutil.WriteFile(path, b.Blob, 0644); err != nil {
+		if err := os.WriteFile(path, b.Blob, 0644); err != nil {
 			return "", errors.Annotate(err, "write blob %s", b.Filename).Err()
 		}
 		if base == "" {
@@ -357,7 +356,7 @@ func writeIndividualCrash(ctx context.Context, info *tlsapi.CrashInfo, crashBlob
 	for _, meta := range info.Fields {
 		metaContents += fmt.Sprintf("%s=%s\n", meta.Key, meta.Text)
 	}
-	if err := ioutil.WriteFile(filepath.Join(crashDir, metaName), []byte(metaContents), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(crashDir, metaName), []byte(metaContents), 0644); err != nil {
 		return "", errors.Annotate(err, "write metadata %s", metaName).Err()
 	}
 	return base, nil
@@ -481,7 +480,7 @@ func findRTDCrashes(ctx context.Context, rootDir string) (map[string]bool, error
 
 // addCrasheInDir finds all crashes in |d| and adds them to |crashes|
 func addCrashesInDir(ctx context.Context, d string, crashes *map[string]bool) error {
-	files, err := ioutil.ReadDir(d)
+	files, err := os.ReadDir(d)
 	if err != nil {
 		return errors.Annotate(err, "reading directory %s", d).Err()
 	}

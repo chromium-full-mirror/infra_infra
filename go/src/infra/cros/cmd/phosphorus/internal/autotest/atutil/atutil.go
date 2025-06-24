@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -157,7 +156,7 @@ func ParseSSPDeployShadowConfig(
 	autotestConfig autotest.Config,
 	configFile string,
 ) ([]mount.Mount, error) {
-	bytes, err := ioutil.ReadFile(configFile)
+	bytes, err := os.ReadFile(configFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed reading SSP deploy shadow config file")
 	}
@@ -428,7 +427,7 @@ func isTest(a *autotest.AutoservArgs) bool {
 // readTestsFailed reads the number of tests failed from the given
 // pid file.
 func readTestsFailed(pidFile string) (int, error) {
-	b, err := ioutil.ReadFile(pidFile)
+	b, err := os.ReadFile(pidFile)
 	if err != nil {
 		return 0, err
 	}
@@ -473,6 +472,6 @@ func keyvalPath(resultsDir string) string {
 }
 
 func readKeyvalFile(resultsDir string) string {
-	content, _ := ioutil.ReadFile(keyvalPath(resultsDir))
+	content, _ := os.ReadFile(keyvalPath(resultsDir))
 	return string(content)
 }

@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
@@ -95,7 +94,7 @@ func (hi *HostInfo) setCrosVersion(crosVersion string) {
 }
 
 func readHostInfoFile(infoFilePath string) (*HostInfo, error) {
-	data, err := ioutil.ReadFile(infoFilePath)
+	data, err := os.ReadFile(infoFilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +110,7 @@ func writeHostInfoFile(infoFilePath string, hostInfo *HostInfo) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(infoFilePath, updatedData, 0)
+	return os.WriteFile(infoFilePath, updatedData, 0)
 }
 
 // convertToPkgStagingURL takes a raw URL string and returns a URL for the

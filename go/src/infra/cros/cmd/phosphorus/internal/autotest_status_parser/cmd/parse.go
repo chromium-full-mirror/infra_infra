@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -105,7 +104,7 @@ func (c *parseRun) validateArgs() error {
 // inside the given results directory.
 func getTestResults(ctx context.Context, dir string) skylab_test_runner.Result_Autotest {
 	resultsSummaryPath := filepath.Join(dir, resultsSummaryFile)
-	resultsSummaryContent, err := ioutil.ReadFile(resultsSummaryPath)
+	resultsSummaryContent, err := os.ReadFile(resultsSummaryPath)
 
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
@@ -119,7 +118,7 @@ func getTestResults(ctx context.Context, dir string) skylab_test_runner.Result_A
 	testCases := parseResultsFile(string(resultsSummaryContent))
 
 	exitStatusFilePath := filepath.Join(dir, exitStatusFile)
-	exitStatusContent, err := ioutil.ReadFile(exitStatusFilePath)
+	exitStatusContent, err := os.ReadFile(exitStatusFilePath)
 
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
@@ -201,7 +200,7 @@ func getPrejobVerdict(prejobName, prejobDir string) skylab_test_runner.Result_Pr
 			return skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
 		}
 	}
-	exitStatusContent, err := ioutil.ReadFile(exitStatusFilePath)
+	exitStatusContent, err := os.ReadFile(exitStatusFilePath)
 
 	if err != nil {
 		return skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL

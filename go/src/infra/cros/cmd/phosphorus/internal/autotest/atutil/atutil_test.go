@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +21,7 @@ import (
 )
 
 func TestRunAutoserv(t *testing.T) {
-	autotestDir, err := ioutil.TempDir("", "autotest-dir-*")
+	autotestDir, err := os.MkdirTemp("", "autotest-dir-*")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +44,7 @@ func TestRunAutoserv(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resultsDir, err := ioutil.TempDir("", "results-dir-*")
+	resultsDir, err := os.MkdirTemp("", "results-dir-*")
 	if err != nil {
 		t.Fatal(err)
 	}

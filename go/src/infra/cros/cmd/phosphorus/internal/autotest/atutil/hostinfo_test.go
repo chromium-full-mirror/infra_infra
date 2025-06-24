@@ -7,7 +7,6 @@
 package atutil
 
 import (
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -66,17 +65,17 @@ func TestReadHostInfoFile(t *testing.T) {
 
 func TestWriteHostInfoFile(t *testing.T) {
 	tmpDir := "hostinfo_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
+	tmpDir, err := os.MkdirTemp("", tmpDir)
 	defer os.RemoveAll(tmpDir)
 	assert.NilError(t, err)
 	tmpPath := filepath.Join(tmpDir, "host_info.json")
-	err = ioutil.WriteFile(tmpPath, []byte{}, 0644)
+	err = os.WriteFile(tmpPath, []byte{}, 0644)
 	assert.NilError(t, err)
 
-	wantData, err := ioutil.ReadFile("test_data/host_info.json")
+	wantData, err := os.ReadFile("test_data/host_info.json")
 	assert.NilError(t, err)
 	assert.NilError(t, writeHostInfoFile(tmpPath, testHostInfo))
-	gotData, err := ioutil.ReadFile(tmpPath)
+	gotData, err := os.ReadFile(tmpPath)
 	assert.NilError(t, err)
 	if diff := cmp.Diff(wantData, gotData); diff != "" {
 		t.Fatalf("unexpected diff (%s)", diff)
