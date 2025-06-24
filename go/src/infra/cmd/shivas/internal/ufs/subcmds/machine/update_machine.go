@@ -144,16 +144,16 @@ func (c *updateMachine) innerRun(a subcommands.Application, args []string, env s
 	res, err := ic.UpdateMachine(ctx, &ufsAPI.UpdateMachineRequest{
 		Machine: &machine,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"zone":     "zone",
-			"rack":     "rack",
-			"platform": "platform",
-			"kvm":      "kvm",
-			"kvm-port": "kvmport",
-			"ticket":   "deploymentTicket",
-			"tag":      "tags",
-			"serial":   "serialNumber",
-			"state":    "resourceState",
-			"desc":     "description",
+			"zone":     ufsUtil.ZonePath,
+			"rack":     ufsUtil.RackPath,
+			"platform": ufsUtil.ChromePlatformPath,
+			"kvm":      ufsUtil.KvmInterfaceKvmPath,
+			"kvm-port": ufsUtil.KvmInterfacePortNamePath,
+			"ticket":   ufsUtil.DeploymentTicketPath,
+			"tag":      ufsUtil.TagsPath,
+			"serial":   ufsUtil.SerialNumberPath,
+			"state":    ufsUtil.ResourceStatePath,
+			"desc":     ufsUtil.DescriptionPath,
 		}),
 	})
 	if err != nil {

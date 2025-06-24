@@ -134,15 +134,15 @@ func (c *updateAttachedDeviceMachine) innerRun(a subcommands.Application, args [
 	res, err := ic.UpdateMachine(ctx, &ufsAPI.UpdateMachineRequest{
 		Machine: &machine,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"zone":         "zone",
-			"rack":         "rack",
-			"tag":          "tags",
-			"serial":       "serialNumber",
-			"state":        "resourceState",
-			"man":          "admManufacturer",
-			"devicetype":   "admDeviceType",
-			"build-target": "admBuildTarget",
-			"model":        "admModel",
+			"zone":         ufsUtil.ZonePath,
+			"rack":         ufsUtil.LocationRackPath,
+			"tag":          ufsUtil.TagsPath,
+			"serial":       ufsUtil.SerialNumberPath,
+			"state":        ufsUtil.ResourceStatePath,
+			"man":          ufsUtil.AttachedDeviceManufacturerPath,
+			"devicetype":   ufsUtil.AttachedDeviceDeviceTypePath,
+			"build-target": ufsUtil.AttachedDeviceBuildTargetPath,
+			"model":        ufsUtil.AttachedDeviceModelPath,
 		}),
 	})
 	if err != nil {

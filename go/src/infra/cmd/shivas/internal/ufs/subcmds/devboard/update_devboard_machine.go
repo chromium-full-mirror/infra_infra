@@ -106,11 +106,11 @@ func (c *updateDevboardMachine) innerRun(a subcommands.Application, args []strin
 	res, err := ic.UpdateMachine(ctx, &ufsAPI.UpdateMachineRequest{
 		Machine: &machine,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"zone":       "zone",
-			"rack":       "rack",
-			"tag":        "tags",
-			"state":      "resource_state",
-			"ultradebug": "devboard.andreiboard.ultradebug_serial",
+			"zone":       ufsUtil.ZonePath,
+			"rack":       ufsUtil.LocationRackPath,
+			"tag":        ufsUtil.TagsPath,
+			"state":      ufsUtil.ResourceStatePath,
+			"ultradebug": ufsUtil.AndreiboardUltradebugSerialPath,
 		}),
 	})
 	if err != nil {
