@@ -107,7 +107,7 @@ func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	command := argsMap.AsString(ctx, "command", "")
 	commandArgs := argsMap.AsStringSlice(ctx, "args", []string{})
 	_, err := adb.Exec(ctx, info.GetDut(), timeout, command, commandArgs...)
-	return errors.Annotate(err, "adb command").Err()
+	return errors.WrapIf(err, "adb command")
 }
 
 func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -152,7 +152,7 @@ func makeAwakeAlwaysExec(ctx context.Context, info *execs.ExecInfo) error {
 	// go/android-dev/reference/android/provider/Settings.Global#STAY_ON_WHILE_PLUGGED_IN
 	// The value 7 indicates that the screen will stay on at all times when plugged in.
 	_, err := run(ctx, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "7")
-	return errors.Annotate(err, "make awake always").Err()
+	return errors.WrapIf(err, "make awake always")
 }
 
 func init() {

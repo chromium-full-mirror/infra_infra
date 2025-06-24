@@ -61,7 +61,7 @@ func (s *iServod) Get(ctx context.Context, command string) (*xmlrpc.Value, error
 		return nil, errors.Reason("get: command is empty").Err()
 	}
 	v, err := s.Call(ctx, components.ServodGet, components.ServodDefaultTimeout, command)
-	return v, errors.Annotate(err, "get %q", command).Err()
+	return v, errors.WrapIf(err, "get %q", command)
 }
 
 // Set sets value to provided command.
@@ -73,7 +73,7 @@ func (s *iServod) Set(ctx context.Context, command string, val any) error {
 		return errors.Reason("set %q: value is empty", command).Err()
 	}
 	_, err := s.Call(ctx, components.ServodSet, components.ServodDefaultTimeout, command, val)
-	return errors.Annotate(err, "set %q with %v", command, val).Err()
+	return errors.WrapIf(err, "set %q with %v", command, val)
 }
 
 // Has verifies that command is known.
@@ -83,7 +83,7 @@ func (s *iServod) Has(ctx context.Context, command string) error {
 		return errors.Reason("has: command not specified").Err()
 	}
 	_, err := s.Call(ctx, components.ServodDoc, components.ServodDefaultTimeout, command)
-	return errors.Annotate(err, "has: %q is not know", command).Err()
+	return errors.WrapIf(err, "has: %q is not know", command)
 }
 
 // Port provides port used for running servod daemon.

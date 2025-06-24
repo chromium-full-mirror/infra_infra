@@ -166,7 +166,7 @@ func (c *UbuntuRouterController) Features() ([]labapi.WifiRouterFeature, error) 
 	}
 	features, ok := ubuntuModelToFeatures[model]
 	if !ok {
-		return nil, errors.Annotate(err, "features: no features mapped for model %s", model).Err()
+		return nil, errors.Fmt("features: no features mapped for model %s", model)
 	}
 	return features, nil
 }

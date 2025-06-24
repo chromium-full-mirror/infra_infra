@@ -62,7 +62,7 @@ func getServodLogDir(ctx context.Context, run components.Runner, servoPort int, 
 		return "", errors.Annotate(err, "get time of latest servod log").Err()
 	}
 	output, err = run(ctx, 30*time.Second, "dirname", output)
-	return output, errors.Annotate(err, "get time of latest servod log").Err()
+	return output, errors.WrapIf(err, "get time of latest servod log")
 }
 
 // getLatestServodLogTime extract time of latest servod logs.
@@ -82,7 +82,7 @@ func getServosStartTime(ctx context.Context, logRoot string, servodPort int, run
 	f := filepath.Join(logRoot, servodStarLogTimeFile)
 	if _, err := os.Stat(f); base_error.Is(err, os.ErrNotExist) {
 		// path/to/whatever does exist
-		return nil, errors.Annotate(err, "collect servod logs").Err()
+		return nil, errors.Fmt("collect servod logs: %w", err)
 	}
 	content, err := os.ReadFile(f)
 	if err != nil {

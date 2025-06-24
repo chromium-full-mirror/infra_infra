@@ -212,7 +212,7 @@ func runUpdateServoDeviceFwAttempt(ctx context.Context, r execs.Runner, device *
 		return topology.RereadServoFwVersion(ctx, r, device)
 	}, "re-read servo device fw version")
 	if readServoFwErr != nil {
-		return errors.Annotate(err, "run update servo device fw attempt").Err()
+		return errors.Annotate(readServoFwErr, "run update servo device fw attempt").Err()
 	}
 	if req.IgnoreVersion || !needsUpdate(ctx, r, device, req.FirmwareChannel) {
 		log.Infof(ctx, "Servo %q firmware updated successfully", device.Type)

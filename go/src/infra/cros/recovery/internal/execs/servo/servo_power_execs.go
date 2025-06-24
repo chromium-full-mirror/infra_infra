@@ -60,7 +60,7 @@ func servoServodPdRoleToggleExec(ctx context.Context, info *execs.ExecInfo) erro
 			return errors.Reason("servod pd role toggle: did not successfully set it to src").Err()
 		}
 	}, "servod pd role toggle")
-	return errors.Annotate(toggleErr, "servod pd role toggle").Err()
+	return errors.WrapIf(toggleErr, "servod pd role toggle")
 }
 
 // servoRecoverAcPowerExec recovers AC detection if AC is not detected.
@@ -114,7 +114,7 @@ func servoRecoverAcPowerExec(ctx context.Context, info *execs.ExecInfo) error {
 	if batteryIsCharging, err := servodGetBool(ctx, servod, "battery_is_charging"); err != nil {
 		return errors.Annotate(err, "servo recover ac power").Err()
 	} else if !batteryIsCharging {
-		return errors.Annotate(err, "servo recover ac power: battery is not charging after recovery").Err()
+		return errors.New("servo recover ac power: battery is not charging after recovery")
 	}
 	return nil
 }

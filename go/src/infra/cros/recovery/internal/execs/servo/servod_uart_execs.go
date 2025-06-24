@@ -16,17 +16,17 @@ import (
 
 func startUartCaptureExec(ctx context.Context, info *execs.ExecInfo) error {
 	err := servo.StartUartCapture(ctx, info.NewServod())
-	return errors.Annotate(err, "start UART captiring").Err()
+	return errors.WrapIf(err, "start UART captiring")
 }
 func stoptUartCaptureExec(ctx context.Context, info *execs.ExecInfo) error {
 	err := servo.StopUartCapture(ctx, info.NewServod())
-	return errors.Annotate(err, "stop UART captiring").Err()
+	return errors.WrapIf(err, "stop UART captiring")
 }
 
 func saveUartCaptureExec(ctx context.Context, info *execs.ExecInfo) error {
 	dir := filepath.Join(info.GetLogRoot(), info.GetChromeos().GetServo().GetName())
 	err := servo.SaveUartStreamToFiles(ctx, info.NewServod(), dir)
-	return errors.Annotate(err, "save UART captiring").Err()
+	return errors.WrapIf(err, "save UART captiring")
 }
 
 func init() {

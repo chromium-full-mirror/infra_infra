@@ -501,7 +501,7 @@ func (c *OpenWrtRouterController) updateImage(ctx context.Context, imageUUID str
 
 	// Verify device image matches expected image.
 	if c.state.GetDeviceBuildInfo().GetImageUuid() != imageUUID {
-		return errors.Annotate(err, "unexpected image uuid after flashing new image; got %q, expected %q", c.state.GetDeviceBuildInfo().GetImageUuid(), imageUUID).Err()
+		return errors.Fmt("unexpected image uuid after flashing new image; got %q, expected %q", c.state.GetDeviceBuildInfo().GetImageUuid(), imageUUID)
 	}
 
 	log.Infof(ctx, "Successfully updated router OpenWrt image from %q to %q", originalImageUUID, imageUUID)

@@ -81,7 +81,7 @@ func servoV4P1NetResetExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
 	logger := info.NewLogger()
 	err := servo.ResetServoV4p1EthernetController(ctx, servod, logger, resetTimeout)
-	return errors.Annotate(err, "servo_v4p1 net reset").Err()
+	return errors.WrapIf(err, "servo_v4p1 net reset")
 }
 
 // servoRebootExec use servodtool to reboot servo device.

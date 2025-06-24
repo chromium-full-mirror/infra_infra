@@ -143,7 +143,7 @@ func servodCreateFlagToUseRecoveryModeExec(ctx context.Context, info *execs.Exec
 	}
 	flagPath := filepath.Join(logRoot, ServodUseRecoveryModeFlag)
 	err := exec.CommandContext(ctx, "touch", flagPath).Run()
-	return errors.Annotate(err, "servod create flag to use recovery-mode").Err()
+	return errors.WrapIf(err, "servod create flag to use recovery-mode")
 }
 
 // Verify that the root servo is enumerated/present on the host.
@@ -475,7 +475,7 @@ func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	usbMuxControl := "usb_mux_oe1"
 	if err := s.Has(ctx, usbMuxControl); err == nil {
 		if err2 := s.Set(ctx, usbMuxControl, "on"); err2 != nil {
-			return errors.Annotate(err, "init dut for servo exec").Err()
+			return errors.Fmt("init dut for servo exec: %w", err2)
 		}
 		if err := s.Set(ctx, "image_usbkey_pwr", "off"); err != nil {
 			log.Debugf(ctx, "Fail to set USB power off: %s", err)

@@ -155,7 +155,7 @@ func (c *tlwClient) Ping(ctx context.Context, resourceName string, count int) er
 		}
 	} else {
 		err = ping(resourceName, count)
-		return errors.Annotate(err, "ping").Err()
+		return errors.WrapIf(err, "ping")
 	}
 }
 
