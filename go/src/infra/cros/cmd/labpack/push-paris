@@ -33,8 +33,10 @@ paris_changelist=$(git log refs/remotes/origin/main --oneline ${paris_prod_git}.
 cat <<EOF
 The push will includes below changes:
 
+LABPACK:
 $labpack_changelist
 
+PARIS:
 $paris_changelist
 
 
@@ -54,18 +56,34 @@ cipd set-ref -ref prev-prod -version prod ${parisInstance}
 cipd set-ref -ref prod -version ${paris_latest_id} ${parisInstance}
 
 cat <<EOF
-Don't forget to send out an announcement!
+
++===========================================+
+| Don't forget to send out an announcement! |
++===========================================+
+
 To:
 chromeos-infra-releases@google.com
 
 Title:
-PARIS push to prod(${latest_git})
+Push to prod PARIS(${paris_latest_git}), LABPACK(${labpack_latest_git})
+
+PARIS
 
 Content:
-Previous CIPD instance id: ${prod_id}
-
-New CIPD instance id: ${latest_id}
+Previous CIPD instance id: ${paris_prod_id}
+New CIPD instance id: ${paris_latest_id}
 
 Change-list:
-${changelist}
+${paris_changelist}
+
+---
+
+LABPACK
+
+Content:
+Previous CIPD instance id: ${labpack_prod_id}
+New CIPD instance id: ${labpack_latest_id}
+
+Change-list:
+${labpack_changelist}
 EOF
