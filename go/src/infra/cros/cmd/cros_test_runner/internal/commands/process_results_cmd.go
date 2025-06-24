@@ -298,10 +298,14 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForClassic(ctx context.Context
 		isIncomplete = false
 		isPastCaseLimit := testCaseCount > 2000
 		passCount := 0
+		skipCount := 0
 		failCount := 0
 		for _, testResult := range cmd.TestResponses.GetTestCaseResults() {
 			testVerdict, isTestFailure := getTestVerdict(ctx, testResult)
 			testResultReason := testResult.GetReason()
+			if testResultReason == "" && len(testResult.GetErrors()) > 0 {
+				testResultReason = testResult.GetErrors()[0].GetMessage()
+			}
 			autotestTestCase := &skylab_test_runner.Result_Autotest_TestCase{
 				Name:                 testResult.GetTestCaseId().GetValue(),
 				Verdict:              testVerdict,
@@ -311,7 +315,12 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForClassic(ctx context.Context
 			if isTestFailure {
 				failCount++
 			} else {
-				passCount++
+				// Mark if the test was skipped
+				if testResultReason != "" {
+					skipCount++
+				} else {
+					passCount++
+				}
 			}
 
 			if !isPastCaseLimit {
@@ -329,6 +338,9 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForClassic(ctx context.Context
 			}
 			if failCount > 0 {
 				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
+			}
+			if skipCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests skipped", skipCount), "", false, false)
 			}
 		}
 	}
@@ -373,12 +385,16 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 		isIncomplete = false
 		isPastCaseLimit := testCaseCount > 2000
 		passCount := 0
+		skipCount := 0
 		failCount := 0
 		for _, givenTestResult := range cmd.TestResponses.GetGivenTestResults() {
 			childTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
 			for _, childTestResult := range givenTestResult.GetChildTestCaseResults() {
 				testVerdict, isTestFailure := getTestVerdict(ctx, childTestResult)
 				testResultReason := childTestResult.GetReason()
+				if testResultReason == "" && len(childTestResult.GetErrors()) > 0 {
+					testResultReason = childTestResult.GetErrors()[0].GetMessage()
+				}
 				childTestCase := &skylab_test_runner.Result_Autotest_TestCase{
 					Name:                 childTestResult.GetTestCaseId().GetValue(),
 					Verdict:              testVerdict,
@@ -387,7 +403,12 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 				if isTestFailure {
 					failCount++
 				} else {
-					passCount++
+					// Mark if the test was skipped
+					if testResultReason != "" {
+						skipCount++
+					} else {
+						passCount++
+					}
 				}
 				childTestCases = append(childTestCases, childTestCase)
 				if !isPastCaseLimit {
@@ -412,6 +433,9 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 			}
 			if failCount > 0 {
 				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
+			}
+			if skipCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests skipped", skipCount), "", false, false)
 			}
 		}
 	}

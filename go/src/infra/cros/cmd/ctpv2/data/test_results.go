@@ -135,14 +135,11 @@ func (t *TestResults) GetFailureErr() error {
 	return nil
 }
 
-func (t *TestResults) GetTestCounts() (int, int, int) {
+func (t *TestResults) GetTestCounts() (totalTestCount int, totalFailedTestCount int, totalSkippedTestCount int, totalFailedTestRunCount int) {
 	if t.TopLevelError != nil {
-		return 0, 0, 0
+		return
 	}
 
-	totalTestCount := 0
-	totalFailedTestCount := 0
-	totalFailedTestRunCount := 0
 	parentTestCasesFoundInResults := 0
 	testCasesNames := common.GetFlattenedTestCases(t.TestCases)
 	testCasesNamesWithModuleInfoOnly := common.ExtractModulesIfSubModulesProvided(testCasesNames)
@@ -158,6 +155,8 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 				totalTestCount++
 				if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
 					totalFailedTestCount++
+				} else if testCase.GetHumanReadableSummary() != "" {
+					totalSkippedTestCount++
 				}
 			}
 		}
@@ -168,7 +167,7 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 			totalFailedTestRunCount = 0
 		}
 
-		return totalTestCount, totalFailedTestCount, totalFailedTestRunCount
+		return
 	}
 
 	// Handle legacy autotest format
@@ -176,17 +175,19 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 	if !ok {
 		// the test results from trv2 should be here, if not,
 		// something else failed before test execution. so fail.
-		return 0, 0, 0
+		return
 	}
 
 	for _, testCase := range testResults.GetTestCases() {
 		totalTestCount++
 		if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
 			totalFailedTestCount++
+		} else if testCase.GetHumanReadableSummary() != "" {
+			totalSkippedTestCount++
 		}
 	}
 
-	return totalTestCount, totalFailedTestCount, totalFailedTestRunCount
+	return
 }
 
 type ByAttempt []*TestResults

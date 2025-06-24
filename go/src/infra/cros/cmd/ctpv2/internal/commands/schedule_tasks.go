@@ -235,11 +235,11 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	for _, results := range cmd.TestResults {
 		testRunnerLinks = append(testRunnerLinks, results.BuildURL)
 		totalShards := cmd.findTotalShards(results.Key)
-		currTestCount, currFailedTestCount, currFailedTestRunCount := results.GetTestCounts()
+		currTestCount, currFailedTestCount, currSkippedTestCount, currFailedTestRunCount := results.GetTestCounts()
 		totalTestCount = totalTestCount + currTestCount
 		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
-		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
+		summary := fmt.Sprintf("passed: %d, failed: %d, skipped: %d, module_failed: %d", (currTestCount - currFailedTestCount - currSkippedTestCount), currFailedTestCount, currSkippedTestCount, currFailedTestRunCount)
 		taskState := common.TaskCompletedState
 		// Intentionally casting wider net to capture all kinds of downstream errors.
 		if err := results.GetTestRunnerErr(); err != nil {
