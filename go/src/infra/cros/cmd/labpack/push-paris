@@ -15,11 +15,11 @@ function get_data() {
 }
 
 echo "Get the latest labpack CIPD and git information..."
-read labpack_latest_id lapback_latest_git < <(get_data $labpackInstance "latest")
+read labpack_latest_id labpack_latest_git < <(get_data $labpackInstance "latest")
 read labpack_prod_id labpack_prod_git < <(get_data $labpackInstance "prod")
 
 git fetch origin main
-labpack_changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- . ../../recovery)
+labpack_changelist=$(git log refs/remotes/origin/main --oneline ${labpack_prod_git}..${labpack_latest_git} -- . ../../recovery)
 
 
 echo "Get the latest paris CIPD and git information..."
