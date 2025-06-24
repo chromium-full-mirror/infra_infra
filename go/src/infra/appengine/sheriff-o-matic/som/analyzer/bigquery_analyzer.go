@@ -10,7 +10,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/url"
 	"sort"
 	"strings"
@@ -672,7 +672,7 @@ func unzipData(data []byte) ([]byte, error) {
 		return nil, err
 	}
 	var unzippedData []byte
-	if unzippedData, err = ioutil.ReadAll(r); err != nil {
+	if unzippedData, err = io.ReadAll(r); err != nil {
 		return nil, err
 	}
 	if err := r.Close(); err != nil {

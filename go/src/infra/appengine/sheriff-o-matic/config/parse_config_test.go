@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer"
@@ -10,7 +10,7 @@ import (
 // This test reads config.json and parses it. This tests both that the config is
 // valid, and that our parsing code is at least vaguely correct.
 func TestConfigParses(t *testing.T) {
-	b, err := ioutil.ReadFile("config.json")
+	b, err := os.ReadFile("config.json")
 	if err != nil {
 		t.Errorf("Failed to read config.json: %s", err)
 		return

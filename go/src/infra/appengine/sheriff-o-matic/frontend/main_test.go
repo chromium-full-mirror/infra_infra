@@ -7,7 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -54,7 +54,7 @@ func TestMain(t *testing.T) {
 					Request: makeGetRequest(c, "/chromium"),
 				})
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, w.Code, should.Equal(500))
@@ -74,7 +74,7 @@ func TestMain(t *testing.T) {
 				})
 
 				assert.Loosely(t, w.Code, should.Equal(200))
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, body, should.NotContainSubstring("som-app"))
@@ -87,7 +87,7 @@ func TestMain(t *testing.T) {
 					Writer:  w,
 					Request: makeGetRequest(c, "/chromium"),
 				})
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, body, should.ContainSubstring("som-app"))

@@ -9,7 +9,7 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -196,7 +196,7 @@ func TestAnnotations(t *testing.T) {
 					Request: makeGetRequest(c),
 				}, nil)
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, w.Code, should.Equal(200))
@@ -220,7 +220,7 @@ func TestAnnotations(t *testing.T) {
 					Request: makeGetRequest(c),
 				}, map[string]any{ann.Key: nil})
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, w.Code, should.Equal(200))
@@ -236,7 +236,7 @@ func TestAnnotations(t *testing.T) {
 					Request: makeGetRequest(c),
 				}, nil)
 
-				r, err := ioutil.ReadAll(w.Body)
+				r, err := io.ReadAll(w.Body)
 				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
 				assert.Loosely(t, w.Code, should.Equal(200))

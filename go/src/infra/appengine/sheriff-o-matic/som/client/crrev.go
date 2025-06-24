@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"go.chromium.org/luci/gae/service/memcache"
 )
@@ -28,7 +28,7 @@ func (cr *crRev) GetRedirect(c context.Context, pos string) (map[string]string, 
 		}
 
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}

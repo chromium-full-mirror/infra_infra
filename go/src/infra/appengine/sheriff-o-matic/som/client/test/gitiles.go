@@ -2,7 +2,7 @@ package test
 
 import (
 	"encoding/base64"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -30,6 +30,6 @@ func (t MockGitilesTransport) RoundTrip(req *http.Request) (*http.Response, erro
 		responseBody = base64.StdEncoding.EncodeToString([]byte(responseBody))
 	}
 
-	response.Body = ioutil.NopCloser(strings.NewReader(responseBody))
+	response.Body = io.NopCloser(strings.NewReader(responseBody))
 	return response, nil
 }

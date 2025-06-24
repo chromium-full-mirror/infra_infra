@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -80,7 +80,7 @@ func GetGitiles(c context.Context, URL string) ([]byte, error) {
 	// this encoding (sigh) so we may need to some extra logic here to make this
 	// decoding conditional on some other heuristic, like request parameters.
 	reader := base64.NewDecoder(base64.StdEncoding, resp.Body)
-	b, err := ioutil.ReadAll(reader)
+	b, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, err
 	}

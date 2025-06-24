@@ -9,7 +9,7 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -142,7 +142,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						_, err := ioutil.ReadAll(w.Body)
+						_, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 					})
@@ -157,7 +157,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						r, err := ioutil.ReadAll(w.Body)
+						r, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
@@ -180,7 +180,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						r, err := ioutil.ReadAll(w.Body)
+						r, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
@@ -236,7 +236,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						_, err := ioutil.ReadAll(w.Body)
+						_, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 					})
@@ -253,7 +253,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						r, err := ioutil.ReadAll(w.Body)
+						r, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
@@ -306,7 +306,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						_, err := ioutil.ReadAll(w.Body)
+						_, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 					})
@@ -323,7 +323,7 @@ func TestMain(t *testing.T) {
 							Params:  makeParams("tree", "chromeos"),
 						})
 
-						r, err := ioutil.ReadAll(w.Body)
+						r, err := io.ReadAll(w.Body)
 						assert.Loosely(t, err, should.BeNil)
 						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
