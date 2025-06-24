@@ -1,5 +1,4 @@
 FROM ubuntu:24.04
-RUN dpkg --add-architecture i386
 # chromium uses python3
 # ld.ldd requires libxml2 libicu70
 # libbase.so requires libglib2.0-0
@@ -7,7 +6,6 @@ RUN dpkg --add-architecture i386
 # some actions requires gperf
 #  e.g. third_party/blink/renderer/build/scripts/core/css/make_css_value_keywords.py
 # wayland_scanner requires libwayland-client0
-# libc6:i386, libgcc1:i386 is required for nacl_x86_glibc
 # rpm, dpkg-dev, devscripts: for packaging
 RUN apt-get update && \
  DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -15,8 +13,6 @@ RUN apt-get update && \
    devscripts \
    dpkg-dev \
    gperf \
-   libc6:i386 \
-   libgcc1:i386 \
    libglib2.0-0 \
    libicu74 \
    libnss3 \
