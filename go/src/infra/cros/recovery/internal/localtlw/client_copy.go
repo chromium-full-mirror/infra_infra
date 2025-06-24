@@ -59,7 +59,7 @@ func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mai
 			return errors.Annotate(iErr, "copy file from %q", req.Resource).Err()
 		} else if !up {
 			log.Infof(ctx, "Copy file from: servod container %s is down!", containerName)
-			return errors.Annotate(iErr, "copy file from %q", req.Resource).Err()
+			return errors.Fmt("copy file from %q", req.Resource)
 		}
 		mainErr = d.CopyFrom(ctx, containerName, req.PathSource, req.PathDestination)
 	} else {
@@ -70,7 +70,7 @@ func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mai
 			PathDestination: req.PathDestination,
 		})
 	}
-	return errors.Annotate(mainErr, "copy file from %q", req.Resource).Err()
+	return errors.WrapIf(mainErr, "copy file from %q", req.Resource)
 }
 
 // CopyDirectoryTo copies directory to remote device from local, recursively.

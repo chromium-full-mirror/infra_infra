@@ -78,7 +78,7 @@ func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, erro
 			}
 		}
 	}
-	return c.clientPool[addr], errors.Annotate(err, "provider get client error:").Err()
+	return c.clientPool[addr], errors.WrapIf(err, "provider get client error:")
 }
 
 // CloseClient closes SSH client if it is not using client pool.

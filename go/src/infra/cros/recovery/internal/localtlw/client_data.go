@@ -23,7 +23,7 @@ func (c *tlwClient) ListResourcesForUnit(ctx context.Context, name string) ([]st
 		return nil, errors.Reason("list resources: unit name is expected").Err()
 	}
 	resourceNames, err := c.readInventory(ctx, name)
-	return resourceNames, errors.Annotate(err, "list resources %q", name).Err()
+	return resourceNames, errors.WrapIf(err, "list resources %q", name)
 }
 
 // GetDut provides DUT info per requested resource name from inventory.
@@ -33,7 +33,7 @@ func (c *tlwClient) GetDut(ctx context.Context, name string) (*tlw.Dut, error) {
 		return nil, errors.Annotate(err, "get DUT %q", name).Err()
 	}
 	dut.ProvisionedInfo, err = localinfo.ReadProvisionInfo(ctx, dut.Name)
-	return dut, errors.Annotate(err, "get dut").Err()
+	return dut, errors.WrapIf(err, "get dut")
 }
 
 // getDevice receives device from inventory.
@@ -194,5 +194,5 @@ func (c *tlwClient) UpdateDut(ctx context.Context, dut *tlw.Dut) error {
 	c.unCacheDevice(dut)
 	// Update provisioning data on the execution env.
 	err = localinfo.UpdateProvisionInfo(ctx, dut)
-	return errors.Annotate(err, "udpate dut").Err()
+	return errors.WrapIf(err, "udpate dut")
 }

@@ -67,5 +67,5 @@ func clearInactiveDLCVerifiedMarks(c *ssh.Client, r rootDev) error {
 
 	inactiveSlot := getInactiveDLCSlot(r)
 	err := runCmd(c, fmt.Sprintf("rm -f %s", path.Join(dlcCacheDir, "*", "*", string(inactiveSlot), dlcVerified)))
-	return errors.Annotate(err, "clear inactive verified DLC marks: failed remove inactive verified DLCs").Err()
+	return errors.WrapIf(err, "clear inactive verified DLC marks: failed remove inactive verified DLCs")
 }

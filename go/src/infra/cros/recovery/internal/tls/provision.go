@@ -98,7 +98,7 @@ func provision(ctx context.Context, tlw tlw_server.Server, run *runner, req *tlw
 	// Provision the OS.
 	select {
 	case <-ctx.Done():
-		return errors.Annotate(err, "provision: timed out before provisioning OS").Err()
+		return errors.Fmt("provision: timed out before provisioning OS: %w", ctx.Err())
 	default:
 	}
 

@@ -40,7 +40,7 @@ type sshClientImpl struct {
 // Close closing the native client.
 func (c *sshClientImpl) Close() error {
 	err := c.client.Close()
-	return errors.Annotate(err, "close ssh client").Err()
+	return errors.WrapIf(err, "close ssh client")
 }
 
 // NewSession creates new SSH session to execute commands.
@@ -148,7 +148,7 @@ func newProxyClient(ctx context.Context, sshConfig *ssh.ClientConfig, proxy *pro
 	select {
 	case <-ctx.Done():
 		conn.Close()
-		return nil, errors.Annotate(ctx.Err(), "new proxy client").Err()
+		return nil, errors.WrapIf(ctx.Err(), "new proxy client")
 	case <-done:
 	}
 	if err != nil {
@@ -176,7 +176,7 @@ func NewClient(ctx context.Context, addr, username string, config Config) (SSHCl
 	}()
 	select {
 	case <-ctx.Done():
-		return nil, errors.Annotate(ctx.Err(), "new SSH client").Err()
+		return nil, errors.WrapIf(ctx.Err(), "new SSH client")
 	case <-done:
 	}
 	if err != nil {

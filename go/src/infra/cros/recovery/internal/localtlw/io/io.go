@@ -167,7 +167,7 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	defer func() { createTarCmd.Wait() }()
 	remotePipe, err2 := session.StdinPipe()
 	if err2 != nil {
-		return errors.Annotate(err, "copy to helper: error with obtaining stdin pipe for the SSH Session").Err()
+		return errors.WrapIf(err, "copy to helper: error with obtaining stdin pipe for the SSH Session")
 	}
 	uploadErrors := make(chan error)
 	var wg sync.WaitGroup
@@ -203,7 +203,7 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	// error.
 	if e, ok := <-uploadErrors; ok {
 		// goroutines encountered an error.
-		return errors.Annotate(e, "copy to helper").Err()
+		return errors.WrapIf(e, "copy to helper")
 	}
 	// Errors channels is closed without any incidents of
 	// error. This implies successful copy operation.

@@ -60,7 +60,7 @@ func UpdateProvisionInfo(ctx context.Context, dut *tlw.Dut) error {
 	if dut.ProvisionedInfo.GetJobRepoUrl() != "" {
 		s.LocalDUTState.ProvisionableAttributes[JobRepoURLKey] = dut.ProvisionedInfo.GetJobRepoUrl()
 	}
-	return errors.Annotate(s.writeStore(), "update provision info").Err()
+	return errors.WrapIf(s.writeStore(), "update provision info")
 }
 
 // Update writes the localDUTState back to disk.

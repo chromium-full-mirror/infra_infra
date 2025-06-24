@@ -116,5 +116,5 @@ func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_
 
 func newDockerClient(ctx context.Context) (docker.Client, error) {
 	d, err := docker.NewClient(ctx)
-	return d, errors.Annotate(err, "new docker client").Err()
+	return d, errors.WrapIf(err, "new docker client")
 }

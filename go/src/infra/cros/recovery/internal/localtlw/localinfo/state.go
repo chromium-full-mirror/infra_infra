@@ -33,7 +33,7 @@ type provisionableAttributes map[string]string
 // marshal returns the encoding of the localDUTState.
 func (lds *localDUTState) marshal() ([]byte, error) {
 	data, err := json.Marshal(lds)
-	return data, errors.Annotate(err, "marshal").Err()
+	return data, errors.WrapIf(err, "marshal")
 }
 
 // unmarshal decodes localDUTState from the encoded data.
