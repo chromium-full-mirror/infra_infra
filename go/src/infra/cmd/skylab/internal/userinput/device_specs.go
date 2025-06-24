@@ -8,7 +8,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 
@@ -173,7 +173,7 @@ func getMCSVText(specsFile string, mcsvFieldsPrompt string) (string, error) {
 		}
 		text = string(rawText)
 	} else {
-		rawText, err := ioutil.ReadFile(specsFile)
+		rawText, err := os.ReadFile(specsFile)
 		if err != nil {
 			return "", err
 		}

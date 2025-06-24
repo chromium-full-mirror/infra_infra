@@ -5,7 +5,6 @@
 package userinput
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -32,7 +31,7 @@ func textEditorInput(initial []byte, name string) ([]byte, error) {
 	if err := c.Run(); err != nil {
 		return nil, errors.Annotate(err, "text editor").Err()
 	}
-	return ioutil.ReadFile(p)
+	return os.ReadFile(p)
 }
 
 // writeTempFile writes a new temporary file with the given data and returns
@@ -40,7 +39,7 @@ func textEditorInput(initial []byte, name string) ([]byte, error) {
 //
 // On successful return, caller is responsible for deleting the created temporary file.
 func writeTempFile(data []byte, name string) (string, error) {
-	f, err := ioutil.TempFile("", name)
+	f, err := os.CreateTemp("", name)
 	if err != nil {
 		return "", errors.Annotate(err, "write temp file").Err()
 	}

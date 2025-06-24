@@ -13,7 +13,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"strings"
@@ -506,7 +506,7 @@ func compressedPBToExecuteResponses(from string) (*steps.ExecuteResponses, error
 	if err != nil {
 		return nil, errors.Annotate(err, "compressedPBToExecuteResponses").Err()
 	}
-	bs, err = ioutil.ReadAll(reader)
+	bs, err = io.ReadAll(reader)
 	if err != nil {
 		return nil, errors.Annotate(err, "compressedPBToExecuteResponses").Err()
 	}
