@@ -6,7 +6,6 @@ package gs
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -21,7 +20,7 @@ import (
 func TestDownloadByteRange(t *testing.T) {
 	t.Parallel()
 
-	source, err := ioutil.TempFile("", "source")
+	source, err := os.CreateTemp("", "source")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +35,7 @@ func TestDownloadByteRange(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dest, err := ioutil.TempFile("", "dest")
+	dest, err := os.CreateTemp("", "dest")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +53,7 @@ func TestDownloadByteRange(t *testing.T) {
 		t.Errorf("failed to download: %s", err.Error())
 	}
 
-	contents, err := ioutil.ReadFile(destPrefix)
+	contents, err := os.ReadFile(destPrefix)
 	if err != nil {
 		t.Fatal(err)
 	}

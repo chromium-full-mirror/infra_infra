@@ -8,7 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/maruel/subcommands"
 
@@ -83,7 +83,7 @@ func (c *command) innerRun(a subcommands.Application, args []string, env subcomm
 		if len(args) > 1 {
 			return errors.New("validating multiple files not yet supported")
 		}
-		contents, err = ioutil.ReadFile(args[0])
+		contents, err = os.ReadFile(args[0])
 		if err != nil {
 			return fmt.Errorf("reading local file: %w", err)
 		}

@@ -5,7 +5,6 @@
 package tokman
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -17,13 +16,13 @@ import (
 
 func TestWriteToken(t *testing.T) {
 	t.Parallel()
-	d, err := ioutil.TempDir("", "test")
+	d, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(d)
 	f := filepath.Join(d, "key.json")
-	if err := ioutil.WriteFile(f, []byte("blah"), 0600); err != nil {
+	if err := os.WriteFile(f, []byte("blah"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	tok := &oauth2.Token{
@@ -33,7 +32,7 @@ func TestWriteToken(t *testing.T) {
 	if err := writeToken(tok, f); err != nil {
 		t.Fatal(err)
 	}
-	got, err := ioutil.ReadFile(f)
+	got, err := os.ReadFile(f)
 	if err != nil {
 		t.Fatal(err)
 	}

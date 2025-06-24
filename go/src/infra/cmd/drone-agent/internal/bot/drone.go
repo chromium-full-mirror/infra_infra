@@ -6,7 +6,6 @@ package bot
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -37,7 +36,7 @@ type DroneStarter struct {
 // to interact with the bot.
 func (s DroneStarter) Start(botID string) (Bot, error) {
 	workingDirPrefix := abbreviate(botID, workingDirPrefixLength)
-	dir, err := ioutil.TempDir(s.WorkingDir, workingDirPrefix+".")
+	dir, err := os.MkdirTemp(s.WorkingDir, workingDirPrefix+".")
 	if err != nil {
 		return nil, errors.Annotate(err, "start bot %v", botID).Err()
 	}

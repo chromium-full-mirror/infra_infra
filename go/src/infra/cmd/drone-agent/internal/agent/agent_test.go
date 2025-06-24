@@ -6,7 +6,6 @@ package agent
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"sort"
 	"testing"
@@ -473,7 +472,7 @@ func TestAgent_block_new_duts_when_draining(t *testing.T) {
 // important to a test, the test should explicitly set the value.
 func newTestAgent(t *testing.T) (a *Agent, cleanup func()) {
 	t.Helper()
-	workDir, err := ioutil.TempDir("", "test")
+	workDir, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Fatal(err)
 	}
