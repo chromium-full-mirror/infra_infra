@@ -101,6 +101,40 @@ func HWInitServod(ctx context.Context, cl *xmlrpc.XMLRpc) error {
 	return nil
 }
 
+// DocServod calls the "doc" method of servod for a given control.
+// It returns the documentation string or an error if the call fails.
+func DocServod(ctx context.Context, control string, cl *xmlrpc.XMLRpc) (string, error) {
+	if control == "" {
+		return "", fmt.Errorf("DocServod: control cannot be empty")
+	}
+	call, err := servodValueToXMLRequest("doc", control, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create XML-RPC call for doc %q: %w", control, err)
+	}
+
+	resp, err := cl.Execute(ctx, call)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute doc %q on servod: %w", control, err)
+	}
+
+	if resp.Params == nil {
+		// Servod 'doc' command might return no params if the control is unknown or has no doc.
+		// Or it might return a fault. The cl.Execute should handle faults.
+		// Depending on servod's behavior for unknown controls (empty params vs fault),
+		// this might be an expected "not found" scenario or an actual error.
+		// For now, treat as "no documentation found".
+		return "", fmt.Errorf(
+			"DocServod: no params returned for control %q, possibly no documentation or unknown control",
+			control)
+	}
+
+	docString, err := xmlValueToString(resp.Params)
+	if err != nil {
+		return "", fmt.Errorf("DocServod: failed to convert response to string for control %q: %w", control, err)
+	}
+	return docString, nil
+}
+
 func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 	if params == nil {
 		return nil, nil
@@ -162,6 +196,45 @@ func xmlValueToServodValue(params *[]xmlrpc.Param) (*bols.ServodValue, error) {
 		}, nil
 	}
 	return nil, fmt.Errorf("unsupport format")
+}
+
+func xmlValueToString(params *[]xmlrpc.Param) (string, error) {
+	if params == nil {
+		return "", nil
+	}
+	values := *params
+	if len(values) == 0 {
+		return "", nil
+	}
+	// We only care about the first value for now.
+	src := values[0]
+	switch {
+	case src.Value.Boolean != nil:
+		return *src.Value.Boolean, nil
+	case src.Value.Double != nil:
+		return *src.Value.Double, nil // Directly return the string representation of double
+	case src.Value.Int != nil:
+		return *src.Value.Int, nil // Directly return the string representation of int
+	case src.Value.Str != nil:
+		return *src.Value.Str, nil
+	case src.Value.Base64 != nil:
+		// Assuming base64 encoded data should be returned as is, or decoded first if needed.
+		// For now, returning the encoded string.
+		return *src.Value.Base64, nil
+	case src.Value.Array != nil:
+		data, err := xml.Marshal(src.Value.Array)
+		if err != nil {
+			return "", fmt.Errorf("failed to convert array to xml string: %w", err)
+		}
+		return string(data), nil
+	case src.Value.Struct != nil:
+		data, err := xml.Marshal(src.Value.Struct)
+		if err != nil {
+			return "", fmt.Errorf("failed to convert struct to xml string: %w", err)
+		}
+		return string(data), nil
+	}
+	return "", fmt.Errorf("unsupported format for direct string conversion")
 }
 
 func servodValueToXMLRequest(method, control string, servodValue *bols.ServodValue) (xmlrpc.Call, error) {

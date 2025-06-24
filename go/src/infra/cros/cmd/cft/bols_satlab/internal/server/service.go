@@ -438,17 +438,37 @@ func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatus
 func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
 	s.logger.Println("Receive HWInitServod Request")
 
-	// Call the HWInitServod function from the xmlrpc package.
-	// This function already knows how to handle the StationIdentifier to determine
-	// the host (container name or localhost) and port.
-	port := int(req.GetStationId().GetServodPort())
-	container := req.GetStationId().GetContainerName()
-	if err := xmlrpc.HWInitServod(ctx, servod_xmlrpc.New(container, port)); err != nil {
+	cl, err := xmlrpcClient(req.GetStationId())
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed create xmlrpc client: %w", err))
+	}
+	if err := xmlrpc.HWInitServod(ctx, cl); err != nil {
 		return nil, s.logAndReturnErr(fmt.Errorf("failed to execute hwinit on servod via xmlrpc client: %w", err))
 	}
 
 	s.logger.Println("Served HWInitServod Request Successfully")
 	return &bols.HWInitServodResponse{}, nil
+}
+
+// DocServod reads a servod control documentation.
+func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*bols.DocServodResponse, error) {
+	s.logger.Printf("Receive DocServod Request for control %q", req.GetControl())
+	control := req.GetControl()
+
+	cl, err := xmlrpcClient(req.GetStationId())
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed create xmlrpc client: %w", err))
+	}
+	docString, err := xmlrpc.DocServod(ctx, control, cl)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to get doc for control %q from servod: %w", control, err))
+	}
+
+	s.logger.Println("Served DocServod Request Successfully")
+	return &bols.DocServodResponse{
+		Control:     control,
+		Description: docString,
+	}, nil
 }
 
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
@@ -864,4 +884,11 @@ func parseDirInfo(output string) ([]*bols.FileStat, error) {
 	}
 
 	return stats, nil
+}
+
+func xmlrpcClient(s *bols.StationIdentifier) (*servod_xmlrpc.XMLRpc, error) {
+	if s.GetContainerName() == "" {
+		return nil, errors.New("DocServod: container name is required for servod host")
+	}
+	return servod_xmlrpc.New(s.GetContainerName(), int(s.GetServodPort())), nil
 }

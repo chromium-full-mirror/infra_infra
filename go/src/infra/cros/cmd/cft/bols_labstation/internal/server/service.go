@@ -432,13 +432,30 @@ func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodReques
 	// This function handles the StationIdentifier to determine the host
 	// (which will default to "localhost" if req.GetStationId().GetContainerName() is empty)
 	// and port.
-	port := int(req.GetStationId().GetServodPort())
-	if err := xmlrpc.HWInitServod(ctx, servod_xmlrpc.New("localhost", port)); err != nil {
+	if err := xmlrpc.HWInitServod(ctx, xmlrpcClient(req.GetStationId())); err != nil {
 		return nil, s.logAndReturnErr(fmt.Errorf("failed to execute hwinit on servod via xmlrpc client: %w", err))
 	}
 
 	s.logger.Println("Served HWInitServod Request Successfully")
 	return &bols.HWInitServodResponse{}, nil
+}
+
+// DocServod reads a servod control documentation.
+func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*bols.DocServodResponse, error) {
+	s.logger.Printf("Receive DocServod Request for control %q", req.GetControl())
+
+	control := req.GetControl()
+	cl := xmlrpcClient(req.GetStationId()) // Use the imported servod_xmlrpc
+	docString, err := xmlrpc.DocServod(ctx, control, cl)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to get doc for control %q from servod: %w", control, err))
+	}
+
+	s.logger.Println("Served DocServod Request Successfully")
+	return &bols.DocServodResponse{
+		Control:     control,
+		Description: docString,
+	}, nil
 }
 
 // GetServod gets a servod control value.
@@ -685,4 +702,11 @@ func downloadFileToHost(ctx context.Context, url, destPath string, headers []*bo
 		return fmt.Errorf("failed to write response body to file %s: %w", destPath, err)
 	}
 	return nil
+}
+
+func xmlrpcClient(s *bols.StationIdentifier) *servod_xmlrpc.XMLRpc {
+	// For labstation, servod runs directly on the host, so "localhost" is used.
+	// The containerName from StationIdentifier is ignored in this context.
+	port := int(s.GetServodPort())
+	return servod_xmlrpc.New("localhost", port)
 }
