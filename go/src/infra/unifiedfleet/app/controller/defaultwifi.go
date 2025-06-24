@@ -19,6 +19,7 @@ import (
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateDefaultWifi creates a default wifi in the datastore.
@@ -169,10 +170,10 @@ func validateDefaultWifiUpdateMask(ctx context.Context, wifi *ufspb.DefaultWifi,
 		// Validate the give field mask.
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateDefaultWifiUpdateMask - name cannot be updated, delete and create a DefaultWifi instead")
-			case "wifi_secret.project_id":
-			case "wifi_secret.secret_name":
+			case util.WifiSecretProjectIdPath:
+			case util.WifiSecretSecretNamePath:
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateDefaultWifiUpdateMask - unsupported update mask path %q", path)
@@ -189,9 +190,9 @@ func processDefaultWifiUpdateMask(ctx context.Context, oldWifi *ufspb.DefaultWif
 	// Update the fields in the existing/old DefaultWifi.
 	for _, path := range mask.Paths {
 		switch path {
-		case "wifi_secret.project_id":
+		case util.WifiSecretProjectIdPath:
 			oldWifi.GetWifiSecret().ProjectId = wifi.GetWifiSecret().GetProjectId()
-		case "wifi_secret.secret_name":
+		case util.WifiSecretSecretNamePath:
 			oldWifi.GetWifiSecret().SecretName = wifi.GetWifiSecret().GetSecretName()
 		}
 	}

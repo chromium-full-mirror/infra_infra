@@ -98,8 +98,8 @@ func (c *updateDefaultWifi) innerRun(a subcommands.Application, args []string, e
 	res, err := ic.UpdateDefaultWifi(ctx, &ufsAPI.UpdateDefaultWifiRequest{
 		DefaultWifi: &wifi,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"project-id":  "wifi_secret.project_id",
-			"secret-name": "wifi_secret.secret_name",
+			"project-id":  ufsUtil.WifiSecretProjectIdPath,
+			"secret-name": ufsUtil.WifiSecretSecretNamePath,
 		}),
 	})
 	if err != nil {
