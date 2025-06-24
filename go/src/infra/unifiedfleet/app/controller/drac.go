@@ -166,7 +166,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 	// update the fields in the existing drac
 	for _, path := range mask.Paths {
 		switch path {
-		case "machine":
+		case ufsUtil.MachinePath:
 			// Check if user provided new machine to associate the drac
 			if drac.GetMachine() != oldDrac.GetMachine() {
 				// A machine can have only one drac. If there is a old drac associated with this machine already, error out.
@@ -194,11 +194,11 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 				oldDrac.Rack = machine.GetLocation().GetRack()
 				oldDrac.Zone = machine.GetLocation().GetZone().String()
 			}
-		case "displayName":
+		case ufsUtil.DisplayNamePath, ufsUtil.DisplayNameCamelPath:
 			oldDrac.DisplayName = drac.GetDisplayName()
-		case "macAddress":
+		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 			oldDrac.MacAddress = drac.GetMacAddress()
-		case "switch":
+		case ufsUtil.SwitchInterfaceSwitchPath, ufsUtil.SwitchPath:
 			if oldDrac.GetSwitchInterface() == nil {
 				oldDrac.SwitchInterface = &ufspb.SwitchInterface{
 					Switch: drac.GetSwitchInterface().GetSwitch(),
@@ -206,7 +206,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 			} else {
 				oldDrac.GetSwitchInterface().Switch = drac.GetSwitchInterface().GetSwitch()
 			}
-		case "portName":
+		case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.PortNameCamelPath:
 			if oldDrac.GetSwitchInterface() == nil {
 				oldDrac.SwitchInterface = &ufspb.SwitchInterface{
 					PortName: drac.GetSwitchInterface().GetPortName(),
@@ -214,9 +214,9 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 			} else {
 				oldDrac.GetSwitchInterface().PortName = drac.GetSwitchInterface().GetPortName()
 			}
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldDrac.Tags = mergeTags(oldDrac.GetTags(), drac.GetTags())
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldDrac.ResourceState = drac.GetResourceState()
 		}
 	}
@@ -487,30 +487,30 @@ func validateDracUpdateMask(ctx context.Context, drac *ufspb.Drac, mask *field_m
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateDracUpdateMask - name cannot be updated, delete and create a new drac instead")
-			case "displayName":
+			case ufsUtil.DisplayNamePath, ufsUtil.DisplayNameCamelPath:
 				if drac.GetDisplayName() == "" {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - display name cannot be empty")
 				}
-			case "switch":
+			case ufsUtil.SwitchInterfaceSwitchPath, ufsUtil.SwitchPath:
 				fallthrough
-			case "portName":
+			case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.PortNameCamelPath:
 				// Check switch interface validity in processDracUpdateMask later.
 				if drac.GetSwitchInterface() == nil {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - switch interface cannot be empty/nil.")
 				}
-			case "machine":
+			case ufsUtil.MachinePath:
 				if drac.GetMachine() == "" {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - machine cannot be empty")
 				}
-			case "macAddress":
+			case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 				if err := validateMacAddress(ctx, drac.GetName(), drac.GetMacAddress()); err != nil {
 					return err
 				}
-			case "tags":
+			case ufsUtil.TagsPath:
 				// valid fields, nothing to validate.
-			case "resourceState":
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateDracUpdateMask - unsupported update mask path %q", path)

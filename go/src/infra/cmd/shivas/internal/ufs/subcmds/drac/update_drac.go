@@ -137,13 +137,13 @@ func (c *updateDrac) innerRun(a subcommands.Application, args []string, env subc
 			Ip:     c.ip,
 		},
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"machine":      "machine",
-			"display-name": "displayName",
-			"mac":          "macAddress",
-			"switch":       "switch",
-			"switch-port":  "portName",
-			"tag":          "tags",
-			"state":        "resourceState",
+			"machine":      ufsUtil.MachinePath,
+			"display-name": ufsUtil.DisplayNamePath,
+			"mac":          ufsUtil.MacAddressPath,
+			"switch":       ufsUtil.SwitchInterfaceSwitchPath,
+			"switch-port":  ufsUtil.SwitchInterfacePortNamePath,
+			"tag":          ufsUtil.TagsPath,
+			"state":        ufsUtil.ResourceStatePath,
 		}),
 	})
 	if err != nil {
