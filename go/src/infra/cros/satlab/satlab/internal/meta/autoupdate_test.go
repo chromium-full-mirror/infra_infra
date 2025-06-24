@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -74,7 +73,7 @@ func TestShouldUpdate(t *testing.T) {
 
 func TestCalculateFileHash(t *testing.T) {
 	content := "Hello, World!"
-	tmpFile, err := ioutil.TempFile("", "testhash")
+	tmpFile, err := os.CreateTemp("", "testhash")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +99,7 @@ func TestCalculateFileHash(t *testing.T) {
 }
 
 func TestAttemptUpdate(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "binary")
+	tmpFile, err := os.CreateTemp("", "binary")
 	if err != nil {
 		t.Fatal(err)
 	}
