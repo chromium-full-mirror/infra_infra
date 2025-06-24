@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -69,7 +68,7 @@ func (s *MockSession) CommandContext(_ context.Context, executable string, args 
 
 func (c *MockCmd) Run() error {
 	if c.Stdin != nil {
-		data, err := ioutil.ReadAll(c.Stdin)
+		data, err := io.ReadAll(c.Stdin)
 		if err != nil {
 			return err
 		}

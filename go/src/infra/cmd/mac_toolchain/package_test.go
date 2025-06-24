@@ -6,7 +6,7 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -173,7 +173,7 @@ func TestBuildCipdPackages(t *testing.T) {
 			name := filepath.Base(p.YamlPath)
 			assert.Loosely(t, strings.HasSuffix(name, ".yaml"), should.BeTrue)
 			name = name[:len(name)-len(".yaml")]
-			data, err := ioutil.ReadFile(p.YamlPath)
+			data, err := os.ReadFile(p.YamlPath)
 			assert.Loosely(t, err, should.BeNil)
 			var pd cipd.PackageDef
 			err = yaml.Unmarshal(data, &pd)

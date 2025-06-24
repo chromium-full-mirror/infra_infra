@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -167,7 +166,7 @@ func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSP
 // server. `buildFn` callback takes a PackageSpec for each package in `packages`
 // and is expected to call `cipd pkg-build` or `cipd create` on it.
 func buildCipdPackages(packages Packages, buildFn func(PackageSpec) error) error {
-	tmpDir, err := ioutil.TempDir("", "mac_toolchain_")
+	tmpDir, err := os.MkdirTemp("", "mac_toolchain_")
 	if err != nil {
 		return errors.Annotate(err, "cannot create a temporary folder for CIPD package configuration files in %s", os.TempDir()).Err()
 	}
@@ -187,7 +186,7 @@ func buildCipdPackages(packages Packages, buildFn func(PackageSpec) error) error
 			return errors.Annotate(err, "failed to serialize %s.yaml", name).Err()
 		}
 		yamlPath := filepath.Join(tmpDir, name+".yaml")
-		if err = ioutil.WriteFile(yamlPath, yamlBytes, 0600); err != nil {
+		if err = os.WriteFile(yamlPath, yamlBytes, 0600); err != nil {
 			return errors.Annotate(err, "failed to write package definition file %s", yamlPath).Err()
 		}
 		if err = buildFn(PackageSpec{Name: p.Package, YamlPath: yamlPath}); err != nil {
@@ -438,7 +437,7 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 	runtimeRuntimePackageName := installConstants.dmgPackageName
 
 	// validate files in the runtime dir
-	entries, err := ioutil.ReadDir(runtimeDir)
+	entries, err := os.ReadDir(runtimeDir)
 	if err != nil {
 		err = errors.Annotate(err, "unable to list files from %s", runtimeDir).Err()
 		return err
@@ -511,7 +510,7 @@ func packageXcodeArchive(ctx context.Context, args PackageXcodeArchiveArgs) erro
 	}
 
 	// validate files in the runtime dir
-	entries, err := ioutil.ReadDir(xcodeDir)
+	entries, err := os.ReadDir(xcodeDir)
 	if err != nil {
 		err = errors.Annotate(err, "unable to list files from %s", xcodeDir).Err()
 		return err
