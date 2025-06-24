@@ -6,7 +6,7 @@ package updater
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"cloud.google.com/go/bigquery"
@@ -173,7 +173,7 @@ func (u *Updater) writeMapping(ctx context.Context, name string, mapping *dirmd.
 
 func (u *Updater) writeOutputFile(ctx context.Context, name string, data []byte) error {
 	fullPath := filepath.Join(u.OutDir, name)
-	if err := ioutil.WriteFile(fullPath, data, 0666); err != nil {
+	if err := os.WriteFile(fullPath, data, 0666); err != nil {
 		return err
 	}
 	logging.Infof(ctx, "wrote %s", fullPath)

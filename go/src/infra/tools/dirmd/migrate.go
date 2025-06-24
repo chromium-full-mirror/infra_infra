@@ -5,7 +5,6 @@
 package dirmd
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -87,5 +86,5 @@ func writeOwners(path string, lines []string) error {
 	if len(lines) == 0 {
 		return os.Remove(path)
 	}
-	return ioutil.WriteFile(path, []byte(strings.Join(lines, "\n")), 0644)
+	return os.WriteFile(path, []byte(strings.Join(lines, "\n")), 0644)
 }

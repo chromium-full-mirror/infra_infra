@@ -5,7 +5,7 @@
 package dirmd
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -34,7 +34,7 @@ func ParseFile(fileName string) (*dirmdpb.Metadata, error) {
 
 	md := &dirmdpb.Metadata{}
 	if base == Filename {
-		contents, err := ioutil.ReadAll(f)
+		contents, err := io.ReadAll(f)
 		if err != nil {
 			return nil, err
 		}

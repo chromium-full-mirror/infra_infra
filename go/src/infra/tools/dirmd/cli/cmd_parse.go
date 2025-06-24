@@ -7,7 +7,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/maruel/subcommands"
@@ -93,7 +93,7 @@ func (r *parseRun) parseFiles(args []string) ([]*dirmdpb.Metadata, []string) {
 func (r *parseRun) parseStdin() (*dirmdpb.Metadata, string) {
 	md := &dirmdpb.Metadata{}
 	if r.formatString == "dir-metadata" {
-		content, err := ioutil.ReadAll(os.Stdin)
+		content, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err.Error()
 		}
