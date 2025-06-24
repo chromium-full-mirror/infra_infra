@@ -9,7 +9,6 @@ package sideeffects
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -101,7 +100,7 @@ func PopulateTKOPasswordFile(ctx context.Context, ckc cloudkms.Client, c *side_e
 		return errors.Annotate(err, "populate TKO password file").Err()
 	}
 
-	f, err := ioutil.TempFile("", "tko_password")
+	f, err := os.CreateTemp("", "tko_password")
 	if err != nil {
 		return errors.Annotate(err, "populate TKO password file").Err()
 	}

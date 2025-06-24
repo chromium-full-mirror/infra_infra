@@ -9,7 +9,6 @@ package sideeffects
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -38,7 +37,7 @@ func basicConfig() *side_effects.Config {
 }
 
 func tempFile() string {
-	f, _ := ioutil.TempFile("", "")
+	f, _ := os.CreateTemp("", "")
 	return f.Name()
 }
 
@@ -138,7 +137,7 @@ func TestWriteConfigToDisk(t *testing.T) {
 			},
 		}
 		t.Run("when WriteConfigToDisk is called", func(t *ftt.Test) {
-			dir, _ := ioutil.TempDir("", "")
+			dir, _ := os.MkdirTemp("", "")
 			err := WriteConfigToDisk(dir, want)
 			assert.Loosely(t, err, should.BeNil)
 
@@ -179,7 +178,7 @@ func TestPopulateTKOPasswordFile(t *testing.T) {
 				assert.Loosely(t, cfg.GetTko().GetMysqlPasswordFile(), should.NotBeEmpty)
 
 				t.Run("which points to a file populated with right contents", func(t *ftt.Test) {
-					got, err := ioutil.ReadFile(cfg.GetTko().GetMysqlPasswordFile())
+					got, err := os.ReadFile(cfg.GetTko().GetMysqlPasswordFile())
 					assert.Loosely(t, err, should.BeNil)
 					assert.Loosely(t, string(got), should.Equal("decrypted-password"))
 
