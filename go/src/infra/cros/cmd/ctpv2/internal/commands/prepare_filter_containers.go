@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -105,6 +106,19 @@ func (cmd *PrepareFilterContainersInfoCmd) updateLocalTestStateKeeper(
 	return nil
 }
 
+// addEnableTFPluginFlag adds the -use-tf-plugin flag to binary arguments if conditions are met.
+func addEnableTFPluginFlag(ctx context.Context, filter *testapi.CTPFilter, experiments []string) {
+	if filter.GetContainerInfo().GetContainer().GetName() == "ants-publish-filter" && experiments != nil {
+		for _, experiment := range experiments {
+			if strings.Contains(experiment, "chromeos.cros_infra_config.tfplugin_enabled") {
+				logging.Infof(ctx, "Enabling TF plugin for ants-publish-filter due to experiment flag.")
+				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-use-tf-plugin", "true")
+				break
+			}
+		}
+	}
+}
+
 // Execute executes the command.
 func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	var err error
@@ -129,6 +143,10 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 			filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-firestore", firestoreDB)
 		}
 		filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().BinaryArgs, "-env", cmd.Environment)
+		// Enable TF plugin in production for internal jobs when LUCI experimental flag is set.
+		if !cmd.IsPartnerRun {
+			addEnableTFPluginFlag(ctx, filter, cmd.Experiments)
+		}
 		filtersQueue.PushBack(filter)
 	}
 
