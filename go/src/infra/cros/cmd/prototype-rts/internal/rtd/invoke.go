@@ -2,7 +2,6 @@ package rtd
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -28,7 +27,7 @@ type Orchestrator struct {
 func (o *Orchestrator) StartRTDContainer(ctx context.Context, imageURI string) error {
 	logging.Infof(ctx, "Starting RTD container")
 	var err error
-	if o.volumeHostDir, err = ioutil.TempDir(os.TempDir(), "rtd-volume"); err != nil {
+	if o.volumeHostDir, err = os.MkdirTemp(os.TempDir(), "rtd-volume"); err != nil {
 		return errors.Annotate(err, "start RTD container").Err()
 	}
 	if err = o.container.PullImage(ctx, imageURI); err != nil {
@@ -94,7 +93,7 @@ func writeInvocationToFile(ctx context.Context, i *rtd.Invocation, volumeHostDir
 	filename := "invocation.binaryproto"
 	hostFile := path.Join(volumeHostDir, filename)
 	containerFile := path.Join(volumeContainerDir, filename)
-	if err = ioutil.WriteFile(hostFile, b, 0664); err != nil {
+	if err = os.WriteFile(hostFile, b, 0664); err != nil {
 		return "", errors.Annotate(err, "write invocation to file").Err()
 	}
 	marsh := jsonpb.Marshaler{EmitDefaults: true, Indent: "  "}
