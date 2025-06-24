@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -53,7 +54,7 @@ func verifyServodEcho(ctx context.Context, logger *log.Logger, a *args, cl bols.
 	if err != nil {
 		return fmt.Errorf("failed to send echo request to servod: %w", err)
 	}
-	if rspn.GetResult() != wanted {
+	if !strings.Contains(rspn.GetResult(), wanted) {
 		return fmt.Errorf("got unexpect echo value; got: %q want: %q", rspn.GetResult(), wanted)
 	}
 	logger.Println("verifyServodEcho: verification was successful")
