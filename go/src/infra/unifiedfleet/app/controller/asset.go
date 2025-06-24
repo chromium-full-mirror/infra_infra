@@ -396,21 +396,21 @@ func validateAssetUpdateMask(ctx context.Context, asset *ufspb.Asset, mask *fiel
 	if mask != nil {
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - name cannot be updated, delete and create new asset")
-			case "info.asset_tag":
+			case util.InfoAssetTagPath:
 				return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - asset_tag cannot be updated, delete and create new asset")
-			case "update_time":
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Invalid update, cannot update update_time")
-			case "location":
+			case util.LocationPath:
 				fallthrough
-			case "location.zone":
+			case util.LocationZonePath:
 				if asset.GetLocation() == nil || asset.GetLocation().GetZone() == ufspb.Zone_ZONE_UNSPECIFIED {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Zone is unspecified so cannot be updated")
 				} else if asset.GetLocation().GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Zone is updated without updating rack")
 				}
-			case "location.rack":
+			case util.LocationRackPath:
 				if asset.GetLocation() == nil {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Rack is unset so cannot be updated")
 				}
@@ -420,39 +420,39 @@ func validateAssetUpdateMask(ctx context.Context, asset *ufspb.Asset, mask *fiel
 				var errMsg strings.Builder
 				errMsg.WriteString("validateAssetUpdateMask - ")
 				return ResourceExist(ctx, []*Resource{GetRackResource(asset.GetLocation().GetRack())}, &errMsg)
-			case "location.aisle":
+			case util.LocationAislePath:
 				fallthrough
-			case "location.row":
+			case util.LocationRowPath:
 				fallthrough
-			case "location.rack_number":
+			case util.LocationRackNumberPath:
 				fallthrough
-			case "location.shelf":
+			case util.LocationShelfPath:
 				fallthrough
-			case "location.position":
+			case util.LocationPositionPath:
 				fallthrough
-			case "location.barcode_name":
+			case util.LocationBarcodeNamePath:
 				if asset.GetLocation() == nil {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Barcode name is unset so cannot be updated")
 				}
-			case "type":
+			case util.TypePath:
 				if asset.GetType() == ufspb.AssetType_UNDEFINED {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Type is undefined so cannot be updated")
 				}
-			case "model":
+			case util.ModelPath:
 				if asset.GetModel() == "" {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Model is unset so cannot be updated")
 				}
-			case "info.cost_center":
+			case util.InfoCostCenterPath:
 				fallthrough
-			case "info.google_code_name":
+			case util.InfoGoogleCodeNamePath:
 				fallthrough
-			case "info.build_target":
+			case util.InfoBuildTargetPath:
 				fallthrough
-			case "info.reference_board":
+			case util.InfoReferenceBoardPath:
 				fallthrough
-			case "info.ethernet_mac_address":
+			case util.InfoEthernetMacAddressPath:
 				fallthrough
-			case "info.phase":
+			case util.InfoPhasePath:
 				if asset.GetInfo() == nil {
 					return status.Error(codes.InvalidArgument, "validateAssetUpdateMask - Phase is unset so cannot be updated")
 				}
@@ -503,48 +503,48 @@ func processAssetUpdateMask(updatedAsset, oldAsset *ufspb.Asset, mask *field_mas
 		updatedAsset.Info = &ufspb.AssetInfo{}
 	}
 	// If we are updating zone. We need to reset all the fields in the Location
-	if util.ContainsAnyStrings(mask.GetPaths(), "location.zone") && updatedAsset.GetLocation().GetZone() != oldAsset.GetLocation().GetZone() {
+	if util.ContainsAnyStrings(mask.GetPaths(), util.LocationZonePath) && updatedAsset.GetLocation().GetZone() != oldAsset.GetLocation().GetZone() {
 		oldAsset.Location = &ufspb.Location{}
 	}
 	if mask != nil {
 		for _, path := range mask.Paths {
 			switch path {
-			case "type":
+			case util.TypePath:
 				oldAsset.Type = updatedAsset.Type
-			case "model":
+			case util.ModelPath:
 				oldAsset.Model = updatedAsset.Model
 				oldAsset.Info.Model = updatedAsset.Model
-			case "location":
+			case util.LocationPath:
 				oldAsset.Location = updatedAsset.Location
 				oldAsset.Realm = updatedAsset.Realm
-			case "location.aisle":
+			case util.LocationAislePath:
 				oldAsset.Location.Aisle = updatedAsset.Location.Aisle
-			case "location.row":
+			case util.LocationRowPath:
 				oldAsset.Location.Row = updatedAsset.Location.Row
-			case "location.rack":
+			case util.LocationRackPath:
 				oldAsset.Location.Rack = updatedAsset.Location.Rack
-			case "location.rack_number":
+			case util.LocationRackNumberPath:
 				oldAsset.Location.RackNumber = updatedAsset.Location.RackNumber
-			case "location.shelf":
+			case util.LocationShelfPath:
 				oldAsset.Location.Shelf = updatedAsset.Location.Shelf
-			case "location.position":
+			case util.LocationPositionPath:
 				oldAsset.Location.Position = updatedAsset.Location.Position
-			case "location.barcode_name":
+			case util.LocationBarcodeNamePath:
 				oldAsset.Location.BarcodeName = updatedAsset.Location.BarcodeName
-			case "location.zone":
+			case util.LocationZonePath:
 				oldAsset.Location.Zone = updatedAsset.Location.Zone
 				oldAsset.Realm = updatedAsset.Realm
-			case "info.cost_center":
+			case util.InfoCostCenterPath:
 				oldAsset.Info.CostCenter = updatedAsset.Info.CostCenter
-			case "info.google_code_name":
+			case util.InfoGoogleCodeNamePath:
 				oldAsset.Info.GoogleCodeName = updatedAsset.Info.GoogleCodeName
-			case "info.build_target":
+			case util.InfoBuildTargetPath:
 				oldAsset.Info.BuildTarget = updatedAsset.Info.BuildTarget
-			case "info.reference_board":
+			case util.InfoReferenceBoardPath:
 				oldAsset.Info.ReferenceBoard = updatedAsset.Info.ReferenceBoard
-			case "info.ethernet_mac_address":
+			case util.InfoEthernetMacAddressPath:
 				oldAsset.Info.EthernetMacAddress = updatedAsset.Info.EthernetMacAddress
-			case "info.phase":
+			case util.InfoPhasePath:
 				oldAsset.Info.Phase = updatedAsset.Info.Phase
 			}
 		}
