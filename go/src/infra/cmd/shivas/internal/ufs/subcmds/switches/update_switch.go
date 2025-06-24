@@ -115,11 +115,11 @@ func (c *updateSwitch) innerRun(a subcommands.Application, args []string, env su
 	res, err := ic.UpdateSwitch(ctx, &ufsAPI.UpdateSwitchRequest{
 		Switch: &s,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"rack":     "rack",
-			"capacity": "capacity",
-			"tag":      "tags",
-			"desc":     "description",
-			"state":    "resourceState",
+			"rack":     ufsUtil.RackPath,
+			"capacity": ufsUtil.CapacityPortPath,
+			"tag":      ufsUtil.TagsPath,
+			"desc":     ufsUtil.DescriptionPath,
+			"state":    ufsUtil.ResourceStatePath,
 		}),
 	})
 	if err != nil {

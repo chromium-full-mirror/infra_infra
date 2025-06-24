@@ -17,6 +17,7 @@ package util
 const (
 	// Common
 	CapacityPath                string = "capacity"
+	CapacityPortPath            string = "capacity_port"
 	ChromePlatformPath          string = "chrome_platform"
 	DeploymentTicketPath        string = "deployment_ticket"
 	DescriptionPath             string = "description"
@@ -33,9 +34,9 @@ const (
 	RackPath                    string = "rack"
 	ResourceStatePath           string = "resource_state"
 	SerialNumberPath            string = "serial_number"
+	SwitchPath                  string = "switch"
 	SwitchInterfacePortNamePath string = "switch_interface.port_name"
 	SwitchInterfaceSwitchPath   string = "switch_interface.switch"
-	SwitchPath                  string = "switch"
 	TagsPath                    string = "tags"
 	TagsRemovePath              string = "tags.remove"
 	TypePath                    string = "type"

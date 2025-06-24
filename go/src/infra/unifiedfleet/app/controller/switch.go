@@ -145,7 +145,7 @@ func processSwitchUpdateMask(ctx context.Context, oldSwitch *ufspb.Switch, s *uf
 	// update the fields in the existing/old switch
 	for _, path := range mask.Paths {
 		switch path {
-		case "rack":
+		case ufsUtil.RackPath:
 			if oldSwitch.GetRack() != s.GetRack() {
 				// User is trying to associate this switch with a different rack.
 				// Get rack to associate the switch
@@ -161,13 +161,13 @@ func processSwitchUpdateMask(ctx context.Context, oldSwitch *ufspb.Switch, s *uf
 				// Fill the zone to switch OUTPUT only fields for indexing
 				oldSwitch.Zone = rack.GetLocation().GetZone().String()
 			}
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldSwitch.ResourceState = s.GetResourceState()
-		case "description":
+		case ufsUtil.DescriptionPath:
 			oldSwitch.Description = s.GetDescription()
-		case "capacity":
+		case ufsUtil.CapacityPortPath, ufsUtil.CapacityPath:
 			oldSwitch.CapacityPort = s.GetCapacityPort()
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldSwitch.Tags = mergeTags(oldSwitch.GetTags(), s.GetTags())
 		}
 	}
@@ -438,18 +438,18 @@ func validateSwitchUpdateMask(s *ufspb.Switch, mask *field_mask.FieldMask) error
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateSwitch - name cannot be updated, delete and create a new switch instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateSwitch - update_time cannot be updated, it is a Output only field")
-			case "rack":
+			case ufsUtil.RackPath:
 				if s.GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "rack cannot be empty for updating a switch")
 				}
-			case "capacity":
-			case "description":
-			case "tags":
-			case "resourceState":
+			case ufsUtil.CapacityPortPath, ufsUtil.CapacityPath:
+			case ufsUtil.DescriptionPath:
+			case ufsUtil.TagsPath:
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateSwitch - unsupported update mask path %q", path)
