@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateChromePlatform creates a new chromeplatform in datastore.
@@ -92,11 +93,11 @@ func processChromePlatformUpdateMask(oldPlatform *ufspb.ChromePlatform, platform
 	// update the fields in the existing chrome platform
 	for _, path := range mask.Paths {
 		switch path {
-		case "manufacturer":
+		case util.ManufacturerPath:
 			oldPlatform.Manufacturer = platform.GetManufacturer()
-		case "description":
+		case util.DescriptionPath:
 			oldPlatform.Description = platform.GetDescription()
-		case "tags":
+		case util.TagsPath:
 			oldPlatform.Tags = mergeTags(oldPlatform.GetTags(), platform.GetTags())
 		}
 	}
@@ -205,13 +206,13 @@ func validateChromePlatformUpdateMask(mask *field_mask.FieldMask) error {
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateChromePlatformUpdateMask - name cannot be updated, delete and create a new platform instead")
-			case "update_time":
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateChromePlatformUpdateMask - update_time cannot be updated, it is a Output only field")
-			case "manufacturer":
-			case "description":
-			case "tags":
+			case util.ManufacturerPath:
+			case util.DescriptionPath:
+			case util.TagsPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateChromePlatformUpdateMask - unsupported update mask path %q", path)

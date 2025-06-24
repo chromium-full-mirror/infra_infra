@@ -113,9 +113,9 @@ func (c *updateChromePlatform) innerRun(a subcommands.Application, args []string
 	res, err := ic.UpdateChromePlatform(ctx, &ufsAPI.UpdateChromePlatformRequest{
 		ChromePlatform: &chromePlatform,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"manufacturer": "manufacturer",
-			"tag":          "tags",
-			"desc":         "description",
+			"manufacturer": ufsUtil.ManufacturerPath,
+			"tag":          ufsUtil.TagsPath,
+			"desc":         ufsUtil.DescriptionPath,
 		}),
 	})
 	if err != nil {
