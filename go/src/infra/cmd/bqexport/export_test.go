@@ -9,7 +9,6 @@ import (
 	"context"
 	"flag"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,7 +62,7 @@ func TestBQExport(t *testing.T) {
 
 		// Compare against the golden file.
 		var err error
-		gen, err = ioutil.ReadFile(outPath)
+		gen, err = os.ReadFile(outPath)
 		if err != nil {
 			t.Fatalf("Could not read output path: %s", err)
 		}
@@ -85,7 +84,7 @@ func TestBQExport(t *testing.T) {
 		t.Fatalf("failed to generate/validate schema file: %s", err)
 	}
 
-	golden, err := ioutil.ReadFile(testOutPath)
+	golden, err := os.ReadFile(testOutPath)
 	if err != nil {
 		t.Fatalf("failed to read golden file: %s", err)
 	}
@@ -102,7 +101,7 @@ func withTempDir(fn func(string) error) error {
 	if err != nil {
 		return err
 	}
-	tdir, err := ioutil.TempDir(cwd, ".bqexport_test")
+	tdir, err := os.MkdirTemp(cwd, ".bqexport_test")
 	if err != nil {
 		return err
 	}

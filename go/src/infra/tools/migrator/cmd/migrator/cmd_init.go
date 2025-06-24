@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -98,16 +97,16 @@ func (r *cmdInitImpl) execute(ctx context.Context) error {
 
 	for path, data := range templates.Plugin() {
 		outPath := filepath.Join(plugDir, path)
-		if err := ioutil.WriteFile(outPath, []byte(data), 0666); err != nil {
+		if err := os.WriteFile(outPath, []byte(data), 0666); err != nil {
 			return errors.Annotate(err, "writing %q", outPath).Err()
 		}
 	}
 
-	if err := ioutil.WriteFile(r.path.CommitMessageFile(), templates.CommitMessage(), 0666); err != nil {
+	if err := os.WriteFile(r.path.CommitMessageFile(), templates.CommitMessage(), 0666); err != nil {
 		return errors.Annotate(err, "creating the commit message file").Err()
 	}
 
-	return ioutil.WriteFile(r.path.ConfigFile(), templates.Config(), 0666)
+	return os.WriteFile(r.path.ConfigFile(), templates.Config(), 0666)
 }
 
 func (r *cmdInitImpl) Run(a subcommands.Application, args []string, env subcommands.Env) int {

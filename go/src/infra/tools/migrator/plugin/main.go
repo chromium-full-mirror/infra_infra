@@ -8,7 +8,6 @@ package plugin
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"go.chromium.org/infra/tools/migrator"
@@ -22,7 +21,7 @@ func Main(factory migrator.InstantiateAPI) {
 	if len(os.Args) != 2 {
 		fatal("expecting 1 positional argument")
 	}
-	blob, err := ioutil.ReadFile(os.Args[1])
+	blob, err := os.ReadFile(os.Args[1])
 	if err != nil {
 		fatal("failed to read the command file")
 	}

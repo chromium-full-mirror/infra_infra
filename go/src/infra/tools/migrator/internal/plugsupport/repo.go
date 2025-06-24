@@ -10,7 +10,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -96,7 +95,7 @@ func discoverAllRepos(ctx context.Context, dir ProjectDir) ([]*repo, error) {
 		return nil, err
 	}
 
-	infos, err := ioutil.ReadDir(string(dir))
+	infos, err := os.ReadDir(string(dir))
 	if err != nil {
 		return nil, err
 	}
@@ -391,12 +390,12 @@ func writeProjectsMetadata(path string, projects []*configpb.Project) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, blob, 0600)
+	return os.WriteFile(path, blob, 0600)
 }
 
 // readProjectsMetadata reads the file written by writeProjectsMetadata.
 func readProjectsMetadata(path string) ([]*configpb.Project, error) {
-	blob, err := ioutil.ReadFile(path)
+	blob, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

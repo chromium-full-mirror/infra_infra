@@ -10,7 +10,6 @@ package docker
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,7 +21,7 @@ import (
 
 // Build calls "docker build --iidfile out [args] - < [read from r]".
 func Build(ctx context.Context, context io.Reader, args []string) (string, error) {
-	tmpDir, err := ioutil.TempDir("", "cloudbuildhelper")
+	tmpDir, err := os.MkdirTemp("", "cloudbuildhelper")
 	if err != nil {
 		return "", errors.Annotate(err, "failed to create temp directory").Err()
 	}
@@ -43,7 +42,7 @@ func Build(ctx context.Context, context io.Reader, args []string) (string, error
 		return "", errors.Annotate(err, "docker build invocation failed").Err()
 	}
 
-	out, err := ioutil.ReadFile(filepath.Join(tmpDir, "imageid"))
+	out, err := os.ReadFile(filepath.Join(tmpDir, "imageid"))
 	if err != nil {
 		return "", errors.Annotate(err, "failed read --iidfile produced by docker build").Err()
 	}

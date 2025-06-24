@@ -7,7 +7,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"os"
 
 	"github.com/maruel/subcommands"
@@ -103,5 +102,5 @@ func writePins(path string, pins *dockerfile.Pins) error {
 	if err := dockerfile.WritePins(&out, pins); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, out.Bytes(), 0666)
+	return os.WriteFile(path, out.Bytes(), 0666)
 }

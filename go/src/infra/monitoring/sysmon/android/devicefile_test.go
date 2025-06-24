@@ -6,7 +6,6 @@ package android
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -24,13 +23,13 @@ func TestLoadFile(t *testing.T) {
 	ctx, _ = testclock.UseTime(ctx, now)
 
 	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
-		path, err := ioutil.TempDir("", "android-devicefile-test")
+		path, err := os.MkdirTemp("", "android-devicefile-test")
 		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(path)
 
 		fileName := filepath.Join(path, "file.json")
 		t.Run("loads a valid file", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`
+			err := os.WriteFile(fileName, []byte(`
         {
           "version": 1,
           "timestamp": 946782245,
@@ -137,7 +136,7 @@ func TestLoadFile(t *testing.T) {
 		})
 
 		t.Run("loads a valid file, no CPUs", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`
+			err := os.WriteFile(fileName, []byte(`
         {
           "version": 1,
           "timestamp": 946782245,
@@ -179,7 +178,7 @@ func TestLoadFile(t *testing.T) {
 		})
 
 		t.Run("invalid json", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`not valid json`), 0644)
+			err := os.WriteFile(fileName, []byte(`not valid json`), 0644)
 			assert.Loosely(t, err, should.BeNil)
 
 			_, st, _, err := loadFile(ctx, fileName)
@@ -188,7 +187,7 @@ func TestLoadFile(t *testing.T) {
 		})
 
 		t.Run("invalid version", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`
+			err := os.WriteFile(fileName, []byte(`
         {
           "version": 42
         }
@@ -201,7 +200,7 @@ func TestLoadFile(t *testing.T) {
 		})
 
 		t.Run("previous version", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`
+			err := os.WriteFile(fileName, []byte(`
         {
           "version": 0,
           "timestamp": 946782245
@@ -216,7 +215,7 @@ func TestLoadFile(t *testing.T) {
 
 		t.Run("stale timestamp", func(t *ftt.Test) {
 			// 946782084 == 946782245 - 161
-			err := ioutil.WriteFile(fileName, []byte(`
+			err := os.WriteFile(fileName, []byte(`
         {
           "version": 1,
           "timestamp": 946782084

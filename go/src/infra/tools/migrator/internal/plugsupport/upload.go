@@ -6,7 +6,7 @@ package plugsupport
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/data/stringset"
@@ -23,7 +23,7 @@ func ExecuteUpload(ctx context.Context, projectDir ProjectDir, force bool) (*mig
 		return nil, errors.Annotate(err, "failed to load tweaks").Err()
 	}
 
-	blob, err := ioutil.ReadFile(projectDir.CommitMessageFile())
+	blob, err := os.ReadFile(projectDir.CommitMessageFile())
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read the commit message").Err()
 	}

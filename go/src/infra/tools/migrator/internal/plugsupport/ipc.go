@@ -7,7 +7,6 @@ package plugsupport
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -39,7 +38,7 @@ func Invoke(ctx context.Context, projectDir ProjectDir, pluginBin string, comman
 
 	// Pass the command through a temp file to avoid occupying the stdin handle.
 	// The plugin may potentially need it.
-	tmpFile, err := ioutil.TempFile(projectDir.TrashDir(), "*_cmd.json")
+	tmpFile, err := os.CreateTemp(projectDir.TrashDir(), "*_cmd.json")
 	if err != nil {
 		return errors.Annotate(err, "failed to create the temp file for the command").Err()
 	}

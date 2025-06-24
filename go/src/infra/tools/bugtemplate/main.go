@@ -7,7 +7,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"strings"
@@ -60,7 +59,7 @@ func run() error {
 		return fmt.Errorf("unexpected args: %q", flag.Args())
 	}
 
-	contents, err := ioutil.ReadFile(*defPath)
+	contents, err := os.ReadFile(*defPath)
 	if err != nil {
 		return errors.Annotate(err, "failed to read template file").Err()
 	}

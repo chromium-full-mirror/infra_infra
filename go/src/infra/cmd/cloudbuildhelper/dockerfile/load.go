@@ -5,7 +5,6 @@
 package dockerfile
 
 import (
-	"io/ioutil"
 	"os"
 
 	"go.chromium.org/luci/common/errors"
@@ -21,7 +20,7 @@ import (
 // an empty string (in which case the Dockerfile MUST use digests only, so
 // there's nothing to resolve).
 func LoadAndResolve(dockerfile, pins string) ([]byte, error) {
-	body, err := ioutil.ReadFile(dockerfile)
+	body, err := os.ReadFile(dockerfile)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read Dockerfile").Err()
 	}

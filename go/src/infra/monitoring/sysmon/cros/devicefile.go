@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"go.chromium.org/luci/common/clock"
@@ -39,7 +39,7 @@ type memory struct {
 }
 
 func loadfile(c context.Context, path string) (df deviceStatusFile, err error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return
 	}

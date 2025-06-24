@@ -6,7 +6,6 @@ package cros
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,14 +24,14 @@ func TestLoadfile(t *testing.T) {
 
 	ftt.Run("Using tmp directory", t, func(t *ftt.Test) {
 		// Use tmp dir to create a mock file
-		path, err := ioutil.TempDir("", "cros-devicefile-test")
+		path, err := os.MkdirTemp("", "cros-devicefile-test")
 		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(path)
 
 		fileName := filepath.Join(path, "file.json")
 
 		t.Run("loads a valid file", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName, []byte(`{
+			err := os.WriteFile(fileName, []byte(`{
 			  "container_hostname": "b1_b2",
 			  "status": "online",
 			  "timestamp": 1559855998.093489
@@ -53,7 +52,7 @@ func TestLoadfile(t *testing.T) {
 		})
 
 		t.Run("invalid json", func(t *ftt.Test) {
-			err := ioutil.WriteFile(fileName,
+			err := os.WriteFile(fileName,
 				[]byte(`not valid json`), 0644)
 			assert.Loosely(t, err, should.BeNil)
 

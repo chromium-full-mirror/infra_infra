@@ -7,7 +7,7 @@ package android
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"go.chromium.org/luci/common/clock"
@@ -112,7 +112,7 @@ func (t *temperature) GetTemperature() *float64 {
 }
 
 func loadFile(c context.Context, path string) (deviceStatusFile, status, float64, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return deviceStatusFile{}, notFound, 0, err
 	}

@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"log"
 	"math"
 	"net/http"
@@ -536,7 +536,7 @@ func readFileContents(ctx context.Context, logsURL, logsName, test string) ([]by
 		return nil, errors.Annotate(err, "create reader").Err()
 	}
 	defer r.Close()
-	bytes, err := ioutil.ReadAll(r)
+	bytes, err := io.ReadAll(r)
 	if err != nil {
 		return nil, errors.Annotate(err, "read logs file contents").Err()
 	}

@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"os/exec"
@@ -382,7 +381,7 @@ func (c *cookRun) run(ctx context.Context, args []string, env environ.Env) (*bui
 
 	// initialize temp dir.
 	if c.TempDir == "" {
-		tdir, err := ioutil.TempDir("", "kitchen")
+		tdir, err := os.MkdirTemp("", "kitchen")
 		if err != nil {
 			return fail(errors.Annotate(err, "failed to create temporary directory").Err())
 		}
@@ -1019,7 +1018,7 @@ func parseProperties(properties map[string]any, propertiesFile string) (result m
 		return properties, nil
 	}
 	if propertiesFile != "" {
-		b, err := ioutil.ReadFile(propertiesFile)
+		b, err := os.ReadFile(propertiesFile)
 		if err != nil {
 			err = errors.Reason("could not read properties file %s\n%s", propertiesFile, err).Err()
 			return nil, err

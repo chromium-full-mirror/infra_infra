@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -42,7 +41,7 @@ func TestCook(t *testing.T) {
 		cook := cmdCook.CommandRun().(*cookRun)
 
 		t.Run("updateEnv", func(t *ftt.Test) {
-			tdir, err := ioutil.TempDir("", "kitchen-test-")
+			tdir, err := os.MkdirTemp("", "kitchen-test-")
 			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tdir)
 
@@ -91,7 +90,7 @@ func TestCook(t *testing.T) {
 			c = lucictx.SetLocalAuth(c, la)
 
 			// Setup tempdir.
-			tdir, err := ioutil.TempDir("", "kitchen-test-")
+			tdir, err := os.MkdirTemp("", "kitchen-test-")
 			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tdir)
 
@@ -200,7 +199,7 @@ func TestCook(t *testing.T) {
 				}))
 
 				// Check recipes.py input.
-				recipeInputFile, err := ioutil.ReadFile(recipeInputPath)
+				recipeInputFile, err := os.ReadFile(recipeInputPath)
 				assert.Loosely(t, err, should.BeNil)
 				type recipeInput struct {
 					Args       []string
@@ -327,10 +326,10 @@ func copyDir(dest, src string) error {
 			return os.Mkdir(destPath, 0700)
 		}
 
-		data, err := ioutil.ReadFile(srcPath)
+		data, err := os.ReadFile(srcPath)
 		if err != nil {
 			return err
 		}
-		return ioutil.WriteFile(destPath, data, info.Mode())
+		return os.WriteFile(destPath, data, info.Mode())
 	})
 }

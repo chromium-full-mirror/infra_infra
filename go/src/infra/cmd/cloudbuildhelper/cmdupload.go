@@ -10,7 +10,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -217,7 +216,7 @@ func buildAndUpload(ctx context.Context, p uploadParams) (obj *storage.Object, d
 func writeToTemp(ctx context.Context, out *fileset.Set) (tmp *os.File, digest string, err error) {
 	logging.Infof(ctx, "Writing tarball with %d files to a temp file...", out.Len())
 
-	f, err := ioutil.TempFile("", "cloudbuildhelper_*.tar.gz")
+	f, err := os.CreateTemp("", "cloudbuildhelper_*.tar.gz")
 	if err != nil {
 		return nil, "", err
 	}

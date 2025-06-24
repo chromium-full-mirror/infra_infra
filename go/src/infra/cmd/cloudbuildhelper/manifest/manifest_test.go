@@ -6,7 +6,6 @@ package manifest
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -229,7 +228,7 @@ func TestExtends(t *testing.T) {
 	t.Parallel()
 
 	ftt.Run("With temp dir", t, func(t *ftt.Test) {
-		dir, err := ioutil.TempDir("", "cloudbuildhelper")
+		dir, err := os.MkdirTemp("", "cloudbuildhelper")
 		assert.Loosely(t, err, should.BeNil)
 		t.Cleanup(func() { os.RemoveAll(dir) })
 
@@ -238,7 +237,7 @@ func TestExtends(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			p := filepath.Join(dir, filepath.FromSlash(path))
 			assert.Loosely(t, os.MkdirAll(filepath.Dir(p), 0777), should.BeNil)
-			assert.Loosely(t, ioutil.WriteFile(p, blob, 0666), should.BeNil)
+			assert.Loosely(t, os.WriteFile(p, blob, 0666), should.BeNil)
 		}
 
 		abs := func(path string) string {

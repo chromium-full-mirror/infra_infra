@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -185,7 +184,7 @@ func (c *commandBase) cleanup(ctx context.Context) {
 //
 // It will be removed at the end of the command execution.
 func (c *commandBase) newTempDir() (string, error) {
-	path, err := ioutil.TempDir("", "cbh_")
+	path, err := os.MkdirTemp("", "cbh_")
 	if err == nil {
 		c.tempDirs = append(c.tempDirs, path)
 	}
@@ -362,7 +361,7 @@ func (c *commandBase) writeJSONOutput(r any) error {
 		fmt.Printf("%s\n", b)
 		return nil
 	default:
-		return errors.WrapIf(ioutil.WriteFile(c.jsonOutput, b, 0600), "failed to write %q", c.jsonOutput)
+		return errors.WrapIf(os.WriteFile(c.jsonOutput, b, 0600), "failed to write %q", c.jsonOutput)
 	}
 }
 

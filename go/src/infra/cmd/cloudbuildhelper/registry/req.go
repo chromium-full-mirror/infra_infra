@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -90,7 +90,7 @@ func sendJSONRequest(ctx context.Context, req *http.Request, out any) (resp *htt
 		return
 	}
 	defer resp.Body.Close()
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		err = errors.Annotate(err, "failed to read HTTP response body").Err()
 		return

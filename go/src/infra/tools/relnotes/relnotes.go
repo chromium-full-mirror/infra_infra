@@ -16,7 +16,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"regexp"
@@ -192,7 +192,7 @@ func getAppNameFromYAML() (string, error) {
 		return "", err
 	}
 
-	b, err := ioutil.ReadAll(in)
+	b, err := io.ReadAll(in)
 	if err != nil {
 		return "", err
 	}
@@ -225,7 +225,7 @@ func getUpdates(path string) (stringset.Set, []*commit, stringset.Set, map[strin
 	}
 	cmd.Start()
 	r := bufio.NewReader(stdout)
-	bytes, err := ioutil.ReadAll(r)
+	bytes, err := io.ReadAll(r)
 	if err != nil {
 		fmt.Printf("Error reading stdout: %v", err)
 		os.Exit(1)

@@ -8,7 +8,6 @@ package builder
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,7 +28,7 @@ type Builder struct {
 
 // New initializes a builder, allocating a temp directory for it.
 func New() (*Builder, error) {
-	tmpDir, err := ioutil.TempDir("", "cloudbuildhelper")
+	tmpDir, err := os.MkdirTemp("", "cloudbuildhelper")
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to allocate a temporary directory").Err()
 	}

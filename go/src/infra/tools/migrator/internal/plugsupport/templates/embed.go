@@ -8,7 +8,7 @@ package templates
 import (
 	"embed"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"path"
 )
 
@@ -54,7 +54,7 @@ func bodyOf(path string) []byte {
 		panic(fmt.Sprintf("%q is not embedded: %s", path, err))
 	}
 	defer f.Close()
-	body, err := ioutil.ReadAll(f)
+	body, err := io.ReadAll(f)
 	if err != nil {
 		panic(fmt.Sprintf("failed to read embedded %q: %s", path, err))
 	}

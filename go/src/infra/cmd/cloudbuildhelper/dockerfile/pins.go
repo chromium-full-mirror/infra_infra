@@ -7,7 +7,6 @@ package dockerfile
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"sort"
 	"strings"
 
@@ -40,7 +39,7 @@ func (p *Pin) ImageRef() string {
 
 // ReadPins loads and validates YAML file with pins.
 func ReadPins(r io.Reader) (*Pins, error) {
-	body, err := ioutil.ReadAll(r)
+	body, err := io.ReadAll(r)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read the pins file").Err()
 	}

@@ -5,7 +5,6 @@
 package gitignore
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -202,7 +201,7 @@ type tmpDir struct {
 func newTempDir(t testing.TB) tmpDir {
 	t.Helper()
 
-	tmp, err := ioutil.TempDir("", "gitignore_test")
+	tmp, err := os.MkdirTemp("", "gitignore_test")
 	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 	t.Cleanup(func() { os.RemoveAll(tmp) })
 	return tmpDir{tmp, t}

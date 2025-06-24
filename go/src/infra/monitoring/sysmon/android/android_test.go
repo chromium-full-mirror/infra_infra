@@ -6,7 +6,6 @@ package android
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,7 +25,7 @@ func TestFileGlobbing(t *testing.T) {
 	c, _ = testclock.UseTime(c, now)
 
 	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
-		tmpPath, err := ioutil.TempDir("", "android-devicefile-test")
+		tmpPath, err := os.MkdirTemp("", "android-devicefile-test")
 		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(tmpPath)
 		err = os.Mkdir(filepath.Join(tmpPath, ".android"), 0777)
@@ -39,13 +38,13 @@ func TestFileGlobbing(t *testing.T) {
 		}
 		t.Run("loads a number of empty files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				assert.Loosely(t, ioutil.WriteFile(filepath.Join(path, fileName), []byte(`{"version": 1, "timestamp": 946782245, "devices": {}}`), 0644), should.BeNil)
+				assert.Loosely(t, os.WriteFile(filepath.Join(path, fileName), []byte(`{"version": 1, "timestamp": 946782245, "devices": {}}`), 0644), should.BeNil)
 			}
 			assert.Loosely(t, update(c, tmpPath), should.BeNil)
 		})
 		t.Run("loads a number of broken files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				assert.Loosely(t, ioutil.WriteFile(filepath.Join(path, fileName), []byte(`not json`), 0644), should.BeNil)
+				assert.Loosely(t, os.WriteFile(filepath.Join(path, fileName), []byte(`not json`), 0644), should.BeNil)
 			}
 			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})

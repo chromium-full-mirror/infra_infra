@@ -5,7 +5,6 @@
 package plugsupport
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -109,7 +108,7 @@ func (p ProjectDir) MkTempDir() (string, error) {
 	if err := os.Mkdir(p.TrashDir(), 0777); err != nil {
 		return "", err
 	}
-	return ioutil.TempDir(p.TrashDir(), "")
+	return os.MkdirTemp(p.TrashDir(), "")
 }
 
 // CleanTrash removes TrashDir().
@@ -119,7 +118,7 @@ func (p ProjectDir) CleanTrash() error {
 
 // LoadConfigFile loads the migration project config.
 func (p ProjectDir) LoadConfigFile() (*migratorpb.Config, error) {
-	blob, err := ioutil.ReadFile(p.ConfigFile())
+	blob, err := os.ReadFile(p.ConfigFile())
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load the migration project config").Err()
 	}

@@ -24,7 +24,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -189,7 +188,7 @@ type uptimeResult struct {
 // "uptime_in_seconds cpu_idle_time_in_seconds"
 // Return the uptime via a channel for use with timeouts.
 func readUptime() (time.Duration, error) {
-	bytes, err := ioutil.ReadFile("/proc/uptime")
+	bytes, err := os.ReadFile("/proc/uptime")
 	if err != nil {
 		return 0, fmt.Errorf("unable to open /proc/uptime: %s", err.Error())
 	}

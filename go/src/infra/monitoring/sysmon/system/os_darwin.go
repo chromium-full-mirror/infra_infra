@@ -7,7 +7,7 @@ package system
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -15,7 +15,7 @@ import (
 )
 
 func osInformation() (string, string, error) {
-	data, err := ioutil.ReadFile("/System/Library/CoreServices/SystemVersion.plist")
+	data, err := os.ReadFile("/System/Library/CoreServices/SystemVersion.plist")
 	if err != nil {
 		return "mac", "unknown", err
 	}

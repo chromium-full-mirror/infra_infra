@@ -7,7 +7,6 @@ package cipd
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -58,7 +57,7 @@ func listCIPDVersionFiles(path string) []string {
 }
 
 func readCIPDVersionFile(path string) (cipdpkg.VersionFile, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return cipdpkg.VersionFile{}, nil
 	}

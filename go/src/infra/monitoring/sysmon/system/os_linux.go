@@ -6,7 +6,7 @@ package system
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 
 	"github.com/shirou/gopsutil/v3/host"
 )
@@ -21,7 +21,7 @@ func osInformation() (string, string, error) {
 }
 
 func model(c context.Context) (string, error) {
-	out, err := ioutil.ReadFile("/sys/devices/virtual/dmi/id/product_name")
+	out, err := os.ReadFile("/sys/devices/virtual/dmi/id/product_name")
 	if err != nil {
 		return "", err
 	}

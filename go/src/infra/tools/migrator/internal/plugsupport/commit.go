@@ -6,7 +6,7 @@ package plugsupport
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -16,7 +16,7 @@ import (
 
 // ExecuteCommit implements "commit" subcommand.
 func ExecuteCommit(ctx context.Context, projectDir ProjectDir) (*migrator.ReportDump, error) {
-	blob, err := ioutil.ReadFile(projectDir.CommitMessageFile())
+	blob, err := os.ReadFile(projectDir.CommitMessageFile())
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to read the commit message").Err()
 	}

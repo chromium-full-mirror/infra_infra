@@ -7,7 +7,6 @@ package plugsupport
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -59,7 +58,7 @@ func (s *shell) ModifyFile(path string, modify func(oldContents string) string, 
 
 	newMode := os.FileMode(0666)
 
-	oldContent, err := ioutil.ReadFile(abspath)
+	oldContent, err := os.ReadFile(abspath)
 	if err == nil {
 		if len(mode) == 0 {
 			st, err := os.Stat(abspath)
@@ -74,7 +73,7 @@ func (s *shell) ModifyFile(path string, modify func(oldContents string) string, 
 
 	newContent := []byte(modify(string(oldContent)))
 	os.MkdirAll(filepath.Dir(abspath), 0777)
-	err = ioutil.WriteFile(abspath, newContent, newMode)
+	err = os.WriteFile(abspath, newContent, newMode)
 	if err != nil {
 		panic(errors.Annotate(err, "writing file %q", abspath).Err())
 	}

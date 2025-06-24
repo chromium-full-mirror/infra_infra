@@ -16,7 +16,6 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -58,7 +57,7 @@ type stats struct {
 func loc(goFiles []string) int {
 	sum := 0
 	for _, fn := range goFiles {
-		data, err := ioutil.ReadFile(fn)
+		data, err := os.ReadFile(fn)
 		if err != nil {
 			log.Fatalf("reading %s: %+v", fn, err)
 		}

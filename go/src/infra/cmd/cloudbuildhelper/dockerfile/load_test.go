@@ -5,7 +5,6 @@
 package dockerfile
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -19,13 +18,13 @@ func TestLoadAndResolve(t *testing.T) {
 	t.Parallel()
 
 	ftt.Run("With temp dir", t, func(t *ftt.Test) {
-		tmpDir, err := ioutil.TempDir("", "builder_test")
+		tmpDir, err := os.MkdirTemp("", "builder_test")
 		assert.Loosely(t, err, should.BeNil)
 		t.Cleanup(func() { os.RemoveAll(tmpDir) })
 
 		put := func(path, body string) string {
 			fp := filepath.Join(tmpDir, filepath.FromSlash(path))
-			assert.Loosely(t, ioutil.WriteFile(fp, []byte(body), 0666), should.BeNil)
+			assert.Loosely(t, os.WriteFile(fp, []byte(body), 0666), should.BeNil)
 			return fp
 		}
 

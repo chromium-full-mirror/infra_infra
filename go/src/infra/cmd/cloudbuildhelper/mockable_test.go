@@ -10,7 +10,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"go.chromium.org/infra/cmd/cloudbuildhelper/cloudbuild"
@@ -44,7 +43,7 @@ func (s *storageImplMock) Check(ctx context.Context, name string) (*storage.Obje
 
 func (s *storageImplMock) Upload(ctx context.Context, name, digest string, r io.Reader) (*storage.Object, error) {
 	h := sha256.New()
-	blob, err := ioutil.ReadAll(io.TeeReader(r, h))
+	blob, err := io.ReadAll(io.TeeReader(r, h))
 	if err != nil {
 		return nil, err
 	}

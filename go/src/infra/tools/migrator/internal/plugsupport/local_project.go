@@ -7,7 +7,6 @@ package plugsupport
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -136,7 +135,7 @@ func (l *localConfigFile) Path() string { return l.id.ConfigFile }
 
 func (l *localConfigFile) RawData() string {
 	l.rawDataOnce.Do(func() {
-		data, err := ioutil.ReadFile(l.abs)
+		data, err := os.ReadFile(l.abs)
 		l.rawData = string(data)
 		l.rawDataErr = err
 	})

@@ -5,7 +5,6 @@
 package cipd
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -18,12 +17,12 @@ import (
 
 func TestListFiles(t *testing.T) {
 	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
-		path, err := ioutil.TempDir("", "cipd-test")
+		path, err := os.MkdirTemp("", "cipd-test")
 		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(path)
 
 		t.Run("finds a file called CIPD_VERSION.json", func(t *ftt.Test) {
-			err := ioutil.WriteFile(filepath.Join(path, "CIPD_VERSION.json"), []byte{}, 0644)
+			err := os.WriteFile(filepath.Join(path, "CIPD_VERSION.json"), []byte{}, 0644)
 			assert.Loosely(t, err, should.BeNil)
 
 			assert.Loosely(t, listCIPDVersionFiles(path), should.Match([]string{
@@ -32,7 +31,7 @@ func TestListFiles(t *testing.T) {
 		})
 
 		t.Run("finds a file called foo.cipd_version", func(t *ftt.Test) {
-			err := ioutil.WriteFile(filepath.Join(path, "foo.cipd_version"), []byte{}, 0644)
+			err := os.WriteFile(filepath.Join(path, "foo.cipd_version"), []byte{}, 0644)
 			assert.Loosely(t, err, should.BeNil)
 
 			assert.Loosely(t, listCIPDVersionFiles(path), should.Match([]string{
@@ -41,7 +40,7 @@ func TestListFiles(t *testing.T) {
 		})
 
 		t.Run("reads a file", func(t *ftt.Test) {
-			err := ioutil.WriteFile(filepath.Join(path, "foo.cipd_version"), []byte(`
+			err := os.WriteFile(filepath.Join(path, "foo.cipd_version"), []byte(`
         {
           "package_name": "Hello",
           "instance_id": "World"

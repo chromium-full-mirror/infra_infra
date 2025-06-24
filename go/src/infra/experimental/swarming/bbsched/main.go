@@ -8,7 +8,6 @@ package main
 import (
 	"context"
 	"flag"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"sync"
@@ -59,7 +58,7 @@ func run(ctx context.Context) error {
 	if *request == "" {
 		return errors.Reason("-request is required").Err()
 	}
-	blob, err := ioutil.ReadFile(*request)
+	blob, err := os.ReadFile(*request)
 	if err != nil {
 		return errors.Annotate(err, "failed to read -request file").Err()
 	}

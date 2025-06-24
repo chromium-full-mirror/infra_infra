@@ -6,7 +6,6 @@ package cloudtail
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -58,7 +57,7 @@ func runTest(t testing.TB, opts TailerOptions) {
 	buf := NewPushBuffer(PushBufferOptions{Client: client, FlushTimeout: 1 * time.Millisecond})
 	buf.Start(ctx)
 
-	dir, err := ioutil.TempDir("", "cloudtail_test")
+	dir, err := os.MkdirTemp("", "cloudtail_test")
 	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 	defer os.RemoveAll(dir)
 	filePath := filepath.Join(dir, "tailed")

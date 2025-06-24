@@ -2,7 +2,6 @@ package cros
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,7 +21,7 @@ func TestUpdate(t *testing.T) {
 	c, _ = tsmon.WithDummyInMemory(c)
 	c, _ = testclock.UseTime(c, now)
 	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
-		tmpPath, err := ioutil.TempDir("", "cros-devicefile-test")
+		tmpPath, err := os.MkdirTemp("", "cros-devicefile-test")
 		assert.Loosely(t, err, should.BeNil)
 		defer func() {
 			assert.Loosely(t, os.RemoveAll(tmpPath), should.BeNil)
@@ -34,13 +33,13 @@ func TestUpdate(t *testing.T) {
 		}
 		t.Run("Loads a number of empty files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				assert.Loosely(t, ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(""), 0644), should.BeNil)
+				assert.Loosely(t, os.WriteFile(filepath.Join(tmpPath, fileName), []byte(""), 0644), should.BeNil)
 			}
 			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})
 		t.Run("Loads a number of broken files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				assert.Loosely(t, ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(`not json`), 0644), should.BeNil)
+				assert.Loosely(t, os.WriteFile(filepath.Join(tmpPath, fileName), []byte(`not json`), 0644), should.BeNil)
 			}
 			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})
