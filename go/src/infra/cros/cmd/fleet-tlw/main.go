@@ -8,9 +8,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
+	"os"
 	"sync"
 
 	"golang.org/x/crypto/ssh"
@@ -81,7 +81,7 @@ func innerMain() error {
 }
 
 func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
-	key, err := ioutil.ReadFile(keyfile)
+	key, err := os.ReadFile(keyfile)
 	if err != nil {
 		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}

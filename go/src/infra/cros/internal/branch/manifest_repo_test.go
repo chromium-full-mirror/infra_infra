@@ -6,7 +6,6 @@ package branch
 
 import (
 	"encoding/xml"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -166,7 +165,7 @@ func TestRepairManifestsOnDisk(t *testing.T) {
 	}
 
 	tmpDir := "manifestrepotest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
+	tmpDir, err := os.MkdirTemp("", tmpDir)
 	defer os.RemoveAll(tmpDir)
 	assert.NilError(t, err)
 

@@ -8,7 +8,7 @@ package test
 
 import (
 	"encoding/xml"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -123,7 +123,7 @@ func TestSetVersion(t *testing.T) {
 
 	// Test that version file was written correctly.
 	harnessRoot := r.Harness.HarnessRoot()
-	tmpRepo, err := ioutil.TempDir(harnessRoot, "test_harness_test")
+	tmpRepo, err := os.MkdirTemp(harnessRoot, "test_harness_test")
 	assert.NilError(t, err)
 	versionProject := rh.GetRemoteProject(*r.versionProject)
 	versionProjectPath := filepath.Join(harnessRoot, versionProject.RemoteName, versionProject.ProjectName)
@@ -131,7 +131,7 @@ func TestSetVersion(t *testing.T) {
 	assert.NilError(t, git.Clone(versionProjectPath, tmpRepo))
 	// Explicitly checkout main to avoid COIL issues with bots.
 	assert.NilError(t, git.Checkout(tmpRepo, "main"))
-	contents, err := ioutil.ReadFile(filepath.Join(tmpRepo, versionFileName))
+	contents, err := os.ReadFile(filepath.Join(tmpRepo, versionFileName))
 	assert.NilError(t, err)
 	vinfo, err := mv.ParseVersionInfo(contents)
 	assert.NilError(t, err)

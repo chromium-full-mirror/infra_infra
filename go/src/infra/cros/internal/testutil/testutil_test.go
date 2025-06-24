@@ -7,7 +7,6 @@
 package testutil
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -20,7 +19,7 @@ import (
 func createFooBarBaz(t *testing.T, root, bazContents string) {
 	assert.NilError(t, os.Mkdir(filepath.Join(root, "foo"), 0755))
 	assert.NilError(t, os.Mkdir(filepath.Join(root, "foo", "bar"), 0755))
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(root, "foo", "bar", "baz"), []byte(bazContents), 0666))
+	assert.NilError(t, os.WriteFile(filepath.Join(root, "foo", "bar", "baz"), []byte(bazContents), 0666))
 }
 
 // checkFooBarBaz checks the foo bar baz file structure, the greatest file structure on earth
@@ -33,23 +32,23 @@ func checkFooBarBaz(t *testing.T, root, bazContents string) {
 	_, err = os.Stat(snapshotBazPath)
 	assert.NilError(t, err)
 	// Check contents of bar/baz.
-	contents, err := ioutil.ReadFile(snapshotBazPath)
+	contents, err := os.ReadFile(snapshotBazPath)
 	assert.NilError(t, err)
 	assert.StringsEqual(t, string(contents), bazContents)
 }
 
 func TestAssertContentsEqual(t *testing.T) {
-	foo1, err := ioutil.TempDir("", "nodiff_test")
+	foo1, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo1)
 	createFooBarBaz(t, foo1, "ヽ༼ຈل͜ຈ༽ﾉ")
 
-	foo2, err := ioutil.TempDir("", "nodiff_test")
+	foo2, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo2)
 	createFooBarBaz(t, foo2, "ヽ༼ຈل͜ຈ༽ﾉ")
 
-	foo3, err := ioutil.TempDir("", "nodiff_test")
+	foo3, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo3)
 	createFooBarBaz(t, foo3, "ヽ༼ಠل͜ಠ༽ﾉ")
@@ -59,37 +58,37 @@ func TestAssertContentsEqual(t *testing.T) {
 }
 
 func TestAssertContentsEqual_files(t *testing.T) {
-	foo, err := ioutil.TempDir("", "nodiff_test")
+	foo, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo)
 	same1 := filepath.Join(foo, "same1")
 	same2 := filepath.Join(foo, "same2")
 	different := filepath.Join(foo, "different")
 
-	assert.NilError(t, ioutil.WriteFile(same1, []byte("same"), 0644))
-	assert.NilError(t, ioutil.WriteFile(same2, []byte("same"), 0644))
-	assert.NilError(t, ioutil.WriteFile(different, []byte("different"), 0644))
+	assert.NilError(t, os.WriteFile(same1, []byte("same"), 0644))
+	assert.NilError(t, os.WriteFile(same2, []byte("same"), 0644))
+	assert.NilError(t, os.WriteFile(different, []byte("different"), 0644))
 
 	assert.NilError(t, AssertContentsEqual(same1, same2))
 	assert.ErrorContains(t, AssertContentsEqual(same1, different), "files differ")
 }
 
 func TestAssertContentsEqual_typeMismatch(t *testing.T) {
-	foo1, err := ioutil.TempDir("", "nodiff_test")
+	foo1, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo1)
 
-	foo2, err := ioutil.TempDir("", "nodiff_test")
+	foo2, err := os.MkdirTemp("", "nodiff_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(foo2)
 	filePath := filepath.Join(foo2, "foo")
-	assert.NilError(t, ioutil.WriteFile(filePath, []byte("file contents"), 0644))
+	assert.NilError(t, os.WriteFile(filePath, []byte("file contents"), 0644))
 
 	assert.ErrorContains(t, AssertContentsEqual(foo1, filePath), "is a dir")
 }
 
 func TestAssertGitBranches_success(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "assert_git_branches_test")
+	tmpDir, err := os.MkdirTemp("", "assert_git_branches_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -107,7 +106,7 @@ func TestAssertGitBranches_success(t *testing.T) {
 }
 
 func TestAssertGitBranchesExact_success(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "assert_git_branches_test")
+	tmpDir, err := os.MkdirTemp("", "assert_git_branches_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -126,7 +125,7 @@ func TestAssertGitBranchesExact_success(t *testing.T) {
 }
 
 func TestAssertGitBranches_failure(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "assert_git_branches_test")
+	tmpDir, err := os.MkdirTemp("", "assert_git_branches_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(tmpDir)
 

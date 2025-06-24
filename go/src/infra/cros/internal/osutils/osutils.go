@@ -7,7 +7,6 @@ package osutils
 import (
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -83,7 +82,7 @@ func CreateTmpCopy(src string) (string, func(), error) {
 	}
 	defer in.Close()
 
-	out, err := ioutil.TempFile("", "tmp_copy")
+	out, err := os.CreateTemp("", "tmp_copy")
 	if err != nil {
 		return "", nil, err
 	}

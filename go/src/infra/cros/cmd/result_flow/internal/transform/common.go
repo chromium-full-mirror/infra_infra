@@ -11,7 +11,7 @@ import (
 	"compress/zlib"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -79,7 +79,7 @@ func unmarshalCompressedString(from string, to proto.Message) (proto.Message, er
 	if err != nil {
 		return nil, errors.Annotate(err, "unmarshal compressed string to PB").Err()
 	}
-	bs, err = ioutil.ReadAll(reader)
+	bs, err = io.ReadAll(reader)
 	if err != nil {
 		return nil, errors.Annotate(err, "unmarshal compressed string to PB").Err()
 	}

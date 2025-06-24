@@ -9,8 +9,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -45,7 +45,7 @@ func (c realRunner) run(ctx context.Context, dir string, stdoutBuf, stderrBuf *b
 // Clone does a `git clone` on the provided repo URL into a subdirectory of the supplied dir, and
 // returns the path to the folder of the checkout.
 func Clone(ctx context.Context, url string, branch string, parentDir string) (string, error) {
-	dir, err := ioutil.TempDir(parentDir, "gitclone")
+	dir, err := os.MkdirTemp(parentDir, "gitclone")
 	if err != nil {
 		return dir, err
 	}

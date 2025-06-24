@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -116,14 +115,14 @@ func buildFakeELFWithNote(buildID string) []byte {
 func TestGetBuildId(t *testing.T) {
 	const expected = "BFCF6FA6CCBDEF00501810DE869C8A2F40ABC321"
 
-	testDir, err := ioutil.TempDir("", "getBuildIdTest")
+	testDir, err := os.MkdirTemp("", "getBuildIdTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
 	defer os.RemoveAll(testDir)
 
 	mockPath := filepath.Join(testDir, "fake.debug")
-	err = ioutil.WriteFile(mockPath, buildFakeELFWithNote(expected), 0644)
+	err = os.WriteFile(mockPath, buildFakeELFWithNote(expected), 0644)
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -151,7 +150,7 @@ func TestDownloadZippedSymbols(t *testing.T) {
 		ExpectedDownloads: expectedDownloads,
 	}
 
-	tarballDir, err := ioutil.TempDir("", "tarball")
+	tarballDir, err := os.MkdirTemp("", "tarball")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -174,7 +173,7 @@ func TestUnzipSymbols(t *testing.T) {
 	targetString := "gzip test"
 
 	// Create temp dir to work in.
-	testDir, err := ioutil.TempDir("", "tarballTest")
+	testDir, err := os.MkdirTemp("", "tarballTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -237,11 +236,11 @@ func TestUnzipSymbols(t *testing.T) {
 // https://pkg.go.dev/archive/tar#pkg-overview.
 func TestUnpackTarball(t *testing.T) {
 	// Create working directory and tarball.
-	testDir, err := ioutil.TempDir("", "tarballTest")
+	testDir, err := os.MkdirTemp("", "tarballTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	debugSymbolsDir, err := ioutil.TempDir(testDir, "symbols")
+	debugSymbolsDir, err := os.MkdirTemp(testDir, "symbols")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -334,11 +333,11 @@ func TestUnpackTarball(t *testing.T) {
 // https://pkg.go.dev/archive/tar#pkg-overview.
 func TestUnpackSplitdebugTarballs(t *testing.T) {
 	// Create working directory and tarball.
-	testDir, err := ioutil.TempDir("", "splitdebugTarballTest")
+	testDir, err := os.MkdirTemp("", "splitdebugTarballTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
-	debugSymbolsDir, err := ioutil.TempDir(testDir, "symbols")
+	debugSymbolsDir, err := os.MkdirTemp(testDir, "symbols")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -566,7 +565,7 @@ func TestGenerateConfigs(t *testing.T) {
 	}
 
 	// Mock the symbol files locally.
-	testDir, err := ioutil.TempDir("", "configGenTest")
+	testDir, err := os.MkdirTemp("", "configGenTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -579,7 +578,7 @@ func TestGenerateConfigs(t *testing.T) {
 			localPath = response.localPath
 		}
 		mockPath := filepath.Join(testDir, localPath)
-		err = ioutil.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, filepath.Base(response.filename))), 0644)
+		err = os.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, filepath.Base(response.filename))), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
@@ -699,7 +698,7 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 	}
 
 	// Mock the symbol files locally.
-	testDir, err := ioutil.TempDir("", "configGenTest")
+	testDir, err := os.MkdirTemp("", "configGenTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -717,14 +716,14 @@ func TestGenerateSplitdebugConfigs(t *testing.T) {
 		mockSplitdebugPath := filepath.Join(localDir, response.splitdebugPath)
 		// Create a mock splitdebug file.
 		if response.splitdebugPath != "" {
-			err = ioutil.WriteFile(mockSplitdebugPath, buildFakeELFWithNote(response.symbol), 0644)
+			err = os.WriteFile(mockSplitdebugPath, buildFakeELFWithNote(response.symbol), 0644)
 			if err != nil {
 				t.Error("error: " + err.Error())
 			}
 		}
 		// Create a mock breakpad file.
 		mockPath := filepath.Join(localDir, response.breakpadPath)
-		err = ioutil.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, response.filename)), 0644)
+		err = os.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, response.filename)), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
@@ -784,7 +783,7 @@ func TestUploadSymbols(t *testing.T) {
 	}
 
 	// Mock the symbol files locally.
-	testDir, err := ioutil.TempDir("", "uploadSymbolsTest")
+	testDir, err := os.MkdirTemp("", "uploadSymbolsTest")
 	if err != nil {
 		t.Error("error: " + err.Error())
 	}
@@ -793,7 +792,7 @@ func TestUploadSymbols(t *testing.T) {
 	// Write mock files locally.
 	for index, task := range tasks {
 		mockPath := filepath.Join(testDir, task.debugFile)
-		err = ioutil.WriteFile(mockPath, []byte("MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid"), 0644)
+		err = os.WriteFile(mockPath, []byte("MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 blkid"), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}

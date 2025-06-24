@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -39,7 +38,7 @@ func EnsureRepoTool() (string, func(), error) {
 		return path, func() {}, nil
 	}
 
-	dir, err := ioutil.TempDir("", "depot_tools")
+	dir, err := os.MkdirTemp("", "depot_tools")
 	cleanup := func() {
 		os.RemoveAll(dir)
 	}

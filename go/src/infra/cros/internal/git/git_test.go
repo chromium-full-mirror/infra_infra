@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -409,7 +409,7 @@ func TestCheckout(t *testing.T) {
 	// Create first branch.
 	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
 	// In order for the ref to be created, need to commit something.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
 	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create second branch (will switch to this branch).
@@ -431,11 +431,11 @@ func TestCherryPick(t *testing.T) {
 	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
 
 	// Create two commits on the first branch.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
 	sha1, err := CommitAll(tmpDir, "commit1")
 	assert.NilError(t, err)
 
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
 	sha2, err := CommitAll(tmpDir, "commit2")
 	assert.NilError(t, err)
 
@@ -461,15 +461,15 @@ func TestMerge(t *testing.T) {
 	assert.NilError(t, CreateBranch(tmpDir, "branch1"))
 
 	// Create three commits on the first branch.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
 	sha1, err := CommitAll(tmpDir, "commit1")
 	assert.NilError(t, err)
 
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
 	sha2, err := CommitAll(tmpDir, "commit2")
 	assert.NilError(t, err)
 
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "baz"), []byte("baz"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "baz"), []byte("baz"), 0644))
 	sha3, err := CommitAll(tmpDir, "commit3")
 	assert.NilError(t, err)
 
@@ -482,7 +482,7 @@ func TestMerge(t *testing.T) {
 
 	// Create a new commit on the second branch that conflicts with the third
 	// commit on the first branch.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "baz"), []byte("other"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "baz"), []byte("other"), 0644))
 	_, err = CommitAll(tmpDir, "commit3 conflict")
 	assert.NilError(t, err)
 
@@ -502,7 +502,7 @@ func TestDeleteBranch_success(t *testing.T) {
 	// Create master branch.
 	assert.NilError(t, CreateBranch(tmpDir, "master"))
 	// In order for the ref to be created, need to commit something.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
 	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create branch to be deleted.
@@ -541,13 +541,13 @@ func TestDeleteBranch_unmerged(t *testing.T) {
 	// Create master branch.
 	assert.NilError(t, CreateBranch(tmpDir, "master"))
 	// In order for the ref to be created, need to commit something.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("foo"), 0644))
 	_, err := CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Create test branch.
 	assert.NilError(t, CreateBranch(tmpDir, branchName))
 	// Make a change to branch.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(tmpDir, "bar"), []byte("bar"), 0644))
 	_, err = CommitAll(tmpDir, "init commit")
 	assert.NilError(t, err)
 	// Switch back to master.
@@ -601,7 +601,7 @@ func TestRemoteBranches(t *testing.T) {
 	// Create local master branch.
 	assert.NilError(t, CreateBranch(local, "master"))
 	// In order for the ref to be created, need to commit something.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(local, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(local, "foo"), []byte("foo"), 0644))
 	_, err := CommitAll(local, "init commit")
 	assert.NilError(t, err)
 	// Add remote.

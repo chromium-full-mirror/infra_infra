@@ -7,7 +7,7 @@ package branch
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"sync/atomic"
@@ -58,7 +58,7 @@ func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBr
 	bi, resp, err := agClient.Projects.CreateBranch(b.Project, b.Branch, &gerritapi.BranchInput{Revision: b.SrcRef})
 	defer resp.Body.Close()
 	if err != nil {
-		body, err2 := ioutil.ReadAll(resp.Body)
+		body, err2 := io.ReadAll(resp.Body)
 		if err2 != nil {
 			// shouldn't happen
 			return err2

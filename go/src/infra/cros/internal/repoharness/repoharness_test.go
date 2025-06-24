@@ -8,7 +8,6 @@ package repoharness
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -188,7 +187,7 @@ func TestInitializeDefaultDefault(t *testing.T) {
 
 func TestCreateRemoteRef(t *testing.T) {
 	t.Parallel()
-	root, err := ioutil.TempDir("", "create_remote_ref_test")
+	root, err := os.MkdirTemp("", "create_remote_ref_test")
 	defer os.RemoveAll(root)
 	assert.NilError(t, err)
 
@@ -257,7 +256,7 @@ func TestAddFiles_simple(t *testing.T) {
 	for projectPath, files := range simpleFiles {
 		project, err := harness.manifest.GetProjectByPath(projectPath)
 		assert.NilError(t, err)
-		tmpDir, err := ioutil.TempDir(harness.harnessRoot, "tmp-clone-dir")
+		tmpDir, err := os.MkdirTemp(harness.harnessRoot, "tmp-clone-dir")
 
 		err = git.Clone(harness.GetRemotePath(GetRemoteProject(*project)), tmpDir)
 		// Explicitly checkout main to avoid COIL issues with bots.
@@ -271,7 +270,7 @@ func TestAddFiles_simple(t *testing.T) {
 			_, err = os.Stat(filePath)
 			assert.NilError(t, err)
 			// Check file contents.
-			fileContents, err := ioutil.ReadFile(filePath)
+			fileContents, err := os.ReadFile(filePath)
 			assert.NilError(t, err)
 			assert.Assert(t, reflect.DeepEqual(file.Contents, fileContents))
 		}
@@ -301,7 +300,7 @@ func TestAddFile(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Check that file was added to remote.
-	tmpDir, err := ioutil.TempDir(harness.harnessRoot, "tmp-clone-dir")
+	tmpDir, err := os.MkdirTemp(harness.harnessRoot, "tmp-clone-dir")
 
 	assert.NilError(t, git.Init(tmpDir, false))
 	assert.NilError(t, git.AddRemote(tmpDir, project.RemoteName, projectPath))
@@ -312,7 +311,7 @@ func TestAddFile(t *testing.T) {
 	_, err = os.Stat(filePath)
 	assert.NilError(t, err)
 	// Check file contents.
-	fileContents, err := ioutil.ReadFile(filePath)
+	fileContents, err := os.ReadFile(filePath)
 	assert.NilError(t, err)
 	assert.Assert(t, reflect.DeepEqual(file.Contents, fileContents))
 }
@@ -353,7 +352,7 @@ func TestProcessSubmitRefs(t *testing.T) {
 		fileContents := []byte(project.Name)
 		localProjectPath := filepath.Join(checkout, project.Path)
 		filePath := filepath.Join(localProjectPath, project.Name+".txt")
-		ioutil.WriteFile(filePath, fileContents, readWritePerms)
+		os.WriteFile(filePath, fileContents, readWritePerms)
 
 		commit, err := git.CommitAll(localProjectPath, "add files")
 		assert.NilError(t, err)
@@ -462,7 +461,7 @@ func TestTeardown(t *testing.T) {
 	t.Parallel()
 	// Pretend that harness has been initialized and harness root has been created.
 	tmpDir := "harness_root"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
+	tmpDir, err := os.MkdirTemp("", tmpDir)
 	defer os.RemoveAll(tmpDir)
 
 	harness := RepoHarness{
@@ -555,7 +554,7 @@ func TestAssertProjectBranchesExact(t *testing.T) {
 func createFooBarBaz(t *testing.T, root, bazContents string) {
 	assert.NilError(t, os.Mkdir(filepath.Join(root, "foo"), 0755))
 	assert.NilError(t, os.Mkdir(filepath.Join(root, "foo", "bar"), 0755))
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(root, "foo", "bar", "baz"), []byte(bazContents), 0666))
+	assert.NilError(t, os.WriteFile(filepath.Join(root, "foo", "bar", "baz"), []byte(bazContents), 0666))
 }
 
 // checkFooBarBaz checks the foo bar baz file structure, the greatest file structure on earth
@@ -568,14 +567,14 @@ func checkFooBarBaz(t *testing.T, root, bazContents string) {
 	_, err = os.Stat(snapshotBazPath)
 	assert.NilError(t, err)
 	// Check contents of bar/baz.
-	contents, err := ioutil.ReadFile(snapshotBazPath)
+	contents, err := os.ReadFile(snapshotBazPath)
 	assert.NilError(t, err)
 	assert.StringsEqual(t, string(contents), bazContents)
 }
 
 func TestSnapshot(t *testing.T) {
 	t.Parallel()
-	root, err := ioutil.TempDir("", "assert_test")
+	root, err := os.MkdirTemp("", "assert_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(root)
 	harness := &RepoHarness{
@@ -584,7 +583,7 @@ func TestSnapshot(t *testing.T) {
 	assert.NilError(t, os.Mkdir(filepath.Join(harness.harnessRoot, "snapshots"), 0777))
 
 	// Create a hierachy of files.
-	fooRoot, err := ioutil.TempDir(harness.harnessRoot, "snapshot_test")
+	fooRoot, err := os.MkdirTemp(harness.harnessRoot, "snapshot_test")
 	assert.NilError(t, err)
 	bazContents := "foo, bar and baz, oh my!"
 	createFooBarBaz(t, fooRoot, bazContents)
@@ -616,16 +615,16 @@ func TestSnapshotRemotes(t *testing.T) {
 
 func TestAssertProjectBranchEqual(t *testing.T) {
 	t.Parallel()
-	root, err := ioutil.TempDir("", "assert_test")
+	root, err := os.MkdirTemp("", "assert_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(root)
 	harness := &RepoHarness{
 		harnessRoot: root,
 	}
 
-	local, err := ioutil.TempDir(harness.harnessRoot, "")
+	local, err := os.MkdirTemp(harness.harnessRoot, "")
 	assert.NilError(t, err)
-	remote, err := ioutil.TempDir(harness.harnessRoot, "")
+	remote, err := os.MkdirTemp(harness.harnessRoot, "")
 	assert.NilError(t, err)
 
 	project := repo.Project{
@@ -636,7 +635,7 @@ func TestAssertProjectBranchEqual(t *testing.T) {
 	assert.NilError(t, git.Init(remote, false))
 	// Explicitly checkout main to avoid COIL issues with bots.
 	assert.NilError(t, git.CreateBranch(remote, "main"))
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(remote, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(remote, "foo"), []byte("foo"), 0644))
 	_, err = git.CommitAll(remote, "init commit")
 	assert.NilError(t, err)
 	// Clone remote so that we have two identical repos.
@@ -644,7 +643,7 @@ func TestAssertProjectBranchEqual(t *testing.T) {
 
 	assert.NilError(t, harness.AssertProjectBranchEqual(GetRemoteProject(project), "main", remote))
 	// Now, make commit to local.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(local, "bar"), []byte("bar"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(local, "bar"), []byte("bar"), 0644))
 	_, err = git.CommitAll(local, "addl commit")
 	assert.NilError(t, err)
 	assert.ErrorContains(t, harness.AssertProjectBranchEqual(GetRemoteProject(project), "main", remote), "mismatch")
@@ -652,16 +651,16 @@ func TestAssertProjectBranchEqual(t *testing.T) {
 
 func TestAssertProjectBranchHasAncestor(t *testing.T) {
 	t.Parallel()
-	root, err := ioutil.TempDir("", "assert_test")
+	root, err := os.MkdirTemp("", "assert_test")
 	assert.NilError(t, err)
 	defer os.RemoveAll(root)
 	harness := &RepoHarness{
 		harnessRoot: root,
 	}
 
-	local, err := ioutil.TempDir(harness.harnessRoot, "")
+	local, err := os.MkdirTemp(harness.harnessRoot, "")
 	assert.NilError(t, err)
-	remote, err := ioutil.TempDir(harness.harnessRoot, "")
+	remote, err := os.MkdirTemp(harness.harnessRoot, "")
 	assert.NilError(t, err)
 
 	project := repo.Project{
@@ -672,7 +671,7 @@ func TestAssertProjectBranchHasAncestor(t *testing.T) {
 	assert.NilError(t, git.Init(remote, false))
 	// Explicitly checkout main to avoid COIL issues with bots.
 	assert.NilError(t, git.CreateBranch(remote, "main"))
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(remote, "foo"), []byte("foo"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(remote, "foo"), []byte("foo"), 0644))
 	_, err = git.CommitAll(remote, "init commit")
 	assert.NilError(t, err)
 	// Clone remote so that we have two identical repos.
@@ -681,13 +680,13 @@ func TestAssertProjectBranchHasAncestor(t *testing.T) {
 	assert.NilError(t, harness.AssertProjectBranchHasAncestor(GetRemoteProject(project), "main", remote, project.Revision))
 
 	// Now, make commit to local. We should still be good.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(local, "bar"), []byte("bar"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(local, "bar"), []byte("bar"), 0644))
 	_, err = git.CommitAll(local, "addl commit")
 	assert.NilError(t, err)
 	assert.NilError(t, harness.AssertProjectBranchHasAncestor(GetRemoteProject(project), "main", remote, project.Revision))
 
 	// But if we make a commit to remote, our local repo will no longer descend from it.
-	assert.NilError(t, ioutil.WriteFile(filepath.Join(remote, "baz"), []byte("baz"), 0644))
+	assert.NilError(t, os.WriteFile(filepath.Join(remote, "baz"), []byte("baz"), 0644))
 	_, err = git.CommitAll(remote, "addl commit")
 	assert.NilError(t, err)
 	assert.ErrorContains(t, harness.AssertProjectBranchHasAncestor(GetRemoteProject(project), "main", remote, project.Revision), "does not descend")

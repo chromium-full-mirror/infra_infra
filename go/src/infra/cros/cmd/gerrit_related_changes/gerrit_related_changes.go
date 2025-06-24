@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -136,7 +135,7 @@ func (r *relatedRun) Run(a subcommands.Application, args []string, env subcomman
 	}
 
 	// Get request info from input JSON.
-	inputBytes, err := ioutil.ReadFile(r.inputJSON)
+	inputBytes, err := os.ReadFile(r.inputJSON)
 	if err != nil {
 		r.LogErr(fmt.Sprintf("Failed reading %s. Error: %s", r.inputJSON, err))
 		return 3

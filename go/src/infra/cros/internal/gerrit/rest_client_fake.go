@@ -6,7 +6,7 @@
 package gerrit
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"go.chromium.org/infra/cros/internal/assert"
@@ -37,7 +37,7 @@ func (g *FakeAPIClient) DownloadFileFromGitiles(project, branch, path string) (s
 func (g *FakeAPIClient) DownloadFileFromGitilesToPath(project, branch, path, saveToPath string) error {
 	data, _ := g.DownloadFileFromGitiles(project, branch, path)
 
-	assert.NilError(g.T, ioutil.WriteFile(saveToPath, []byte(data), 0644))
+	assert.NilError(g.T, os.WriteFile(saveToPath, []byte(data), 0644))
 	return nil
 }
 

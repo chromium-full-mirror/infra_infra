@@ -9,7 +9,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -164,7 +163,7 @@ func (c *checkBuild) readInput() (*testplans_pb.PointlessBuildCheckRequest, erro
 	}
 	// use input_binary_pb if it's specified
 	if len(c.inputBinaryPb) > 0 {
-		inputPb, err := ioutil.ReadFile(c.inputBinaryPb)
+		inputPb, err := os.ReadFile(c.inputBinaryPb)
 		if err != nil {
 			return nil, fmt.Errorf("Failed reason input_binary_pb\n%w", err)
 		}
@@ -175,7 +174,7 @@ func (c *checkBuild) readInput() (*testplans_pb.PointlessBuildCheckRequest, erro
 		return req, nil
 		// otherwise use input_json
 	}
-	inputBytes, err := ioutil.ReadFile(c.inputJSON)
+	inputBytes, err := os.ReadFile(c.inputJSON)
 	log.Printf("Request is:\n%s", string(inputBytes))
 	if err != nil {
 		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
@@ -300,7 +299,7 @@ func (c *checkBuild) writeOutput(resp *testplans_pb.PointlessBuildCheckResponse)
 		if err != nil {
 			return fmt.Errorf("Failed to marshal JSON %v\n%w", resp, err)
 		}
-		if err = ioutil.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
+		if err = os.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
 			return fmt.Errorf("Failed to write output JSON!\n%w", err)
 		}
 		log.Printf("Wrote output to %s", c.outputJSON)
@@ -311,7 +310,7 @@ func (c *checkBuild) writeOutput(resp *testplans_pb.PointlessBuildCheckResponse)
 		if err != nil {
 			return fmt.Errorf("Failed to marshal binaryproto %v\n%w", resp, err)
 		}
-		if err = ioutil.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
+		if err = os.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
 			return fmt.Errorf("Failed to write output binary proto!\n%w", err)
 		}
 		log.Printf("Wrote output binary proto to %s", c.outputBinaryPb)

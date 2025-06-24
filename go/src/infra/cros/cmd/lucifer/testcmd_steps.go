@@ -7,7 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"sync"
@@ -172,11 +172,11 @@ func provision(ctx context.Context, c *testCmd, host string) (err error) {
 	// TODO(ayatane): LogDog output is single threaded, so
 	// gathering output from potentially multiple provisions in
 	// parallel is non-trivial, so just discard for now.
-	_, err = atutil.RunAutoserv(ctx, c.mainJob(), p, ioutil.Discard)
+	_, err = atutil.RunAutoserv(ctx, c.mainJob(), p, io.Discard)
 	if err != nil {
 		event.SendWithMsg(event.HostNeedsRepair, p.Host)
 		if _, err2 := atutil.TKOParse(c.autotestConfig(), p.ResultsDir, c.tkoLevel(),
-			ioutil.Discard); err == nil {
+			io.Discard); err == nil {
 			err = err2
 		}
 		return err

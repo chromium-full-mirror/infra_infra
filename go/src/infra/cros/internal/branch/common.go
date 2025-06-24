@@ -6,10 +6,10 @@ package branch
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -87,7 +87,7 @@ func (c *Client) ProjectFetchURL(projectPath string) (string, error) {
 }
 
 func getProjectCheckoutFromURL(projectURL string, opts *CheckoutOptions) (string, error) {
-	checkoutDir, err := ioutil.TempDir("", "cros-branch-")
+	checkoutDir, err := os.MkdirTemp("", "cros-branch-")
 	if err != nil {
 		return "", errors.Annotate(err, "tmp dir could not be created").Err()
 	}

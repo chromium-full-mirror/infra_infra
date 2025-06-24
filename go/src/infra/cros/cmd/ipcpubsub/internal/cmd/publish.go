@@ -7,7 +7,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/maruel/subcommands"
@@ -59,7 +59,7 @@ func (c *publishRun) Run(a subcommands.Application, args []string, env subcomman
 }
 
 func (c *publishRun) getMessageBody() ([]byte, error) {
-	message, err := ioutil.ReadFile(c.messageFile)
+	message, err := os.ReadFile(c.messageFile)
 	if err != nil {
 		return nil, err
 	}

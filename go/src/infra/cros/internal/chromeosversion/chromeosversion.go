@@ -8,8 +8,8 @@ package chromeosversion
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -76,7 +76,7 @@ func VersionsEqual(a, b VersionInfo) bool {
 func GetVersionInfoFromRepo(sourceRepo string) (VersionInfo, error) {
 	versionFile := filepath.Join(sourceRepo, VersionFileProjectPath)
 
-	fileData, err := ioutil.ReadFile(versionFile)
+	fileData, err := os.ReadFile(versionFile)
 	if err != nil {
 		return VersionInfo{}, fmt.Errorf("could not read version file %s", versionFile)
 	}
@@ -215,7 +215,7 @@ func (v *VersionInfo) UpdateVersionFile() error {
 		return fmt.Errorf("cannot call UpdateVersionFile without an associated version file (field VersionFile)")
 	}
 
-	data, err := ioutil.ReadFile(v.VersionFile)
+	data, err := os.ReadFile(v.VersionFile)
 	if err != nil {
 		return fmt.Errorf("could not read version file %s", v.VersionFile)
 	}
@@ -248,7 +248,7 @@ func (v *VersionInfo) UpdateVersionFile() error {
 		return err
 	}
 	// Update version file.
-	if err = ioutil.WriteFile(v.VersionFile, []byte(fileData), 0644); err != nil {
+	if err = os.WriteFile(v.VersionFile, []byte(fileData), 0644); err != nil {
 		return errors.Annotate(err, "could not write version file %s", v.VersionFile).Err()
 	}
 

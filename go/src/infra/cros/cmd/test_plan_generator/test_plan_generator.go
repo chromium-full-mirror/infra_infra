@@ -8,7 +8,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -192,7 +191,7 @@ func (c *getTestPlanRun) Run(a subcommands.Application, args []string, env subco
 func (c *getTestPlanRun) readInput() (*testplans.GenerateTestPlanRequest, error) {
 	// use input_binary_pb if it's specified
 	if len(c.inputBinaryPb) > 0 {
-		inputPb, err := ioutil.ReadFile(c.inputBinaryPb)
+		inputPb, err := os.ReadFile(c.inputBinaryPb)
 		if err != nil {
 			return nil, fmt.Errorf("Failed reason input_binary_pb\n%w", err)
 		}
@@ -203,7 +202,7 @@ func (c *getTestPlanRun) readInput() (*testplans.GenerateTestPlanRequest, error)
 		return req, nil
 		// otherwise use input_json
 	}
-	inputBytes, err := ioutil.ReadFile(c.inputJSON)
+	inputBytes, err := os.ReadFile(c.inputJSON)
 	if err != nil {
 		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
 	}
@@ -264,7 +263,7 @@ func (c *getTestPlanRun) readLocalConfigFiles() (*testplans.BoardPriorityList, *
 	log.Print("Be sure that you've run `./regenerate_configs.sh -b` first to generate binaryproto files")
 	log.Print("--------------------------------------------")
 
-	bplBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.boardPriorityConfigPath))
+	bplBytes, err := os.ReadFile(path.Join(c.localConfigDir, c.boardPriorityConfigPath))
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("couldn't read BoardPriorityList file: %w", err)
 	}
@@ -273,7 +272,7 @@ func (c *getTestPlanRun) readLocalConfigFiles() (*testplans.BoardPriorityList, *
 		return nil, nil, nil, fmt.Errorf("couldn't decode file as BoardPriorityList: %w", err)
 	}
 
-	stcBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.sourceTreeTestConfigPath))
+	stcBytes, err := os.ReadFile(path.Join(c.localConfigDir, c.sourceTreeTestConfigPath))
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("couldn't read SourceTreeTestCfg file: %w", err)
 	}
@@ -282,7 +281,7 @@ func (c *getTestPlanRun) readLocalConfigFiles() (*testplans.BoardPriorityList, *
 		return nil, nil, nil, fmt.Errorf("couldn't decode file as SourceTreeTestCfg: %w", err)
 	}
 
-	ttrBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.targetTestRequirementsPath))
+	ttrBytes, err := os.ReadFile(path.Join(c.localConfigDir, c.targetTestRequirementsPath))
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("couldn't read TargetTestRequirementsCfg file: %w", err)
 	}
@@ -433,7 +432,7 @@ func (c *getTestPlanRun) writeOutput(tp *testplans.GenerateTestPlanResponse) err
 		if err != nil {
 			return fmt.Errorf("Failed to marshal JSON %v\n%w", tp, err)
 		}
-		if err = ioutil.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
+		if err = os.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
 			return fmt.Errorf("Failed to write output JSON!\n%w", err)
 		}
 		log.Printf("Wrote output JSON to %s", c.outputJSON)
@@ -444,7 +443,7 @@ func (c *getTestPlanRun) writeOutput(tp *testplans.GenerateTestPlanResponse) err
 		if err != nil {
 			return fmt.Errorf("Failed to marshal binaryproto %v\n%w", tp, err)
 		}
-		if err = ioutil.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
+		if err = os.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
 			return fmt.Errorf("Failed to write output binary proto!\n%w", err)
 		}
 		log.Printf("Wrote output binary proto to %s", c.outputBinaryPb)

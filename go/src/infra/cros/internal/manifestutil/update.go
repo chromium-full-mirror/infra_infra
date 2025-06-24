@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -240,7 +240,7 @@ func UpdateManifestElementsInFile(path string, reference *repo.Manifest) (bool, 
 
 	if newData, err := UpdateManifestElements(reference, data); err != nil {
 		return false, err
-	} else if err := ioutil.WriteFile(path, newData, 0644); err != nil {
+	} else if err := os.WriteFile(path, newData, 0644); err != nil {
 		return false, errors.Annotate(err, "failed to write manifest").Err()
 	} else {
 		return !bytes.Equal(data, newData), nil

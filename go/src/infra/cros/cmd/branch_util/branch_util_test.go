@@ -11,7 +11,6 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -369,7 +368,7 @@ func setUp(t *testing.T, vinfo *mv.VersionInfo) *test.CrosRepoHarness {
 	manifest := r.Harness.Manifest()
 	manifestData, err := xml.Marshal(manifest)
 	assert.NilError(t, err)
-	assert.NilError(t, ioutil.WriteFile(fullManifestPath(&r), manifestData, 0777))
+	assert.NilError(t, os.WriteFile(fullManifestPath(&r), manifestData, 0777))
 
 	// Because we use a hierachy of manifest files, we need to update the fetch attributes
 	// in _remotes.xml.
@@ -392,7 +391,7 @@ func setUp(t *testing.T, vinfo *mv.VersionInfo) *test.CrosRepoHarness {
 	branchManifest.ResolveImplicitLinks()
 	// Write full branched manifest to file so that it can be passed to cros branch in
 	// *Nonmain tests.
-	assert.NilError(t, ioutil.WriteFile(fullBranchedManifestPath(&r), []byte(fullBranchedXML), 0777))
+	assert.NilError(t, os.WriteFile(fullBranchedManifestPath(&r), []byte(fullBranchedXML), 0777))
 
 	// Create Ref for each project.
 	for _, project := range branchManifest.Projects {
@@ -498,7 +497,7 @@ func setUpCreate(t *testing.T, dryRun, force, useBranch bool) (*test.CrosRepoHar
 		manifestPath = fullBranchedManifestPath(r)
 		buildspecName = "buildspecs/12/2.1.0.xml"
 	}
-	manifestFile, err := ioutil.ReadFile(manifestPath)
+	manifestFile, err := os.ReadFile(manifestPath)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
@@ -844,7 +843,7 @@ func TestCreateExistingVersion(t *testing.T) {
 //	r := setUp(t, nil)
 //	defer r.Teardown()
 //
-//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	localRoot, err := os.MkdirTemp("", "test_rename")
 //	defer os.RemoveAll(localRoot)
 //	assert.NilError(t, err)
 //	manifest := r.Harness.Manifest()
@@ -896,7 +895,7 @@ func TestCreateExistingVersion(t *testing.T) {
 //	r := setUp(t, nil)
 //	defer r.Teardown()
 //
-//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	localRoot, err := os.MkdirTemp("", "test_rename")
 //	defer os.RemoveAll(localRoot)
 //	assert.NilError(t, err)
 //	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
@@ -925,7 +924,7 @@ func TestCreateExistingVersion(t *testing.T) {
 //	r := setUp(t, nil)
 //	defer r.Teardown()
 //
-//	localRoot, err := ioutil.TempDir("", "test_rename")
+//	localRoot, err := os.MkdirTemp("", "test_rename")
 //	defer os.RemoveAll(localRoot)
 //	assert.NilError(t, err)
 //	manifest := r.Harness.Manifest()
@@ -990,7 +989,7 @@ func TestRenameOverwriteMissingForce(t *testing.T) {
 	r := setUp(t, nil)
 	defer r.Teardown()
 
-	localRoot, err := ioutil.TempDir("", "test_rename")
+	localRoot, err := os.MkdirTemp("", "test_rename")
 	defer os.RemoveAll(localRoot)
 	assert.NilError(t, err)
 	manifestDir := r.Harness.GetRemotePath(manifestInternalProject)
@@ -1021,7 +1020,7 @@ func TestDelete(t *testing.T) {
 	r := setUp(t, nil)
 	defer r.Teardown()
 
-	localRoot, err := ioutil.TempDir("", "test_delete")
+	localRoot, err := os.MkdirTemp("", "test_delete")
 	defer os.RemoveAll(localRoot)
 	assert.NilError(t, err)
 
@@ -1050,7 +1049,7 @@ func TestDeleteDryRun(t *testing.T) {
 	r := setUp(t, nil)
 	defer r.Teardown()
 
-	localRoot, err := ioutil.TempDir("", "test_delete")
+	localRoot, err := os.MkdirTemp("", "test_delete")
 	defer os.RemoveAll(localRoot)
 	assert.NilError(t, err)
 
@@ -1084,7 +1083,7 @@ func TestDeleteMissingForce(t *testing.T) {
 	r := setUp(t, nil)
 	defer r.Teardown()
 
-	localRoot, err := ioutil.TempDir("", "test_delete")
+	localRoot, err := os.MkdirTemp("", "test_delete")
 	defer os.RemoveAll(localRoot)
 	assert.NilError(t, err)
 

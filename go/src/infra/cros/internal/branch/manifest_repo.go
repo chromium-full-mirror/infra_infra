@@ -7,7 +7,7 @@ package branch
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -238,7 +238,7 @@ func (c *Client) RepairManifestsOnDisk(m *ManifestRepo, branchesByPath map[strin
 		if err != nil {
 			return errors.Annotate(err, "failed to repair manifest %s", manifestPath).Err()
 		}
-		err = ioutil.WriteFile(manifestPath, manifest, 0644)
+		err = os.WriteFile(manifestPath, manifest, 0644)
 		if err != nil {
 			return errors.Annotate(err, "failed to write repaired manifest to %s", manifestPath).Err()
 		}

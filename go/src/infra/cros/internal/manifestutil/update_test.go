@@ -7,7 +7,7 @@
 package manifestutil
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"go.chromium.org/infra/cros/internal/assert"
@@ -32,7 +32,7 @@ func TestGetSetDelAttr(t *testing.T) {
 }
 
 func TestUpdateManifestElements(t *testing.T) {
-	input, err := ioutil.ReadFile("test_data/update/pre.xml")
+	input, err := os.ReadFile("test_data/update/pre.xml")
 	assert.NilError(t, err)
 
 	referenceManifest := &repo.Manifest{
@@ -64,7 +64,7 @@ func TestUpdateManifestElements(t *testing.T) {
 	got, err := UpdateManifestElements(referenceManifest, input)
 	assert.NilError(t, err)
 
-	expected, err := ioutil.ReadFile("test_data/update/post.xml")
+	expected, err := os.ReadFile("test_data/update/post.xml")
 	assert.NilError(t, err)
 	if string(got) != string(expected) {
 		t.Fatalf("mismatch on UpdateManifestElements(...)\ngot:%v\n\nexpected:%v\n\n", string(got), string(expected))
@@ -106,10 +106,10 @@ func TestUpdateManifestElementsInFile(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, changed)
 
-	expected, err := ioutil.ReadFile("test_data/update/post.xml")
+	expected, err := os.ReadFile("test_data/update/post.xml")
 	assert.NilError(t, err)
 
-	got, err := ioutil.ReadFile(tmpFile)
+	got, err := os.ReadFile(tmpFile)
 	assert.NilError(t, err)
 
 	if string(got) != string(expected) {
@@ -118,7 +118,7 @@ func TestUpdateManifestElementsInFile(t *testing.T) {
 }
 
 func TestUpdateManifestElements_extraneous(t *testing.T) {
-	input, err := ioutil.ReadFile("test_data/update/pre.xml")
+	input, err := os.ReadFile("test_data/update/pre.xml")
 	assert.NilError(t, err)
 
 	referenceManifest := &repo.Manifest{
@@ -143,7 +143,7 @@ func TestUpdateManifestElements_extraneous(t *testing.T) {
 	_, err = UpdateManifestElements(referenceManifest, input)
 	assert.ErrorContains(t, err, "contained project(s)")
 
-	input, err = ioutil.ReadFile("test_data/update/no_default.xml")
+	input, err = os.ReadFile("test_data/update/no_default.xml")
 	assert.NilError(t, err)
 	referenceManifest = &repo.Manifest{
 		Default: repo.Default{
@@ -157,7 +157,7 @@ func TestUpdateManifestElements_extraneous(t *testing.T) {
 }
 
 func TestUpdateManifestElementsStrict(t *testing.T) {
-	input, err := ioutil.ReadFile("test_data/update/pre.xml")
+	input, err := os.ReadFile("test_data/update/pre.xml")
 	assert.NilError(t, err)
 
 	referenceManifest := &repo.Manifest{
@@ -189,7 +189,7 @@ func TestUpdateManifestElementsStrict(t *testing.T) {
 	got, err := UpdateManifestElementsStrict(referenceManifest, input)
 	assert.NilError(t, err)
 
-	expected, err := ioutil.ReadFile("test_data/update/post_strict.xml")
+	expected, err := os.ReadFile("test_data/update/post_strict.xml")
 	assert.NilError(t, err)
 	if string(got) != string(expected) {
 		t.Fatalf("mismatch on UpdateManifestElementsStrict(...)\ngot:%v\n\nexpected:%v\n\n", string(got), string(expected))

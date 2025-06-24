@@ -14,7 +14,6 @@ import (
 	gerrs "errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -385,7 +384,7 @@ func (c *ProdClient) GetFileLog(ctx context.Context, host, project, ref, filepat
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -449,7 +448,7 @@ func (c *ProdClient) GetRelatedChanges(ctx context.Context, host string, changeN
 		if err != nil {
 			return nil, err
 		}
-		body, err := ioutil.ReadAll(res.Body)
+		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, err
 		}

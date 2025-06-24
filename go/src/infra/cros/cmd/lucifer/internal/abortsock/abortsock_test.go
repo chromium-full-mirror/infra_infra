@@ -9,7 +9,6 @@ package abortsock
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,7 +31,7 @@ func Example() {
 // Test the full lifecycle of a socket that is aborted.
 func TestAbortingSocket(t *testing.T) {
 	t.Parallel()
-	d, err := ioutil.TempDir("", "abortsock_test")
+	d, err := os.MkdirTemp("", "abortsock_test")
 	if err != nil {
 		t.Fatalf("Error creating test directory: %s", err)
 	}
@@ -58,7 +57,7 @@ func TestAbortingSocket(t *testing.T) {
 // Test the full lifecycle of a socket that is aborted.
 func TestClosingSocket(t *testing.T) {
 	t.Parallel()
-	d, err := ioutil.TempDir("", "abortsock_test")
+	d, err := os.MkdirTemp("", "abortsock_test")
 	if err != nil {
 		t.Fatalf("Error creating test directory: %s", err)
 	}

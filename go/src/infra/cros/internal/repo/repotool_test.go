@@ -7,7 +7,7 @@ package repo
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -38,7 +38,7 @@ func TestSync(t *testing.T) {
 }
 
 func TestGetRepoToSourceRoot_success(t *testing.T) {
-	f, err := ioutil.TempDir("", "repotest_tmp_dir")
+	f, err := os.MkdirTemp("", "repotest_tmp_dir")
 	CommandRunnerImpl = cmd.FakeCommandRunner{
 		// This is a sample of `repo list` output.
 		Stdout: `chromeos-admin : chromeos/chromeos-admin
@@ -63,7 +63,7 @@ chromite : chromiumos/chromite
 }
 
 func TestGetRepoToSourceRoot_repoToolFails(t *testing.T) {
-	f, err := ioutil.TempDir("", "repotest_tmp_dir")
+	f, err := os.MkdirTemp("", "repotest_tmp_dir")
 	CommandRunnerImpl = cmd.FakeCommandRunner{
 		ExpectedDir: f,
 		// Simulate the `repo list` command returning a nonzero exit code.

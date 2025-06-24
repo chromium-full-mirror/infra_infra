@@ -5,8 +5,8 @@
 package dutstate
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
@@ -23,7 +23,7 @@ func ReadFile(resultsDir string) event.Event {
 	}
 
 	path := filepath.Join(resultsDir, dutStateFilename)
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Println(err)
 		return ""

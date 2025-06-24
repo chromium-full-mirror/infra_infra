@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"sort"
@@ -93,7 +92,7 @@ func (c *collectRun) validate() error {
 }
 
 func (c *collectRun) readInput() (*pb.CollectConfig, error) {
-	inputBytes, err := ioutil.ReadFile(c.inputJSON)
+	inputBytes, err := os.ReadFile(c.inputJSON)
 	if err != nil {
 		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
 	}

@@ -7,7 +7,7 @@ package branch
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -57,7 +57,7 @@ func TestCreateRemoteBranchesAPI_success(t *testing.T) {
 		branchesCreated <- branchName
 
 		defer r.Body.Close()
-		b, err := ioutil.ReadAll(r.Body)
+		b, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, branchName, http.StatusBadRequest)
 		}

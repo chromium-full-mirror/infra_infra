@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -73,7 +73,7 @@ func loadManifest(file string, getFile func(file string) ([]byte, error), mergeM
 func loadManifestFromFile(file string, mergeManifests bool) (*repo.Manifest, error) {
 	getFile := func(f string) ([]byte, error) {
 		path := filepath.Join(filepath.Dir(file), f)
-		data, err := ioutil.ReadFile(path)
+		data, err := os.ReadFile(path)
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to open and read %s", path).Err()
 		}
@@ -98,7 +98,7 @@ func loadManifestFromGS(ctx context.Context, gsClient gs.Client, path lgs.Path, 
 func LoadManifestTreeFromFile(file string) (map[string]*repo.Manifest, error) {
 	getFile := func(f string) ([]byte, error) {
 		path := filepath.Join(filepath.Dir(file), f)
-		data, err := ioutil.ReadFile(path)
+		data, err := os.ReadFile(path)
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to open and read %s", path).Err()
 		}
@@ -122,7 +122,7 @@ func LoadManifestFromFileWithIncludes(file string) (*repo.Manifest, error) {
 // LoadManifestFromFileRaw loads the manifest at the given file and returns
 // the file contents as a byte array.
 func LoadManifestFromFileRaw(file string) ([]byte, error) {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to open and read %s", file).Err()
 	}

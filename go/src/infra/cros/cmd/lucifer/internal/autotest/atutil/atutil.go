@@ -11,7 +11,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -139,7 +138,7 @@ func isTest(a *autotest.AutoservArgs) bool {
 // readTestsFailed reads the number of tests failed from the given
 // pid file.
 func readTestsFailed(pidFile string) (int, error) {
-	b, err := ioutil.ReadFile(pidFile)
+	b, err := os.ReadFile(pidFile)
 	if err != nil {
 		return 0, err
 	}

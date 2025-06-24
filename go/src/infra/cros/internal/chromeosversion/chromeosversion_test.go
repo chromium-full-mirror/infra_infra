@@ -4,7 +4,6 @@
 package chromeosversion
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -167,15 +166,15 @@ func TestUpdateVersionFile_noVersionFile(t *testing.T) {
 func TestUpdateVersionFile_success(t *testing.T) {
 	t.Skip("b/389742273, this test breaks shuffling")
 	tmpDir := "repotest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
+	tmpDir, err := os.MkdirTemp("", tmpDir)
 	defer os.RemoveAll(tmpDir)
 	assert.NilError(t, err)
 	tmpPath := filepath.Join(tmpDir, "chromeos_version.sh")
 
 	// We're modifying chromeos_version.sh, so need to copy it to  a tmp file.
-	fileContents, err := ioutil.ReadFile("test_data/chromeos_version.sh")
+	fileContents, err := os.ReadFile("test_data/chromeos_version.sh")
 	assert.NilError(t, err)
-	err = ioutil.WriteFile(tmpPath, fileContents, 0644)
+	err = os.WriteFile(tmpPath, fileContents, 0644)
 	assert.NilError(t, err)
 
 	// Set git mock expectations.

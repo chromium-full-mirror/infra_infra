@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
@@ -113,7 +112,7 @@ func WriteStructToFile(s *structpb.Struct, file *os.File) error {
 
 // ReadStructFromFile reads a struct from the specified file.
 func ReadStructFromFile(path string) (*structpb.Struct, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

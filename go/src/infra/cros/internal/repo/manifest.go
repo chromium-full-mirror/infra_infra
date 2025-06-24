@@ -9,7 +9,7 @@ package repo
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 
 	"go.chromium.org/luci/common/errors"
@@ -426,7 +426,7 @@ func (m *Manifest) Write(path string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(path, data, 0644)
+	err = os.WriteFile(path, data, 0644)
 	if err != nil {
 		return errors.Annotate(err, "failed to write manifest").Err()
 	}

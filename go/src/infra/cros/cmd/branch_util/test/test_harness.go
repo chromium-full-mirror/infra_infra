@@ -7,7 +7,6 @@ package test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -462,7 +461,7 @@ func (r *CrosRepoHarness) AssertProjectRevisionsMatchBranch(manifest repo.Manife
 
 func getLocalCheckout(r *CrosRepoHarness, project rh.RemoteProject, branch string) (string, error) {
 	// Create local checkout of project at branch.
-	tmpDir, err := ioutil.TempDir(r.Harness.HarnessRoot(), "tmp-repo")
+	tmpDir, err := os.MkdirTemp(r.Harness.HarnessRoot(), "tmp-repo")
 	if err != nil {
 		return "", err
 	}
@@ -538,7 +537,7 @@ func (r *CrosRepoHarness) AssertCommentsPersist(
 		// Manifest filenames are the same in source and destination branches, so we simply change the path to get the
 		// new manifest.
 		filepath := filepath.Join(tmpDir, file)
-		contents, err := ioutil.ReadFile(filepath)
+		contents, err := os.ReadFile(filepath)
 		if err != nil {
 			return errors.Annotate(err, "failed to load manifest file %s", file).Err()
 		}
@@ -584,7 +583,7 @@ func (r *CrosRepoHarness) AssertMinimalManifestChanges(
 	// Check that manifests in project/branch exactly match contents of expectedManifestFiles
 	for file, expectedContents := range expectedManifestFiles {
 		filepath := filepath.Join(tmpDir, file)
-		contents, err := ioutil.ReadFile(filepath)
+		contents, err := os.ReadFile(filepath)
 		if err != nil {
 			return errors.Annotate(err, "failed to load manifest file %s", file).Err()
 		}

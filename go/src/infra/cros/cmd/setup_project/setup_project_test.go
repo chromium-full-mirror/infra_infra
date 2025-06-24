@@ -9,7 +9,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -21,12 +20,12 @@ import (
 
 func checkFiles(t *testing.T, path string, expected map[string]string) {
 	for filename, expectedContents := range expected {
-		data, err := ioutil.ReadFile(filepath.Join(path, filename))
+		data, err := os.ReadFile(filepath.Join(path, filename))
 		assert.NilError(t, err)
 		assert.StringsEqual(t, string(data), expectedContents)
 	}
 	// Make sure there are no extraneous files.
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	assert.NilError(t, err)
 	for _, file := range files {
 		if file.IsDir() {
@@ -63,7 +62,7 @@ func TestSetupProject(t *testing.T) {
 		ExpectedDownloads: expectedDownloads,
 	}
 
-	dir, err := ioutil.TempDir("", "setup_project")
+	dir, err := os.MkdirTemp("", "setup_project")
 	defer os.RemoveAll(dir)
 	assert.NilError(t, err)
 	localManifestDir := filepath.Join(dir, ".repo/local_manifests/")
@@ -102,7 +101,7 @@ func TestSetupProject_onlyOtherRepo(t *testing.T) {
 		ExpectedDownloads: expectedDownloads,
 	}
 
-	dir, err := ioutil.TempDir("", "setup_project")
+	dir, err := os.MkdirTemp("", "setup_project")
 	defer os.RemoveAll(dir)
 	assert.NilError(t, err)
 	localManifestDir := filepath.Join(dir, ".repo/local_manifests/")
@@ -145,7 +144,7 @@ func TestSetupProject_allProjects(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "setup_project")
+	dir, err := os.MkdirTemp("", "setup_project")
 	defer os.RemoveAll(dir)
 	assert.NilError(t, err)
 	localManifestDir := filepath.Join(dir, ".repo/local_manifests/")
@@ -191,7 +190,7 @@ func TestSetupProject_buildspecs(t *testing.T) {
 		ExpectedDownloads: expectedDownloads,
 	}
 
-	dir, err := ioutil.TempDir("", "setup_project")
+	dir, err := os.MkdirTemp("", "setup_project")
 	defer os.RemoveAll(dir)
 	assert.NilError(t, err)
 	localManifestDir := filepath.Join(dir, ".repo/local_manifests/")
@@ -234,7 +233,7 @@ func TestSetupProject_buildspecs_missingProgram(t *testing.T) {
 		ExpectedDownloads: expectedDownloads,
 	}
 
-	dir, err := ioutil.TempDir("", "setup_project")
+	dir, err := os.MkdirTemp("", "setup_project")
 	defer os.RemoveAll(dir)
 	assert.NilError(t, err)
 	localManifestDir := filepath.Join(dir, ".repo/local_manifests/")

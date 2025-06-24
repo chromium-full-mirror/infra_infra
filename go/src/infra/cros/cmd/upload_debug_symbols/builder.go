@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -159,7 +158,7 @@ func retrieveApiKey() (string, error) {
 		return "", fmt.Errorf("could not open file containing the API key")
 	}
 	defer file.Close()
-	apiKey, err := ioutil.ReadAll(file)
+	apiKey, err := io.ReadAll(file)
 	if err != nil {
 		return "", fmt.Errorf("could not read key from file")
 	}
@@ -212,7 +211,7 @@ func crashRetrieveUploadInformation(uploadInfo *crashUploadInformation, crash cr
 		return fmt.Errorf("request to %s failed with status %d", requestUrlWithoutKey, response.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
@@ -277,7 +276,7 @@ func crashSubmitSymbolUpload(uploadKey string, task taskConfig, crash crashConne
 		return fmt.Errorf("request to %s failed with status %d", requestUrlWithoutKey, response.StatusCode)
 	}
 	// TODO(juahurta): Check body of the response for a success message
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
@@ -988,7 +987,7 @@ func filterTasksAlreadyUploaded(ctx context.Context, tasks []taskConfig, dryRun 
 	response := <-ch
 
 	// Parse the response from the API.
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -1184,7 +1183,7 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 		return 1
 	}
 	// Create local dir and file for tarball to live in.
-	workDir, err := ioutil.TempDir("", "tarball")
+	workDir, err := os.MkdirTemp("", "tarball")
 	LogOut("Creating working folder at %s", workDir)
 	if err != nil {
 		LogErr(&crash, err.Error())
@@ -1196,7 +1195,7 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 
 	retcode := 0
 	if b.dataType == "breakpad" {
-		symbolDir, err := ioutil.TempDir(workDir, "symbols")
+		symbolDir, err := os.MkdirTemp(workDir, "symbols")
 		if err != nil {
 			LogErr(&crash, err.Error())
 			return 1
@@ -1232,7 +1231,7 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 			return 1
 		}
 	} else if b.dataType == "splitdebug" {
-		symbolDir, err := ioutil.TempDir(workDir, "splitdebug")
+		symbolDir, err := os.MkdirTemp(workDir, "splitdebug")
 		if err != nil {
 			LogErr(&crash, err.Error())
 			return 1

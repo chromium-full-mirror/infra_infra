@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -126,7 +125,7 @@ func (r *RepoHarness) Initialize(config *Config) error {
 
 	var err error
 	// Set up root directory for harness instance.
-	r.harnessRoot, err = ioutil.TempDir("", "repo_harness")
+	r.harnessRoot, err = os.MkdirTemp("", "repo_harness")
 	if err != nil {
 		return errors.Annotate(err, "failed to create harness root dir").Err()
 	}
@@ -236,7 +235,7 @@ func (r *RepoHarness) createRemoteRefHelper(project RemoteProject, ref string, c
 
 	if commit == "" {
 		// Set up tmp local repo and make empty commit.
-		repoPath, err = ioutil.TempDir(r.harnessRoot, "tmp-repo")
+		repoPath, err = os.MkdirTemp(r.harnessRoot, "tmp-repo")
 		defer os.RemoveAll(repoPath)
 		errs := []error{
 			err,
@@ -304,7 +303,7 @@ func (r *RepoHarness) AddFiles(project RemoteProject, branch string, files []Fil
 	// Populate project in specified remote with files. Because the remote repository is bare,
 	// we need to write/commit the files locally and then push them to the remote.
 	// We do this using a temp checkout of the appropriate remote.
-	tmpRepo, err := ioutil.TempDir(r.harnessRoot, "tmp-repo")
+	tmpRepo, err := os.MkdirTemp(r.harnessRoot, "tmp-repo")
 	defer os.RemoveAll(tmpRepo)
 
 	projectPath := r.GetRemotePath(project)
@@ -329,7 +328,7 @@ func (r *RepoHarness) AddFiles(project RemoteProject, branch string, files []Fil
 
 		errs = append(errs,
 			os.MkdirAll(filepath.Dir(filePath), dirPerms),
-			ioutil.WriteFile(filePath, file.Contents, file.Perm))
+			os.WriteFile(filePath, file.Contents, file.Perm))
 	}
 
 	commit, err := git.CommitAll(tmpRepo, "add files")
@@ -376,7 +375,7 @@ func (r *RepoHarness) ProcessSubmitRefs() error {
 			// (which is externally visible) on the remote, pull that into a local
 			// checkout, do the needed rebasing, and then push directly to the
 			// corresponding refs/heads/... ref.
-			tmpRepo, err := ioutil.TempDir(r.harnessRoot, "tmp-repo")
+			tmpRepo, err := os.MkdirTemp(r.harnessRoot, "tmp-repo")
 			defer os.RemoveAll(tmpRepo)
 			if err != nil {
 				return err
@@ -423,7 +422,7 @@ func (r *RepoHarness) ReadFile(project RemoteProject, branch, filePath string) (
 	if err := r.assertInitialized(); err != nil {
 		return []byte{}, err
 	}
-	tmpRepo, err := ioutil.TempDir(r.harnessRoot, "tmp-repo")
+	tmpRepo, err := os.MkdirTemp(r.harnessRoot, "tmp-repo")
 	defer os.RemoveAll(tmpRepo)
 	if err != nil {
 		return nil, err
@@ -439,7 +438,7 @@ func (r *RepoHarness) ReadFile(project RemoteProject, branch, filePath string) (
 		git.RunGitIgnoreOutput(tmpRepo, []string{"fetch", "remote", ref, "--depth", "1"}),
 		git.RunGitIgnoreOutput(tmpRepo, []string{"checkout", refspec, "--", filePath}),
 	}
-	contents, err := ioutil.ReadFile(filepath.Join(tmpRepo, filePath))
+	contents, err := os.ReadFile(filepath.Join(tmpRepo, filePath))
 	errs = append(errs, err)
 
 	for _, err = range errs {
@@ -505,7 +504,7 @@ func (r *RepoHarness) ReadCheckoutFile(project *repo.Project, branch, filePath s
 		return nil, err
 	}
 
-	contents, err := ioutil.ReadFile(filepath.Join(projectPath, filePath))
+	contents, err := os.ReadFile(filepath.Join(projectPath, filePath))
 	if err != nil {
 		return []byte{}, errors.Annotate(err, "failed to read file %s from %s:%s", filePath, projectPath, branch).Err()
 	}
@@ -515,7 +514,7 @@ func (r *RepoHarness) ReadCheckoutFile(project *repo.Project, branch, filePath s
 // Snapshot recursively copies a directory's contents to a temp dir.
 func (r *RepoHarness) Snapshot(path string) (string, error) {
 	snapshotRoot := filepath.Join(r.harnessRoot, "snapshots/")
-	snapshotDir, err := ioutil.TempDir(snapshotRoot, "snapshot")
+	snapshotDir, err := os.MkdirTemp(snapshotRoot, "snapshot")
 	if err != nil {
 		return "", err
 	}

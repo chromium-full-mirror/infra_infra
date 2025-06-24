@@ -6,7 +6,7 @@ package flagx
 
 import (
 	"flag"
-	"io/ioutil"
+	"io"
 	"reflect"
 	"testing"
 
@@ -152,6 +152,6 @@ func TestDeployActionListParseWithManyItems(t *testing.T) {
 func testFlagSet() *flag.FlagSet {
 	fs := flag.NewFlagSet("test", flag.ContinueOnError)
 	fs.Usage = func() {}
-	fs.SetOutput(ioutil.Discard)
+	fs.SetOutput(io.Discard)
 	return fs
 }

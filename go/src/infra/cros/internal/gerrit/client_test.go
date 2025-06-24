@@ -6,9 +6,9 @@ package gerrit
 import (
 	"context"
 	"encoding/base64"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -60,7 +60,7 @@ func TestDownloadFileFromGitiles(t *testing.T) {
 }
 
 func TestDownloadFileFromGitilesToPath(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "TestDownlaodFileFromGitilesToPath")
+	tmpDir, err := os.MkdirTemp("", "TestDownlaodFileFromGitilesToPath")
 	assert.NilError(t, err)
 
 	outputPath := filepath.Join(tmpDir, "output")
@@ -68,7 +68,7 @@ func TestDownloadFileFromGitilesToPath(t *testing.T) {
 	gc := testDownloadFileFromGitilesSetUp(t)
 	err = gc.DownloadFileFromGitilesToPath(context.Background(), "host", "chromeos/foo", "HEAD", "bar.xml", outputPath, shared.NoRetryOpts)
 	assert.NilError(t, err)
-	got, err := ioutil.ReadFile(outputPath)
+	got, err := os.ReadFile(outputPath)
 	assert.NilError(t, err)
 	assert.StringsEqual(t, "foobar!", string(got))
 }

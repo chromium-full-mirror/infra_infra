@@ -6,7 +6,6 @@ package repo
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -117,7 +116,7 @@ func TestGetUniqueProject(t *testing.T) {
 
 func TestWrite(t *testing.T) {
 	tmpDir := "repotest_tmp_dir"
-	tmpDir, err := ioutil.TempDir("", tmpDir)
+	tmpDir, err := os.MkdirTemp("", tmpDir)
 	defer os.RemoveAll(tmpDir)
 	assert.NilError(t, err)
 	tmpPath := filepath.Join(tmpDir, "foo.xml")
@@ -135,7 +134,7 @@ func TestWrite(t *testing.T) {
 	assert.NilError(t, err)
 	// Make sure manifest was marshalled and written correctly.
 
-	data, err := ioutil.ReadFile(tmpPath)
+	data, err := os.ReadFile(tmpPath)
 	assert.NilError(t, err)
 
 	got := &Manifest{}
