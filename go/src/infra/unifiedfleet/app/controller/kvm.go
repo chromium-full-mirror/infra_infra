@@ -145,7 +145,7 @@ func processKVMUpdateMask(ctx context.Context, oldKVM *ufspb.KVM, kvm *ufspb.KVM
 	// update the fields in the existing/old kvm
 	for _, path := range mask.Paths {
 		switch path {
-		case "rack":
+		case ufsUtil.RackPath:
 			if oldKVM.GetRack() != kvm.GetRack() {
 				// User is trying to associate this kvm with a different rack.
 				// Get rack to associate the kvm
@@ -161,15 +161,15 @@ func processKVMUpdateMask(ctx context.Context, oldKVM *ufspb.KVM, kvm *ufspb.KVM
 				// Fill the zone to kvm OUTPUT only fields
 				oldKVM.Zone = rack.GetLocation().GetZone().String()
 			}
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldKVM.ResourceState = kvm.GetResourceState()
-		case "platform":
+		case ufsUtil.ChromePlatformPath, ufsUtil.PlatformPath:
 			oldKVM.ChromePlatform = kvm.GetChromePlatform()
-		case "macAddress":
+		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 			oldKVM.MacAddress = kvm.GetMacAddress()
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldKVM.Tags = mergeTags(oldKVM.GetTags(), kvm.GetTags())
-		case "description":
+		case ufsUtil.DescriptionPath:
 			oldKVM.Description = kvm.GetDescription()
 		}
 	}
@@ -415,22 +415,22 @@ func validateKVMUpdateMask(ctx context.Context, kvm *ufspb.KVM, mask *field_mask
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateKVM - name cannot be updated, delete and create a new kvm instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateKVM - update_time cannot be updated, it is a Output only field")
-			case "macAddress":
+			case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 				if err := validateMacAddress(ctx, kvm.GetName(), kvm.GetMacAddress()); err != nil {
 					return err
 				}
-			case "rack":
+			case ufsUtil.RackPath:
 				if kvm.GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "rack cannot be empty for updating a KVM")
 				}
-			case "platform":
-			case "description":
-			case "tags":
-			case "resourceState":
+			case ufsUtil.ChromePlatformPath, ufsUtil.PlatformPath:
+			case ufsUtil.DescriptionPath:
+			case ufsUtil.TagsPath:
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateKVM - unsupported update mask path %q", path)

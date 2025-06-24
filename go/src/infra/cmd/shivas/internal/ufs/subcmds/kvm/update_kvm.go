@@ -136,12 +136,12 @@ func (c *updateKVM) innerRun(a subcommands.Application, args []string, env subco
 			Ip:     c.ip,
 		},
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"rack":     "rack",
-			"platform": "platform",
-			"mac":      "macAddress",
-			"tag":      "tags",
-			"desc":     "description",
-			"state":    "resourceState",
+			"rack":     ufsUtil.RackPath,
+			"platform": ufsUtil.ChromePlatformPath,
+			"mac":      ufsUtil.MacAddressPath,
+			"tag":      ufsUtil.TagsPath,
+			"desc":     ufsUtil.DescriptionPath,
+			"state":    ufsUtil.ResourceStatePath,
 		}),
 	})
 	if err != nil {
