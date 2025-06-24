@@ -46,7 +46,6 @@ type SchedukeClient struct {
 	gerritClient, schedukeHTTPClient *http.Client
 	ctx                              context.Context
 	dmPools                          []string
-	blockedPools                     []string
 }
 
 // NewSchedukeClientForCLI returns a Scheduke client that can be called from a
@@ -61,10 +60,6 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 	dmPools, err := GetPoolsFromURL(ctx, gc, DmPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
-	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
 
 	// Determine Scheduke instance to send requests to.
@@ -87,7 +82,6 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
 		dmPools:            dmPools,
-		blockedPools:       blockedPools,
 	}
 
 	// Ping Scheduke base URL to confirm IAM works; don't use exponential backoff
@@ -114,10 +108,6 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
 	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
-	}
 
 	// Determine Scheduke instance to send requests to.
 	baseURL := schedukeProdURL
@@ -141,7 +131,6 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
 		dmPools:            dmPools,
-		blockedPools:       blockedPools,
 	}, nil
 }
 
@@ -157,10 +146,6 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 	dmPools, err := GetPoolsFromURL(ctx, gc, DmPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
-	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
 
 	// Determine Scheduke instance to send requests to.
@@ -182,7 +167,6 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
 		dmPools:            dmPools,
-		blockedPools:       blockedPools,
 	}, nil
 }
 
@@ -223,19 +207,6 @@ func (s *SchedukeClient) parseReadResponse(response *http.Response) (*schedukeap
 
 // ScheduleExecution will schedule TR executions via scheduke.
 func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEvents) (*schedukeapi.CreateTaskStatesResponse, error) {
-	var pools []string
-	for _, e := range req.GetEvents() {
-		resolvePool(e)
-		pools = append(pools, e.Pool)
-	}
-	poolsBlocked, err := AnyStringInGerritList(s.ctx, s.gerritClient, pools, BlockedPoolsURL, s.blockedPools)
-	if err != nil {
-		return nil, err
-	}
-	if poolsBlocked {
-		return nil, fmt.Errorf("leasing is currently blocked for pools %s; try again later", pools)
-	}
-
 	endpoint, err := url.JoinPath(s.baseURL, schedukeExecutionEndpoint)
 	if err != nil {
 		return nil, errors.Annotate(err, "url.joinpath").Err()
