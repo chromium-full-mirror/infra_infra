@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -71,7 +70,7 @@ func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
 		logging.Infof(ctx, "Failed to collect latest ref: %v", err)
 		return err
 	}
-	tmpfile, err := ioutil.TempFile("", "*.asset.host.zip")
+	tmpfile, err := os.CreateTemp("", "*.asset.host.zip")
 	if err != nil {
 		logging.Infof(ctx, "Failed to create the temp asset file: %v", err)
 		return err
@@ -85,7 +84,7 @@ func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
 		return err
 	}
 
-	tmpDir, err := ioutil.TempDir("", "celab-")
+	tmpDir, err := os.MkdirTemp("", "celab-")
 	if err != nil {
 		return err
 	}
