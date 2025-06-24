@@ -9,7 +9,6 @@ import (
 	base_error "errors"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -85,7 +84,7 @@ func getServosStartTime(ctx context.Context, logRoot string, servodPort int, run
 		// path/to/whatever does exist
 		return nil, errors.Annotate(err, "collect servod logs").Err()
 	}
-	content, err := ioutil.ReadFile(f)
+	content, err := os.ReadFile(f)
 	if err != nil {
 		return nil, errors.Annotate(err, "collect servod logs").Err()
 	}
@@ -116,7 +115,7 @@ func regServoLogsStartPointExec(ctx context.Context, info *execs.ExecInfo) error
 		return errors.Annotate(err, "reg servo logs start point").Err()
 	}
 	log.Debugf("Latest servod logs time: %v", t)
-	ioutil.WriteFile(f, []byte(t.Format(servoLogTimeLayout)), defaultFilePermissions)
+	os.WriteFile(f, []byte(t.Format(servoLogTimeLayout)), defaultFilePermissions)
 	return nil
 }
 

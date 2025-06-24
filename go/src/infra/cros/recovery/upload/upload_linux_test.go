@@ -6,7 +6,6 @@ package upload
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -34,7 +33,7 @@ func (c *fakeInnerClient) Init(tempdir func() string) error {
 	path := ""
 	if tempdir == nil {
 		var err error
-		path, err = ioutil.TempDir("", "upload_test-")
+		path, err = os.MkdirTemp("", "upload_test-")
 		if err != nil {
 			return errors.Annotate(err, "initialize fake writer").Err()
 		}
@@ -70,7 +69,7 @@ func TestUpload(t *testing.T) {
 
 	td := t.TempDir()
 
-	if err := ioutil.WriteFile(filepath.Join(td, "a.txt"), []byte("a"), 0o777); err != nil {
+	if err := os.WriteFile(filepath.Join(td, "a.txt"), []byte("a"), 0o777); err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 

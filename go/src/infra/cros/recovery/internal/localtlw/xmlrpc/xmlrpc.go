@@ -12,7 +12,7 @@ import (
 	"crypto/x509"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net"
 	"net/http"
@@ -524,7 +524,7 @@ func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...any) error {
 	defer func() { resp.Body.Close() }()
 
 	// Read body and unmarshal XML.
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.Annotate(err, "read body").Err()
 	}
@@ -617,7 +617,7 @@ func (r *XMLRpc) RunOnCloudBots(ctx context.Context, cl Call, out ...any) error 
 	}()
 
 	// Read body and unmarshal XML.
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.Annotate(err, "read body").Err()
 	}

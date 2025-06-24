@@ -6,7 +6,7 @@ package ssh
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"golang.org/x/crypto/ssh"
 
@@ -62,7 +62,7 @@ func readPrivateKeyFromFile(path string) (ssh.Signer, error) {
 	if path == "" {
 		return nil, errors.Reason("key file path is empty").Err()
 	}
-	c, err := ioutil.ReadFile(path)
+	c, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

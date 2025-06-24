@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -25,7 +25,7 @@ var unmarshaller = jsonpb.Unmarshaler{AllowUnknownFields: false}
 
 // InspectFile takes a path and determines what, if anything, is wrong with a stable_versions.cfg file.
 func InspectFile(path string) (*lab_platform.StableVersions, error) {
-	buf, err := ioutil.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("file cannot be read (%s)", err.Error())
 	}

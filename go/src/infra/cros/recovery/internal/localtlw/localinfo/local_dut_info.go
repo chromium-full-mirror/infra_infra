@@ -7,7 +7,6 @@ package localinfo
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -84,7 +83,7 @@ func (s *store) writeStore() error {
 		return errors.Annotate(err, "write store").Err()
 	}
 	// Write DUT state into a local file named by DUT's hostname.
-	if err := ioutil.WriteFile(filePathForDut, data, 0666); err != nil {
+	if err := os.WriteFile(filePathForDut, data, 0666); err != nil {
 		return errors.Annotate(err, "write store").Err()
 	}
 	return nil
@@ -117,7 +116,7 @@ func (s *store) retrieveLocalState() error {
 	if err != nil {
 		return errors.Annotate(err, "retrive local state").Err()
 	}
-	data, err := ioutil.ReadFile(filePathForDut)
+	data, err := os.ReadFile(filePathForDut)
 	if os.IsNotExist(err) {
 		// If the file not exists we Marshal and Unmarshal a nil value here
 		// to take advantage of Unmarshal initializing nested maps.

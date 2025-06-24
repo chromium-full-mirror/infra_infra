@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -268,7 +267,7 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 
 	destFileName := filepath.Join(req.PathDestination, remoteFileName)
 	log.Debugf(ctx, "copy from helper: %q path to new file.", destFileName)
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: error with creating temporary dir %q", tmpDir).Err()
 	}
