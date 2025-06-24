@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -23,6 +24,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/secretmanager"
 )
 
@@ -35,6 +37,11 @@ const (
 	gtsAccountKeyFile    = "/tmp/test/gts-arc.json"
 	gtsKeySecretName     = "gts-arc"
 	gtsKeyProjectNumber  = 501735538094
+	propAccountID        = "account_id"
+	propBoard            = "board"
+	propModel            = "model"
+	propSku              = "sku"
+	internalAccountID    = "1"
 )
 
 // List of xTS & non-xTS test suites supported by this driver.
@@ -252,6 +259,52 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 	return allRspn, nil
 }
 
+// appendInvocationDataArgs appends "invocation-data" arguments to the args map
+// based on the ChromeOS DUT information and execution metadata found in the CrosTestRequest.
+func appendInvocationDataArgs(args map[string][]string, req *api.CrosTestRequest) {
+	if req == nil {
+		return // Nothing to process if the request is nil
+	}
+
+	// Helper function to append key-value pairs to invocation data
+	appendInvocationData := func(key, value string) {
+		if value != "" {
+			args[commonlib.InvocationDataFlag] = append(args[commonlib.InvocationDataFlag], fmt.Sprintf("%s=%s", key, value))
+		}
+	}
+
+	// Add ChromeOS related invocation data
+	if primary := req.GetPrimary(); primary != nil {
+		if dut := primary.GetDut(); dut != nil {
+			if chromeOS := dut.GetChromeos(); chromeOS != nil {
+				if dutModel := chromeOS.GetDutModel(); dutModel != nil {
+					appendInvocationData(propBoard, dutModel.GetBuildTarget())
+					appendInvocationData(propModel, dutModel.GetModelName())
+				}
+				appendInvocationData(propSku, chromeOS.GetSku())
+			}
+		}
+	}
+
+	// Find and add account-id from ExecutionMetadata.GetArgs() to invocation-data
+	if len(req.GetTestSuites()) > 0 {
+		// Assuming metadata is the same for all test suites
+		if metadata := req.GetTestSuites()[0].GetExecutionMetadata(); metadata != nil {
+			for _, arg := range metadata.GetArgs() {
+				if arg.GetFlag() == propAccountID {
+					accID := arg.GetValue()
+					// Attempt to convert to int; if it fails or the string is empty, use the default value 1.
+					if _, err := strconv.Atoi(accID); err != nil || accID == "" {
+						accID = internalAccountID
+					}
+					appendInvocationData(propAccountID, accID)
+					break
+				}
+			}
+		}
+	}
+}
+
 // getArgs extracts arguments from the test request.
 // It supports multiple values for the same flag (non-unique keys).
 func getArgs(req *api.CrosTestRequest) map[string][]string {
@@ -275,6 +328,9 @@ func getArgs(req *api.CrosTestRequest) map[string][]string {
 			}
 		}
 	}
+	// Append "invocation-data" arguments for the properties to be
+	// set as test results properties
+	appendInvocationDataArgs(args, req)
 	return args
 }
 

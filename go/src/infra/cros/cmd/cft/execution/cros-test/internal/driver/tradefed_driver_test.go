@@ -5,15 +5,20 @@
 package driver
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	commonlib "go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 func createTestFile(dir, filename string, content string) error {
@@ -377,4 +382,206 @@ func TestExtractBuildInfoFromTest(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestAppendInvocationDataArgs(t *testing.T) {
+	tests := []struct {
+		name         string
+		req          *api.CrosTestRequest // Use our mock type for the request
+		initialArgs  map[string][]string  // Arguments map before function call
+		expectedArgs map[string][]string  // Expected arguments map after function call
+	}{
+		{
+			name:         "Nil Request - Should do nothing",
+			req:          nil,
+			initialArgs:  map[string][]string{},
+			expectedArgs: map[string][]string{},
+		},
+		{
+			name:         "Empty Request (No DUT, No Test Suites) - Should add nothing",
+			req:          &api.CrosTestRequest{},
+			initialArgs:  map[string][]string{},
+			expectedArgs: map[string][]string{},
+		},
+		{
+			name: "Request with Partial DUT Info (Board and Model) - Should add board and model",
+			req: &api.CrosTestRequest{
+				Primary: &api.CrosTestRequest_Device{
+					Dut: &labapi.Dut{
+						DutType: &labapi.Dut_Chromeos{
+							Chromeos: &labapi.Dut_ChromeOS{
+								Name: "host1",
+								DutModel: &labapi.DutModel{
+									BuildTarget: "board-a",
+									ModelName:   "model-a",
+								},
+							},
+						},
+					},
+				},
+			},
+			initialArgs:  map[string][]string{},
+			expectedArgs: map[string][]string{commonlib.InvocationDataFlag: {"board=board-a", "model=model-a"}},
+		},
+		{
+			name: "Request with Full DUT Info - Should add board, model, and SKU",
+			req: &api.CrosTestRequest{
+				Primary: &api.CrosTestRequest_Device{
+					Dut: &labapi.Dut{
+						DutType: &labapi.Dut_Chromeos{
+							Chromeos: &labapi.Dut_ChromeOS{
+								Name: "host1",
+								DutModel: &labapi.DutModel{
+									BuildTarget: "board-b",
+									ModelName:   "model-y",
+								},
+								Sku: "sku-456",
+							},
+						},
+					},
+				},
+			},
+			initialArgs: map[string][]string{},
+			// Order matters for reflect.DeepEqual, ensure it matches the append order in func
+			expectedArgs: map[string][]string{
+				commonlib.InvocationDataFlag: {"board=board-b", "model=model-y", "sku=sku-456"},
+			},
+		},
+		{
+			name: "Request with Account ID (with value) - Should add account ID",
+			req: &api.CrosTestRequest{
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: propAccountID, Value: "11"},
+							},
+						},
+					},
+				},
+			},
+			initialArgs: map[string][]string{},
+			expectedArgs: map[string][]string{
+				commonlib.InvocationDataFlag: {"account_id=11"},
+			},
+		},
+		{
+			name: "Request with Account ID (with some string valye) - Should add default account ID, 1",
+			req: &api.CrosTestRequest{
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: propAccountID, Value: "${account-id}"},
+							},
+						},
+					},
+				},
+			},
+			initialArgs: map[string][]string{},
+			expectedArgs: map[string][]string{
+				commonlib.InvocationDataFlag: {"account_id=1"},
+			},
+		},
+		{
+			name: "Request with Full DUT Info and Account ID - Should add all relevant info",
+			req: &api.CrosTestRequest{
+				Primary: &api.CrosTestRequest_Device{
+					Dut: &labapi.Dut{
+						DutType: &labapi.Dut_Chromeos{
+							Chromeos: &labapi.Dut_ChromeOS{
+								Name: "host1",
+								DutModel: &labapi.DutModel{
+									BuildTarget: "board-x",
+									ModelName:   "model-y",
+								},
+								Sku: "sku-z",
+							},
+						},
+					},
+				},
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: propAccountID, Value: "2"},
+							},
+						},
+					},
+				},
+			},
+			initialArgs: map[string][]string{},
+			// Order matters for reflect.DeepEqual, ensure it matches the append order in func
+			expectedArgs: map[string][]string{
+				commonlib.InvocationDataFlag: {"board=board-x", "model=model-y", "sku=sku-z", "account_id=2"},
+			},
+		},
+		{
+			name: "Initial args map is not empty - Should append to existing map",
+			req: &api.CrosTestRequest{
+				Primary: &api.CrosTestRequest_Device{
+					Dut: &labapi.Dut{
+						DutType: &labapi.Dut_Chromeos{
+							Chromeos: &labapi.Dut_ChromeOS{
+								Name: "host1",
+								DutModel: &labapi.DutModel{
+									BuildTarget: "board-x",
+									ModelName:   "model-y",
+								},
+								Sku: "sku-z",
+							},
+						},
+					},
+				},
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: propAccountID, Value: "2"},
+							},
+						},
+					},
+				},
+			},
+			initialArgs: map[string][]string{
+				"existing-flag": {"val1", "val2"},
+			},
+			expectedArgs: map[string][]string{
+				"existing-flag":              {"val1", "val2"},
+				commonlib.InvocationDataFlag: {"board=board-x", "model=model-y", "sku=sku-z", "account_id=2"},
+			},
+		},
+		{
+			name: "No Account ID in Test Suites - Should not add account ID",
+			req: &api.CrosTestRequest{
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: "someflag", Value: "somevalue"},
+							},
+						},
+					},
+				},
+			},
+			initialArgs:  map[string][]string{},
+			expectedArgs: map[string][]string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			args := make(map[string][]string)
+			for k, v := range tt.initialArgs {
+				args[k] = append([]string(nil), v...)
+			}
+			fmt.Printf("ARGS .......%v", tt.req.GetTestSuites())
+			// Call the function under test
+			appendInvocationDataArgs(args, tt.req)
+
+			if !reflect.DeepEqual(args, tt.expectedArgs) {
+				t.Errorf("appendInvocationDataArgs() for test '%s'\nGOT:  %v\nWANT: %v", tt.name, args, tt.expectedArgs)
+			}
+		})
+	}
 }

@@ -68,6 +68,16 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 			"test.dynamicDeps": "",
 		},
 	)
+	generator.AddModification(
+		&api.DynamicDep{
+
+			Key:   "testRequest.testSuites.0.executionMetadata.args",
+			Value: `JSON={"flag":"account_id","value":"${account-id}"}`,
+		},
+		map[string]string{
+			"test.dynamicDeps": "",
+		},
+	)
 
 	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 	if err != nil {
