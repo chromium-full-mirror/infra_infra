@@ -112,11 +112,17 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 }
 
 type botInfo struct {
-	Dimensions swarming.Dimensions
-	State      botState
+	Dimensions   swarming.Dimensions
+	State        botState
+	UFSStateInfo ufsStateInfo
 }
 
 type botState map[string][]string
+
+type ufsStateInfo struct {
+	User        string
+	Description string
+}
 
 // getNamespace returns the namespace we will be using to query UFS given user
 // input. It is guaranteed to be a valid namespace (so we can make assumptions
@@ -141,13 +147,22 @@ func getBrowserBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string
 		return nil, err
 	}
 	var state, zone, maintenanceConfig string
-	if resp.GetBrowserDeviceData().GetHost() != nil {
-		state = dutstate.ConvertFromUFSState(resp.GetBrowserDeviceData().GetHost().GetResourceState()).String()
-		zone = resp.GetBrowserDeviceData().GetHost().GetZone()
-		maintenanceConfig = resp.GetBrowserDeviceData().GetHost().GetMaintenanceConfigName()
+	var usi ufsStateInfo
+	if data := resp.GetBrowserDeviceData(); data.GetHost() != nil {
+		host := data.GetHost()
+		state = dutstate.ConvertFromUFSState(host.GetResourceState()).String()
+		zone = host.GetZone()
+		maintenanceConfig = host.GetMaintenanceConfigName()
+
+		sr := data.GetStateRecord()
+		usi = ufsStateInfo{
+			User:        sr.GetUser(),
+			Description: sr.GetDescription(),
+		}
 	} else {
-		state = dutstate.ConvertFromUFSState(resp.GetBrowserDeviceData().GetVm().GetResourceState()).String()
-		zone = resp.GetBrowserDeviceData().GetVm().GetZone()
+		vm := data.GetVm()
+		state = dutstate.ConvertFromUFSState(vm.GetResourceState()).String()
+		zone = vm.GetZone()
 	}
 	dims := map[string][]string{
 		"ufs_state": {state},
@@ -158,7 +173,7 @@ func getBrowserBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string
 	if maintenanceConfig != "" {
 		dims["maintenance_config"] = []string{maintenanceConfig}
 	}
-	return &botInfo{Dimensions: dims}, nil
+	return &botInfo{Dimensions: dims, UFSStateInfo: usi}, nil
 }
 
 func getOSBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string, byHostname bool, r swarming.ReportFunc) (*botInfo, error) {

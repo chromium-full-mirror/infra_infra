@@ -20,6 +20,7 @@ import (
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/controller"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/state"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
@@ -713,12 +714,18 @@ func (fs *FleetServerImpl) GetDeviceData(ctx context.Context, req *ufsAPI.GetDev
 		return nil, grpcStatus.Error(codes.NotFound, "no valid device found")
 	}
 
+	stateRecord, err := state.GetStateRecord(ctx, req.GetHostname())
+	if err != nil {
+		// The detailed state info is not critical for most of cases.
+		logging.Errorf(ctx, "GetDeviceData: failed to get state record: %s", err.Error())
+	}
 	// Get data based on device type
 	if lse.GetChromeBrowserMachineLse() != nil {
 		return &ufsAPI.GetDeviceDataResponse{
 			Resource: &ufsAPI.GetDeviceDataResponse_BrowserDeviceData{
 				BrowserDeviceData: &ufsAPI.BrowserDeviceData{
-					Host: lse,
+					Host:        lse,
+					StateRecord: stateRecord,
 				},
 			},
 			ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_BROWSER_DEVICE,

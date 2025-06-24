@@ -44,7 +44,7 @@ func TestShivasHostBasic(t *testing.T) {
 				{"get host lse1", "Host .*\nlse1"},
 				{"get host -json lse1", `"name": "lse1"`},
 				{"update host -name lse1 -state serving", ""},
-				{"internal-print-bot-info lse1", `"dut_state":.*"ready"`},
+				{"internal-print-bot-info lse1", `"dut_state":.*"ready".*"UFSStateInfo":.*"User"`},
 			},
 		},
 	}
