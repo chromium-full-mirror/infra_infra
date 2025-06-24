@@ -189,7 +189,8 @@ const (
 	StatePath                string = "state"
 
 	// Rack
-	BbnumPath string = "bbnum"
+	BbnumPath      string = "bbnum"
+	CapacityRuPath string = "capacity_ru"
 
 	// Drac
 	DisplayNamePath string = "display_name"

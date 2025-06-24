@@ -208,7 +208,7 @@ func processRackUpdateMask(ctx context.Context, oldRack *ufspb.Rack, rack *ufspb
 	// update the fields in the existing rack
 	for _, path := range mask.Paths {
 		switch path {
-		case "zone":
+		case ufsUtil.LocationZonePath, ufsUtil.ZonePath:
 			indexMap := map[string]string{"zone": rack.GetLocation().GetZone().String()}
 			oldIndexMap := map[string]string{"zone": oldRack.GetLocation().GetZone().String()}
 			if err := updateIndexingForRackResources(ctx, rack.GetName(), indexMap, oldIndexMap, hc); err != nil {
@@ -219,13 +219,13 @@ func processRackUpdateMask(ctx context.Context, oldRack *ufspb.Rack, rack *ufspb
 			}
 			oldRack.GetLocation().Zone = rack.GetLocation().GetZone()
 			oldRack.Realm = rack.GetRealm()
-		case "capacity":
+		case ufsUtil.CapacityRuPath, ufsUtil.CapacityPath:
 			oldRack.CapacityRu = rack.GetCapacityRu()
-		case "bbnum":
+		case ufsUtil.BbnumPath:
 			oldRack.Bbnum = rack.GetBbnum()
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldRack.Tags = mergeTags(oldRack.GetTags(), rack.GetTags())
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldRack.ResourceState = rack.GetResourceState()
 		}
 	}
@@ -821,21 +821,21 @@ func validateRackUpdateMask(ctx context.Context, rack *ufspb.Rack, mask *field_m
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateRack - name cannot be updated, delete and create a new rack instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateUpdateRack - update_time cannot be updated, it is a output only field")
-			case "zone":
+			case ufsUtil.LocationZonePath, ufsUtil.ZonePath:
 				if rack.GetLocation() == nil {
 					return status.Error(codes.InvalidArgument, "validateUpdateRack - location cannot be empty/nil.")
 				}
-			case "bbnum":
+			case ufsUtil.BbnumPath:
 				if err := validateRackBbnum(ctx, rack.GetName(), rack.GetBbnum()); err != nil {
 					return err
 				}
-			case "capacity":
-			case "tags":
-			case "resourceState":
+			case ufsUtil.CapacityRuPath, ufsUtil.CapacityPath:
+			case ufsUtil.TagsPath:
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateRack - unsupported update mask path %q", path)

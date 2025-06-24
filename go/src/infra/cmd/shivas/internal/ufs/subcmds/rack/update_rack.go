@@ -112,11 +112,11 @@ func (c *updateRack) innerRun(a subcommands.Application, args []string, env subc
 	res, err := ic.UpdateRack(ctx, &ufsAPI.UpdateRackRequest{
 		Rack: &rack,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"zone":        "zone",
-			"capacity_ru": "capacity",
-			"tag":         "tags",
-			"bbnum":       "bbnum",
-			"state":       "resourceState",
+			"zone":        ufsUtil.LocationZonePath,
+			"capacity_ru": ufsUtil.CapacityRuPath,
+			"tag":         ufsUtil.TagsPath,
+			"bbnum":       ufsUtil.BbnumPath,
+			"state":       ufsUtil.ResourceStatePath,
 		}),
 	})
 	if err != nil {
