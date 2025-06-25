@@ -326,7 +326,11 @@ class WinISOCustomization(customization.Customization):
       * dest: destination to copy the file to
     """
     if self.m.path.isdir(src):
-      self.m.file.copytree('Copy {} to {}'.format(src, dest), src, dest)
+      self.m.file.copytree(
+          name='Copy {} to {}'.format(src, dest),
+          source=src,
+          dest=dest,
+          allow_override=True)
     else:
       self.m.file.copy('Copy {} to {}'.format(src, dest), src, dest)
 
