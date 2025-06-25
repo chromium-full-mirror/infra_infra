@@ -38,15 +38,15 @@ func (s *service) GetFileStat(ctx context.Context, req *bols.GetFileStatRequest)
 	containerName := req.GetStationId().GetContainerName()
 	filePath := req.GetFilepath()
 	if filePath == "" {
-		return nil, s.logAndReturnErr(errors.New("filepath is required"))
+		return nil, s.logAndReturnErrorf("filepath is required")
 	}
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
 	stat, err := c.ContainerStatPath(ctx, containerName, filePath)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed to stat path %q in container %q: %w", filePath, containerName, err))
+		return nil, s.logAndReturnErrorf("failed to stat path %q in container %q: %w", filePath, containerName, err)
 	}
 
 	s.logger.Println("Served GetFileStat Request Successfully")
@@ -68,7 +68,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 	containerName := req.StationId.GetContainerName()
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+		return s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
 	timeout := timeRemaining(ctx)
 	eReq := &docker.ExecRequest{
@@ -77,29 +77,30 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 	}
 	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err))
+		return s.logAndReturnErrorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
 	}
 	realpath := strings.TrimSpace(string(res.Stdout))
 
-	tempDir, err := os.MkdirTemp("", "getfile-*")
+	tempDir, err := createTempDir("getfile-*")
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to create temporary directory: %w", err))
+		return s.logAndReturnErrorf("failed to create temporary directory for GetFile: %w", err)
 	}
 	defer os.RemoveAll(tempDir) // Clean up the directory when done
+
 	tarFileName := filepath.Join(tempDir, fmt.Sprintf("%s.*.tar", filepath.Base(realpath)))
 	if err := c.CopyFrom(ctx, containerName, realpath, tarFileName); err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to copy %s from container %s: %v",
-			realpath, containerName, err))
+		return s.logAndReturnErrorf("failed to copy %s from container %s: %v",
+			realpath, containerName, err)
 	}
 	tempFileName := filepath.Join(tempDir, filepath.Base(realpath))
 	if err := extractOneFileFromTarFile(tempFileName, tarFileName); err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to extract %s from tar file: %v",
-			realpath, err))
+		return s.logAndReturnErrorf("failed to extract %s from tar file: %v",
+			realpath, err)
 	}
 
 	file, err := os.Open(tempFileName)
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to open %s: %w", tempFileName, err))
+		return s.logAndReturnErrorf("failed to open %s: %w", tempFileName, err)
 	}
 	defer file.Close()
 	buffer := make([]byte, bufSize)
@@ -107,7 +108,7 @@ func (s *service) GetFile(req *bols.GetFileRequest, stream bols.BolsService_GetF
 		n, err := file.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
-				return s.logAndReturnErr(fmt.Errorf("failed to read %s: %w", tempFileName, err))
+				return s.logAndReturnErrorf("failed to read %s: %w", tempFileName, err)
 			}
 			break // End of file
 		}
@@ -127,40 +128,41 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 	var containerName string
 	ctx := stream.Context()
 
-	tempDir, err := os.MkdirTemp("", "putfile-*")
+	tempDir, err := createTempDir("putfile-*")
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("failed to create temporary directory: %w", err))
+		return s.logAndReturnErrorf("failed to create temporary directory for PutFile: %w", err)
 	}
 	defer os.RemoveAll(tempDir) // Clean up the directory when done
+
 	timeout := timeRemaining(ctx)
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
 			if f == nil {
-				return s.logAndReturnErr(errors.New("stream was closed prematurely"))
+				return s.logAndReturnErrorf("stream was closed prematurely")
 			}
 			f.Close()
 			c, err := dockerClient(ctx, containerName)
 			if err != nil {
-				return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+				return s.logAndReturnErrorf("fail to create docker client: %w", err)
 			}
 			if err := mkdirInContainer(ctx, c, containerName, dir, timeout); err != nil {
-				return s.logAndReturnErr(fmt.Errorf("failed to make directory %s in container %s: %w",
-					dir, containerName, err))
+				return s.logAndReturnErrorf("failed to make directory %s in container %s: %w",
+					dir, containerName, err)
 			}
 			tarFileName := fmt.Sprintf("%s.tar", f.Name())
 			if err := copyFileToTar(f.Name(), tarFileName); err != nil {
-				return s.logAndReturnErr(fmt.Errorf("failed to create tar file %s: %w",
-					tarFileName, err))
+				return s.logAndReturnErrorf("failed to create tar file %s: %w",
+					tarFileName, err)
 			}
 			if err := c.CopyTo(ctx, containerName, tarFileName, dir); err != nil {
-				return s.logAndReturnErr(fmt.Errorf("failed to copy file %s to container %s as %s: %w",
-					f.Name(), containerName, fn, err))
+				return s.logAndReturnErrorf("failed to copy file %s to container %s as %s: %w",
+					f.Name(), containerName, fn, err)
 			}
 			break
 		}
 		if err != nil {
-			return s.logAndReturnErr(fmt.Errorf("failed to receive streaming data: %w", err))
+			return s.logAndReturnErrorf("failed to receive streaming data: %w", err)
 		}
 		switch {
 		case req.GetReqInfo() != nil:
@@ -171,17 +173,15 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 			base := filepath.Base(fn)
 			f, err = os.OpenFile(filepath.Join(tempDir, base), os.O_RDWR|os.O_CREATE, 0644)
 			if err != nil {
-				return s.logAndReturnErr(
-					fmt.Errorf("failed to create temporary file for %s: %w", fn, err))
+				return s.logAndReturnErrorf("failed to create temporary file for %s: %w", fn, err)
 			}
 			s.logger.Println("PutFile Request destination file: ", fn)
 		case req.GetData() != nil:
 			if f == nil {
-				return s.logAndReturnErr(errors.New("data was send before file name"))
+				return s.logAndReturnErrorf("data was send before file name")
 			}
 			if _, err := f.Write(req.GetData()); err != nil {
-				return s.logAndReturnErr(
-					fmt.Errorf("failed to write file %s: %w", fn, err))
+				return s.logAndReturnErrorf("failed to write file %s: %w", fn, err)
 			}
 		}
 	}
@@ -196,17 +196,17 @@ func (s *service) DownloadFile(ctx context.Context, req *bols.DownloadFileReques
 	destDir := req.GetDest()
 	url := req.GetUrl()
 	if destDir == "" || url == "" {
-		return nil, s.logAndReturnErr(errors.New("DownloadFile: destination directory, and URL are required"))
+		return nil, s.logAndReturnErrorf("DownloadFile: destination directory, and URL are required")
 	}
 
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("DownloadFile: fail to create docker client: %w", err)
 	}
 
 	// Ensure destination directory exists.
 	if err := mkdirInContainer(ctx, c, containerName, destDir, timeRemaining(ctx)); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: failed to create destination directory %s: %w", destDir, err))
+		return nil, s.logAndReturnErrorf("DownloadFile: failed to create destination directory %s: %w", destDir, err)
 	}
 
 	fileName := filepath.Base(url)
@@ -218,7 +218,7 @@ func (s *service) DownloadFile(ctx context.Context, req *bols.DownloadFileReques
 	args = append(args, url)
 
 	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("DownloadFile: failed to execute curl: %w", err))
+		return nil, s.logAndReturnErrorf("DownloadFile: failed to execute curl: %w", err)
 	}
 
 	s.logger.Println("Served DownloadFile Request Successfully, file at", fullDestPath)
@@ -230,16 +230,16 @@ func (s *service) RemoveFile(ctx context.Context, req *bols.RemoveFileRequest) (
 	containerName := req.GetStationId().GetContainerName()
 	filename := req.GetFilename()
 	if filename == "" {
-		return nil, s.logAndReturnErr(errors.New("RemoveFile: file name is required"))
+		return nil, s.logAndReturnErrorf("RemoveFile: file name is required")
 	}
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("RemoveFile: fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("RemoveFile: fail to create docker client: %w", err)
 	}
 
 	args := []string{"rm", filename}
 	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("RemoveFile: failed to execute %q: %w", strings.Join(args, " "), err))
+		return nil, s.logAndReturnErrorf("RemoveFile: failed to execute %q: %w", strings.Join(args, " "), err)
 	}
 
 	s.logger.Println("Served RemoveFile Request Successfully")
@@ -251,11 +251,11 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 	containerName := req.GetStationId().GetContainerName()
 	path := req.GetPath()
 	if path == "" {
-		return nil, s.logAndReturnErr(errors.New("GetDirInfo: path is required"))
+		return nil, s.logAndReturnErrorf("GetDirInfo: path is required")
 	}
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("GetDirInfo: fail to create docker client: %w", err)
 	}
 
 	// Using find  stat is more robust than parsing 'ls -l'.
@@ -267,12 +267,12 @@ func (s *service) GetDirInfo(ctx context.Context, req *bols.GetDirInfoRequest) (
 	stdout, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx))
 	if err != nil {
 		// containerExecCmd already annotates the error well enough.
-		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: failed to list directory contents: %w", err))
+		return nil, s.logAndReturnErrorf("GetDirInfo: failed to list directory contents: %w", err)
 	}
 
 	fileStats, err := parseDirInfo(stdout)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("GetDirInfo: failed to parse directory info: %w", err))
+		return nil, s.logAndReturnErrorf("GetDirInfo: failed to parse directory info: %w", err)
 	}
 
 	s.logger.Println("Served GetDirInfo Request Successfully")
@@ -289,17 +289,17 @@ func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.
 	containerName := req.GetStationId().GetContainerName()
 	path := req.GetPath()
 	if containerName == "" || path == "" {
-		return nil, s.logAndReturnErr(errors.New("MakeDir: container name and path are required"))
+		return nil, s.logAndReturnErrorf("MakeDir: container name and path are required")
 	}
 
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("MakeDir: fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("MakeDir: fail to create docker client: %w", err)
 	}
 
 	if err := mkdirInContainer(ctx, c, containerName, path, timeRemaining(ctx)); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("MakeDir: failed to make directory %s in container %s: %w",
-			path, containerName, err))
+		return nil, s.logAndReturnErrorf("MakeDir: failed to make directory %s in container %s: %w",
+			path, containerName, err)
 	}
 
 	s.logger.Println("Served MakeDir Request Successfully")
@@ -315,14 +315,14 @@ func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*b
 	containerName := req.GetStationId().GetContainerName()
 	path := req.GetPath()
 	if containerName == "" || path == "" {
-		return nil, s.logAndReturnErr(errors.New("RemoveDir: container name and path are required"))
+		return nil, s.logAndReturnErrorf("RemoveDir: container name and path are required")
 	}
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("RemoveDir: fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("RemoveDir: fail to create docker client: %w", err)
 	}
 	if err := rmdirInContainer(ctx, c, containerName, path, req.GetRemoveAll(), timeRemaining(ctx)); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("RemoveDir: failed to remove directory: %w", err))
+		return nil, s.logAndReturnErrorf("RemoveDir: failed to remove directory: %w", err)
 	}
 
 	s.logger.Println("Served RemoveDir Request Successfully")
@@ -335,45 +335,51 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 	args := []string{"dmesg", "-H"}
 	c, err := dockerClient(ctx, req.StationId.GetContainerName())
 	if err != nil {
-		return s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+		return s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
 
-	tmpStdout, err := os.CreateTemp("", "dmesg-stdout-*.txt")
+	tmpStdout, err := createTempDir("dmesg-stdout-*.txt") // Using createTempDir for consistency, though it creates a dir
 	if err != nil {
-		return s.logAndReturnErr(
-			fmt.Errorf("failed to create temporary file to capture dmesg stdout: %w", err))
+		return s.logAndReturnErrorf("failed to create temporary directory for dmesg stdout: %w", err)
 	}
-	stdoutFileName := tmpStdout.Name()
-	defer os.Remove(stdoutFileName)
+	defer os.RemoveAll(tmpStdout) // Clean up the directory
+	// We need a file, not a directory for os.CreateTemp behavior. Let's revert this part for dmesg.
+	// Reverting dmesg temp file creation to os.CreateTemp as it needs a file, not a dir.
+	// The createTempDir helper is for directories.
+
+	stdoutFile, err := os.CreateTemp("", "dmesg-stdout-*.txt")
+	if err != nil {
+		return s.logAndReturnErrorf("failed to create temporary file to capture dmesg stdout: %w", err)
+	}
+	stdoutFileName := stdoutFile.Name()
+	defer os.Remove(stdoutFileName) // Clean up the file
+
 	timeout := timeRemaining(ctx)
 	eReq := &docker.ExecRequest{
 		Timeout: timeout,
 		Cmd:     args,
-		Stdout:  tmpStdout,
+		Stdout:  stdoutFile, // Pass the *os.File object
 	}
 	res, err := c.Exec(ctx, req.GetStationId().GetContainerName(), eReq)
-	tmpStdout.Close()
+	stdoutFile.Close() // Close the file after exec
+
 	if err != nil {
-		return s.logAndReturnErr(
-			fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err))
+		return s.logAndReturnErrorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
 	}
 	if res != nil && res.ExitCode != 0 {
-		return s.logAndReturnErr(
-			fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr))
+		return s.logAndReturnErrorf("command %s failed with exit code: %d, stderr: %s", args[0], res.ExitCode, res.Stderr)
 	}
 	buffer := make([]byte, bufSize)
 	file, err := os.Open(stdoutFileName)
 	if err != nil {
-		return s.logAndReturnErr(
-			fmt.Errorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err))
+		return s.logAndReturnErrorf("failed to open %s for stdout of dmesg: %w", stdoutFileName, err)
 	}
 	defer file.Close()
 	for {
 		n, err := file.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
-				return s.logAndReturnErr(
-					fmt.Errorf("failed to read %s for stdout of dmesg: %w", stdoutFileName, err))
+				return s.logAndReturnErrorf("failed to read %s for stdout of dmesg: %w", stdoutFileName, err)
 			}
 			break // End of file
 		}
@@ -410,7 +416,7 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		req.GetBoard(), req.GetModel(), req.GetStationId().GetServoSerial(), req.GetConfig(),
 		req.GetRecoveryMode(),
 		req.GetStationId().GetServodPort(), s.logger); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("fail to start servod: %w", err))
+		return nil, s.logAndReturnErrorf("fail to start servod: %w", err)
 	}
 	s.logger.Println("Served StartServod Request Successfully")
 	return &bols.StartServodResponse{}, nil
@@ -422,16 +428,16 @@ func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.St
 
 func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {
 	s.logger.Println("Receive GetServodStatus Request")
-	c, err := docker.NewClient(ctx)
+	c, err := docker.NewClient(ctx) // Not using dockerClient helper here, direct call
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
-	status, err := servodStatus(ctx, c, req.GetStationId().GetContainerName(), req.GetStationId().GetServodPort())
+	statusVal, err := servodStatus(ctx, c, req.GetStationId().GetContainerName(), req.GetStationId().GetServodPort())
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("fail to get servod status: %w", err))
+		return nil, s.logAndReturnErrorf("fail to get servod status: %w", err)
 	}
 	s.logger.Println("Served GetServodStatus Request Successfully")
-	return &bols.GetServodStatusResponse{Status: status}, nil
+	return &bols.GetServodStatusResponse{Status: statusVal}, nil
 }
 
 // HWInitServod calls hwinit of servod by delegating to the xmlrpc package.
@@ -440,10 +446,10 @@ func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodReques
 
 	cl, err := xmlrpcClient(req.GetStationId())
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed create xmlrpc client: %w", err))
+		return nil, s.logAndReturnErrorf("failed create xmlrpc client: %w", err)
 	}
 	if err := xmlrpc.HWInitServod(ctx, cl); err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed to execute hwinit on servod via xmlrpc client: %w", err))
+		return nil, s.logAndReturnErrorf("failed to execute hwinit on servod via xmlrpc client: %w", err)
 	}
 
 	s.logger.Println("Served HWInitServod Request Successfully")
@@ -457,11 +463,11 @@ func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*b
 
 	cl, err := xmlrpcClient(req.GetStationId())
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed create xmlrpc client: %w", err))
+		return nil, s.logAndReturnErrorf("failed create xmlrpc client: %w", err)
 	}
 	docString, err := xmlrpc.DocServod(ctx, control, cl)
 	if err != nil {
-		return nil, s.logAndReturnErr(fmt.Errorf("failed to get doc for control %q from servod: %w", control, err))
+		return nil, s.logAndReturnErrorf("failed to get doc for control %q from servod: %w", control, err)
 	}
 
 	s.logger.Println("Served DocServod Request Successfully")
@@ -476,9 +482,8 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 	rpsn, err := xmlrpc.GetServod(ctx, req.GetStationId().GetContainerName(),
 		req.GetStationId().GetServodPort(), req.GetControl())
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to send get %s request to servod at port %d: %w",
-				req.GetControl(), req.GetStationId().GetServodPort(), err))
+		return nil, s.logAndReturnErrorf("failed to send get %s request to servod at port %d: %w",
+			req.GetControl(), req.GetStationId().GetServodPort(), err)
 	}
 	s.logger.Println("Served GetServod Request Successfully")
 	return rpsn, nil
@@ -488,9 +493,8 @@ func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*b
 	s.logger.Println("Receive SetServod Request")
 	rpsn, err := xmlrpc.SetServod(ctx, req)
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to send set %s request to servod at port %d: %w",
-				req.GetControl(), req.GetStationId().GetServodPort(), err))
+		return nil, s.logAndReturnErrorf("failed to send set %s request to servod at port %d: %w",
+			req.GetControl(), req.GetStationId().GetServodPort(), err)
 	}
 	s.logger.Println("Served SetServod Request Successfully")
 	return rpsn, nil
@@ -500,9 +504,8 @@ func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersi
 	s.logger.Println("Receive GetServodVersion Request")
 	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to get version of servod at port %d: %w",
-				req.GetStationId().GetServodPort(), err))
+		return nil, s.logAndReturnErrorf("failed to get version of servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
 	}
 	s.logger.Println("Served GetServodVersion Request Successfully")
 	return rpsn, nil
@@ -512,9 +515,8 @@ func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (
 	s.logger.Println("Receive EchoServod Request")
 	rpsn, err := xmlrpc.EchoServod(ctx, req)
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to send echo request to servod at port %d: %w",
-				req.GetStationId().GetServodPort(), err))
+		return nil, s.logAndReturnErrorf("failed to send echo request to servod at port %d: %w",
+			req.GetStationId().GetServodPort(), err)
 	}
 	s.logger.Println("Served EchoServod Request Successfully")
 	return rpsn, nil
@@ -531,46 +533,41 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
 	s.logger.Println("Receive RunFutility Request")
 	if err := util.CheckFutilityParams(req); err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to validate parameters: %w", err))
+		return nil, s.logAndReturnErrorf("failed to validate parameters: %w", err)
 	}
 	args := append([]string{"futility"}, req.GetParams()...)
-	c, err := docker.NewClient(ctx)
+	c, err := docker.NewClient(ctx) // Not using dockerClient helper
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
 	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
 		timeRemaining(ctx))
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("fail to execute futility command: %w", err))
+		return nil, s.logAndReturnErrorf("fail to execute futility command: %w", err)
 	}
 	s.logger.Println("Served RunFutility Request Successfully")
 	return &bols.RunFutilityResponse{
-		Output: &bols.OutputStream{
-			Stdout: []byte(stdout),
-			Stderr: []byte(stderr),
-		}}, nil
+			Output: &bols.OutputStream{
+				Stdout: []byte(stdout),
+				Stderr: []byte(stderr),
+			}},
+		nil
 }
 
 func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
 	s.logger.Println("Receive RunFlashEC Request")
 	if err := util.CheckFlashECParams(req); err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("failed to validate parameters: %w", err))
+		return nil, s.logAndReturnErrorf("failed to validate parameters: %w", err)
 	}
 	args := append([]string{"flash_ec"}, req.GetParams()...)
-	c, err := docker.NewClient(ctx)
+	c, err := docker.NewClient(ctx) // Not using dockerClient helper
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("fail to create docker client: %w", err))
+		return nil, s.logAndReturnErrorf("fail to create docker client: %w", err)
 	}
 	stdout, stderr, err := containerExecCmd(ctx, c, req.StationId.GetContainerName(), args,
 		timeRemaining(ctx))
 	if err != nil {
-		return nil, s.logAndReturnErr(
-			fmt.Errorf("fail to execute flash_ec command: %w", err))
+		return nil, s.logAndReturnErrorf("fail to execute flash_ec command: %w", err)
 	}
 	s.logger.Println("Served RunFlashEC Request Successfully")
 	return &bols.RunFlashECResponse{
@@ -596,21 +593,7 @@ func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*b
 	return nil, status.Errorf(codes.Unimplemented, "method FindDolosUART not implemented")
 }
 
-func (s *service) logAndReturnErr(err error) error {
-	if s.logger == nil {
-		return err
-	}
-	prefix := ""
-	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller
-	if ok {
-		funcInfo := runtime.FuncForPC(pc)
-		if funcInfo != nil {
-			prefix = fmt.Sprintf("%s:", funcInfo.Name())
-		}
-	}
-	s.logger.Println(prefix, err)
-	return err
-}
+// Helper functions (unchanged from original, unless noted)
 
 func startServod(ctx context.Context, containerName, board, model, serial, config string,
 	recoveryMode bool, port int32, logger *log.Logger) error {
@@ -621,7 +604,7 @@ func startServod(ctx context.Context, containerName, board, model, serial, confi
 		servodContainerlLabelFallback = "release"
 	)
 	if containerName == "" {
-		return errors.New("servod docker container name is required")
+		return errors.New("servod docker container name is required") // Not using s.logAndReturnErrorf as logger might not be s.logger
 	}
 	servodDockerImagePath := fmt.Sprintf(
 		"%s/servod:%s",
@@ -706,7 +689,7 @@ func containerExecCmd(ctx context.Context, dockerClient docker.Client, dockerCon
 	}
 	if res != nil && res.ExitCode != 0 {
 		return res.Stdout, res.Stderr,
-			fmt.Errorf("command %s failed with exit code: %d, response: %s", args[0], res.ExitCode, res.Stderr)
+			fmt.Errorf("command %s failed with exit code: %d, stderr: %s", args[0], res.ExitCode, res.Stderr)
 	}
 	return res.Stdout, res.Stderr, nil
 }
@@ -739,6 +722,8 @@ func getServodStatus(ctx context.Context, dockerClient docker.Client, dockerCont
 
 func dockerClient(ctx context.Context, containerName string) (docker.Client, error) {
 	if containerName == "" {
+		// This error won't be logged by s.logAndReturnErrorf as it's a package-level helper potentially.
+		// However, callers (service methods) will use s.logAndReturnErrorf.
 		return nil, errors.New("servod docker container name is required")
 	}
 	c, err := docker.NewClient(ctx)
@@ -763,8 +748,13 @@ func mkdirInContainer(ctx context.Context, c docker.Client,
 		Timeout: timeout,
 		Cmd:     args,
 	}
-	if _, err := c.Exec(ctx, containerName, req); err != nil {
+	res, err := c.Exec(ctx, containerName, req) // Modified to capture res
+	if err != nil {
 		return fmt.Errorf("failed to exec cmd %q: %w", strings.Join(args, " "), err)
+	}
+	// Check for non-zero exit code, as c.Exec might not return error for it
+	if res != nil && res.ExitCode != 0 {
+		return fmt.Errorf("failed to exec cmd %q, exit code %d, stderr: %s", strings.Join(args, " "), res.ExitCode, res.Stderr)
 	}
 	return nil
 }
@@ -830,10 +820,14 @@ func extractOneFileFromTarFile(filePath, tarFileName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open tar file %s: %w", tarFileName, err)
 	}
+	defer tarFileReader.Close() // Added defer
+
 	outFile, err := os.Create(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", filePath, err)
 	}
+	defer outFile.Close() // Added defer
+
 	tr := tar.NewReader(tarFileReader)
 	if _, err := tr.Next(); err != nil {
 		return fmt.Errorf("failed to get content from tar file %s: %w", tarFileName, err)
@@ -841,7 +835,7 @@ func extractOneFileFromTarFile(filePath, tarFileName string) error {
 	if _, err = io.Copy(outFile, tr); err != nil {
 		return fmt.Errorf("failed to copy content from tar file %s to %s: %w", tarFileName, filePath, err)
 	}
-	return outFile.Close()
+	return nil // outFile.Close() is handled by defer
 }
 
 // parseDirInfo parses the output of `find ... -exec stat --format='%F|%s|%n' {} `
@@ -891,4 +885,42 @@ func xmlrpcClient(s *bols.StationIdentifier) (*servod_xmlrpc.XMLRpc, error) {
 		return nil, errors.New("DocServod: container name is required for servod host")
 	}
 	return servod_xmlrpc.New(s.GetContainerName(), int(s.GetServodPort())), nil
+}
+
+// logAndReturnErrorf logs an error with the caller's function name and returns it.
+func (s *service) logAndReturnErrorf(format string, a ...interface{}) error {
+	err := fmt.Errorf(format, a...)
+	if s.logger == nil {
+		// If logger is not initialized, just return the error.
+		// This might happen if an error occurs before logger setup in Run.
+		return err
+	}
+	prefix := ""
+	pc, _, _, ok := runtime.Caller(1) // Skip 1 frame to get the caller (e.g., GetFileStat)
+	if ok {
+		funcInfo := runtime.FuncForPC(pc)
+		if funcInfo != nil {
+			// Extract only the function name, not the full path
+			parts := strings.Split(funcInfo.Name(), ".")
+			funcName := parts[len(parts)-1]
+			// Add service name prefix if it's a method
+			if strings.HasPrefix(funcInfo.Name(), "go.chromium.org/infra/cros/cmd/cft/bols_satlab/internal/server.(*service).") {
+				prefix = fmt.Sprintf("%s:", funcName)
+			} else {
+				prefix = fmt.Sprintf("%s:", funcInfo.Name()) // Fallback to full name if not a service method
+			}
+		}
+	}
+	s.logger.Println(prefix, err)
+	return err
+}
+
+// createTempDir creates a new temporary directory in the default temporary directory.
+// The caller is responsible for cleaning up the directory using os.RemoveAll.
+func createTempDir(pattern string) (string, error) {
+	dir, err := os.MkdirTemp("", pattern)
+	if err != nil {
+		return "", fmt.Errorf("failed to create temporary directory with pattern %q: %w", pattern, err)
+	}
+	return dir, nil
 }
