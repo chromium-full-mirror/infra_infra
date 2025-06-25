@@ -55,14 +55,9 @@ func AdbCmd(args []string, log *log.Logger, retryCount, deadlineSeconds int) (st
 
 		out, err := cmd.CombinedOutput()
 		if ctx.Err() == context.DeadlineExceeded {
-			return "", "", fmt.Errorf("cmd %s exceeded deadline", cmd.String())
+			err = fmt.Errorf("cmd %s exceeded deadline", cmd.String())
 		}
-		if err != nil {
-			return "", "", err
-		}
-
-		outStr := string(out)
-		return cmd.String(), outStr, nil
+		return cmd.String(), string(out), err
 	}
 
 	// Run the adb command in a retry loop.
