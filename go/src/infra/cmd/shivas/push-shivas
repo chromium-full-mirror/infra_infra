@@ -136,7 +136,7 @@ $BODY
 BUG=None
 EOF
 
-git cl upload -r friedman@google.com,dba@google.com,samdockery@google.com,abesmith@google.com -cc peep-fleet-infra-sw@google.com --commit-description=+
+git cl upload -r friedman@google.com,dba@google.com,samdockery@google.com,abesmith@google.com -cc peep-fleet-infra-sw@google.com --auto-submit --commit-description=+
 
 popd
 rm -rf ${WORKDIR}
