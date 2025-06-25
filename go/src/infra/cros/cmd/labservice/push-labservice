@@ -1,0 +1,110 @@
+#!/bin/bash -e
+
+labserviceInstance=chromiumos/infra/labservice/linux-amd64
+
+function get_instance_id() {
+    echo $(cipd describe -version $2 $1 | awk -F ': +' '/Instance ID:/{print $2}')
+}
+function get_git_revision() {
+	echo $(cipd describe -version $2 $1 | awk -F ':' '/git_revision/{print $2; exit}')
+}
+function get_data() {
+	echo $(get_instance_id $1 $2) $(get_git_revision $1 $2)
+}
+
+# Function to handle the push logic for both canary and prod
+function perform_push() {
+    local target_ref="$1"
+    local source_ref="$2"
+    local target_id="$3"
+    local target_git="$4"
+    local previous_id="$5"
+    local previous_git="$6"
+
+    echo "Preparing to push to ${target_ref}..."
+
+    if [[ "${target_id}" == "${previous_id}" ]]; then
+        echo "The '${source_ref}' version is already the same as '${target_ref}'. No push needed."
+        exit 0
+    fi
+
+    local changelist=$(git log --oneline  ${previous_git}..${target_git} -- .)
+
+    cat <<EOF
+The push will include below changes to '${target_ref}':
+
+$changelist
+
+
+Are they good? [y/n]
+EOF
+
+    read confirm
+
+    if [[ "${confirm}" != "y" ]]; then
+        echo "Aborting the push"
+        exit 1
+    fi
+
+    cipd set-ref -ref prev-${target_ref} -version ${target_ref} ${labserviceInstance}
+    cipd set-ref -ref "${target_ref}" -version "${target_id}" ${labserviceInstance}
+    if [[ "${target_ref}" == "canary" ]]; then
+        cipd set-ref -ref al-ate-staging -version canary ${labserviceInstance}
+    fi
+    echo "Successfully pushed ${source_ref} to ${target_ref}."
+
+    cat <<EOF
+Don't forget to send out an announcement!
+To:
+chromeos-infra-releases@google.com if prod or notify oncall to canary.
+
+Title:
+Labservice push to ${target_ref} (${target_git})
+
+Content:
+Previous CIPD instance id (${target_ref}): ${previous_id}
+
+New CIPD instance id (${target_ref}): ${target_id}
+
+Change-list:
+${changelist}
+EOF
+}
+
+# Parse command line arguments
+push_type=""
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --prod)
+            push_type="prod"
+            ;;
+        --canary)
+            push_type="canary"
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--prod|--canary]"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [[ -z "${push_type}" ]]; then
+    echo "Error: Please specify --prod or --canary."
+    echo "Usage: $0 [--prod|--canary]"
+    exit 1
+fi
+
+echo "Getting current Labservice CIPD and git information..."
+read labservice_latest_id labservice_latest_git < <(get_data ${labserviceInstance} "latest")
+read labservice_canary_id labservice_canary_git < <(get_data ${labserviceInstance} "canary")
+read labservice_prod_id labservice_prod_git < <(get_data ${labserviceInstance} "prod")
+
+git fetch origin main
+
+if [[ "${push_type}" == "canary" ]]; then
+    perform_push "canary" "latest" "${labservice_latest_id}" "${labservice_latest_git}" "${labservice_canary_id}" "${labservice_canary_git}"
+elif [[ "${push_type}" == "prod" ]]; then
+    perform_push "prod" "canary" "${labservice_canary_id}" "${labservice_canary_git}" "${labservice_prod_id}" "${labservice_prod_git}"
+fi
