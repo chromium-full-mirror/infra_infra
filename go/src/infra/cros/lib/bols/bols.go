@@ -15,5 +15,6 @@ type Service struct {
 }
 
 var (
-	DefaultBOLSPort = 9100
+	DefaultBOLSPort    = 9100
+	DefaultLogFileName = "bols_log.txt"
 )

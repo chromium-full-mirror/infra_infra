@@ -25,7 +25,7 @@ type Runner interface {
 
 var (
 	ServiceName     = "bols"
-	defaultLogDir   = fmt.Sprintf("/tmp/%s/", ServiceName)
+	defaultLogDir   = fmt.Sprintf("/var/log/%s/", ServiceName)
 	helpDescription = `bols_labstation tool
 The tool is allow to communicate with labstation tools and services on the host.
 Commands:
