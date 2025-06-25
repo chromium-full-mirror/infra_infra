@@ -526,6 +526,16 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 		},
+		{
+			Name: "post-process",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/post-test/post-process/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 	}
 
 	return CleanConfigs(configs)
