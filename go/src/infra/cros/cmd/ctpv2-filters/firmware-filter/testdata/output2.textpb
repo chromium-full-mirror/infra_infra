@@ -2325,6 +2325,10 @@ suite_info {
                 value: "cros-fw-provision_primary"
               }
               dynamic_deps {
+                key: "installRequest.partnerMetadata"
+                value: "partner-metadata"
+              }
+              dynamic_deps {
                 key: "startupRequest.dut"
                 value: "device_primary.dut"
               }

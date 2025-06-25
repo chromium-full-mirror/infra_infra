@@ -69,5 +69,11 @@ func (builder *ProvisionTaskBuilder) AddInstallRequest(install *interfaces.Provi
 	}
 	taskDeps := builder.Task.GetProvision().DynamicDeps
 	generatedDeps := common.GenerateDynamicDeps("install", install.DynamicInputs, ProvisionDynamicDepFormat)
+
+	defaultInstallDynamicInputs := map[string]string{
+		"partnerMetadata": "partner-metadata",
+	}
+	generatedDeps = append(generatedDeps, common.GenerateDynamicDeps("install", defaultInstallDynamicInputs, ProvisionDynamicDepFormat)...)
+
 	builder.Task.GetProvision().DynamicDeps = append(taskDeps, generatedDeps...)
 }

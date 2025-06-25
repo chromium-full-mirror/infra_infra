@@ -393,6 +393,11 @@ func executeHwTestsV2(
 		if partnerGcsBucket := partnerInfo.GetGcsBucket(); partnerGcsBucket != "" {
 			common.LogWarningIfErr(ctx, sk.Injectables.Set("partner-gcs-bucket", partnerGcsBucket))
 		}
+		partnerMetadata := &api.PartnerMetadata{
+			AccountId:        partnerInfo.GetAccountId(),
+			PartnerGcsBucket: partnerInfo.GetGcsBucket(),
+		}
+		common.LogWarningIfErr(ctx, sk.Injectables.Set("partner-metadata", partnerMetadata))
 	}
 	parentBBID, err := getParentBBID(buildState.Build())
 	if err != nil {
