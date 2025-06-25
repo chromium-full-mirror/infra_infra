@@ -44,6 +44,11 @@ var AddMachineCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.kvmPort, "kvm-port", "", "the port of the kvm that this machine uses")
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine")
 		c.Flags.StringVar(&c.serialNumber, "serial", "", "the serial number for this machine")
+		c.Flags.StringVar(&c.model, "model", "", "the model for this machine")
+		c.Flags.StringVar(&c.cpuType, "cpu-type", "", "the cpu type for this machine")
+		c.Flags.StringVar(&c.driveModel, "drive-model", "", "the drive type for this machine")
+		c.Flags.StringVar(&c.storage, "storage", "0", "disk storage capacity in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText)
+		c.Flags.StringVar(&c.memory, "memory", "0", "amount of memory in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText)
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 		return c
 	},
@@ -64,6 +69,11 @@ type addMachine struct {
 	kvm              string
 	kvmPort          string
 	deploymentTicket string
+	model            string
+	cpuType          string
+	driveModel       string
+	storage          string
+	memory           string
 	tags             []string
 	serialNumber     string
 }
@@ -154,6 +164,21 @@ func (c *addMachine) parseArgs(req *ufsAPI.MachineRegistrationRequest) {
 				RpmInterface: &ufspb.RPMInterface{},
 			},
 		}
+	} else if ufsUtil.IsInAndroidZone(ufsZone.String()) {
+		storageBytes, _ := utils.ConvertToBytes(c.storage)
+		memoryBytes, _ := utils.ConvertToBytes(c.memory)
+		req.Machine.Device = &ufspb.Machine_ServerMachine{
+			ServerMachine: &ufspb.ServerMachine{
+				Model:      c.model,
+				Storage:    storageBytes,
+				Memory:     memoryBytes,
+				CpuType:    c.cpuType,
+				DriveModel: c.driveModel,
+				Device: &ufspb.ServerMachine_AndroidHostMachine{
+					AndroidHostMachine: &ufspb.AndroidHostMachine{},
+				},
+			},
+		}
 	} else {
 		req.Machine.Device = &ufspb.Machine_ChromeosMachine{
 			ChromeosMachine: &ufspb.ChromeOSMachine{},
@@ -184,6 +209,21 @@ func (c *addMachine) validateArgs() error {
 		if c.serialNumber != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-serial' cannot be specified at the same time.")
 		}
+		if c.model != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-model' cannot be specified at the same time.")
+		}
+		if c.storage != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-storage' cannot be specified at the same time.")
+		}
+		if c.memory != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-memory' cannot be specified at the same time.")
+		}
+		if c.cpuType != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-cpu-type' cannot be specified at the same time.")
+		}
+		if c.driveModel != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-drive-model' cannot be specified at the same time.")
+		}
 		if len(c.tags) > 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-tags' cannot be specified at the same time.")
 		}
@@ -196,6 +236,12 @@ func (c *addMachine) validateArgs() error {
 		}
 		if !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zoneName)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid zone name, please check help info for '-zone'.", c.zoneName)
+		}
+		if _, err := utils.ConvertToBytes(c.memory); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -memory flag was used incorrectly: %w", err)
+		}
+		if _, err := utils.ConvertToBytes(c.storage); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage flag was used incorrectly: %w", err)
 		}
 	}
 	return nil

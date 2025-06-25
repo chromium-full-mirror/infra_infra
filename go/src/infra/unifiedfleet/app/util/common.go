@@ -85,6 +85,23 @@ func IsInBrowserZone(name string) bool {
 	}
 }
 
+// IsInAndroidZone check if a given name(resource or zone name) indicates it's in android zone.
+func IsInAndroidZone(name string) bool {
+	// check the actual zone name
+	switch name {
+	case "ZONE_AT1",
+		"ZONE_AT2",
+		"ZONE_AT3",
+		"ZONE_AT4",
+		"ZONE_AT5",
+		"ZONE_FL1",
+		"ZONE_FL2":
+		return true
+	default:
+		return false
+	}
+}
+
 // IsInOSZone check if a given name(resource or zone name) indicates it's in OS zone.
 func IsInOSZone(name string) bool {
 	if strings.Contains(name, "ZONE_CHROMEOS") {
