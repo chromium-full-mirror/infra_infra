@@ -113,11 +113,13 @@ func (c *addAttachedDeviceMachine) innerRun(a subcommands.Application, args []st
 
 	var machineRegistrationReq ufsAPI.MachineRegistrationRequest
 	if c.newSpecsFile != "" {
-		if err = utils.ParseJSONFile(c.newSpecsFile, &machineRegistrationReq); err != nil {
+		var machine ufspb.Machine
+		if err := utils.ParseJSONFile(c.newSpecsFile, &machine); err != nil {
 			return err
 		}
-		ufsZone := machineRegistrationReq.GetMachine().GetLocation().GetZone()
-		machineRegistrationReq.GetMachine().Realm = ufsUtil.ToUFSRealm(ufsZone.String())
+		ufsZone := machine.GetLocation().GetZone()
+		machine.Realm = ufsUtil.ToUFSRealm(ufsZone.String())
+		machineRegistrationReq.Machine = &machine
 	} else {
 		c.parseArgs(&machineRegistrationReq)
 	}
