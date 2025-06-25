@@ -1,0 +1,10 @@
+{
+    "gsc_ro_version": "0.0.59",
+    "gsc_rw_version": "0.26.112",
+    "gsc_rw_branch": "tot:v0.0",
+    "gsc_rw_rev": "1408",
+    "gsc_rw_sha": "-ac00db8d",
+    "gsc_buildurl": "gs://chromeos-image-archive/firmware-ti50-postsubmit/R129-15969.0.0-102267-8741384054848642993",
+    "gsc_testbed_type": "gsc_dt_shield",
+    "gsc_ccd_serial": "1482101a-4c2ac261"
+}

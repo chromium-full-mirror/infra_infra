@@ -20,6 +20,30 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
+// ReadJSONFile reads bytes from the given file.
+func ReadJSONFile(ctx context.Context, filePath string) (bytes []byte, retErr error) {
+	_, fileName := path.Split(filePath)
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("opening JSON file %q: %w", fileName, err)
+	}
+	defer func() {
+		err := f.Close()
+		if err != nil && retErr == nil {
+			retErr = fmt.Errorf("error closing JSON file %q: %w", fileName, err)
+		}
+	}()
+
+	bytes, err = io.ReadAll(f)
+	if err != nil {
+		return nil, fmt.Errorf("reading JSON file %q: %w", fileName, err)
+	}
+
+	log.Printf("Successfully read from JSON file: %s", string(bytes))
+	return bytes, nil
+}
+
 // ReadProtoJSONFile reads a protocol buffer from the given file.
 func ReadProtoJSONFile(ctx context.Context, filePath string, outputProto proto.Message) (retErr error) {
 	_, fileName := path.Split(filePath)

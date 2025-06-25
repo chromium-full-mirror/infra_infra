@@ -1,0 +1,5 @@
+{
+    "servod_version": "v1.0.2388-4e980b5d 2024-10-31 14:47:15",
+    "servo_type": "servo_v4p1_with_ccd_cr50",
+    "servo_versions": "fizz-labstation-release/R131-16063.25.0,servo_v4p1_v2.0.24152-0b36eb51a,0.5.261/cr50_v4.11_mp.76-bc730d0f41"
+}
