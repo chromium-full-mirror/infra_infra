@@ -6,6 +6,7 @@ package server
 
 import (
 	"context"
+	"strings"
 
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
@@ -26,7 +27,7 @@ type DefaultCommandExecutor struct{}
 // the stdout to extract only the first line (without the newline character).
 func (*DefaultCommandExecutor) Execute(ctx context.Context, cmd commands.Command) (string, string, error) {
 	stdout, stderr, err := cmd.Execute(ctx)
-	return utils.firstLine(stdout), stderr, err
+	return strings.Trim(stdout, "\n"), stderr, err
 }
 
 // compatibleLookupNetworkIdCommand returns a command that supports both docker

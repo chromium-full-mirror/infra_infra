@@ -84,8 +84,8 @@ func (s *ContainerServerImpl) GetNetwork(ctx context.Context, request *api.GetNe
 
 func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (string, error) {
 	getNetworkIdCmd := compatibleLookupNetworkIdCommand(name)
-	id, stderr, err := s.executor.Execute(ctx, getNetworkIdCmd)
-	if id == "" {
+	ids, stderr, err := s.executor.Execute(ctx, getNetworkIdCmd)
+	if ids == "" {
 		return "", utils.notFound(fmt.Sprintf("Cannot retrieve network ID with name %s", name))
 	}
 	if err != nil && stderr != "" {
@@ -94,7 +94,18 @@ func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (st
 	if err != nil {
 		return "", err
 	}
-	return id, nil
+	idList := strings.Split(ids, "\n")
+	// Remove the networks with the same name.
+	// Must be removed for ambiguity.
+	if len(idList) > 1 {
+		rmCmd := &commands.NetworkRemove{
+			Names: idList[1:],
+		}
+		rmOut, rmErr, _ := s.executor.Execute(ctx, rmCmd)
+		log.Println("stdout: ", rmOut)
+		log.Println("stderr: ", rmErr)
+	}
+	return idList[0], nil
 }
 
 // Shutdown signals to shut down the CTRv2 gRPC server.
