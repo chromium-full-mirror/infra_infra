@@ -1104,6 +1104,50 @@ func TestUpdateMachine(t *testing.T) {
 			assert.Loosely(t, resp.GetAttachedDevice().GetBuildTarget(), should.Equal("test-target-1"))
 			assert.Loosely(t, resp.GetAttachedDevice().GetModel(), should.Equal("test-model-1"))
 		})
+
+		t.Run("Partial Update server machine", func(t *ftt.Test) {
+			machine := &ufspb.Machine{
+				Name: "sm-1",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{
+						Model:      "test-model",
+						CpuType:    "test-cpu",
+						DriveModel: "test-drive",
+						Memory:     1024,
+						Storage:    1024,
+					},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			assert.NoErr(t, err)
+
+			machine1 := &ufspb.Machine{
+				Name: "sm-1",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{
+						Model:      "test-model-1",
+						CpuType:    "test-cpu-1",
+						DriveModel: "test-drive-1",
+						Memory:     2048,
+						Storage:    4096,
+					},
+				},
+			}
+			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{
+				"server_machine.model",
+				"server_machine.cpu_type",
+				"server_machine.drive_model",
+				"server_machine.memory",
+				"server_machine.storage",
+			}})
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.That(t, resp.GetServerMachine().GetModel(), should.Equal("test-model-1"))
+			assert.That(t, resp.GetServerMachine().GetCpuType(), should.Equal("test-cpu-1"))
+			assert.That(t, resp.GetServerMachine().GetDriveModel(), should.Equal("test-drive-1"))
+			assert.Loosely(t, resp.GetServerMachine().GetMemory(), should.Equal(2048))
+			assert.Loosely(t, resp.GetServerMachine().GetStorage(), should.Equal(4096))
+		})
 	})
 }
 

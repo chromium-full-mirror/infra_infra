@@ -501,6 +501,16 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.ResourceState = machine.GetResourceState()
 		case util.DescriptionPath:
 			oldMachine.GetChromeBrowserMachine().Description = machine.GetChromeBrowserMachine().GetDescription()
+		case util.ServerMachineModelPath:
+			oldMachine.GetServerMachine().Model = machine.GetServerMachine().GetModel()
+		case util.ServerMachineMemoryPath:
+			oldMachine.GetServerMachine().Memory = machine.GetServerMachine().GetMemory()
+		case util.ServerMachineStoragePath:
+			oldMachine.GetServerMachine().Storage = machine.GetServerMachine().GetStorage()
+		case util.ServerMachineCpuTypePath:
+			oldMachine.GetServerMachine().CpuType = machine.GetServerMachine().GetCpuType()
+		case util.ServerMachineDriveModelPath:
+			oldMachine.GetServerMachine().DriveModel = machine.GetServerMachine().GetDriveModel()
 		case util.AdmManufacturerPath:
 			fallthrough
 		case util.AttachedDeviceManufacturerPath:
@@ -1286,6 +1296,11 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 			case util.SerialNumberPath:
 			case util.ResourceStateCamelPath:
 			case util.ResourceStatePath:
+			case util.ServerMachineModelPath:
+			case util.ServerMachineMemoryPath:
+			case util.ServerMachineStoragePath:
+			case util.ServerMachineCpuTypePath:
+			case util.ServerMachineDriveModelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateMachineUpdateMask - unsupported update mask path %q", path)

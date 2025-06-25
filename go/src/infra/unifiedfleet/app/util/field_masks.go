@@ -170,6 +170,13 @@ const (
 	PoolsDevboardPath               string = "pools-devboard"
 	PoolsDevboardRemovePath         string = "pools-devboard-remove"
 
+	// ServerMachine
+	ServerMachineCpuTypePath    string = "server_machine.cpu_type"
+	ServerMachineDriveModelPath string = "server_machine.drive_model"
+	ServerMachineMemoryPath     string = "server_machine.memory"
+	ServerMachineModelPath      string = "server_machine.model"
+	ServerMachineStoragePath    string = "server_machine.storage"
+
 	// MachineLSE
 	SchedulablePath string = "schedulable"
 
