@@ -288,7 +288,7 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 	// update the fields in the existing vm
 	for _, path := range mask.Paths {
 		switch path {
-		case "machineLseId":
+		case util.MachineLseIdPath, util.MachineLseIdCamelPath:
 			machine, err := getMachineForHost(ctx, vm.GetMachineLseId())
 			if err != nil {
 				return oldVM, err
@@ -299,11 +299,11 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 			}
 			oldVM.MachineLseId = vm.GetMachineLseId()
 			oldVM.Zone = machine.GetLocation().GetZone().String()
-		case "macAddress":
+		case util.MacAddressPath, util.MacAddressCamelPath:
 			oldVM.MacAddress = vm.GetMacAddress()
-		case "resourceState":
+		case util.ResourceStatePath, util.ResourceStateCamelPath:
 			oldVM.ResourceState = vm.GetResourceState()
-		case "osVersion":
+		case util.OsVersionValuePath, util.OsVersionCamelPath:
 			if oldVM.GetOsVersion() == nil {
 				oldVM.OsVersion = &ufspb.OSVersion{
 					Value: vm.GetOsVersion().GetValue(),
@@ -311,7 +311,7 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 			} else {
 				oldVM.GetOsVersion().Value = vm.GetOsVersion().GetValue()
 			}
-		case "osImage":
+		case util.OsVersionImagePath, util.OsImageCamelPath:
 			if oldVM.GetOsVersion() == nil {
 				oldVM.OsVersion = &ufspb.OSVersion{
 					Image: vm.GetOsVersion().GetImage(),
@@ -319,19 +319,19 @@ func processVMUpdateMask(ctx context.Context, oldVM *ufspb.VM, vm *ufspb.VM, mas
 			} else {
 				oldVM.GetOsVersion().Image = vm.GetOsVersion().GetImage()
 			}
-		case "tags":
+		case util.TagsPath:
 			oldVM.Tags = mergeTags(oldVM.GetTags(), vm.GetTags())
-		case "description":
+		case util.DescriptionPath:
 			oldVM.Description = vm.Description
-		case "deploymentTicket":
+		case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
 			oldVM.DeploymentTicket = vm.GetDeploymentTicket()
-		case "cpuCores":
+		case util.CpuCoresPath, util.CpuCoresCamelPath:
 			oldVM.CpuCores = vm.GetCpuCores()
-		case "memory":
+		case util.MemoryPath:
 			oldVM.Memory = vm.GetMemory()
-		case "storage":
+		case util.StoragePath:
 			oldVM.Storage = vm.GetStorage()
-		case "vmid":
+		case util.VmidPath:
 			oldVM.Vmid = vm.GetVmid()
 		}
 	}
@@ -482,29 +482,29 @@ func validateVMUpdateMask(vm *ufspb.VM, mask *field_mask.FieldMask) error {
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateVMUpdateMask - name cannot be updated, delete and create a new vm instead")
-			case "update_time":
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateVMUpdateMask - update_time cannot be updated, it is a output only field")
-			case "machineLseId":
+			case util.MachineLseIdPath, util.MachineLseIdCamelPath:
 				if vm.MachineLseId == "" {
 					return status.Error(codes.InvalidArgument, "validateVMUpdateMask - machineLseId cannot be empty/nil.")
 				}
-			case "macAddress":
-			case "osImage":
+			case util.MacAddressPath, util.MacAddressCamelPath:
+			case util.OsVersionImagePath, util.OsImageCamelPath:
 				fallthrough
-			case "osVersion":
+			case util.OsVersionValuePath, util.OsVersionCamelPath:
 				if vm.GetOsVersion() == nil {
 					return status.Error(codes.InvalidArgument, "validateUpdateVM - Osversion cannot be empty/nil.")
 				}
-			case "deploymentTicket":
-			case "tags":
-			case "description":
-			case "resourceState":
-			case "cpuCores":
-			case "memory":
-			case "storage":
-			case "vmid":
+			case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
+			case util.TagsPath:
+			case util.DescriptionPath:
+			case util.ResourceStatePath, util.ResourceStateCamelPath:
+			case util.CpuCoresPath, util.CpuCoresCamelPath:
+			case util.MemoryPath:
+			case util.StoragePath:
+			case util.VmidPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateUpdateVM - unsupported update mask path %q", path)

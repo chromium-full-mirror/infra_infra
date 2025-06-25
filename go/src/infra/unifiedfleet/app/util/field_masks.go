@@ -28,8 +28,6 @@ const (
 	ManufacturerPath            string = "manufacturer"
 	MlseprototypePath           string = "mlseprototype"
 	NamePath                    string = "name"
-	OsImagePath                 string = "osImage"
-	OsVersionPath               string = "osVersion"
 	PlatformPath                string = "platform"
 	RackPath                    string = "rack"
 	ResourceStatePath           string = "resource_state"
@@ -47,6 +45,8 @@ const (
 	// Non-standard paths for backwards compatibility.
 	DeploymentTicketCamelPath string = "deploymentTicket"
 	MacAddressCamelPath       string = "macAddress"
+	OsImageCamelPath          string = "osImage"
+	OsVersionCamelPath        string = "osVersion"
 	PortNameCamelPath         string = "portName"
 	ResourceStateCamelPath    string = "resourceState"
 	SerialNumberCamelPath     string = "serialNumber"
@@ -146,11 +146,16 @@ const (
 	KvmPortPath string = "kvmport"
 
 	// VM
-	CpuCoresPath     string = "cpuCores"
-	MachineLseIdPath string = "machineLseId"
-	MemoryPath       string = "memory"
-	StoragePath      string = "storage"
-	VmidPath         string = "vmid"
+	CpuCoresPath       string = "cpu_cores"
+	MachineLseIdPath   string = "machine_lse_id"
+	MemoryPath         string = "memory"
+	OsVersionImagePath string = "os_version.image"
+	OsVersionValuePath string = "os_version.value"
+	StoragePath        string = "storage"
+	VmidPath           string = "vmid"
+	// Non-standard
+	CpuCoresCamelPath     string = "cpuCores"
+	MachineLseIdCamelPath string = "machineLseId"
 
 	// AttachedDevice
 	AttachedDeviceBuildTargetPath  string = "attached_device.build_target"
