@@ -46,6 +46,12 @@ var UpdateMachineCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.kvmPort, "kvm-port", "", "the port of the kvm that this machine uses"+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.serialNumber, "serial", "", "the serial number for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.model, "model", "", "the model for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.cpuType, "cpu-type", "", "the cpu type for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.driveModel, "drive-model", "", "the drive type for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.storage, "storage", "0", "disk storage capacity in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.memory, "memory", "0", "amount of memory in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText+" "+cmdhelp.ClearFieldHelpText)
+
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
@@ -73,6 +79,11 @@ type updateMachine struct {
 	tags             []string
 	serialNumber     string
 	state            string
+	model            string
+	cpuType          string
+	driveModel       string
+	storage          string
+	memory           string
 	description      string
 }
 
@@ -144,16 +155,21 @@ func (c *updateMachine) innerRun(a subcommands.Application, args []string, env s
 	res, err := ic.UpdateMachine(ctx, &ufsAPI.UpdateMachineRequest{
 		Machine: &machine,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"zone":     ufsUtil.ZonePath,
-			"rack":     ufsUtil.RackPath,
-			"platform": ufsUtil.ChromePlatformPath,
-			"kvm":      ufsUtil.KvmInterfaceKvmPath,
-			"kvm-port": ufsUtil.KvmInterfacePortNamePath,
-			"ticket":   ufsUtil.DeploymentTicketPath,
-			"tag":      ufsUtil.TagsPath,
-			"serial":   ufsUtil.SerialNumberPath,
-			"state":    ufsUtil.ResourceStatePath,
-			"desc":     ufsUtil.DescriptionPath,
+			"zone":        ufsUtil.ZonePath,
+			"rack":        ufsUtil.RackPath,
+			"platform":    ufsUtil.ChromePlatformPath,
+			"kvm":         ufsUtil.KvmInterfaceKvmPath,
+			"kvm-port":    ufsUtil.KvmInterfacePortNamePath,
+			"ticket":      ufsUtil.DeploymentTicketPath,
+			"tag":         ufsUtil.TagsPath,
+			"serial":      ufsUtil.SerialNumberPath,
+			"state":       ufsUtil.ResourceStatePath,
+			"desc":        ufsUtil.DescriptionPath,
+			"model":       ufsUtil.ServerMachineModelPath,
+			"cpu-type":    ufsUtil.ServerMachineCpuTypePath,
+			"drive-model": ufsUtil.ServerMachineDriveModelPath,
+			"memory":      ufsUtil.ServerMachineMemoryPath,
+			"storage":     ufsUtil.ServerMachineStoragePath,
 		}),
 	})
 	if err != nil {
@@ -190,6 +206,36 @@ func (c *updateMachine) parseArgs(machine *ufspb.Machine) {
 		machine.SerialNumber = c.serialNumber
 	}
 	machine.ResourceState = ufsUtil.ToUFSState(c.state)
+	if c.model != "" || c.cpuType != "" || c.driveModel != "" || c.memory != "" || c.storage != "" {
+		machine.Device = &ufspb.Machine_ServerMachine{
+			ServerMachine: &ufspb.ServerMachine{},
+		}
+		if c.model == utils.ClearFieldValue {
+			machine.GetServerMachine().Model = ""
+		} else {
+			machine.GetServerMachine().Model = c.model
+		}
+		if c.cpuType == utils.ClearFieldValue {
+			machine.GetServerMachine().CpuType = ""
+		} else {
+			machine.GetServerMachine().CpuType = c.cpuType
+		}
+		if c.driveModel == utils.ClearFieldValue {
+			machine.GetServerMachine().DriveModel = ""
+		} else {
+			machine.GetServerMachine().DriveModel = c.driveModel
+		}
+		if c.memory == utils.ClearFieldValue {
+			machine.GetServerMachine().Memory = 0
+		} else {
+			machine.GetServerMachine().Memory, _ = utils.ConvertToBytes(c.memory)
+		}
+		if c.storage == utils.ClearFieldValue {
+			machine.GetServerMachine().Storage = 0
+		} else {
+			machine.GetServerMachine().Storage, _ = utils.ConvertToBytes(c.storage)
+		}
+	}
 	if c.platform != "" || c.deploymentTicket != "" || c.kvm != "" || c.kvmPort != "" || c.description != "" {
 		machine.Device = &ufspb.Machine_ChromeBrowserMachine{
 			ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{
@@ -261,6 +307,21 @@ func (c *updateMachine) validateArgs() error {
 		if c.description != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-desc' cannot be specified at the same time.")
 		}
+		if c.model != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-model' cannot be specified at the same time.")
+		}
+		if c.storage != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-storage' cannot be specified at the same time.")
+		}
+		if c.memory != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-memory' cannot be specified at the same time.")
+		}
+		if c.cpuType != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-cpu-type' cannot be specified at the same time.")
+		}
+		if c.driveModel != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-drive-model' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.machineName == "" {
@@ -268,7 +329,9 @@ func (c *updateMachine) validateArgs() error {
 		}
 		if c.zoneName == "" && c.rackName == "" && c.state == "" &&
 			len(c.tags) == 0 && c.platform == "" && c.deploymentTicket == "" &&
-			c.kvm == "" && c.kvmPort == "" && c.serialNumber == "" && c.description == "" {
+			c.kvm == "" && c.kvmPort == "" && c.serialNumber == "" &&
+			c.description == "" && c.model == "" && c.cpuType == "" &&
+			c.driveModel == "" && c.storage == "" && c.memory == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.zoneName != "" && !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zoneName)) {
@@ -276,6 +339,12 @@ func (c *updateMachine) validateArgs() error {
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
+		}
+		if _, err := utils.ConvertToBytes(c.memory); err != nil && c.memory != utils.ClearFieldValue {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -memory flag was used incorrectly: %w", err)
+		}
+		if _, err := utils.ConvertToBytes(c.storage); err != nil && c.storage != utils.ClearFieldValue {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage flag was used incorrectly: %w", err)
 		}
 	}
 	return nil
