@@ -74,3 +74,8 @@ func FoilProvisionClientFromScope(ctx context.Context, dut *tlw.Dut) (api.Generi
 func PassportSwitchClientFromScope(ctx context.Context, dut *tlw.Dut) (passport.SwitchServiceClient, error) {
 	return ClientFromScope[passport.SwitchServiceClient](ctx, dut, PassportSwitchName(dut))
 }
+
+// PassportUSBTesterClientFromScope fetches the usb tester service client from the current scope.
+func PassportUSBTesterClientFromScope(ctx context.Context, dut *tlw.Dut) (passport.UsbTesterServiceClient, error) {
+	return ClientFromScope[passport.UsbTesterServiceClient](ctx, dut, PassportUSBTesterName(dut))
+}

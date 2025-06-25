@@ -49,11 +49,28 @@ func InitSwitchClient(ctx context.Context, dut *tlw.Dut, conn *grpc.ClientConn) 
 	return nil
 }
 
+// InitUSBTesterClient creates and caches a client to the UsbTesterService on the passport container.
+func InitUSBTesterClient(ctx context.Context, dut *tlw.Dut, conn *grpc.ClientConn) error {
+	client := passport.NewUsbTesterServiceClient(conn)
+	if client == nil {
+		return errors.Reason("usb tester service client: fail to create client").Err()
+	}
+
+	if err := cft.ClientToScope(ctx, dut, client, cft.PassportUSBTesterName(dut)); err != nil {
+		return errors.Annotate(err, "store passport usb tester service client").Err()
+	}
+	return nil
+}
+
 // InitClients initializes clients for all passport services.
 //
 // Note: Passport container serves multiple services on single grpc endpoint.
 func InitClients(ctx context.Context, conn *grpc.ClientConn, dut *tlw.Dut) error {
 	if err := InitSwitchClient(ctx, dut, conn); err != nil {
+		return err
+	}
+
+	if err := InitUSBTesterClient(ctx, dut, conn); err != nil {
 		return err
 	}
 

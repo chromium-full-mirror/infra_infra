@@ -60,6 +60,50 @@ func auditSwitchesExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// auditUSBTestersExec checks that the USB testers described in the topology match those reported by PassPort.
+func auditUSBTestersExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := cft.PassportUSBTesterClientFromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Annotate(err, "audit usb testers: get usb tester client").Err()
+	}
+
+	foundTesters := make(map[string]bool)
+	resp, err := client.GetTesters(ctx, &passport.GetTestersRequest{})
+	if err != nil {
+		return errors.Annotate(err, "audit usb testers: call GetTesters").Err()
+	}
+
+	for _, s := range resp.GetTesters() {
+		id := strings.ToUpper(s.GetId())
+		log.Debugf(ctx, "Found usb testers: %q", id)
+		foundTesters[id] = true
+	}
+
+	var missingTesters []string
+	for _, d := range info.GetChromeos().GetPasit().GetDevices() {
+		if d.GetType() != tlw.Pasit_Device_USB_TESTER {
+			continue
+		}
+		id := strings.ToUpper(d.GetId())
+		if !foundTesters[id] {
+			log.Debugf(ctx, "Missing usb testers: %q in inventory records but found in testbed. Please update inventory records!", id)
+			missingTesters = append(missingTesters, id)
+		}
+		delete(foundTesters, id)
+	}
+
+	for id := range foundTesters {
+		log.Debugf(ctx, "Found a new USB tester: %q in  testbed. Please update inventory records!", id)
+	}
+
+	if len(missingTesters) > 0 {
+		return errors.Reason("audit usb testers: Missing tester with IDs %v", missingTesters).Err()
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("pasit_audit_switches", auditSwitchesExec)
+	execs.Register("pasit_audit_usb_testers", auditUSBTestersExec)
 }

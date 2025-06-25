@@ -52,3 +52,8 @@ func PassportName(dut *tlw.Dut) string {
 func PassportSwitchName(dut *tlw.Dut) string {
 	return "cros-passport_switch-" + dut.Name
 }
+
+// PassportUSBTesterName generates the predicable name for passport usb tester service.
+func PassportUSBTesterName(dut *tlw.Dut) string {
+	return "cros-passport_usb_tester-" + dut.Name
+}

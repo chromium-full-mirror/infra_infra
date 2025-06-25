@@ -136,9 +136,37 @@ func passportResetResetSwitchesExec(ctx context.Context, info *execs.ExecInfo) e
 	return nil
 }
 
+// passportResetAllUSBTestersExec resets all USB testers connected to the PassPort Host.
+func passportResetAllUSBTestersExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := cft.PassportUSBTesterClientFromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Annotate(err, "reset passport usb testers: get switch client").Err()
+	}
+
+	testers, err := client.GetTesters(ctx, &passport.GetTestersRequest{})
+	if err != nil {
+		return errors.Annotate(err, "reset passport usb testers: get testers").Err()
+	}
+
+	for _, tester := range testers.GetTesters() {
+		if _, err := client.OpenTester(ctx, &passport.OpenTesterRequest{Id: tester.Id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: open tester %q", tester.Id).Err()
+		}
+		if _, err := client.HardResetTester(ctx, &passport.HardResetTesterRequest{Id: tester.Id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: hard reset tester %q", tester.Id).Err()
+		}
+		if _, err := client.CloseTester(ctx, &passport.CloseTesterRequest{Id: tester.Id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: close tester %q", tester.Id).Err()
+		}
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("ctr_passport_address_not_in_scope", passportAddressNotInScopeExec)
 	execs.Register("ctr_passport_start", passportStartContainerExec)
 	execs.Register("ctr_passport_reset_switches", passportResetResetSwitchesExec)
+	execs.Register("ctr_passport_reset_usb_testers", passportResetAllUSBTestersExec)
 	execs.Register("ctr_passport_stop", pasportStopContainerExec)
 }
