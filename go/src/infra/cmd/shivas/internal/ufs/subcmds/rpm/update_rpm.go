@@ -130,12 +130,12 @@ func (c *updateRPM) innerRun(a subcommands.Application, args []string, env subco
 			Ip:     c.ip,
 		},
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"rack":     "rack",
-			"mac":      "macAddress",
-			"capacity": "capacity",
-			"tag":      "tags",
-			"desc":     "description",
-			"state":    "resourceState",
+			"rack":     ufsUtil.RackPath,
+			"mac":      ufsUtil.MacAddressPath,
+			"capacity": ufsUtil.CapacityPortPath,
+			"tag":      ufsUtil.TagsPath,
+			"desc":     ufsUtil.DescriptionPath,
+			"state":    ufsUtil.ResourceStatePath,
 		}),
 	})
 	if err != nil {

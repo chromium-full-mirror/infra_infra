@@ -331,22 +331,22 @@ func validateRPMUpdateMask(ctx context.Context, rpm *ufspb.RPM, mask *field_mask
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case ufsUtil.NamePath:
 				return status.Error(codes.InvalidArgument, "name cannot be updated, delete and create a new rpm instead")
-			case "update_time":
+			case ufsUtil.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "update_time cannot be updated, it is a Output only field")
-			case "macAddress":
+			case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 				if err := validateMacAddress(ctx, rpm.GetName(), rpm.GetMacAddress()); err != nil {
 					return err
 				}
-			case "rack":
+			case ufsUtil.RackPath:
 				if rpm.GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "rack cannot be empty for updating a RPM")
 				}
-			case "capacity":
-			case "description":
-			case "tags":
-			case "resourceState":
+			case ufsUtil.CapacityPortPath, ufsUtil.CapacityPath:
+			case ufsUtil.DescriptionPath:
+			case ufsUtil.TagsPath:
+			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)
@@ -391,7 +391,7 @@ func processRPMUpdateMask(ctx context.Context, oldRPM *ufspb.RPM, rpm *ufspb.RPM
 	// update the fields in the existing/old rpm
 	for _, path := range mask.Paths {
 		switch path {
-		case "rack":
+		case ufsUtil.RackPath:
 			if oldRPM.GetRack() != rpm.GetRack() {
 				// User is trying to associate this rpm with a different rack.
 				// Get rack to associate the rpm
@@ -407,15 +407,15 @@ func processRPMUpdateMask(ctx context.Context, oldRPM *ufspb.RPM, rpm *ufspb.RPM
 				// Fill the zone to rpm OUTPUT only fields
 				oldRPM.Zone = rack.GetLocation().GetZone().String()
 			}
-		case "description":
+		case ufsUtil.DescriptionPath:
 			oldRPM.Description = rpm.GetDescription()
-		case "capacity":
+		case ufsUtil.CapacityPortPath, ufsUtil.CapacityPath:
 			oldRPM.CapacityPort = rpm.GetCapacityPort()
-		case "resourceState":
+		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
 			oldRPM.ResourceState = rpm.GetResourceState()
-		case "macAddress":
+		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
 			oldRPM.MacAddress = rpm.GetMacAddress()
-		case "tags":
+		case ufsUtil.TagsPath:
 			oldRPM.Tags = mergeTags(oldRPM.GetTags(), rpm.GetTags())
 		}
 	}
