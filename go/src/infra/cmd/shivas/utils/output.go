@@ -60,6 +60,7 @@ var (
 	BrowserMachineTitle        = []string{"Machine Name", "Serial Number", "Zone", "Rack", "KVM", "KVM Port", "ChromePlatform", "DeploymentTicket", "Description", "State", "Realm", "UpdateTime"}
 	OSMachineTitle             = []string{"Machine Name", "Zone", "Rack", "Barcode", "Hardware ID", "Model", "DeviceType", "MacAddress", "SKU", "Phase", "Build Target", "State", "Realm", "UpdateTime"}
 	AttachedDeviceMachineTitle = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "State", "Realm", "UpdateTime"}
+	ServerMachineTitle         = []string{"Machine Name", "Zone", "Rack", "Model", "CpuType", "DriveModel", "State", "Realm", "UpdateTime"}
 	DevboardMachineTitle       = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Board Type", "State", "Realm", "UpdateTime"}
 	MachinelseprototypeTitle   = []string{"Machine Prototype Name", "Occupied Capacity", "PeripheralTypes", "VirtualTypes", "Tags", "UpdateTime"}
 	RacklseprototypeTitle      = []string{"Rack Prototype Name", "PeripheralTypes", "Tags", "UpdateTime"}
@@ -969,6 +970,18 @@ func machineOutputStrs(pm proto.Message) []string {
 			m.GetAttachedDevice().GetDeviceType().String(),
 			m.GetAttachedDevice().GetModel(),
 			m.GetAttachedDevice().GetBuildTarget(),
+			ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
+			m.GetRealm(),
+			ts,
+		}
+	} else if m.GetServerMachine() != nil {
+		return []string{
+			ufsUtil.RemovePrefix(m.GetName()),
+			ufsUtil.RemoveZonePrefix(m.GetLocation().GetZone().String()),
+			m.GetLocation().GetRack(),
+			m.GetServerMachine().GetModel(),
+			m.GetServerMachine().GetCpuType(),
+			m.GetServerMachine().GetDriveModel(),
 			ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
 			m.GetRealm(),
 			ts,

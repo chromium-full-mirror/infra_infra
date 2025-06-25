@@ -185,6 +185,8 @@ func printMachineNormal(entities []proto.Message, tsv, keysOnly bool) error {
 		utils.PrintTableTitle(utils.OSMachineTitle, tsv, keysOnly)
 	} else if machine.GetAttachedDevice() != nil {
 		utils.PrintTableTitle(utils.AttachedDeviceMachineTitle, tsv, keysOnly)
+	} else if machine.GetServerMachine() != nil {
+		utils.PrintTableTitle(utils.ServerMachineTitle, tsv, keysOnly)
 	}
 	utils.PrintMachines(entities, keysOnly)
 	return nil
