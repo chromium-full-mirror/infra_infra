@@ -228,41 +228,41 @@ func processSchedulingUnitUpdateMask(ctx context.Context, oldSu *ufspb.Schedulin
 	// Update the fields in the existing/old SchedulingUnit.
 	for _, path := range mask.Paths {
 		switch path {
-		case "pools":
+		case util.PoolsPath:
 			oldSu.Pools = mergeTags(oldSu.GetPools(), su.GetPools())
-		case "pools.remove":
+		case util.PoolsRemovePath:
 			oldPools := oldSu.GetPools()
 			for _, lse := range su.GetPools() {
 				oldPools = util.RemoveStringEntry(oldPools, lse)
 			}
 			oldSu.Pools = oldPools
-		case "machinelses":
+		case util.MachinelsesPath:
 			oldSu.MachineLSEs = mergeTags(oldSu.GetMachineLSEs(), su.GetMachineLSEs())
-		case "machinelses.remove":
+		case util.MachinelsesRemovePath:
 			oldMachineLSEs := oldSu.GetMachineLSEs()
 			for _, lse := range su.GetMachineLSEs() {
 				oldMachineLSEs = util.RemoveStringEntry(oldMachineLSEs, lse)
 			}
 			oldSu.MachineLSEs = oldMachineLSEs
-		case "tags":
+		case util.TagsPath:
 			oldSu.Tags = mergeTags(oldSu.GetTags(), su.GetTags())
-		case "tags.remove":
+		case util.TagsRemovePath:
 			oldTags := oldSu.GetTags()
 			for _, lse := range su.GetTags() {
 				oldTags = util.RemoveStringEntry(oldTags, lse)
 			}
 			oldSu.Tags = oldTags
-		case "type":
+		case util.TypePath:
 			oldSu.Type = su.GetType()
-		case "description":
+		case util.DescriptionPath:
 			oldSu.Description = su.GetDescription()
-		case "primary-dut":
+		case util.PrimaryDutPath, util.PrimaryDutKebabPath:
 			oldSu.PrimaryDut = su.GetPrimaryDut()
-		case "expose-type":
+		case util.ExposeTypePath, util.ExposeTypeKebabPath:
 			oldSu.ExposeType = su.GetExposeType()
-		case "wificell":
+		case util.WificellPath:
 			oldSu.Wificell = su.GetWificell()
-		case "carrier":
+		case util.CarrierPath:
 			oldSu.Carrier = su.GetCarrier()
 		}
 	}
@@ -289,22 +289,22 @@ func validateSchedulingUnitUpdateMask(ctx context.Context, su *ufspb.SchedulingU
 		// Validate the give field mask.
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "name cannot be updated, delete and create a SchedulingUnit instead")
-			case "update_time":
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "update_time cannot be updated, it is a output only field")
-			case "pools":
-			case "pools.remove":
-			case "tags":
-			case "tags.remove":
-			case "type":
-			case "machinelses":
-			case "machinelses.remove":
-			case "description":
-			case "primary-dut":
-			case "expose-type":
-			case "wificell":
-			case "carrier":
+			case util.PoolsPath:
+			case util.PoolsRemovePath:
+			case util.TagsPath:
+			case util.TagsRemovePath:
+			case util.TypePath:
+			case util.MachinelsesPath:
+			case util.MachinelsesRemovePath:
+			case util.DescriptionPath:
+			case util.PrimaryDutPath, util.PrimaryDutKebabPath:
+			case util.ExposeTypePath, util.ExposeTypeKebabPath:
+			case util.WificellPath:
+			case util.CarrierPath:
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)

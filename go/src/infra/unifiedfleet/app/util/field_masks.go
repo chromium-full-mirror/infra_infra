@@ -128,13 +128,16 @@ const (
 
 	// Scheduling Unit
 	CarrierPath           string = "carrier"
-	ExposeTypePath        string = "expose-type"
+	ExposeTypePath        string = "expose_type"
 	MachinelsesPath       string = "machinelses"
 	MachinelsesRemovePath string = "machinelses.remove"
 	PoolsPath             string = "pools"
 	PoolsRemovePath       string = "pools.remove"
-	PrimaryDutPath        string = "primary-dut"
+	PrimaryDutPath        string = "primary_dut"
 	WificellPath          string = "wificell"
+	// Non-standard
+	ExposeTypeKebabPath string = "expose-type"
+	PrimaryDutKebabPath string = "primary-dut"
 
 	// Chrome Browser Host
 	KvmInterfaceKvmPath      string = "kvm_interface.kvm"

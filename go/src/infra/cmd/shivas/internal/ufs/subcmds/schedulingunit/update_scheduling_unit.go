@@ -97,18 +97,18 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 	}
 
 	mask := utils.GetUpdateMask(&c.Flags, map[string]string{
-		"duts":            "machinelses",
-		"pools":           "pools",
-		"tags":            "tags",
-		"duts-to-remove":  "machinelses.remove",
-		"pools-to-remove": "pools.remove",
-		"tags-to-remove":  "tags.remove",
-		"type":            "type",
-		"desc":            "description",
-		"primary-dut":     "primary-dut",
-		"expose-type":     "expose-type",
-		"wificell":        "wificell",
-		"carrier":         "carrier",
+		"duts":            ufsUtil.MachinelsesPath,
+		"pools":           ufsUtil.PoolsPath,
+		"tags":            ufsUtil.TagsPath,
+		"duts-to-remove":  ufsUtil.MachinelsesRemovePath,
+		"pools-to-remove": ufsUtil.PoolsRemovePath,
+		"tags-to-remove":  ufsUtil.TagsRemovePath,
+		"type":            ufsUtil.TypePath,
+		"desc":            ufsUtil.DescriptionPath,
+		"primary-dut":     ufsUtil.PrimaryDutPath,
+		"expose-type":     ufsUtil.ExposeTypePath,
+		"wificell":        ufsUtil.WificellPath,
+		"carrier":         ufsUtil.CarrierPath,
 	})
 	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
 	if len(mask.Paths) == 0 {
