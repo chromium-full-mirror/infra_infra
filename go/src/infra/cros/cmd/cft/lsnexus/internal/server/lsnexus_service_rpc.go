@@ -88,6 +88,109 @@ func (s *LsNexus) CallServod(ctx context.Context, req *lsnexus.CallServodRequest
 	return nil, status.Error(codes.Unimplemented, "the specified call servod method not implemented")
 }
 
+func (s *LsNexus) RemoveFile(ctx context.Context, req *lsnexus.RemoveFileRequest) (*lsnexus.RemoveFileResponse, error) {
+	s.log("Serving RemoveFile request for file:", req.GetFileName())
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	bolsReq := &bols.RemoveFileRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Filename: req.GetFileName(),
+	}
+
+	if _, err := s.cl.RemoveFile(ctx, bolsReq); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS RemoveFile: %w", err))
+	}
+
+	s.log("Successfully removed file:", req.GetFileName())
+	return &lsnexus.RemoveFileResponse{}, nil
+}
+
+func (s *LsNexus) MakeDir(ctx context.Context, req *lsnexus.MakeDirRequest) (*lsnexus.MakeDirResponse, error) {
+	s.log("Serving MakeDir request for path:", req.GetPath())
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	bolsReq := &bols.MakeDirRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Path: req.GetPath(),
+	}
+
+	if _, err := s.cl.MakeDir(ctx, bolsReq); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS MakeDir: %w", err))
+	}
+
+	s.log("Successfully made directory:", req.GetPath())
+	return &lsnexus.MakeDirResponse{}, nil
+}
+
+func (s *LsNexus) RemoveDir(ctx context.Context, req *lsnexus.RemoveDirRequest) (*lsnexus.RemoveDirResponse, error) {
+	s.log("Serving RemoveDir request for path:", req.GetPath())
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	bolsReq := &bols.RemoveDirRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Path:      req.GetPath(),
+		RemoveAll: true, // Recursively remove the directory and its contents.
+	}
+
+	if _, err := s.cl.RemoveDir(ctx, bolsReq); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS RemoveDir: %w", err))
+	}
+
+	s.log("Successfully removed directory:", req.GetPath())
+	return &lsnexus.RemoveDirResponse{}, nil
+}
+
+func (s *LsNexus) MakeTempDir(ctx context.Context, req *lsnexus.MakeTempDirRequest) (*lsnexus.MakeTempDirResponse, error) {
+	s.log("Serving MakeTempDir request, parent dir:", req.GetParent())
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	bolsReq := &bols.MakeTempDirRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Dir: req.GetParent(),
+		// Pattern is left empty to use the default behavior of the BOLS service.
+	}
+
+	bolsRsp, err := s.cl.MakeTempDir(ctx, bolsReq)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS MakeTempDir: %w", err))
+	}
+
+	if bolsRsp.GetInfo() == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS MakeTempDir returned a response with no directory info"))
+	}
+
+	path := bolsRsp.GetInfo().GetPath()
+	s.log("Successfully created temp directory:", path)
+
+	return &lsnexus.MakeTempDirResponse{
+		Path: path,
+	}, nil
+}
+
 func (s *LsNexus) log(args ...any) {
 	if s.logger == nil {
 		return
