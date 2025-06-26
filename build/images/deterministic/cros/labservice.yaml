@@ -1,0 +1,9 @@
+---
+name: cros/labservice
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/cmd/labservice/docker/Dockerfile
+deterministic: true
+
+build:
+  - go_binary: go.chromium.org/infra/cros/cmd/labservice
