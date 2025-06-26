@@ -59,7 +59,7 @@ func (c *cmdPinsUpdateRun) exec(ctx context.Context) error {
 
 	ts, err := c.tokenSource(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to setup auth").Err()
+		return errors.Fmt("failed to setup auth: %w", err)
 	}
 	registry := &registry.Client{TokenSource: ts}
 
@@ -105,10 +105,10 @@ func (c *cmdPinsUpdateRun) exec(ctx context.Context) error {
 	logging.Infof(ctx, "    Failed:    %d", len(out.Failed))
 
 	if jerr := c.writeJSONOutput(&out); jerr != nil {
-		return errors.Annotate(jerr, "failed to write JSON output").Err()
+		return errors.Fmt("failed to write JSON output: %w", jerr)
 	}
 	if err != nil {
-		return errors.Annotate(err, "failed to resolve pin(s)").Err()
+		return errors.Fmt("failed to resolve pin(s): %w", err)
 	}
 	if len(out.Updated) != 0 {
 		return errors.WrapIf(writePins(c.pins, pins), "writing pins file")

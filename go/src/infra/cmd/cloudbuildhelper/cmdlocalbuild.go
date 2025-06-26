@@ -87,9 +87,9 @@ func (c *cmdLocalBuildRun) exec(ctx context.Context) error {
 
 		switch {
 		case dockerErr != nil:
-			return errors.Annotate(dockerErr, "failed to build the image").Err()
+			return errors.Fmt("failed to build the image: %w", dockerErr)
 		case tarErr != nil:
-			return errors.Annotate(tarErr, "building the image").Err()
+			return errors.Fmt("building the image: %w", tarErr)
 		}
 
 		// TODO(vadimsh): Add -json-output support.
@@ -103,10 +103,10 @@ func sendAsTarball(out *fileset.Set, w io.WriteCloser) (digest string, err error
 	h := sha256.New()
 	if err := out.ToTarGz(io.MultiWriter(w, h)); err != nil {
 		w.Close()
-		return "", errors.Annotate(err, "failed to write the tarball").Err()
+		return "", errors.Fmt("failed to write the tarball: %w", err)
 	}
 	if err := w.Close(); err != nil {
-		return "", errors.Annotate(err, "failed to close the write end of the pipe").Err()
+		return "", errors.Fmt("failed to close the write end of the pipe: %w", err)
 	}
 	return hex.EncodeToString(h.Sum(nil)), nil
 }

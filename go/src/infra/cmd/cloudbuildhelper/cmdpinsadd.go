@@ -67,19 +67,19 @@ func (c *cmdPinsAddRun) exec(ctx context.Context) error {
 
 	ts, err := c.tokenSource(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to setup auth").Err()
+		return errors.Fmt("failed to setup auth: %w", err)
 	}
 	registry := &registry.Client{TokenSource: ts}
 
 	resolved, err := registry.GetImage(ctx, pinToAdd.ImageRef())
 	if err != nil {
-		return errors.Annotate(err, "resolving %q", pinToAdd.ImageRef()).Err()
+		return errors.Fmt("resolving %q: %w", pinToAdd.ImageRef(), err)
 	}
 	pinToAdd.Digest = resolved.Digest
 
 	logging.Infof(ctx, "%s => %s", pinToAdd.ImageRef(), resolved.Digest)
 	if err := pins.Add(pinToAdd); err != nil {
-		return errors.Annotate(err, "adding resolved tag").Err()
+		return errors.Fmt("adding resolved tag: %w", err)
 	}
 
 	return errors.WrapIf(writePins(c.pins, pins), "writing pins file")
@@ -89,7 +89,7 @@ func (c *cmdPinsAddRun) exec(ctx context.Context) error {
 func readPins(path string) (*dockerfile.Pins, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, errors.Annotate(err, "can't read pins file").Tag(isCLIError).Err()
+		return nil, isCLIError.Apply(errors.Fmt("can't read pins file: %w", err))
 	}
 	defer f.Close()
 	pins, err := dockerfile.ReadPins(f)

@@ -124,17 +124,17 @@ func (c *cmdBuildRun) exec(ctx context.Context) error {
 	// Need a token source to talk to Google Storage and Cloud Build.
 	ts, err := c.tokenSource(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to setup auth").Err()
+		return errors.Fmt("failed to setup auth: %w", err)
 	}
 
 	// Instantiate infra services based on what's in the manifest.
 	store, err := storage.New(ctx, ts, m.Infra.Storage)
 	if err != nil {
-		return errors.Annotate(err, "failed to initialize Storage").Err()
+		return errors.Fmt("failed to initialize Storage: %w", err)
 	}
 	builder, err := cloudbuild.New(ctx, ts, *m.CloudBuild)
 	if err != nil {
-		return errors.Annotate(err, "failed to initialize Builder").Err()
+		return errors.Fmt("failed to initialize Builder: %w", err)
 	}
 	registry := &registry.Client{TokenSource: ts} // can talk to any registry
 
@@ -171,7 +171,7 @@ func (c *cmdBuildRun) reportResult(ctx context.Context, r buildResult, err error
 	}
 
 	if jerr := c.writeJSONOutput(&r); jerr != nil {
-		return errors.Annotate(jerr, "failed to write JSON output").Err()
+		return errors.Fmt("failed to write JSON output: %w", jerr)
 	}
 	return err
 }
@@ -245,7 +245,7 @@ func runBuild(ctx context.Context, p buildParams) (res buildResult, err error) {
 
 	// Attach all requested tags (even if we reused an existing image).
 	if err := tagImage(ctx, p.Registry, res.Image, p.Tags); err != nil {
-		return res, errors.Annotate(err, "tagging the image with -tag(s)").Err()
+		return res, errors.Fmt("tagging the image with -tag(s): %w", err)
 	}
 
 	return
@@ -290,7 +290,7 @@ func remoteBuild(ctx context.Context, p buildParams, out *fileset.Set) (res buil
 
 	f, digest, err := writeToTemp(ctx, out)
 	if err != nil {
-		err = errors.Annotate(err, "failed to write the tarball with context dir").Err()
+		err = errors.Fmt("failed to write the tarball with context dir: %w", err)
 		return
 	}
 
@@ -380,7 +380,7 @@ func remoteBuild(ctx context.Context, p buildParams, out *fileset.Set) (res buil
 		// Apply the canonical tag to the image since we built a new image and need
 		// to give it a canonical name.
 		if err := tagImage(ctx, p.Registry, res.Image, []string{p.CanonicalTag}); err != nil {
-			return res, errors.Annotate(err, "tagging the image with the canonical tag").Err()
+			return res, errors.Fmt("tagging the image with the canonical tag: %w", err)
 		}
 		// Modify tarball's metadata to let the future builds know they can reuse
 		// the image we've just built. We do it only when using canonical tags,
@@ -412,7 +412,7 @@ func getImage(ctx context.Context, r registryImpl, imageRef string) (*registry.I
 	case registry.IsManifestUnknown(err):
 		return nil, nil
 	default:
-		return nil, errors.Annotate(err, "checking existence of %q", imageRef).Err()
+		return nil, errors.Fmt("checking existence of %q: %w", imageRef, err)
 	}
 }
 
@@ -428,13 +428,13 @@ func tagImage(ctx context.Context, r registryImpl, imgRef *imageRef, tags []stri
 	logging.Debugf(ctx, "Fetching the image manifest...")
 	img, err := r.GetImage(ctx, fmt.Sprintf("%s@%s", imgRef.Image, imgRef.Digest))
 	if err != nil {
-		return errors.Annotate(err, "fetching the image manifest").Err()
+		return errors.Fmt("fetching the image manifest: %w", err)
 	}
 
 	for _, t := range tags {
 		logging.Infof(ctx, "Tagging %s => %s", t, imgRef.Digest)
 		if r.TagImage(ctx, img, t); err != nil {
-			return errors.Annotate(err, "pushing tag %q", t).Err()
+			return errors.Fmt("pushing tag %q: %w", t, err)
 		}
 	}
 
@@ -469,7 +469,7 @@ func doCloudBuild(ctx context.Context, in *storage.Object, inDigest string, p bu
 		},
 	})
 	if err != nil {
-		return "", nil, errors.Annotate(err, "failed to trigger Cloud Build build").Err()
+		return "", nil, errors.Fmt("failed to trigger Cloud Build build: %w", err)
 	}
 	logging.Infof(ctx, "Triggered build %s", build.ID)
 	logging.Infof(ctx, "Logs are available at %s (may require special permissions to view)", build.LogURL)
@@ -477,21 +477,21 @@ func doCloudBuild(ctx context.Context, in *storage.Object, inDigest string, p bu
 	// Babysit it until it completes.
 	logging.Infof(ctx, "Waiting for the build to finish...")
 	if build, err = waitBuild(ctx, p.Builder, build); err != nil {
-		return "", build, errors.Annotate(err, "waiting for the build to finish").Err()
+		return "", build, errors.Fmt("waiting for the build to finish: %w", err)
 	}
 	if build.Status != cloudbuild.StatusSuccess {
-		return "", build, errors.Reason("build failed, see its logs at %s", build.LogURL).Err()
+		return "", build, errors.Fmt("build failed, see its logs at %s", build.LogURL)
 	}
 
 	// Make sure Cloud Build worker really consumed the tarball we prepared.
 	if got := build.InputHashes[in.String()]; got != inDigest {
-		return "", build, errors.Reason("build consumed file with digest %q, but we produced %q", got, inDigest).Err()
+		return "", build, errors.Fmt("build consumed file with digest %q, but we produced %q", got, inDigest)
 	}
 
 	// If Cloud Build pushed the image itself, trust the digest it returned.
 	if build.OutputDigest != "" {
 		if build.OutputImage != image {
-			return "", build, errors.Reason("build produced image %q, but we expected %q", build.OutputImage, image).Err()
+			return "", build, errors.Fmt("build produced image %q, but we expected %q", build.OutputImage, image)
 		}
 		return build.OutputDigest, build, nil
 	}
@@ -502,7 +502,7 @@ func doCloudBuild(ctx context.Context, in *storage.Object, inDigest string, p bu
 	logging.Infof(ctx, "Resolving digest of %s...", image)
 	resolved, err := p.Registry.GetImage(ctx, image)
 	if err != nil {
-		return "", build, errors.Annotate(err, "the Cloud Build step didn't push image %q", image).Err()
+		return "", build, errors.Fmt("the Cloud Build step didn't push image %q: %w", image, err)
 	}
 	return resolved.Digest, build, nil
 }
@@ -528,7 +528,7 @@ func waitBuild(ctx context.Context, bldr builderImpl, b *cloudbuild.Build) (*clo
 		build, err := bldr.Check(ctx, b.ID)
 		if err != nil {
 			if errs++; errs > 5 {
-				return nil, errors.Annotate(err, "too many errors, the last one").Err()
+				return nil, errors.Fmt("too many errors, the last one: %w", err)
 			}
 			logging.Warningf(ctx, "Error when checking build status - %s", err)
 			continue // sleep and try again
@@ -536,7 +536,7 @@ func waitBuild(ctx context.Context, bldr builderImpl, b *cloudbuild.Build) (*clo
 		errs = 0
 
 		if build.ID != b.ID {
-			return nil, errors.Reason("got unexpected build with ID %q, expecting %q", build.ID, b.ID).Err()
+			return nil, errors.Fmt("got unexpected build with ID %q, expecting %q", build.ID, b.ID)
 		}
 		b = build
 	}

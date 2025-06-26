@@ -34,24 +34,24 @@ func mainImpl(c context.Context) error {
 	flag.Parse()
 
 	if *path == "" {
-		return errors.Reason("no TableDef protobuf path was specified (-path)").Err()
+		return errors.New("no TableDef protobuf path was specified (-path)")
 	}
 
 	if *dest == "" {
 		var err error
 		if *dest, err = os.Getwd(); err != nil {
-			return errors.Annotate(err, "failed to get current working directory").Err()
+			return errors.Fmt("failed to get current working directory: %w", err)
 		}
 	}
 
 	pkg, err := build.Default.ImportDir(*dest, 0)
 	if err != nil {
-		return errors.Annotate(err, "failed to import destination package from: %q", *dest).Err()
+		return errors.Fmt("failed to import destination package from: %q: %w", *dest, err)
 	}
 
 	td, err := LoadTableDef(*path)
 	if err != nil {
-		return errors.Annotate(err, "failed to load table def").Err()
+		return errors.Fmt("failed to load table def: %w", err)
 	}
 
 	if *name == "" {

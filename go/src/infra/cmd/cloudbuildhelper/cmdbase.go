@@ -139,11 +139,11 @@ func (c *commandBase) Run(a subcommands.Application, args []string, env subcomma
 
 	if len(args) != len(c.posArgs) {
 		if len(c.posArgs) == 0 {
-			return handleErr(ctx, errors.Reason("unexpected positional arguments %q", args).Tag(isCLIError).Err())
+			return handleErr(ctx, isCLIError.Apply(errors.Fmt("unexpected positional arguments %q", args)))
 		}
-		return handleErr(ctx, errors.Reason(
-			"expected %d positional argument(s), got %d",
-			len(c.posArgs), len(args)).Tag(isCLIError).Err())
+		return handleErr(ctx,
+			isCLIError.Apply(errors.Fmt("expected %d positional argument(s), got %d",
+				len(c.posArgs), len(args))))
 	}
 
 	for i, arg := range args {
@@ -156,7 +156,7 @@ func (c *commandBase) Run(a subcommands.Application, args []string, env subcomma
 			return handleErr(ctx, errBadFlag("-render-to-stdout", err.Error()))
 		}
 		if c.jsonOutput == "-" {
-			return handleErr(ctx, errors.Reason("-render-to-stdout and -json-output='-' can't be used together").Tag(isCLIError).Err())
+			return handleErr(ctx, isCLIError.Apply(errors.New("-render-to-stdout and -json-output='-' can't be used together")))
 		}
 	}
 
@@ -207,20 +207,20 @@ func (c *commandBase) loadManifest(ctx context.Context, path string, needStorage
 
 	m.Manifest, err = manifest.Load(path)
 	if err != nil {
-		return nil, nil, errors.Annotate(err, "when loading manifest").Tag(isCLIError).Err()
+		return nil, nil, isCLIError.Apply(errors.Fmt("when loading manifest: %w", err))
 	}
 
 	// If contextdir isn't set, replace it with an empty temp directory.
 	if m.Manifest.ContextDir == "" {
 		m.Manifest.ContextDir, err = c.newTempDir()
 		if err != nil {
-			return nil, nil, errors.Annotate(err, "failed to create temp directory to act as a context dir").Err()
+			return nil, nil, errors.Fmt("failed to create temp directory to act as a context dir: %w", err)
 		}
 	}
 
 	// Now that all paths are initialized, render "${dir}/..." strings.
 	if err = m.Manifest.Finalize(); err != nil {
-		return nil, nil, errors.Annotate(err, "when loading manifest").Tag(isCLIError).Err()
+		return nil, nil, isCLIError.Apply(errors.Fmt("when loading manifest: %w", err))
 	}
 
 	if c.extraFlags.infra {
@@ -232,13 +232,13 @@ func (c *commandBase) loadManifest(ctx context.Context, path string, needStorage
 		case !ok:
 			return nil, nil, errBadFlag("-infra", fmt.Sprintf("no %q infra specified in the manifest", c.infra))
 		case needStorage && section.Storage == "":
-			return nil, nil, errors.Reason("in %q: infra[...].storage is required when using Cloud Build", path).Tag(isCLIError).Err()
+			return nil, nil, isCLIError.Apply(errors.Fmt("in %q: infra[...].storage is required when using Cloud Build", path))
 		case needCloudBuild && section.Registry == "":
-			return nil, nil, errors.Reason("in %q: infra[...].registry is required when using Cloud Build", path).Tag(isCLIError).Err()
+			return nil, nil, isCLIError.Apply(errors.Fmt("in %q: infra[...].registry is required when using Cloud Build", path))
 		case needCloudBuild:
 			m.CloudBuild, err = section.ResolveCloudBuildConfig(m.Manifest.CloudBuild)
 			if err != nil {
-				return nil, nil, errors.Annotate(err, "in %q", path).Err()
+				return nil, nil, errors.Fmt("in %q: %w", path, err)
 			}
 		}
 		m.Infra = &section
@@ -259,13 +259,13 @@ func (c *commandBase) loadManifest(ctx context.Context, path string, needStorage
 			for _, msg := range violations {
 				logging.Errorf(ctx, "Restriction violation: %s", msg)
 			}
-			return nil, nil, errors.Reason("restrictions violation detected, see logs").Err()
+			return nil, nil, errors.New("restrictions violation detected, see logs")
 		}
 	}
 
 	// Prepare -json-output portion that depends on the manifest.
 	if output, err = prepBaseOutput(m.Manifest, m.Infra); err != nil {
-		return nil, nil, errors.Annotate(err, "failed to prepare values for -json-output").Err()
+		return nil, nil, errors.Fmt("failed to prepare values for -json-output: %w", err)
 	}
 
 	return
@@ -279,14 +279,14 @@ func prepBaseOutput(m *manifest.Manifest, infra *manifest.Infra) (*baseOutput, e
 	if contextDir != "" {
 		var err error
 		if contextDir, err = filepath.Abs(contextDir); err != nil {
-			return nil, errors.Annotate(err, "bad context directory path").Err()
+			return nil, errors.Fmt("bad context directory path: %w", err)
 		}
 	}
 	sources := make([]string, len(m.Sources))
 	for i, path := range m.Sources {
 		var err error
 		if sources[i], err = filepath.Abs(path); err != nil {
-			return nil, errors.Annotate(err, "bad path in `sources`").Err()
+			return nil, errors.Fmt("bad path in `sources`: %w", err)
 		}
 	}
 	var notify []manifest.NotifyConfig
@@ -314,7 +314,7 @@ func (c *commandBase) tokenSource(ctx context.Context) (oauth2.TokenSource, erro
 	}
 	opts, err := c.authFlags.Options()
 	if err != nil {
-		return nil, errors.Annotate(err, "bad auth options").Tag(isCLIError).Err()
+		return nil, isCLIError.Apply(errors.Fmt("bad auth options: %w", err))
 	}
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, opts)
 	if email, err := authn.GetEmail(); err == nil {
@@ -330,11 +330,11 @@ func (c *commandBase) writeJSONOutput(r any) error {
 	// Need to round-trip though JSON to "activate" all `json:...` annotations.
 	b, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
-		return errors.Annotate(err, "failed to marshal to JSON: %v", r).Err()
+		return errors.Fmt("failed to marshal to JSON: %v: %w", r, err)
 	}
 	var asMap any
 	if err := json.Unmarshal(b, &asMap); err != nil {
-		return errors.Annotate(err, "generated bad JSON output").Err()
+		return errors.Fmt("generated bad JSON output: %w", err)
 	}
 
 	if c.renderToStdout != "" {
@@ -344,13 +344,13 @@ func (c *commandBase) writeJSONOutput(r any) error {
 		// Render it.
 		buf := bytes.Buffer{}
 		if err = tmpl.Execute(&buf, asMap); err != nil {
-			return errors.Annotate(err, "failed to render %q", c.renderToStdout).Err()
+			return errors.Fmt("failed to render %q: %w", c.renderToStdout, err)
 		}
 		buf.WriteRune('\n')
 
 		// Emit it.
 		if _, err := os.Stdout.Write(buf.Bytes()); err != nil {
-			return errors.Annotate(err, "failed to write to stdout").Err()
+			return errors.Fmt("failed to write to stdout: %w", err)
 		}
 	}
 
@@ -381,7 +381,7 @@ func checkVersion(minVer string) error {
 		case cur[i] > min[i]:
 			return nil
 		case cur[i] < min[i]:
-			return errors.Reason("the caller wants cloudbuildhelper >=v%s but the running executable is v%s", minVer, Version).Tag(isCLIError).Err()
+			return isCLIError.Apply(errors.Fmt("the caller wants cloudbuildhelper >=v%s but the running executable is v%s", minVer, Version))
 		}
 	}
 	return nil
@@ -408,7 +408,7 @@ var isCLIError = errtag.Make("bad CLI invocation", true)
 
 // errBadFlag produces an error related to malformed or absent CLI flag
 func errBadFlag(flag, msg string) error {
-	return errors.Reason("bad %q: %s", flag, msg).Tag(isCLIError).Err()
+	return isCLIError.Apply(errors.Fmt("bad %q: %s", flag, msg))
 }
 
 // handleErr prints the error and returns the process exit code.

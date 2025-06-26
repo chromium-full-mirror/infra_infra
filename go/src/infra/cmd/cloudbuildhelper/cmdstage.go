@@ -64,17 +64,17 @@ func (c *cmdStageRun) exec(ctx context.Context) error {
 
 	switch {
 	case c.outputTarball == "" && c.outputDirectory == "":
-		return errors.Reason("either -output-tarball or -output-directory flags are required").Tag(isCLIError).Err()
+		return isCLIError.Apply(errors.New("either -output-tarball or -output-directory flags are required"))
 
 	case c.outputTarball != "" && c.outputDirectory != "":
-		return errors.Reason("-output-tarball and -output-directory flags can't be used together").Tag(isCLIError).Err()
+		return isCLIError.Apply(errors.New("-output-tarball and -output-directory flags can't be used together"))
 
 	case c.outputTarball != "":
 		outputWriter = func(out *fileset.Set) error {
 			logging.Infof(ctx, "Writing %d files to %q...", out.Len(), c.outputTarball)
 			hash, err := out.ToTarGzFile(c.outputTarball)
 			if err != nil {
-				return errors.Annotate(err, "failed to save the output").Err()
+				return errors.Fmt("failed to save the output: %w", err)
 			}
 			logging.Infof(ctx, "Resulting tarball SHA256 is %q", hash)
 			return nil
@@ -84,7 +84,7 @@ func (c *cmdStageRun) exec(ctx context.Context) error {
 		outputWriter = func(out *fileset.Set) error {
 			logging.Infof(ctx, "Writing %d files to %q...", out.Len(), c.outputDirectory)
 			if err := out.Materialize(c.outputDirectory); err != nil {
-				return errors.Annotate(err, "failed to save the output").Err()
+				return errors.Fmt("failed to save the output: %w", err)
 			}
 			return nil
 		}
@@ -131,19 +131,19 @@ func stage(ctx context.Context, m *manifest.Manifest, cb func(*fileset.Set) erro
 				logging.Errorf(ctx, "------------------------------------------------------------------------")
 				return isCLIError.Apply(err)
 			}
-			return errors.Annotate(err, "resolving Dockerfile").Err()
+			return errors.Fmt("resolving Dockerfile: %w", err)
 		}
 	}
 
 	// Execute all build steps to get the resulting fileset.Set.
 	b, err := builder.New()
 	if err != nil {
-		return errors.Annotate(err, "failed to initialize Builder").Err()
+		return errors.Fmt("failed to initialize Builder: %w", err)
 	}
 	defer b.Close()
 	out, err := b.Build(ctx, m)
 	if err != nil {
-		return errors.Annotate(err, "local build failed").Err()
+		return errors.Fmt("local build failed: %w", err)
 	}
 
 	// Append resolved Dockerfile to outputs (perhaps overwriting an existing
@@ -151,7 +151,7 @@ func stage(ctx context.Context, m *manifest.Manifest, cb func(*fileset.Set) erro
 	// *always* lives in the root of the context directory.
 	if dockerFilePath != "" {
 		if err := out.AddFromMemory("Dockerfile", dockerFileBody, nil); err != nil {
-			return errors.Annotate(err, "failed to add Dockerfile to output").Err()
+			return errors.Fmt("failed to add Dockerfile to output: %w", err)
 		}
 	}
 

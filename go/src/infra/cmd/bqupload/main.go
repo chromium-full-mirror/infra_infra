@@ -206,7 +206,7 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 		d := json.NewDecoder(strings.NewReader(value))
 		d.UseNumber()
 		if err := d.Decode(&val); err != nil {
-			return errors.Annotate(err, "parsing -column %q value", key).Err()
+			return errors.Fmt("parsing -column %q value: %w", key, err)
 		}
 		overrides[key] = val
 	}

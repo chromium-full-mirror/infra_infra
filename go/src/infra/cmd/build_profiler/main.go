@@ -51,7 +51,7 @@ type processValue struct {
 func updateProcessMap(ctx context.Context, m map[processKey]*processValue) error {
 	processes, err := process.ProcessesWithContext(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to call ProcessesWithContext").Err()
+		return errors.Fmt("failed to call ProcessesWithContext: %w", err)
 	}
 
 	// Ignore error when failed to get process attributes here.

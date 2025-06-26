@@ -54,12 +54,12 @@ func getBuild(ctx context.Context, input io.Reader) (*buildbucketpb.Build, error
 	logging.Infof(ctx, "reading build input")
 	data, err := io.ReadAll(input)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read build input").Err()
+		return nil, errors.Fmt("failed to read build input: %w", err)
 	}
 	logging.Infof(ctx, "unmarshalling build input")
 	build := &buildbucketpb.Build{}
 	if err = proto.Unmarshal(data, build); err != nil {
-		return nil, errors.Annotate(err, "failed to unmarshall build").Err()
+		return nil, errors.Fmt("failed to unmarshall build: %w", err)
 	}
 	return build, nil
 }
@@ -153,7 +153,7 @@ func performBootstrap(ctx context.Context, input io.Reader, opts options) ([]str
 	logging.Infof(ctx, "marshalling bootstrapped build input")
 	recipeInput, err := proto.Marshal(build)
 	if err != nil {
-		return nil, nil, errors.Annotate(err, "failed to marshall bootstrapped build input: <%s>", build).Err()
+		return nil, nil, errors.Fmt("failed to marshall bootstrapped build input: <%s>: %w", build, err)
 	}
 
 	if opts.outputPath != "" {
@@ -179,7 +179,7 @@ func getStream(ctx context.Context) (streamclient.DatagramStream, error) {
 	logging.Infof(ctx, "bootstrapping logdog")
 	logdog, err := logdogbootstrap.Get()
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to bootstrap logdog").Err()
+		return nil, errors.Fmt("failed to bootstrap logdog: %w", err)
 	}
 
 	logging.Infof(ctx, "getting datagram stream")
@@ -189,7 +189,7 @@ func getStream(ctx context.Context) (streamclient.DatagramStream, error) {
 		streamclient.WithContentType(luciexe.BuildProtoContentType),
 	)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get datagram stream").Err()
+		return nil, errors.Fmt("failed to get datagram stream: %w", err)
 	}
 
 	return stream, nil
@@ -204,7 +204,7 @@ func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream get
 	}
 	defer func() {
 		if err := stream.Close(); err != nil {
-			logging.Errorf(ctx, errors.Annotate(err, "failed to close datagram stream").Err().Error())
+			logging.Errorf(ctx, errors.Fmt("failed to close datagram stream: %w", err).Error())
 		}
 	}()
 
@@ -225,7 +225,7 @@ func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream get
 		Status: buildbucketpb.Status_STARTED,
 	}
 	if err := writeBuild(); err != nil {
-		logging.Errorf(ctx, errors.Annotate(err, "failed to write out initial build").Err().Error())
+		logging.Errorf(ctx, errors.Fmt("failed to write out initial build: %w", err).Error())
 		return
 	}
 
@@ -248,7 +248,7 @@ func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream get
 
 	logging.Infof(ctx, "updating build with failure details")
 	if err := writeBuild(); err != nil {
-		logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
+		logging.Errorf(ctx, errors.Fmt("failed to update build with failure details: %w", err).Error())
 		return
 	}
 }

@@ -98,7 +98,7 @@ type Build struct {
 func New(ctx context.Context, ts oauth2.TokenSource, cfg manifest.CloudBuildBuilder) (*Builder, error) {
 	svc, err := cloudbuild.NewService(ctx, option.WithTokenSource(ts))
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to instantiate cloudbuild.Service").Err()
+		return nil, errors.Fmt("failed to instantiate cloudbuild.Service: %w", err)
 	}
 
 	// When not using private pools we can hit "global" location in the API.
@@ -199,7 +199,7 @@ func (b *Builder) Trigger(ctx context.Context, r Request) (build *Build, image s
 
 	op, err := call.Context(ctx).Do()
 	if err != nil {
-		return nil, "", errors.Annotate(err, "API call to Cloud Build failed").Err()
+		return nil, "", errors.Fmt("API call to Cloud Build failed: %w", err)
 	}
 
 	// Cloud Build returns triggered build details with operation's metadata.
@@ -207,10 +207,10 @@ func (b *Builder) Trigger(ctx context.Context, r Request) (build *Build, image s
 		Build *cloudbuild.Build `json:"build"`
 	}
 	if err := json.Unmarshal(op.Metadata, &metadata); err != nil {
-		return nil, "", errors.Annotate(err, "failed to unmarshal operations metadata %s", op.Metadata).Err()
+		return nil, "", errors.Fmt("failed to unmarshal operations metadata %s: %w", op.Metadata, err)
 	}
 	if metadata.Build == nil {
-		return nil, "", errors.Reason("`build` field unexpectedly missing in the metadata %s", op.Metadata).Err()
+		return nil, "", errors.Fmt("`build` field unexpectedly missing in the metadata %s", op.Metadata)
 	}
 
 	return makeBuild(metadata.Build), image, nil
@@ -220,7 +220,7 @@ func (b *Builder) Trigger(ctx context.Context, r Request) (build *Build, image s
 func (b *Builder) Check(ctx context.Context, bid string) (*Build, error) {
 	build, err := b.builds.Get(fmt.Sprintf("%s/builds/%s", b.location, bid)).Context(ctx).Do()
 	if err != nil {
-		return nil, errors.Annotate(err, "API call to Cloud Build failed").Err()
+		return nil, errors.Fmt("API call to Cloud Build failed: %w", err)
 	}
 	return makeBuild(build), nil
 }

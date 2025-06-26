@@ -135,20 +135,20 @@ func Export(ctx context.Context, td *tabledef.TableDef, packageName, structName,
 	// Generate the template.
 	fd, err := os.Create(out)
 	if err != nil {
-		return errors.Annotate(err, "could not open output file %q", out).Err()
+		return errors.Fmt("could not open output file %q: %w", out, err)
 	}
 	err = structTemplate.Execute(fd, &p)
 	if err != nil {
 		_ = fd.Close()
-		return errors.Annotate(err, "could not generate output file").Err()
+		return errors.Fmt("could not generate output file: %w", err)
 	}
 	if err := fd.Close(); err != nil {
-		return errors.Annotate(err, "could not close output file").Err()
+		return errors.Fmt("could not close output file: %w", err)
 	}
 
 	cmd := exec.CommandContext(ctx, "gofmt", "-s", "-w", out)
 	if err := cmd.Run(); err != nil {
-		return errors.Annotate(err, "could not format output file").Err()
+		return errors.Fmt("could not format output file: %w", err)
 	}
 
 	return nil

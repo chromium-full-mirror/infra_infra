@@ -113,7 +113,7 @@ func parseArgs(args []string) (cmdArgs, error) {
 
 	errs := errors.NewMultiError()
 	if *compBuildId == "" {
-		errs = append(errs, errors.Reason("compilator-id is required").Err())
+		errs = append(errs, errors.New("compilator-id is required"))
 	}
 	if errs.First() != nil {
 		return cmdArgs{}, errs

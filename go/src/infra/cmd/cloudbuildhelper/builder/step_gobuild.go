@@ -53,7 +53,7 @@ func runGoBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	cmd.Stderr = os.Stderr
 	cmd.Env = env.Sorted()
 	if err := cmd.Run(); err != nil {
-		return errors.Annotate(err, "go build invocation failed").Err()
+		return errors.Fmt("go build invocation failed: %w", err)
 	}
 
 	return inv.addFilesToOutput(ctx, tmpName, inv.BuildStep.Dest, nil)

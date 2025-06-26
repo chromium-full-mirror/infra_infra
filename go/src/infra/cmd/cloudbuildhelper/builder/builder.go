@@ -30,7 +30,7 @@ type Builder struct {
 func New() (*Builder, error) {
 	tmpDir, err := os.MkdirTemp("", "cloudbuildhelper")
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to allocate a temporary directory").Err()
+		return nil, errors.Fmt("failed to allocate a temporary directory: %w", err)
 	}
 	return &Builder{tmpDir: tmpDir}, nil
 }
@@ -44,7 +44,7 @@ func New() (*Builder, error) {
 func (b *Builder) Close() error {
 	if b.tmpDir != "" {
 		if err := os.RemoveAll(b.tmpDir); err != nil {
-			return errors.Annotate(err, "failed to remove builder temp dir").Err()
+			return errors.Fmt("failed to remove builder temp dir: %w", err)
 		}
 		b.tmpDir = ""
 	}
@@ -69,10 +69,10 @@ func (b *Builder) Build(ctx context.Context, m *manifest.Manifest) (*fileset.Set
 		logging.Debugf(ctx, "Adding %q to the output set...", m.ContextDir)
 		excluder, err := gitignore.NewExcluder(m.ContextDir, ".gitignore")
 		if err != nil {
-			return nil, errors.Annotate(err, "when loading .gitignore files").Err()
+			return nil, errors.Fmt("when loading .gitignore files: %w", err)
 		}
 		if err := out.AddFromDisk(m.ContextDir, ".", excluder); err != nil {
-			return nil, errors.Annotate(err, "failed to add contextdir %q to output set", m.ContextDir).Err()
+			return nil, errors.Fmt("failed to add contextdir %q to output set: %w", m.ContextDir, err)
 		}
 	}
 
@@ -105,7 +105,7 @@ func (b *Builder) Build(ctx context.Context, m *manifest.Manifest) (*fileset.Set
 			TempSuffix: fmt.Sprintf("_%d", idx),
 		})
 		if err != nil {
-			return nil, errors.Annotate(err, "local build step #%d (%s) failed", idx+1, concrete).Err()
+			return nil, errors.Fmt("local build step #%d (%s) failed: %w", idx+1, concrete, err)
 		}
 	}
 
@@ -155,7 +155,7 @@ func (inv *stepRunnerInv) addFilesToOutput(ctx context.Context, src, dst string,
 	}
 	logging.Infof(ctx, "Copying %s => ${contextdir}/%s", filepath.Base(src), rel)
 	if strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return errors.Reason("the destination should be under the context directory, got %q", rel).Err()
+		return errors.Fmt("the destination should be under the context directory, got %q", rel)
 	}
 	return inv.Output.AddFromDisk(src, rel, exclude)
 }

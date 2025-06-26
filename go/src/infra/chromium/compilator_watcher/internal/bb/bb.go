@@ -77,7 +77,7 @@ func (c *Client) GetBuild(ctx context.Context, ID int64) (*buildbucket_pb.Build,
 	}
 	build, err := c.client.GetBuild(ctx, req)
 	if err != nil {
-		return nil, errors.Annotate(err, "get build").Err()
+		return nil, errors.Fmt("get build: %w", err)
 	}
 	return build, nil
 }

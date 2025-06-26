@@ -34,7 +34,7 @@ func retrieveChromeAndChromiumBuilders(ctx context.Context) ([]Row, error) {
 	client, err := bbClient(ctx)
 
 	if err != nil {
-		return nil, errors.Annotate(err, "Make BB client").Err()
+		return nil, errors.Fmt("Make BB client: %w", err)
 	}
 
 	result := []*buildbucketpb.BuilderItem{}
@@ -80,13 +80,13 @@ func retrieveChromeAndChromiumBuilders(ctx context.Context) ([]Row, error) {
 func generate(ctx context.Context) error {
 	bqClient, err := setup(ctx)
 	if err != nil {
-		return errors.Annotate(err, "Setup").Err()
+		return errors.Fmt("Setup: %w", err)
 	}
 	defer bqClient.Close()
 
 	err = deleteBuilders(ctx, bqClient)
 	if err != nil {
-		return errors.Annotate(err, "Delete builders").Err()
+		return errors.Fmt("Delete builders: %w", err)
 	}
 
 	var rows []Row
@@ -99,7 +99,7 @@ func generate(ctx context.Context) error {
 
 	// Write out to BQ
 	if err = writeToBigQuery(ctx, bqClient, rows); err != nil {
-		return errors.Annotate(err, "Write builders").Err()
+		return errors.Fmt("Write builders: %w", err)
 	}
 	return nil
 }
@@ -111,7 +111,7 @@ func setup(buildCtx context.Context) (*bigquery.Client, error) {
 
 	bqClient, err := bigquery.NewClient(buildCtx, "cr-builder-value")
 	if err != nil {
-		return nil, errors.Annotate(err, "Initializing BigQuery client").Err()
+		return nil, errors.Fmt("Initializing BigQuery client: %w", err)
 	}
 
 	return bqClient, nil
@@ -125,7 +125,7 @@ func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {
 	authenticator := auth.NewAuthenticator(buildCtx, auth.SilentLogin, auth.Options{})
 	httpClient, err := authenticator.Client()
 	if err != nil {
-		return nil, errors.Annotate(err, "Initializing Auth").Err()
+		return nil, errors.Fmt("Initializing Auth: %w", err)
 	}
 
 	return buildbucketpb.NewBuildersPRPCClient(&prpc.Client{

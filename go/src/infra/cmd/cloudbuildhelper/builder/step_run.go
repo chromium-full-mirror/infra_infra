@@ -21,7 +21,7 @@ func runRunBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return errors.Annotate(err, "`run` step failed").Err()
+		return errors.Fmt("`run` step failed: %w", err)
 	}
 
 	// "Pick up" newly generated files in the context directory.

@@ -51,10 +51,10 @@ func Modify(f *fileset.Set, cb func(desc *Description) error) error {
 	if f, ok := f.File(Path); ok {
 		blob, err := f.ReadAll()
 		if err != nil {
-			return errors.Annotate(err, "failed to read existing %s", Path).Err()
+			return errors.Fmt("failed to read existing %s: %w", Path, err)
 		}
 		if err := json.Unmarshal(blob, &cur); err != nil {
-			return errors.Annotate(err, "bad existing %s", Path).Err()
+			return errors.Fmt("bad existing %s: %w", Path, err)
 		}
 	}
 
@@ -65,11 +65,11 @@ func Modify(f *fileset.Set, cb func(desc *Description) error) error {
 
 	blob, err := json.MarshalIndent(&cur, "", "  ")
 	if err != nil {
-		return errors.Annotate(err, "bad updated %s", Path).Err()
+		return errors.Fmt("bad updated %s: %w", Path, err)
 	}
 
 	if err := f.AddFromMemory(Path, blob, nil); err != nil {
-		return errors.Annotate(err, "storing updated %s", Path).Err()
+		return errors.Fmt("storing updated %s: %w", Path, err)
 	}
 
 	return nil

@@ -60,20 +60,20 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 
 	// Hybrid bundles aren't allowed.
 	if cur := currentMode(inv.Output); cur != bundleUnknown && cur != mode {
-		return errors.Reason("the bundle is already in %s mode, but being extended using %s mode", cur, mode).Err()
+		return errors.Fmt("the bundle is already in %s mode, but being extended using %s mode", cur, mode)
 	}
 
 	yamlPath, err := filepath.Abs(inv.BuildStep.GoGAEBundle)
 	if err != nil {
-		return errors.Annotate(err, "failed to convert the path %q to absolute", inv.BuildStep.GoGAEBundle).Err()
+		return errors.Fmt("failed to convert the path %q to absolute: %w", inv.BuildStep.GoGAEBundle, err)
 	}
 	yamlBlob, err := os.ReadFile(yamlPath)
 	if err != nil {
-		return errors.Annotate(err, "failed to read %q", yamlPath).Err()
+		return errors.Fmt("failed to read %q: %w", yamlPath, err)
 	}
 	appYaml, err := gaeapp.LoadAppYAML(yamlBlob)
 	if err != nil {
-		return errors.Annotate(err, "failed to parse %q", yamlPath).Err()
+		return errors.Fmt("failed to parse %q: %w", yamlPath, err)
 	}
 
 	// Read go runtime version from the YAML to know what Go build flags to use.
@@ -83,13 +83,13 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	runtime := appYaml.Runtime
 	logging.Infof(ctx, "Runtime is %q", runtime)
 	if runtime != "go" && !strings.HasPrefix(runtime, "go1") {
-		return errors.Reason("%q is not a supported go runtime", runtime).Err()
+		return errors.Fmt("%q is not a supported go runtime", runtime)
 	}
 	var goMinorVer int64
 	if strings.HasPrefix(runtime, "go1") {
 		runtime = strings.ReplaceAll(runtime, ".", "")
 		if goMinorVer, err = strconv.ParseInt(runtime[3:], 10, 32); err != nil {
-			return errors.Annotate(err, "can't parse %q", runtime).Err()
+			return errors.Fmt("can't parse %q: %w", runtime, err)
 		}
 	}
 
@@ -108,7 +108,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		return err
 	}
 	if mode == bundleModules && (mainPkg.Module == nil || !mainPkg.Module.Main) {
-		return errors.Reason("the main package is not a main module").Err()
+		return errors.New("the main package is not a main module")
 	}
 
 	// In modules mode we should keep track of visited dependencies to build the
@@ -122,7 +122,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	if mode == bundleModules {
 		modDeps, err = prepareModDeps(mainPkg.Module, inv.Output)
 		if err != nil {
-			return errors.Annotate(err, "preparing dependency tracker").Err()
+			return errors.Fmt("preparing dependency tracker: %w", err)
 		}
 	}
 
@@ -134,14 +134,14 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		packageDest = func(pkg *packages.Package) (string, error) {
 			switch {
 			case pkg.Module == nil:
-				return "", errors.Reason("not in a module").Err()
+				return "", errors.New("not in a module")
 			case pkg.Module.Main:
 				var relToMod string
 				switch {
 				case pkg.PkgPath == pkg.Module.Path:
 					relToMod = "."
 				case !strings.HasPrefix(pkg.PkgPath, pkg.Module.Path+"/"):
-					return "", errors.Reason("module %q doesn't match the package import path", pkg.Module.Path).Err()
+					return "", errors.Fmt("module %q doesn't match the package import path", pkg.Module.Path)
 				default:
 					relToMod = pkg.PkgPath[len(pkg.Module.Path)+1:]
 				}
@@ -163,13 +163,13 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	// other directories, since we pick only *.go files from them.
 	excludedByIgnoreFile, err := gitignore.NewExcluder(mainDir, ".gcloudignore")
 	if err != nil {
-		return errors.Annotate(err, "when loading .gcloudignore files").Err()
+		return errors.Fmt("when loading .gcloudignore files: %w", err)
 	}
 
 	// The directory inside the bundle that should contain the `main` package.
 	mainPkgDestRel, err := packageDest(mainPkg)
 	if err != nil {
-		return errors.Annotate(err, "when finding where to put the main package").Err()
+		return errors.Fmt("when finding where to put the main package: %w", err)
 	}
 	// Absolute path to it in the staging directory.
 	mainPkgDestAbs := filepath.Join(inv.Manifest.ContextDir, mainPkgDestRel)
@@ -186,7 +186,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		return nil
 	})
 	if err != nil {
-		return errors.Annotate(err, "updating bundle description").Err()
+		return errors.Fmt("updating bundle description: %w", err)
 	}
 
 	// Copy all files that make up "main" package (they can be only at the root
@@ -231,7 +231,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	// files, but gcloud wants some .gcloudignore anyway, creating the default one
 	// otherwise.
 	if err := inv.Output.Overlay().AddFromMemory(filepath.Join(mainPkgDestRel, ".gcloudignore"), nil, nil); err != nil {
-		return errors.Annotate(err, "failed to create .gcloudignore").Err()
+		return errors.Fmt("failed to create .gcloudignore: %w", err)
 	}
 
 	// We moved the main package to be somewhere under "_gomod" or "_gopath" to
@@ -249,7 +249,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		return err
 	}
 	if err := inv.Output.AddSymlink(linkName, linkTarget); err != nil {
-		return errors.Annotate(err, "failed to setup a symlink to the main package").Err()
+		return errors.Fmt("failed to setup a symlink to the main package: %w", err)
 	}
 
 	// Packages for different go versions may have different files in them due to
@@ -387,7 +387,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		}
 	})
 	if errs != 0 {
-		return errors.Reason("failed to add Go files to the tarball, see the log").Err()
+		return errors.New("failed to add Go files to the tarball, see the log")
 	}
 	logging.Infof(ctx, "Visited %d packages and copied %d files", visited, copied)
 
@@ -396,15 +396,15 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		logging.Infof(ctx, "Writing %s and %s", bundledGoModPath, bundledModulesTxtPath)
 		state, err := modDeps.Save()
 		if err != nil {
-			return errors.Annotate(err, "generating bundled go.mod").Err()
+			return errors.Fmt("generating bundled go.mod: %w", err)
 		}
 		err = inv.Output.AddFromMemory(bundledGoModPath, state.GoMod, nil)
 		if err != nil {
-			return errors.Annotate(err, "adding bundled go.mod").Err()
+			return errors.Fmt("adding bundled go.mod: %w", err)
 		}
 		err = inv.Output.AddFromMemory(bundledModulesTxtPath, state.ModulesTxt, nil)
 		if err != nil {
-			return errors.Annotate(err, "adding bundled modules.txt").Err()
+			return errors.Fmt("adding bundled modules.txt: %w", err)
 		}
 	}
 
@@ -432,11 +432,11 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		}
 		relToMod := mainPkg.PkgPath[len(mainPkg.Module.Path)+1:]
 		if err := adjustYAMLPaths(ctx, appYaml, relToMod); err != nil {
-			return errors.Annotate(err, "adjusting %s", appYamlBundlePath).Err()
+			return errors.Fmt("adjusting %s: %w", appYamlBundlePath, err)
 		}
 		blob, err := appYaml.Save()
 		if err != nil {
-			return errors.Annotate(err, "formatting %s", appYamlBundlePath).Err()
+			return errors.Fmt("formatting %s: %w", appYamlBundlePath, err)
 		}
 		logging.Infof(ctx, "Adjusted %s to use correct paths:\n%s", appYamlBundlePath, blob)
 		// Add the fixed YAML to the output's overlay set. That way if this YAML is
@@ -444,7 +444,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 		// static file this time), it still will end up being correct in the final
 		// staged output.
 		if err := inv.Output.Overlay().AddFromMemory(appYamlBundlePath, blob, nil); err != nil {
-			return errors.Annotate(err, "rewriting %s", appYamlBundlePath).Err()
+			return errors.Fmt("rewriting %s: %w", appYamlBundlePath, err)
 		}
 	}
 
@@ -508,7 +508,7 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 		Env:     append(os.Environ(), "GOOS="+bc.GOOS, "GOARCH="+bc.GOARCH),
 	}, ".")
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to load the main package").Err()
+		return nil, errors.Fmt("failed to load the main package: %w", err)
 	}
 
 	// `packages.Load` records some errors inside packages.Package.
@@ -522,18 +522,18 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 		}
 	})
 	if errs != 0 {
-		return nil, errors.Reason("failed to load the package tree").Err()
+		return nil, errors.New("failed to load the package tree")
 	}
 
 	// We expect only one package to match our load query.
 	if len(pkgs) != 1 {
-		return nil, errors.Reason("expected to load 1 package, but got %d", len(pkgs)).Err()
+		return nil, errors.Fmt("expected to load 1 package, but got %d", len(pkgs))
 	}
 
 	// Make sure it is indeed `main` and log its path in the package tree.
 	mainPkg := pkgs[0]
 	if mainPkg.PkgPath == "" {
-		return nil, errors.Reason("could not figure out import path of the main package").Err()
+		return nil, errors.New("could not figure out import path of the main package")
 	}
 	logging.Infof(ctx, "Import path is %q", mainPkg.PkgPath)
 	if mainPkg.Name != "main" {
@@ -551,7 +551,7 @@ func loadPackageTree(ctx context.Context, bc *build.Context) (*packages.Package,
 func relPath(base, path string) (string, error) {
 	rel, err := filepath.Rel(base, path)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to calculate rel(%q, %q)", base, path).Err()
+		return "", errors.Fmt("failed to calculate rel(%q, %q): %w", base, path, err)
 	}
 	return rel, nil
 }
@@ -587,11 +587,11 @@ func prepareModDeps(main *packages.Module, out *fileset.Set) (*godep.Deps, error
 	mainModPath := filepath.Join(main.Dir, "go.mod")
 	mainModBlob, err := os.ReadFile(mainModPath)
 	if err != nil {
-		return nil, errors.Annotate(err, "reading main module's go.mod").Err()
+		return nil, errors.Fmt("reading main module's go.mod: %w", err)
 	}
 	mainMod, err := modfile.Parse(mainModPath, mainModBlob, nil)
 	if err != nil {
-		return nil, errors.Annotate(err, "parsing main module's go.mod").Err()
+		return nil, errors.Fmt("parsing main module's go.mod: %w", err)
 	}
 
 	// GAE Cloud Build deployer uses a concrete toolchain version hardcoded in its
@@ -611,17 +611,17 @@ func prepareModDeps(main *packages.Module, out *fileset.Set) (*godep.Deps, error
 	if bundleMod, ok := out.File(bundledGoModPath); ok {
 		state := godep.SerializedState{}
 		if state.GoMod, err = bundleMod.ReadAll(); err != nil {
-			return nil, errors.Annotate(err, "reading %q", bundledGoModPath).Err()
+			return nil, errors.Fmt("reading %q: %w", bundledGoModPath, err)
 		}
 		modulesTxt, ok := out.File(bundledModulesTxtPath)
 		if !ok {
-			return nil, errors.Reason("unexpectedly missing %q", bundledModulesTxtPath).Err()
+			return nil, errors.Fmt("unexpectedly missing %q", bundledModulesTxtPath)
 		}
 		if state.ModulesTxt, err = modulesTxt.ReadAll(); err != nil {
-			return nil, errors.Annotate(err, "reading %q", bundledModulesTxtPath).Err()
+			return nil, errors.Fmt("reading %q: %w", bundledModulesTxtPath, err)
 		}
 		if err := deps.Load(state); err != nil {
-			return nil, errors.Annotate(err, "loading bundle deps").Err()
+			return nil, errors.Fmt("loading bundle deps: %w", err)
 		}
 	}
 
@@ -649,11 +649,11 @@ func adjustYAMLPaths(ctx context.Context, app *gaeapp.AppYAML, p string) error {
 	// slash-separated clean path without any funny shell escape symbols
 	// (including spaces). Check this to be sure.
 	if p != path.Clean(p) {
-		return errors.Reason("unexpected format of the app path %q", p).Err()
+		return errors.Fmt("unexpected format of the app path %q", p)
 	}
 	for _, part := range strings.Split(p, "/") {
 		if part == "" || part == "." || part == ".." || !pathElemReg.MatchString(part) {
-			return errors.Reason("unexpected format of the app path %q", p).Err()
+			return errors.Fmt("unexpected format of the app path %q", p)
 		}
 	}
 
