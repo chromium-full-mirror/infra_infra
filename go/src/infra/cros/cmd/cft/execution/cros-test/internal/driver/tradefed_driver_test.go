@@ -6,6 +6,7 @@ package driver
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -584,4 +585,72 @@ func TestAppendInvocationDataArgs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestExtractCsuitePackageInfo(t *testing.T) {
+	t.Parallel()
+
+	packagesFlag := "packages"
+	packagesFileFlag := "packages-file"
+
+	ftt.Run("Test extractCsuitePackageInfo", t, func(t *ftt.Test) {
+		logger := log.New(io.Discard, "", 0)
+		testCases := []struct {
+			name              string
+			executionMetadata *api.ExecutionMetadata
+			expectedArgs      []string
+		}{
+			{
+				name: "Csuite empty metadata (default)",
+				executionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{},
+				},
+				expectedArgs: []string{"--packages-file=" + defaultCSuitePackagesFile},
+			},
+			{
+				name: "Csuite single package",
+				executionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{
+						{Flag: packagesFlag, Value: "com.example"},
+					},
+				},
+				expectedArgs: []string{"--package=com.example"},
+			},
+			{
+				name: "Csuite multiple packages",
+				executionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{
+						{Flag: packagesFlag, Value: "com.example1,com.example2"},
+					},
+				},
+				expectedArgs: []string{"--package=com.example1", "--package=com.example2"},
+			},
+			{
+				name: "Csuite packages file",
+				executionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{
+						{Flag: packagesFileFlag, Value: "/a/b/c/packages.txt"},
+					},
+				},
+				expectedArgs: []string{"--packages-file=/a/b/c/packages.txt"},
+			},
+			{
+				name: "Csuite both packages and packages file specified",
+				executionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{
+						{Flag: packagesFlag, Value: "com.example"},
+						{Flag: packagesFileFlag, Value: "/a/b/c/packages.txt"},
+					},
+				},
+				expectedArgs: []string{"--package=com.example"},
+			},
+		}
+
+		for _, tc := range testCases {
+			ftt.Run(tc.name, t.T, func(t *ftt.Test) {
+				actualArgs := extractCsuitePackageInfo(logger, tc.executionMetadata)
+				assert.Loosely(t, actualArgs, should.Match(tc.expectedArgs))
+			})
+		}
+	})
 }

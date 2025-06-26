@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	planMetadataFlag   = "plan"
-	tfGoogleTestRunner = "google/cts/google-cts-launcher-for-aosp"
-	tfAospTestRunner   = "tf-aosp-compatibility-config"
-	DTS                = "dts"
+	planMetadataFlag          = "plan"
+	tfGoogleTestRunner        = "google/cts/google-cts-launcher-for-aosp"
+	tfAospTestRunner          = "tf-aosp-compatibility-config"
+	DTS                       = "dts"
+	defaultCSuitePackagesFile = "/google/data/ro/teams/app-compatibility/test-resources/package-lists/vic-top-100.txt"
 )
 
 func getTestRunner() string {
@@ -32,6 +33,23 @@ func getTestRunner() string {
 	}
 }
 
+func extractCsuitePackageInfo(logger *log.Logger, metadata *api.ExecutionMetadata) []string {
+	cmd := []string{}
+	if packages, err := extractMetadataFlag(metadata, "packages"); err == nil {
+		for _, pkg := range strings.Split(packages, ",") {
+			cmd = append(cmd, "--package="+pkg)
+		}
+		logger.Println("Got packages: ", cmd)
+		return cmd
+	}
+	if packageFile, err := extractMetadataFlag(metadata, "packages-file"); err == nil {
+		logger.Printf("Got package-file: %s", packageFile)
+		return []string{"--packages-file=" + packageFile}
+	}
+	logger.Println("No Csuite packages provided, using default: ", defaultCSuitePackagesFile)
+	return []string{"--packages-file=" + defaultCSuitePackagesFile}
+}
+
 func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestCaseMetadata,
 	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
 	servo *labapi.Servo, lsnexus *labapi.IpEndpoint) []string {
@@ -40,9 +58,11 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 
 	plan, err := extractMetadataFlag(metadata, planMetadataFlag)
 	if err != nil {
-		// By default, plan is the same as test suite type, i.e. "cts", "dtd", etc (except for STS).
+		// By default, plan is the same as test suite type, i.e. "cts", "dtd", etc (except for STS and CSuite).
 		if testType == "sts" {
 			plan = "sts-dynamic-full"
+		} else if testType == "csuite" {
+			plan = "csuite-app-launch"
 		} else if testType == "apts" {
 			plan = formatTestName(tests[0].GetTestCase().GetId().GetValue())
 			if len(tests) > 1 {
@@ -102,6 +122,18 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		}
 		if testType == "sts" {
 			ctsParams = append(ctsParams, "--ghidra-preparer:disable")
+		}
+		if testType == "csuite" {
+			ctsParams = append(ctsParams, "--compatibility:enable-module-dynamic-download",
+				"--dynamic-download-args com.android.csuite.config.AppRemoteFileResolver:uri-template=pstash://{package}",
+				"--dynamic-download-args pstash:include-obb=true", "--no-throw-if-extra-not-found",
+				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:collect-app-version:true",
+				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:screenshot-after-launch:true",
+				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:app-launch-timeout-ms:20000",
+				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:save-apk-when:ON_FAIL",
+			)
+			packages := extractCsuitePackageInfo(logger, metadata)
+			ctsParams = append(ctsParams, packages...)
 		}
 		if testType != "apts" {
 			ctsParams = append(ctsParams, "--no-use-device-build-info", "--include-test-log-tags",
@@ -172,8 +204,8 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		}
 		logger.Println("Running provided test: ", testName)
 
-		// For APTS, test name is defined in "--config-name" parameter.
-		if testType != "apts" {
+		// For APTS and CSuite, test name is defined in "--config-name" or "--package" parameter.
+		if testType != "apts" && testType != "csuite" {
 			if isAospTradefed() {
 				cmd = append(cmd, "--include-filter", testName)
 			} else {
