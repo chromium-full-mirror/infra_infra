@@ -27,11 +27,11 @@ func TestConverter(t *testing.T) {
 		{
 			name: "No conversion needed",
 			inputDeps: []*api.TestCase_Dependency{
-				{Value: "servo"},
+				{Value: "servo_deployed:true"},
 				{Value: "dep2:value"}, // Already in the correct format
 			},
 			expectedDeps: []*api.TestCase_Dependency{
-				{Value: "label-servo:True"},
+				{Value: "servo_deployed:true"},
 				{Value: "dep2:value"},
 			},
 		},
@@ -41,9 +41,7 @@ func TestConverter(t *testing.T) {
 				{Value: "suite:foo_test"},
 				{Value: "stable-version:12345.0.0"},
 			},
-
 			expectedDeps: []*api.TestCase_Dependency{
-
 				{Value: "suite:foo_test"},
 				{Value: "stable-version:12345.0.0"}, // The mock skylab functions in the current tests mean this does not get converted.
 			},
@@ -56,11 +54,9 @@ func TestConverter(t *testing.T) {
 				{Value: "cros-version:12345.0.0"},
 			},
 			expectedDeps: []*api.TestCase_Dependency{
-
 				{Value: "suite:foo_test"},
 				{Value: "some-other-dep"},
 				{Value: "cros-version:12345.0.0"}, // same again as above.
-
 			},
 		},
 	}
@@ -69,15 +65,14 @@ func TestConverter(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			actualDeps := Converter(tc.inputDeps)
 
-			// Check if slices have the same length
-			assert.Equal(t, len(tc.expectedDeps), len(actualDeps))
-
+			if len(tc.expectedDeps) != len(actualDeps) {
+				// Check if slices have the same length
+				t.Fatalf("%s: Expecting: %v, \n\tGot: %v, size does not match!", tc.name, tc.expectedDeps, actualDeps)
+			}
 			// Compare elements item by item
 			for i := range tc.expectedDeps {
-
 				assert.Equal(t, tc.expectedDeps[i].GetValue(), actualDeps[i].GetValue())
 			}
-
 		})
 	}
 }

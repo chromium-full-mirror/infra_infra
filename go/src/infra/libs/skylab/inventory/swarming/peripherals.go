@@ -53,8 +53,15 @@ func boolPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels) 
 	if p.GetMimo() {
 		dims["label-mimo"] = []string{"True"}
 	}
-	if p.GetServo() {
-		dims["label-servo"] = []string{"True"}
+	if p.GetServoState() != inventory.PeripheralState_UNKNOWN {
+		// Only set the label if the state is present.
+		// Do not use the state directly, as this will make it difficult
+		// to return to the previous state.
+		if p.GetServo() {
+			dims["label-servo_deployed"] = []string{"True"}
+		} else {
+			dims["label-servo_deployed"] = []string{"False"}
+		}
 	}
 	if p.GetStylus() {
 		dims["label-stylus"] = []string{"True"}
@@ -79,7 +86,7 @@ func boolPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dime
 	d = assignLastBoolValueAndDropKey(d, p.HmrWalt, "label-hmr_walt")
 	d = assignLastBoolValueAndDropKey(d, p.Huddly, "label-huddly")
 	d = assignLastBoolValueAndDropKey(d, p.Mimo, "label-mimo")
-	d = assignLastBoolValueAndDropKey(d, p.Servo, "label-servo")
+	d = assignLastBoolValueAndDropKey(d, p.Servo, "label-servo_deployed")
 	d = assignLastBoolValueAndDropKey(d, p.Stylus, "label-stylus")
 	d = assignLastBoolValueAndDropKey(d, p.Wificell, "label-wificell")
 	d = assignLastBoolValueAndDropKey(d, p.Router_802_11Ax, "label-router_802_11ax")

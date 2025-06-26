@@ -989,6 +989,16 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				should.Equal(
 					inventory.PeripheralState_NOT_CONNECTED))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(true))
+		})
+		t.Run("servo_state is missed_config", func(t *ftt.Test) {
+			dataCopy.DutState = &chromeosLab.DutState{}
+			dataCopy.DutState.Servo = chromeosLab.PeripheralState_MISSING_CONFIG
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				should.Equal(
+					inventory.PeripheralState_MISSING_CONFIG))
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(false))
 		})
 		t.Run("happy path", func(t *ftt.Test) {

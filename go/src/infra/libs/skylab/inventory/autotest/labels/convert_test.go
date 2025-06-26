@@ -287,9 +287,9 @@ var fullLabels = []string{
 	"reference_design:reef",
 	"router_802_11ax",
 	"rpm_state:WORKING",
-	"servo",
 	"servo_component:ccd_cr50",
 	"servo_component:servo_v4",
+	"servo_deployed",
 	"servo_state:BROKEN",
 	"servo_topology:eyJtYWluIjp7InR5cGUiOiJzZXJ2b192NCIsInN5c2ZzX3Byb2R1Y3QiOiJTZXJ2byBWNCIsInNlcmlhbCI6IkMxOTAzMTQ1NTkxIiwidXNiX2h1Yl9wb3J0IjoiNi40LjEifSwiY2hpbGRyZW4iOlt7InR5cGUiOiJjY2RfY3I1MCIsInN5c2ZzX3Byb2R1Y3QiOiJDcjUwIiwic2VyaWFsIjoiMDY4MUQwM0EtOTJEQ0NENjQiLCJ1c2JfaHViX3BvcnQiOiI2LjQuMiJ9XX0=",
 	"servo_type:servo_v3",
@@ -362,7 +362,7 @@ func TestConvertEmptyLabels(t *testing.T) {
 	assert.That(t, got, should.Match(baseExpectedLabels))
 }
 
-func TestConvertFull(t *testing.T) {
+func TestAutotestConvertFull(t *testing.T) {
 	t.Parallel()
 	var ls inventory.SchedulableLabels
 	if err := proto.UnmarshalText(fullTextProto, &ls); err != nil {
@@ -620,7 +620,7 @@ func TestRevertServoTypeValues(t *testing.T) {
 	}
 }
 
-func TestRevertFull(t *testing.T) {
+func TestAutotestRevertFull(t *testing.T) {
 	t.Parallel()
 	var want inventory.SchedulableLabels
 	if err := proto.UnmarshalText(fullTextProto, &want); err != nil {
@@ -879,7 +879,7 @@ var fullLabelsSpecial = []string{
 	"recovery_test",
 	"reference_design:reef",
 	"router_802_11ax",
-	"servo",
+	"servo_deployed",
 	"servo_state:broken",
 	"servo_type:servo_v4",
 	"servo_usb_state:NEED_REPLACEMENT",

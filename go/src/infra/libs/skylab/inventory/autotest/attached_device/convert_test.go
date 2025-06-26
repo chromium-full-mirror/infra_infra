@@ -1,3 +1,7 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package attached_device
 
 import (
@@ -60,7 +64,7 @@ func TestConvertEmptyAttachedDeviceData(t *testing.T) {
 	}
 }
 
-func TestConvertFullAttachedDeviceData(t *testing.T) {
+func TestAttachedConvertFullAttachedDeviceData(t *testing.T) {
 	t.Parallel()
 	var data ufsapi.AttachedDeviceData
 	if err := proto.UnmarshalText(attachedDeviceDataProto, &data); err != nil {

@@ -468,7 +468,7 @@ var fullDimensions = Dimensions{
 	"label-reference_design":        {"reef"},
 	"label-touchpad":                {"True"},
 	"label-touchscreen":             {"True"},
-	"label-servo":                   {"True"},
+	"label-servo_deployed":          {"True"},
 	"label-wifi_state":              {"ACCEPTABLE"},
 	"label-bluetooth_state":         {"NEED_REPLACEMENT"},
 	"label-cellular_modem_state":    {"NEED_REPLACEMENT"},
@@ -545,7 +545,7 @@ func TestConvertEmpty(t *testing.T) {
 	}
 }
 
-func TestConvertFull(t *testing.T) {
+func TestSwarmingConvertFull(t *testing.T) {
 	t.Parallel()
 	var ls inventory.SchedulableLabels
 	if err := proto.UnmarshalText(fullTextProto, &ls); err != nil {
@@ -556,31 +556,35 @@ func TestConvertFull(t *testing.T) {
 }
 
 var servoStateConvertStateCases = []struct {
-	stateValue    int32
-	expectedEmpty bool
-	expectValue   string
+	stateValue  int32
+	expectValue string
 }{
-	{0, true, ""},
-	{1, false, "WORKING"},
-	{2, false, "NOT_CONNECTED"},
-	{3, false, "BROKEN"},
-	{4, false, "WRONG_CONFIG"},
-	{99, true, ""}, //wrong value
+	{0, ""},
+	{1, "WORKING"},
+	{2, "NOT_CONNECTED"},
+	{3, "BROKEN"},
+	{4, "WRONG_CONFIG"},
+	{5, "MISSING_CONFIG"},
+	{99, ""}, //wrong value
 }
 
 func TestConvertServoStateWorking(t *testing.T) {
 	for _, testCase := range servoStateConvertStateCases {
-		t.Run("State value is "+string(testCase.stateValue), func(t *testing.T) {
+		name := fmt.Sprintf("State value is %d", testCase.stateValue)
+		t.Run(name, func(t *testing.T) {
 			var ls inventory.SchedulableLabels
-			var dims Dimensions
+
 			protoText := fmt.Sprintf(`peripherals: { servo_state: %v}`, testCase.stateValue)
 			if err := proto.UnmarshalText(protoText, &ls); err != nil {
-				t.Fatalf("Error unmarshalling example text: %s", err)
+				t.Fatalf("%s, error unmarshalling example text: %s", name, err)
 			}
-			if testCase.expectedEmpty {
-				dims = Dimensions{}
-			} else {
-				dims = Dimensions{"label-servo_state": {testCase.expectValue}}
+			dims := Dimensions{}
+
+			if testCase.stateValue > 0 {
+				dims["label-servo_deployed"] = []string{"False"}
+			}
+			if testCase.expectValue != "" {
+				dims["label-servo_state"] = []string{testCase.expectValue}
 			}
 			got := Convert(&ls)
 			assert.That(t, got, should.Match(dims))
@@ -626,7 +630,7 @@ func TestRevertServoStateInCaseEffect(t *testing.T) {
 	}
 }
 
-func TestRevertFull(t *testing.T) {
+func TestSwarmingRevertFull(t *testing.T) {
 	t.Parallel()
 	var want inventory.SchedulableLabels
 	if err := proto.UnmarshalText(revertedFullTextProto, &want); err != nil {

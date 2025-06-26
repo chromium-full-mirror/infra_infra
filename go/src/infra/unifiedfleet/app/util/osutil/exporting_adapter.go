@@ -554,6 +554,16 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 	p.SimState = &simState
 }
 
+func setServoStateHelper(s chromeosLab.PeripheralState) *bool {
+	var val bool
+	if s == chromeosLab.PeripheralState_UNKNOWN || s == chromeosLab.PeripheralState_MISSING_CONFIG {
+		val = false
+	} else {
+		val = true
+	}
+	return &val
+}
+
 func setDutStateHelper(s chromeosLab.PeripheralState) *bool {
 	var val bool
 	if s == chromeosLab.PeripheralState_UNKNOWN || s == chromeosLab.PeripheralState_NOT_CONNECTED {
@@ -626,7 +636,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	}
 	p := l.Peripherals
 	p.ServoState = setPeripheralState(s.GetServo())
-	p.Servo = setDutStateHelper(s.GetServo())
+	p.Servo = setServoStateHelper(s.GetServo())
 	p.ChameleonState = setPeripheralState(s.GetChameleon())
 	p.AudioLoopbackDongle = setDutStateHelper(s.GetAudioLoopbackDongle())
 	p.ServoUsbState = setHardwareState(s.GetServoUsbState())

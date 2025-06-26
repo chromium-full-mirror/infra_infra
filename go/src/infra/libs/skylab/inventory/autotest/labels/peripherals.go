@@ -58,7 +58,7 @@ func boolPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, "mimo")
 	}
 	if p.GetServo() {
-		labels = append(labels, "servo")
+		labels = append(labels, "servo_deployed")
 	}
 	if p.GetSmartUsbhub() {
 		labels = append(labels, "smart_usbhub")
@@ -270,7 +270,7 @@ func boolPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) [
 			*p.Huddly = true
 		case "mimo":
 			*p.Mimo = true
-		case "servo":
+		case "servo_deployed":
 			*p.Servo = true
 		case "smart_usbhub":
 			*p.SmartUsbhub = true
