@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/infra/build/gong/gn/build"
-	"go.chromium.org/infra/build/gong/gn/fs"
+	"go.chromium.org/infra/build/gong/gn/build/fs"
 	"go.chromium.org/infra/build/gong/gn/parse"
 	"go.chromium.org/infra/build/gong/gn/resolve"
 	"go.chromium.org/infra/build/gong/gn/syntax"
