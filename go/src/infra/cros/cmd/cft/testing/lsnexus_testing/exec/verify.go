@@ -14,20 +14,41 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"go.chromium.org/chromiumos/config/go/test/api/lsnexus"
+
+	lsnexusTesting "go.chromium.org/infra/cros/cmd/cft/lsnexus/testing"
 )
 
-// verify verifies BOLS APIs.
+// verify verifies LSNexus APIs.
 func verify(ctx context.Context, logger *log.Logger, a *args) error {
-	conn, err := grpc.NewClient(a.lsNexusAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	lsnexusTestServerAddr, stopLsNexusTestServer, err := lsnexusTesting.StartServer(
+		a.workingDir,
+		a.board,
+		a.model,
+		nil,
+		a.servoSerial,
+		a.servodContainer,
+		int32(a.servodPort),
+		a.bolsAddr,
+	)
 	if err != nil {
-		return fmt.Errorf("failed to create BOLS client at %s: %w", a.lsNexusAddr, err)
+		return fmt.Errorf("failed to start LSNexus test server: %w", err)
+	}
+	defer stopLsNexusTestServer() // Ensure the test server is stopped
+
+	logger.Printf("LSNexus test server started at: %s for verification", lsnexusTestServerAddr)
+
+	// Connect to the LSNexus test server we just started
+	conn, err := grpc.NewClient(lsnexusTestServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return fmt.Errorf("failed to create LSNexus client to %s: %w", lsnexusTestServerAddr, err)
 	}
 	defer conn.Close()
 	cl := lsnexus.NewLSNexusServiceClient(conn)
-	if a.testServod {
-		if err := verifyServodAPIs(ctx, logger, a, cl); err != nil {
-			return fmt.Errorf("failed to verify servod related APIs in BOLS at %s: %w", a.lsNexusAddr, err)
-		}
+
+	if err := verifyServodAPIs(ctx, logger, a, cl); err != nil {
+		return fmt.Errorf("failed to verify servod related APIs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
 	}
+
+	logger.Println("LSNexus verification completed successfully.")
 	return nil
 }

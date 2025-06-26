@@ -91,20 +91,32 @@ func (service *LsNexus) Start(ctx context.Context, start *api.GenericStartReques
 			// BOLS is in a satlab. The BOLS address should be bols:9100
 			bolsAddr = "bols:9100"
 		} else if dut.GetChromeos().GetServo().GetServodAddress().GetAddress() != "" {
-			// BOLS is in labstation. The port should be 9000.
-			bolsAddr = fmt.Sprintf("%s:9000",
-				dut.GetChromeos().GetServo().GetServodAddress().GetAddress())
+			bolsAddr = fmt.Sprintf("%s:%d",
+				dut.GetChromeos().GetServo().GetServodAddress().GetAddress(), 9100) // Example: use a default or configured BOLS port
 		}
 	}
+
+	// Clean up any existing BOLS connection before establishing a new one
+	if service.bolsConn != nil {
+		service.logger.Println("GenericStart: Closing existing BOLS connection.")
+		service.bolsConn.Close()
+		service.bolsConn = nil
+		service.cl = nil
+	}
+
 	if bolsAddr != "" {
 		service.logger.Println("Connecting to BOLS at address: ", bolsAddr)
-		bolsClient, err := connectToBOLS(bolsAddr)
-		if err != nil {
-			service.logger.Printf("Failed to connect to BOLS at %s: %v\n", bolsAddr, err)
+		bolsClient, conn, clientErr := connectToBOLS(bolsAddr) // Use updated connectToBOLS
+		if clientErr != nil {
+			service.logger.Printf("Failed to connect to BOLS at %s: %v\n", bolsAddr, clientErr)
+			// Decide if this is a fatal error for Start. Currently, it logs and continues.
 		} else {
 			service.cl = bolsClient
+			service.bolsConn = conn // Store the connection
 			service.logger.Println("Connected to BOLS")
 		}
+	} else {
+		service.logger.Println("No BOLS address configured. LSNexus will operate without a BOLS client.")
 	}
 
 	service.logger.Println("Successfully served Start request")
@@ -119,13 +131,30 @@ func (service *LsNexus) Start(ctx context.Context, start *api.GenericStartReques
 }
 
 func (service *LsNexus) Stop(ctx context.Context, req *api.GenericStopRequest) (*api.GenericStopResponse, error) {
+	service.logger.Println("Received Stop request.")
 	if service.cl == nil {
-		service.logger.Println("LSNexus will not save servod log because there is no BOLS client")
-		return &api.GenericStopResponse{}, nil
+		service.logger.Println("LSNexus will not save servod log because there is no BOLS client (service.cl is nil)")
+	} else {
+		// Attempt to save servod logs even if BOLS connection (service.bolsConn) might be closing/closed.
+		// The BOLS client (service.cl) might still be usable if the connection hasn't been explicitly closed yet by Stop.
+		if err := service.saveServodLogs(ctx); err != nil {
+			service.logger.Println("Warning: failed to download servod logs during Stop: ", err)
+		}
 	}
-	if err := service.saveServodLogs(ctx); err != nil {
-		service.logger.Println("Warning: failed to download servod logs: ", err)
+
+	if service.bolsConn != nil {
+		service.logger.Println("Closing BOLS connection.")
+		err := service.bolsConn.Close()
+		if err != nil {
+			service.logger.Printf("Error closing BOLS connection: %v", err)
+		}
+		service.bolsConn = nil // Nullify to indicate it's closed
+		service.cl = nil       // Also nullify the client
+	} else {
+		service.logger.Println("No active BOLS connection to close.")
 	}
+
+	service.logger.Println("LSNexus Stop request processed.")
 	return &api.GenericStopResponse{}, nil
 }
 

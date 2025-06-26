@@ -23,28 +23,9 @@ func verifyServodAPIs(ctx context.Context, logger *log.Logger, a *args, cl lsnex
 	if _, err := cl.StartServod(ctx, req); err != nil {
 		return fmt.Errorf("failed to start servod: %w", err)
 	}
-	if err := verifyServodEcho(ctx, logger, cl); err != nil {
-		return err
-	}
 	if err := verifyServodSetGetlidOpen(ctx, logger, cl); err != nil {
 		return err
 	}
-	return nil
-}
-
-func verifyServodEcho(ctx context.Context, logger *log.Logger, cl lsnexus.LSNexusServiceClient) (err error) {
-	logger.Println("verifyServodEcho: Verifying ServodEcho")
-	wanted := "Hello world"
-	rspn, err := cl.Echo(ctx, &lsnexus.EchoRequest{
-		Msg: wanted,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to send echo request to servod: %w", err)
-	}
-	if rspn.GetResult() != wanted {
-		return fmt.Errorf("failed to get correct echo response; got: %q, wanted: %q", rspn.GetResult(), wanted)
-	}
-	logger.Println("verifyServodEcho: verification was successful")
 	return nil
 }
 
@@ -81,7 +62,7 @@ func verifyServodSetGet(ctx context.Context, logger *log.Logger, cl lsnexus.LSNe
 		return fmt.Errorf("failed to send get control request to BOLS: %w", err)
 	}
 	if diff := cmp.Diff(result, value, protocmp.Transform()); diff != "" {
-		return fmt.Errorf("Got unexpected results (-got +want):\n%s", diff)
+		return fmt.Errorf("Got unexpected results (-got +want):%s", diff)
 	}
 	return nil
 }

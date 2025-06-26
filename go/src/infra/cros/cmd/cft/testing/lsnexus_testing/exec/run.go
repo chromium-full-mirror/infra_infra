@@ -61,6 +61,7 @@ type args struct {
 	lsNexusAddr     string
 	servodPort      int
 	servodContainer string
+	servoSerial     string
 	testServod      bool
 	board           string
 	model           string
@@ -79,6 +80,7 @@ func runCLI(ctx context.Context, d []string) int {
 	fs.StringVar(&a.lsNexusAddr, "lsnexus_addr", "", "The address of LSNexus.")
 	fs.StringVar(&a.servodContainer, "servod_container", "", "The container of BOLS.")
 	fs.IntVar(&a.servodPort, "servod_port", 0, "The servod port.")
+	fs.StringVar(&a.servoSerial, "servo_serial", "", "The serial of the servo.")
 	fs.BoolVar(&a.testServod, "test_servod", true, "Test servo related APIs.")
 	fs.StringVar(&a.board, "board", "", "The board of the DUT")
 	fs.StringVar(&a.model, "model", "", "The model of the DUT")
