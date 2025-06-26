@@ -76,6 +76,14 @@ func (s *LsNexus) CallServod(ctx context.Context, req *lsnexus.CallServodRequest
 			return nil, err
 		}
 		return rspn, nil
+	case lsnexus.CallServodRequest_GET_SERVOD_VERSION:
+		rspn, err := s.getServodVersion(ctx)
+		if err != nil {
+			err = fmt.Errorf("failed to run get servod version request: %w", err)
+			s.log(err)
+			return nil, err
+		}
+		return rspn, nil
 	}
 	return nil, status.Error(codes.Unimplemented, "the specified call servod method not implemented")
 }
@@ -142,6 +150,28 @@ func (s *LsNexus) setServodRequest(ctx context.Context, req *lsnexus.CallServodR
 		return nil, err
 	}
 	return &lsnexus.CallServodResponse{Result: &lsnexus.CallServodResponse_Success_{}}, nil
+}
+
+func (s *LsNexus) getServodVersion(ctx context.Context) (*lsnexus.CallServodResponse, error) {
+	bolsReq := &bols.GetServodVersionRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+	}
+	bolsRsp, err := s.cl.GetServodVersion(ctx, bolsReq)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get servod version from BOLS: %w", err)
+	}
+	return &lsnexus.CallServodResponse{
+		Result: &lsnexus.CallServodResponse_Success_{
+			Success: &lsnexus.CallServodResponse_Success{
+				Result: &bols.ServodValue{
+					Value: &bols.ServodValue_StringValue{StringValue: bolsRsp.GetVersion()},
+				},
+			},
+		}}, nil
 }
 
 func (s *LsNexus) DownloadServoLogs(ctx context.Context, req *lsnexus.DownloadServoLogsRequest) (*lsnexus.DownloadServoLogsResponse, error) {
