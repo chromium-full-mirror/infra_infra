@@ -25,7 +25,7 @@ import (
 
 const (
 	provisionOSImagePath    = "gs://chromeos-throw-away-bucket/kimjae"
-	provisionOSImageVersion = "v7.0.1"
+	provisionOSImageVersion = "v7.0.1-a"
 )
 
 // provisionExec performs provisioning of the device.
