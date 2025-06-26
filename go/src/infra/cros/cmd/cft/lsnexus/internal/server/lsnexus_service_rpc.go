@@ -191,6 +191,114 @@ func (s *LsNexus) MakeTempDir(ctx context.Context, req *lsnexus.MakeTempDirReque
 	}, nil
 }
 
+func (s *LsNexus) Echo(ctx context.Context, req *lsnexus.EchoRequest) (*lsnexus.EchoResponse, error) {
+	s.log("Serving Echo request")
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	bolsReq := &bols.EchoServodRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Echo: req.GetMsg(),
+	}
+
+	bolsRsp, err := s.cl.EchoServod(ctx, bolsReq)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS EchoServod: %w", err))
+	}
+
+	return &lsnexus.EchoResponse{
+		Result: bolsRsp.GetResult(),
+	}, nil
+}
+
+func (s *LsNexus) RunFutility(ctx context.Context, req *lsnexus.RunFutilityRequest) (*lsnexus.RunFutilityResponse, error) {
+	s.log("Serving RunFutility request")
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	// Prepare parameters for the BOLS request.
+	bolsParams := req.GetParams()
+	if len(bolsParams) > 0 {
+		// Insert the servo_port argument as the second element, after the subcommand.
+		portArg := fmt.Sprintf("--servo_port=%d", s.servodPort)
+		bolsParams = append(bolsParams[:1], append([]string{portArg}, bolsParams[1:]...)...)
+	}
+
+	bolsReq := &bols.RunFutilityRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Params: bolsParams,
+	}
+
+	s.log(fmt.Sprintf("Calling BOLS RunFutility with params: %v", bolsReq.Params))
+	bolsRsp, err := s.cl.RunFutility(ctx, bolsReq)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS RunFutility: %w", err))
+	}
+
+	// The OutputStream message is structurally identical between the lsnexus and bols packages,
+	// but they are distinct types. We need to copy the fields.
+	output := bolsRsp.GetOutput()
+	lsnexusOutput := &lsnexus.OutputStream{}
+	if output != nil {
+		lsnexusOutput.Stdout = output.GetStdout()
+		lsnexusOutput.Stderr = output.GetStderr()
+	}
+
+	return &lsnexus.RunFutilityResponse{
+		Output: lsnexusOutput,
+	}, nil
+}
+
+func (s *LsNexus) RunFlashEC(ctx context.Context, req *lsnexus.RunFlashECRequest) (*lsnexus.RunFlashECResponse, error) {
+	s.log("Serving RunFlashEC request")
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+
+	// Prepare parameters for the BOLS request.
+	bolsParams := req.GetParams()
+	// As per the requirement, insert the port if other parameters are present.
+	if len(bolsParams) > 0 {
+		bolsParams = append([]string{fmt.Sprintf("--port=%d", s.servodPort)}, bolsParams...)
+	}
+
+	bolsReq := &bols.RunFlashECRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Params: bolsParams,
+	}
+
+	s.log(fmt.Sprintf("Calling BOLS RunFlashEC with params: %v", bolsReq.Params))
+	bolsRsp, err := s.cl.RunFlashEC(ctx, bolsReq)
+	if err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to call BOLS RunFlashEC: %w", err))
+	}
+
+	output := bolsRsp.GetOutput()
+	lsnexusOutput := &lsnexus.OutputStream{}
+	if output != nil {
+		lsnexusOutput.Stdout = output.GetStdout()
+		lsnexusOutput.Stderr = output.GetStderr()
+	}
+
+	return &lsnexus.RunFlashECResponse{
+		Output: lsnexusOutput,
+	}, nil
+}
+
 func (s *LsNexus) log(args ...any) {
 	if s.logger == nil {
 		return
