@@ -51,7 +51,7 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 	// Reject service if unsupported.
 	version := getVersionFromContext(ctx)
 	if !isVersionSupported(ctx, version) {
-		return nil, errors.Reason("drone version not supported").Err()
+		return nil, errors.New("drone version not supported")
 	}
 
 	// Assign a new UUID if needed.
@@ -71,18 +71,18 @@ func (q *DroneQueenImpl) ReportDrone(ctx context.Context, req *api.ReportDroneRe
 			if datastore.IsErrNoSuchEntity(err) {
 				res.Status = api.ReportDroneResponse_UNKNOWN_UUID
 			}
-			return errors.Annotate(err, "get drone %s", id).Err()
+			return errors.Fmt("get drone %s: %w", id, err)
 		}
 		if q.now().After(d.Expiration) {
 			res.Status = api.ReportDroneResponse_UNKNOWN_UUID
-			return errors.Reason("drone expired").Err()
+			return errors.New("drone expired")
 		}
 		d.Expiration = q.now().Add(config.AssignmentDuration(ctx)).UTC()
 		d.Description = req.GetDroneDescription()
 		d.Hive = req.GetHive()
 		d.Version = version
 		if err = datastore.Put(ctx, &d); err != nil {
-			return errors.Annotate(err, "refresh drone expiration").Err()
+			return errors.Fmt("refresh drone expiration: %w", err)
 		}
 		return nil
 	}
@@ -201,7 +201,7 @@ func (q *DroneQueenImpl) ReleaseDuts(ctx context.Context, req *api.ReleaseDutsRe
 	}()
 	drone := entities.DroneID(req.GetDroneUuid())
 	if drone == "" {
-		return nil, errors.Reason("drone UUID must be supplied").Err()
+		return nil, errors.New("drone UUID must be supplied")
 	}
 	for _, dut := range req.GetDuts() {
 		dutID := entities.DUTID(dut)
@@ -214,14 +214,14 @@ func (q *DroneQueenImpl) ReleaseDuts(ctx context.Context, req *api.ReleaseDutsRe
 				if datastore.IsErrNoSuchEntity(err) {
 					return nil
 				}
-				return errors.Annotate(err, "get DUT %s", dutID).Err()
+				return errors.Fmt("get DUT %s: %w", dutID, err)
 			}
 			if dut.AssignedDrone != drone {
 				return nil
 			}
 			dut.AssignedDrone = ""
 			if err := datastore.Put(ctx, &dut); err != nil {
-				return errors.Annotate(err, "modify DUT %s", dutID).Err()
+				return errors.Fmt("modify DUT %s: %w", dutID, err)
 			}
 			return nil
 		}
@@ -244,7 +244,7 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		q := datastore.NewQuery(entities.DUTKind).Ancestor(dutGroupKey)
 		var existingDuts []entities.DUT
 		if err := datastore.GetAll(ctx, q, &existingDuts); err != nil {
-			return errors.Annotate(err, "get existing DUTs").Err()
+			return errors.Fmt("get existing DUTs: %w", err)
 		}
 		// Create a map of existing DUTs for easy search.
 		existingMap := make(map[entities.DUTID]*entities.DUT)
@@ -311,7 +311,7 @@ func (q *DroneQueenImpl) DeclareDuts(ctx context.Context, req *api.DeclareDutsRe
 		}
 		// Update modified DUTs and add newly declared DUTs.
 		if err := datastore.Put(ctx, updatedDuts); err != nil {
-			return errors.Annotate(err, "add DUTs").Err()
+			return errors.Fmt("add DUTs: %w", err)
 		}
 		return nil
 	}
@@ -328,7 +328,7 @@ func (q *DroneQueenImpl) ListDrones(ctx context.Context, req *api.ListDronesRequ
 	}()
 	var drones []entities.Drone
 	if err := datastore.GetAll(ctx, datastore.NewQuery(entities.DroneKind), &drones); err != nil {
-		return nil, errors.Annotate(err, "get all drones").Err()
+		return nil, errors.Fmt("get all drones: %w", err)
 	}
 	res = &api.ListDronesResponse{}
 	for _, d := range drones {
@@ -351,7 +351,7 @@ func (q *DroneQueenImpl) ListDuts(ctx context.Context, req *api.ListDutsRequest)
 	}()
 	var duts []entities.DUT
 	if err := datastore.GetAll(ctx, datastore.NewQuery(entities.DUTKind), &duts); err != nil {
-		return nil, errors.Annotate(err, "get all DUTs").Err()
+		return nil, errors.Fmt("get all DUTs: %w", err)
 	}
 	res = &api.ListDutsResponse{}
 	for _, d := range duts {

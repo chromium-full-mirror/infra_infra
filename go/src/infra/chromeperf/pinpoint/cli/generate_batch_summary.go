@@ -108,7 +108,7 @@ func (e *generateBatchSummary) getJobs(ctx context.Context, c proto.PinpointClie
 			req := &proto.GetJobRequest{Name: pinpoint.LegacyJobName(jobId)}
 			j, err := c.GetJob(ctx, req)
 			if err != nil {
-				return jobs, errors.Annotate(err, "failed during GetJob").Err()
+				return jobs, errors.Fmt("failed during GetJob: %w", err)
 			}
 			jobs = append(jobs, j)
 		}
@@ -165,7 +165,7 @@ func loadOutput(config *changeConfig, rootDir string) (*output.Output, error) {
 				if d.Name() == "output.json" {
 					jf, err := os.Open(path)
 					if err != nil {
-						return errors.Annotate(err, "failed loading file: %q", path).Err()
+						return errors.Fmt("failed loading file: %q: %w", path, err)
 					}
 					defer jf.Close()
 					r, err = output.NewFromJSON(jf)
@@ -397,7 +397,7 @@ func (e *generateBatchSummary) analyzeArtifactsAndGenerateCSVs(outputDir string,
 	// Generate CSVs
 	resultsDir := path.Join(outputDir, batchId+"_summaries")
 	if err := removeExisting(resultsDir); err != nil {
-		return errors.Annotate(err, "cannot download artifacts").Err()
+		return errors.Fmt("cannot download artifacts: %w", err)
 	}
 	err = os.Mkdir(resultsDir, 0755)
 	if err != nil {
@@ -421,12 +421,12 @@ func (e *generateBatchSummary) analyzeArtifactsAndGenerateCSVs(outputDir string,
 func (e *generateBatchSummary) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	c, err := e.pinpointClient(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to create a Pinpoint client").Err()
+		return errors.Fmt("failed to create a Pinpoint client: %w", err)
 	}
 
 	p, err := e.getPreset(ctx)
 	if err != nil {
-		return errors.Annotate(err, "unable to load preset").Err()
+		return errors.Fmt("unable to load preset: %w", err)
 	}
 	if p.BatchSummaryReportSpec == nil {
 		return fmt.Errorf("Preset must be a batch_summary_report_spec")

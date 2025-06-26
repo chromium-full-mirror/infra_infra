@@ -30,7 +30,7 @@ import (
 func NewHTTPClient(ctx context.Context) (*http.Client, error) {
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
+		return nil, errors.Fmt("failed to get RPC transport: %w", err)
 	}
 	return &http.Client{
 		Transport: transport,
@@ -58,10 +58,10 @@ type Client interface {
 // The hostname should generally be read from the config.
 func NewClient(ctx context.Context, hc *http.Client, hostname string) (Client, error) {
 	if hc == nil {
-		return nil, errors.Reason("new ufs client: hc cannot be nil").Err()
+		return nil, errors.New("new ufs client: hc cannot be nil")
 	}
 	if hostname == "" {
-		return nil, errors.Reason("new ufs client: hostname cannot be empty").Err()
+		return nil, errors.New("new ufs client: hostname cannot be empty")
 	}
 	return ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,

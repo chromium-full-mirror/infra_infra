@@ -225,7 +225,7 @@ func guessRepositoryDefaults(writeJSON writeGitCLJSON) (gitilesHost, gerritHost,
 		return defaultGitilesHost, defaultGerritHost, defaultRepository, err
 	}
 	if x.GerritHost == "" || x.GerritProject == "" {
-		return defaultGitilesHost, defaultGerritHost, defaultRepository, errors.Reason("no gerrit_host and/or gerrit_project found in `git cl issue` output: %s", bs).Err()
+		return defaultGitilesHost, defaultGerritHost, defaultRepository, errors.Fmt("no gerrit_host and/or gerrit_project found in `git cl issue` output: %s", bs)
 	}
 	// Guess the gitiles host based off the gerrit host
 	gitilesHost = strings.Replace(x.GerritHost, "-review", "", 1)

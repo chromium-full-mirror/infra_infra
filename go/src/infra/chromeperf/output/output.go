@@ -35,7 +35,7 @@ func NewFromJSON(r io.Reader) (*Output, error) {
 	jd := json.NewDecoder(r)
 	res := Output{}
 	if err := jd.Decode(&res); err != nil {
-		return nil, errors.Annotate(err, "failed decoding output json").Err()
+		return nil, errors.Fmt("failed decoding output json: %w", err)
 	}
 	return &res, nil
 }

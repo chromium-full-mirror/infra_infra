@@ -63,11 +63,11 @@ func (dam *downloadArtifactsMixin) doDownloadArtifacts(ctx context.Context, w io
 	}
 	switch job.GetJobSpec().GetJobKind().(type) {
 	case *proto.JobSpec_Bisection:
-		return errors.Reason("Not implemented").Err()
+		return errors.New("Not implemented")
 	case *proto.JobSpec_Experiment:
 		return dam.downloadExperimentArtifacts(ctx, w, httpClient, workDir, job)
 	default:
-		return errors.Reason("Unsupported Job Kind").Err()
+		return errors.New("Unsupported Job Kind")
 	}
 }
 
@@ -102,20 +102,20 @@ type telemetryExperimentArtifactsManifest struct {
 func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Context, w io.Writer, httpClient *http.Client, workDir string, job *proto.Job) error {
 	id, err := pinpoint.LegacyJobID(job.Name)
 	if err != nil {
-		return errors.Annotate(err, "failed parsing pinpoint job name").Err()
+		return errors.Fmt("failed parsing pinpoint job name: %w", err)
 	}
 	dst, err := filepath.Abs(filepath.Join(workDir, id))
 	if err != nil {
-		return errors.Annotate(err, "failed getting absolute file path from %q %q", workDir, id).Err()
+		return errors.Fmt("failed getting absolute file path from %q %q: %w", workDir, id, err)
 	}
 	if err := removeExisting(dst); err != nil {
-		return errors.Annotate(err, "cannot download artifacts").Err()
+		return errors.Fmt("cannot download artifacts: %w", err)
 	}
 
 	urls := make(abExperimentURLs)
 	m, err := urls.fromJob(job, dam.selectArtifacts)
 	if err != nil {
-		return errors.Annotate(err, "failed filtering urls").Err()
+		return errors.Fmt("failed filtering urls: %w", err)
 	}
 
 	// Once we've validated the inputs, we'll proceed to downloading the
@@ -123,7 +123,7 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 	// destination directory.
 	tmp, err := os.MkdirTemp(os.TempDir(), "pinpoint-cli-*")
 	if err != nil {
-		return errors.Annotate(err, "failed creating temporary directory").Err()
+		return errors.Fmt("failed creating temporary directory: %w", err)
 	}
 	defer os.RemoveAll(tmp)
 	if err := downloadCasURLs(ctx, tmp, urls); err != nil {
@@ -135,14 +135,14 @@ func (dam *downloadArtifactsMixin) downloadExperimentArtifacts(ctx context.Conte
 	// the files to the relevant artifacts.
 	manifest, err := yaml.Marshal(m)
 	if err != nil {
-		return errors.Annotate(err, "failed marshalling YAML for manifest").Err()
+		return errors.Fmt("failed marshalling YAML for manifest: %w", err)
 	}
 	if err := os.WriteFile(filepath.Join(tmp, "manifest.yaml"), manifest, 0600); err != nil {
-		return errors.Annotate(err, "failed writing manifest file").Err()
+		return errors.Fmt("failed writing manifest file: %w", err)
 	}
 
 	if err := os.Rename(tmp, dst); err != nil {
-		return errors.Annotate(err, "failed renaming file from %q to %q", tmp, dst).Err()
+		return errors.Fmt("failed renaming file from %q to %q: %w", tmp, dst, err)
 	}
 	fmt.Fprintf(w, "Downloaded all artifacts to: %q\n", dst)
 	return nil
@@ -191,7 +191,7 @@ func downloadCasURLs(ctx context.Context, base string, urls map[string]string) e
 
 		dst := filepath.Join(base, path)
 		if err := os.MkdirAll(dst, 0700); err != nil {
-			errs <- errors.Annotate(err, "failed creating directory: %s", dst).Err()
+			errs <- errors.Fmt("failed creating directory: %s: %w", dst, err)
 			return
 		}
 		if _, _, err := casClient.DownloadDirectory(ctx, d, dst, filemetadata.NewNoopCache()); err != nil {
@@ -238,7 +238,7 @@ func generateResultMap(selector string, i idStruct) (abExperimentURLs, error) {
 	}
 	s, found := selectors[selector]
 	if !found {
-		return nil, errors.Reason("Unsupported selector: %s", selector).Err()
+		return nil, errors.Fmt("Unsupported selector: %s", selector)
 	}
 
 	dirName := i.commit.GetGitHash()
@@ -257,7 +257,7 @@ func generateResultMap(selector string, i idStruct) (abExperimentURLs, error) {
 					if d.GetKey() == s.key {
 						path := filepath.Join(dirName, selector, fmt.Sprintf("%02d", idx+1))
 						if u, ok := urls[path]; ok {
-							return nil, errors.Reason("URL %s and %s have conflicting key: %s", u, d.GetUrl(), path).Err()
+							return nil, errors.Fmt("URL %s and %s have conflicting key: %s", u, d.GetUrl(), path)
 						}
 						urls[path] = d.GetUrl()
 					}
@@ -271,7 +271,7 @@ func generateResultMap(selector string, i idStruct) (abExperimentURLs, error) {
 func merge(to, from abExperimentURLs) error {
 	for k, v := range from {
 		if e, found := to[k]; found {
-			return errors.Reason("key collision found for %q (current value = %q, merging value = %q)", k, e, v).Err()
+			return errors.Fmt("key collision found for %q (current value = %q, merging value = %q)", k, e, v)
 		}
 		to[k] = v
 	}

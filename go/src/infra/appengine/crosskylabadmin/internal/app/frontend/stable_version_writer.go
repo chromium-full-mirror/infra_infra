@@ -71,7 +71,7 @@ func (is *ServerImpl) DeleteSatlabStableVersion(ctx context.Context, req *fleet.
 // ValidateSetSatlabStableVersion validates a set satlab stable version request.
 func validateSetSatlabStableVersion(req *fleet.SetSatlabStableVersionRequest) error {
 	if req == nil {
-		return errors.Reason("validate set satlab stable version: request cannot be nil").Err()
+		return errors.New("validate set satlab stable version: request cannot be nil")
 	}
 	var hostname string
 	var board string
@@ -86,7 +86,7 @@ func validateSetSatlabStableVersion(req *fleet.SetSatlabStableVersionRequest) er
 	}
 
 	if err := shallowValidateKeyFields(hostname, board, model); err != nil {
-		return errors.Annotate(err, "validate set satlab stable version").Err()
+		return errors.Fmt("validate set satlab stable version: %w", err)
 	}
 
 	osVersion := req.GetCrosVersion()
@@ -94,7 +94,7 @@ func validateSetSatlabStableVersion(req *fleet.SetSatlabStableVersionRequest) er
 	fwImage := req.GetFirmwareImage()
 
 	if err := shallowValidateValueFields(osVersion, fwVersion, fwImage); err != nil {
-		return errors.Annotate(err, "validate set satlab stable version").Err()
+		return errors.Fmt("validate set satlab stable version: %w", err)
 	}
 
 	return nil
@@ -122,19 +122,19 @@ func shallowValidateKeyFields(hostname string, board string, model string) error
 // This is a shallow validation because it does not consult any sources of truth to see if the information is valid.
 func shallowValidateValueFields(os string, fw string, fwImage string) error {
 	if err := stableversion.ValidateCrOSVersion(os); err != nil {
-		return errors.Annotate(err, "shallow validate value fields").Err()
+		return errors.Fmt("shallow validate value fields: %w", err)
 	}
 	if fw == "" && fwImage != "" {
 		return status.Error(codes.InvalidArgument, "fw version is not specified")
 	}
 	if fw != "" {
 		if _, err := stableversion.ParseFirmwareVersion(fw); err != nil {
-			return errors.Annotate(err, "shallow validate value fields").Err()
+			return errors.Fmt("shallow validate value fields: %w", err)
 		}
 	}
 	if fwImage != "" {
 		if _, err := stableversion.ParseFirmwarePath(fwImage); err != nil {
-			return errors.Annotate(err, "shallow validate value fields").Err()
+			return errors.Fmt("shallow validate value fields: %w", err)
 		}
 	}
 	return nil

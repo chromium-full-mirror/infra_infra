@@ -56,7 +56,7 @@ func (tsi *TrackerServerImpl) getKarteClient(ctx context.Context) (metrics.Metri
 	// Create the Karte client
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
+		return nil, errors.Fmt("failed to get RPC transport: %w", err)
 	}
 	kClient, err := karte.NewMetricsWithHttp(ctx, &http.Client{
 		Transport: transport,
@@ -77,7 +77,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 	cfg := config.Get(ctx)
 	sc, err := tsi.newSwarmingClient(ctx, cfg.Swarming.Host)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
+		return nil, errors.Fmt("failed to obtain Swarming client: %w", err)
 	}
 
 	httpClient, err := ufs.NewHTTPClient(ctx)
@@ -153,7 +153,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 	scheduleTasks := func(swarmingHost, swarmingPool string) error {
 		sc, err := tsi.newSwarmingClient(ctx, swarmingHost)
 		if err != nil {
-			return errors.Annotate(err, "failed to obtain Swarming client").Err()
+			return errors.Fmt("failed to obtain Swarming client: %w", err)
 		}
 		// Schedule audit tasks to ready|needs_repair|needs_reset|repair_failed DUTs.
 		var bots []*swarmingv2.BotInfo
@@ -164,7 +164,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		}
 		err = retry.Retry(ctx, simple3TimesRetry(), f, retry.LogCallback(ctx, "Try get list of the BOTs"))
 		if err != nil {
-			return errors.Annotate(err, "failed to list alive cros bots").Err()
+			return errors.Fmt("failed to list alive cros bots: %w", err)
 		}
 		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
 
@@ -179,7 +179,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname, swarmingPool)
 		if err != nil {
 			logging.Infof(ctx, "failed push audit bots: %v", err)
-			return errors.Reason("failed to push audit bots").Err()
+			return errors.New("failed to push audit bots")
 		}
 		return nil
 	}
@@ -192,7 +192,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		}
 		if err := scheduleTasks(cfg.GetSwarming().GetHost(), pool.GetPoolName()); err != nil {
 			logging.Errorf(ctx, "Audit for %q failed: %s.", pool.GetPoolName(), err)
-			errs = append(errs, errors.Annotate(err, "schedule tasks for %q", pool.GetPoolName()).Err())
+			errs = append(errs, errors.Fmt("schedule tasks for %q: %w", pool.GetPoolName(), err))
 		} else {
 			logging.Infof(ctx, "Audit for %q succesful scheduled.", pool.GetPoolName())
 		}
@@ -212,7 +212,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	cfg := config.Get(ctx)
 	sc, err := tsi.newSwarmingClient(ctx, cfg.Swarming.Host)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
+		return nil, errors.Fmt("failed to obtain Swarming client: %w", err)
 	}
 
 	// Schedule repair jobs to idle labstations. It's for periodically checking
@@ -222,7 +222,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	swarmingPool := cfg.GetSwarming().GetBotPool()
 	bots, err := sc.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to list alive idle labstation bots").Err()
+		return nil, errors.Fmt("failed to list alive idle labstation bots: %w", err)
 	}
 	logging.Infof(ctx, "successfully get %d alive idle labstation bots.", len(bots))
 
@@ -257,7 +257,7 @@ func (tsi *TrackerServerImpl) ReportBots(ctx context.Context, req *fleet.ReportB
 	cfg := config.Get(ctx)
 	sc, err := tsi.newSwarmingClient(ctx, cfg.Swarming.Host)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
+		return nil, errors.Fmt("failed to obtain Swarming client: %w", err)
 	}
 
 	bots, err := sc.ListAliveBotsInPool(ctx, cfg.Swarming.BotPool, strpair.Map{})

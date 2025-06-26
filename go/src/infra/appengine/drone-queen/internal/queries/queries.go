@@ -46,11 +46,11 @@ func createNewDrone(ctx context.Context, now time.Time, generator func() string)
 			key := datastore.MakeKey(ctx, entities.DroneKind, proposed)
 			res, err := datastore.Exists(ctx, key)
 			if err != nil {
-				return errors.Annotate(err, "check if drone %s exists", id).Err()
+				return errors.Fmt("check if drone %s exists: %w", id, err)
 			}
 			if res.Any() {
 				if i == maxAttempts {
-					return errors.Reason("max attempts finding unique ID").Err()
+					return errors.New("max attempts finding unique ID")
 				}
 				return retry
 			}
@@ -69,7 +69,7 @@ func createNewDrone(ctx context.Context, now time.Time, generator func() string)
 				retryUniqueUUID.Add(ctx, 1, config.Instance(ctx))
 				continue
 			}
-			return "", errors.Annotate(err, "create new drone").Err()
+			return "", errors.Fmt("create new drone: %w", err)
 		}
 		return id, nil
 	}
@@ -83,7 +83,7 @@ func getDroneDUTs(ctx context.Context, d entities.DroneID) ([]*entities.DUT, err
 	q = q.Ancestor(entities.DUTGroupKey(ctx))
 	var duts []*entities.DUT
 	if err := datastore.GetAll(ctx, q, &duts); err != nil {
-		return nil, errors.Annotate(err, "get drone %v DUTs:", d).Err()
+		return nil, errors.Fmt("get drone %v DUTs:: %w", d, err)
 	}
 	return duts, nil
 }
@@ -107,7 +107,7 @@ func getUnassignedDUTs(ctx context.Context, n int32, hive string) (_ []*entities
 	q = q.Limit(n)
 	var duts []*entities.DUT
 	if err := datastore.GetAll(ctx, q, &duts); err != nil {
-		return nil, errors.Annotate(err, "get %v unassigned DUTs", n).Err()
+		return nil, errors.Fmt("get %v unassigned DUTs: %w", n, err)
 	}
 	return duts, nil
 }
@@ -123,13 +123,13 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 	otil.AddValues(span, d)
 	currentDUTs, err := getDroneDUTs(ctx, d)
 	if err != nil {
-		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
+		return nil, errors.Fmt("assign new DUTs to %v: %w", d, err)
 	}
 	dutsNeeded := uint32ToInt(li.GetDutCapacity()) - len(currentDUTs)
 
 	newDUTs, err := getUnassignedDUTs(ctx, int32(dutsNeeded), hive)
 	if err != nil {
-		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
+		return nil, errors.Fmt("assign new DUTs to %v: %w", d, err)
 	}
 	logging.Infof(ctx, "Got unassigned DUTs to assign: %v", entities.FormatDUTs(newDUTs))
 	for _, dut := range newDUTs {
@@ -137,7 +137,7 @@ func AssignNewDUTs(ctx context.Context, d entities.DroneID, li *api.ReportDroneR
 	}
 	currentDUTs = append(currentDUTs, newDUTs...)
 	if err := datastore.Put(ctx, newDUTs); err != nil {
-		return nil, errors.Annotate(err, "assign new DUTs to %v", d).Err()
+		return nil, errors.Fmt("assign new DUTs to %v: %w", d, err)
 	}
 	updateAgentLoad(d, agentLoad{hive: hive, version: version, totalCapacity: int(li.GetDutCapacity()), usedCapacity: len(currentDUTs)})
 	return currentDUTs, nil
@@ -153,11 +153,11 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) (err error) {
 	q = q.Ancestor(entities.DUTGroupKey(ctx))
 	q = q.KeysOnly(true)
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
-		return errors.Annotate(err, "free invalid DUTs: get all DUTs").Err()
+		return errors.Fmt("free invalid DUTs: get all DUTs: %w", err)
 	}
 	validDrones, err := getValidDrones(ctx, now)
 	if err != nil {
-		return errors.Annotate(err, "free invalid DUTs").Err()
+		return errors.Fmt("free invalid DUTs: %w", err)
 	}
 	for _, d := range d {
 		f := func(ctx context.Context) error {
@@ -165,7 +165,7 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) (err error) {
 			defer span.End()
 			otil.AddValues(span, d.ID)
 			if err := datastore.Get(ctx, &d); err != nil {
-				return errors.Annotate(err, "get DUT %v", d.ID).Err()
+				return errors.Fmt("get DUT %v: %w", d.ID, err)
 			}
 			if d.AssignedDrone == "" {
 				return nil
@@ -175,12 +175,12 @@ func FreeInvalidDUTs(ctx context.Context, now time.Time) (err error) {
 			}
 			d.AssignedDrone = ""
 			if err := datastore.Put(ctx, &d); err != nil {
-				return errors.Annotate(err, "put DUT %v", d.ID).Err()
+				return errors.Fmt("put DUT %v: %w", d.ID, err)
 			}
 			return nil
 		}
 		if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
-			return errors.Annotate(err, "free invalid DUTs").Err()
+			return errors.Fmt("free invalid DUTs: %w", err)
 		}
 	}
 	return nil
@@ -193,7 +193,7 @@ func getValidDrones(ctx context.Context, now time.Time) (_ map[entities.DroneID]
 	q := datastore.NewQuery(entities.DroneKind)
 	var d []entities.Drone
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
-		return nil, errors.Annotate(err, "get valid drones").Err()
+		return nil, errors.Fmt("get valid drones: %w", err)
 	}
 	m := make(map[entities.DroneID]bool)
 	for _, d := range d {
@@ -212,14 +212,14 @@ func PruneExpiredDrones(ctx context.Context, now time.Time) (err error) {
 	var d []entities.Drone
 	q := datastore.NewQuery(entities.DroneKind)
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
-		return errors.Annotate(err, "prune expired drones: get drones").Err()
+		return errors.Fmt("prune expired drones: get drones: %w", err)
 	}
 	for _, d := range d {
 		if d.Expiration.After(now) {
 			continue
 		}
 		if err := datastore.Delete(ctx, &d); err != nil {
-			return errors.Annotate(err, "prune expired drones: delete drone %v", d.ID).Err()
+			return errors.Fmt("prune expired drones: delete drone %v: %w", d.ID, err)
 		}
 		deleteAgentLoad(d.ID)
 	}
@@ -238,11 +238,11 @@ func PruneDrainedDUTs(ctx context.Context) (err error) {
 	q = q.Eq(entities.DrainingField, true)
 	q = q.Eq(entities.AssignedDroneField, "")
 	if err := datastore.GetAll(ctx, q, &d); err != nil {
-		return errors.Annotate(err, "get draining DUTs").Err()
+		return errors.Fmt("get draining DUTs: %w", err)
 	}
 	for _, d := range d {
 		if err := datastore.Delete(ctx, &d); err != nil {
-			return errors.Annotate(err, "delete DUT %v", d.ID).Err()
+			return errors.Fmt("delete DUT %v: %w", d.ID, err)
 		}
 	}
 	return nil

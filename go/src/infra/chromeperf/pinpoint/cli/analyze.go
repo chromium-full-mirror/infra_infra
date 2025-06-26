@@ -63,10 +63,10 @@ func loadManifestFromPath(m string) (*telemetryExperimentArtifactsManifest, erro
 	a := &telemetryExperimentArtifactsManifest{}
 	d, err := os.ReadFile(m)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed reading manifest").Err()
+		return nil, errors.Fmt("failed reading manifest: %w", err)
 	}
 	if err := yaml.Unmarshal(d, a); err != nil {
-		return nil, errors.Annotate(err, "failed unmarshaling manifest").Err()
+		return nil, errors.Fmt("failed unmarshaling manifest: %w", err)
 	}
 	return a, nil
 }
@@ -170,7 +170,7 @@ func loadAndMergeHistograms(config *changeConfig, rootDir string) ([]*histograms
 				if d.Name() == "perf_results.json" {
 					jf, err := os.Open(path)
 					if err != nil {
-						return errors.Annotate(err, "failed loading file: %q", path).Err()
+						return errors.Fmt("failed loading file: %q: %w", path, err)
 					}
 					defer jf.Close()
 					h, err := histograms.NewFromJSON(jf)
@@ -347,27 +347,27 @@ func (aem *analyzeExperimentMixin) doAnalyzeExperiment(ctx context.Context, work
 	}
 	switch job.GetJobSpec().GetJobKind().(type) {
 	case *proto.JobSpec_Bisection:
-		return nil, errors.Reason("not implemented").Err()
+		return nil, errors.New("not implemented")
 	case *proto.JobSpec_Experiment:
 		return aem.analyzeTelemetryExperiment(ctx, workDir, job)
 	default:
-		return nil, errors.Reason("unsupported job kind").Err()
+		return nil, errors.New("unsupported job kind")
 	}
 }
 
 func (aem *analyzeExperimentMixin) analyzeTelemetryExperiment(ctx context.Context, workDir string, job *proto.Job) (*experimentReport, error) {
 	id, err := pinpoint.ExtractJobID(job.Name)
 	if err != nil {
-		return nil, errors.Annotate(err, "invalid job id").Err()
+		return nil, errors.Fmt("invalid job id: %w", err)
 	}
 	jp := filepath.Join(workDir, id)
 	jm, err := loadManifestFromPath(filepath.Join(jp, "manifest.yaml"))
 	if err != nil {
-		return nil, errors.Annotate(err, "couldn't load manifest").Err()
+		return nil, errors.Fmt("couldn't load manifest: %w", err)
 	}
 	r, err := analyzeExperiment(jm, jp)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed analysis").Err()
+		return nil, errors.Fmt("failed analysis: %w", err)
 	}
 	return r, nil
 }
@@ -411,21 +411,21 @@ func cmdAnalyzeExperiment(p Param) *subcommands.Command {
 func (ar *analyzeRun) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	c, err := ar.pinpointClient(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to create a Pinpoint client").Err()
+		return errors.Fmt("failed to create a Pinpoint client: %w", err)
 	}
 
 	h, err := ar.httpClient(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed creating an http client").Err()
+		return errors.Fmt("failed creating an http client: %w", err)
 	}
 
 	j, err := c.GetJob(ctx, &proto.GetJobRequest{Name: pinpoint.LegacyJobName(ar.jobName)})
 	if err != nil {
-		return errors.Annotate(err, "failed getting job details").Err()
+		return errors.Fmt("failed getting job details: %w", err)
 	}
 
 	if err := ar.doDownloadArtifacts(ctx, a.GetOut(), h, ar.workDir, j); err != nil {
-		return errors.Annotate(err, "failed downloading artifacts").Err()
+		return errors.Fmt("failed downloading artifacts: %w", err)
 	}
 	return nil
 }

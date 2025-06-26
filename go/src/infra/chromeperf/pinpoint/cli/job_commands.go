@@ -73,7 +73,7 @@ func waitAndDownloadJob(br *baseCommandRun,
 	}
 	_, err = yaml.Marshal(r)
 	if err != nil {
-		return errors.Annotate(err, "failed YAML export").Err()
+		return errors.Fmt("failed YAML export: %w", err)
 	}
 
 	return nil
@@ -176,21 +176,21 @@ func (lj *listJobs) Run(ctx context.Context, a subcommands.Application, args []s
 	}
 
 	if err != nil {
-		return errors.Annotate(err, "failed getting filter").Err()
+		return errors.Fmt("failed getting filter: %w", err)
 	}
 
 	req := &proto.ListJobsRequest{Filter: filter}
 	resp, err := c.ListJobs(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "failed during ListJobs").Err()
+		return errors.Fmt("failed during ListJobs: %w", err)
 	}
 	if lj.baseCommandRun.json {
 		if err = lj.baseCommandRun.writeJSON(a.GetOut(), resp.Jobs); err != nil {
-			return errors.Annotate(err, "failed rendering jobs").Err()
+			return errors.Fmt("failed rendering jobs: %w", err)
 		}
 	} else {
 		if err = render.JobListText(a.GetOut(), resp.Jobs); err != nil {
-			return errors.Annotate(err, "failed rendering jobs").Err()
+			return errors.Fmt("failed rendering jobs: %w", err)
 		}
 	}
 	return nil
@@ -233,7 +233,7 @@ func (gj *getJob) RegisterFlags(p Param) {
 
 func (gj *getJob) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	if gj.name == "" {
-		return errors.Reason("must set -name").Err()
+		return errors.New("must set -name")
 	}
 
 	c, err := gj.pinpointClient(ctx)
@@ -244,7 +244,7 @@ func (gj *getJob) Run(ctx context.Context, a subcommands.Application, args []str
 	req := &proto.GetJobRequest{Name: pinpoint.LegacyJobName(gj.name)}
 	j, err := c.GetJob(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "failed during GetJob").Err()
+		return errors.Fmt("failed during GetJob: %w", err)
 	}
 	out := prototext.MarshalOptions{Multiline: true}.Format(j)
 	fmt.Println(out)
@@ -296,7 +296,7 @@ func (wj *waitJob) RegisterFlags(p Param) {
 
 func (wj *waitJob) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	if wj.name == "" {
-		return errors.Reason("must set -name").Err()
+		return errors.New("must set -name")
 	}
 
 	c, err := wj.pinpointClient(ctx)
@@ -307,7 +307,7 @@ func (wj *waitJob) Run(ctx context.Context, a subcommands.Application, args []st
 	req := &proto.GetJobRequest{Name: pinpoint.LegacyJobName(wj.name)}
 	j, err := c.GetJob(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "failed during GetJob").Err()
+		return errors.Fmt("failed during GetJob: %w", err)
 	}
 
 	// Force `wait` to true because we're always meant to wait with wait-job.
@@ -356,11 +356,11 @@ func (cj *cancelJob) RegisterFlags(p Param) {
 
 func (cj *cancelJob) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	if len(args) != 1 {
-		return errors.Reason("Must specify reason as the only positional argument").Err()
+		return errors.New("Must specify reason as the only positional argument")
 	}
 	reason := args[0]
 	if cj.name == "" {
-		return errors.Reason("must set -name").Err()
+		return errors.New("must set -name")
 	}
 
 	c, err := cj.pinpointClient(ctx)
@@ -372,7 +372,7 @@ func (cj *cancelJob) Run(ctx context.Context, a subcommands.Application, args []
 
 	job, err := c.GetJob(ctx, &proto.GetJobRequest{Name: legacyName})
 	if err != nil {
-		return errors.Annotate(err, "failed during GetJob").Err()
+		return errors.Fmt("failed during GetJob: %w", err)
 	}
 	out := prototext.MarshalOptions{Multiline: true}.Format(job)
 	fmt.Println(out)
@@ -383,7 +383,7 @@ func (cj *cancelJob) Run(ctx context.Context, a subcommands.Application, args []
 
 		sc := bufio.NewScanner(os.Stdin)
 		if !sc.Scan() || !strings.EqualFold(sc.Text(), "y") {
-			return errors.Reason("cancelled").Err()
+			return errors.New("cancelled")
 		}
 	}
 
@@ -393,7 +393,7 @@ func (cj *cancelJob) Run(ctx context.Context, a subcommands.Application, args []
 	}
 	resp, err := c.CancelJob(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "failed during CancelJob").Err()
+		return errors.Fmt("failed during CancelJob: %w", err)
 	}
 	out = prototext.MarshalOptions{Multiline: true}.Format(resp)
 	fmt.Println(out)

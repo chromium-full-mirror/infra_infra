@@ -249,10 +249,10 @@ func attachLUCIBisectionTestAnalysesResults(c context.Context, failures []*messa
 		mask := &fieldmaskpb.FieldMask{Paths: []string{"analysis_id", "status", "culprit"}}
 		testAnalyses, err := batchGetLUCIBisectionTestAnalyses(c, p, tests, mask, bisectionClient)
 		if err != nil {
-			return errors.Annotate(err, "batch get test analyses").Err()
+			return errors.Fmt("batch get test analyses: %w", err)
 		}
 		if len(testAnalyses) != len(tests) {
-			return errors.Reason("number of test analyses(%d) in response doesn't equal number of tests(%d) for project %s", len(testAnalyses), len(tests), p).Err()
+			return errors.Fmt("number of test analyses(%d) in response doesn't equal number of tests(%d) for project %s", len(testAnalyses), len(tests), p)
 		}
 		// Attach test analyses to tests.
 		for i, analysis := range testAnalyses {
@@ -297,7 +297,7 @@ func batchGetLUCIBisectionTestAnalyses(ctx context.Context, project string, test
 			Fields:       mask,
 		})
 		if err != nil {
-			return nil, errors.Annotate(err, "batch get test analyses for project %s", project).Err()
+			return nil, errors.Fmt("batch get test analyses for project %s: %w", project, err)
 		}
 		results = append(results, resp.GetTestAnalyses()...)
 	}
@@ -338,7 +338,7 @@ func attachLUCIBisectionCompileFailureAnalyses(c context.Context, failures []*me
 		bbid := builder.LatestFailure
 		res, err := bisectionClient.QueryBisectionResults(c, bbid, stepName)
 		if err != nil {
-			errs = append(errs, errors.Annotate(err, "failed getting LUCI Bisection results for build %d", bbid).Err())
+			errs = append(errs, errors.Fmt("failed getting LUCI Bisection results for build %d: %w", bbid, err))
 			continue
 		}
 

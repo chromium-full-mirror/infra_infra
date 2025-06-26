@@ -30,7 +30,7 @@ func NewFromJSON(r io.Reader) ([]*Histogram, error) {
 	jd := json.NewDecoder(r)
 	hl := []*Histogram{}
 	if err := jd.Decode(&hl); err != nil {
-		return nil, errors.Annotate(err, "failed decoding histograms").Err()
+		return nil, errors.Fmt("failed decoding histograms: %w", err)
 	}
 
 	// Filter out the histograms that do not have a name.

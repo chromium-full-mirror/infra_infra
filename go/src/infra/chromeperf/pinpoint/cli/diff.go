@@ -105,7 +105,7 @@ func (dc *diffCmd) getJob(ctx context.Context, name string) (*pppb.Job, error) {
 	req := &pppb.GetJobRequest{Name: pinpoint.LegacyJobName(name)}
 	j, err := c.GetJob(ctx, req)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed during GetJob").Err()
+		return nil, errors.Fmt("failed during GetJob: %w", err)
 	}
 	return j, nil
 }
@@ -113,7 +113,7 @@ func (dc *diffCmd) getJob(ctx context.Context, name string) (*pppb.Job, error) {
 func diffJob(job *pppb.Job) (map[string]customDiffReporter, error) {
 	e := job.GetJobSpec().GetExperiment()
 	if e == nil {
-		return nil, errors.Reason("unsupported job kind: %+v", job).Err()
+		return nil, errors.Fmt("unsupported job kind: %+v", job)
 	}
 	comps := []struct {
 		label       string
@@ -260,7 +260,7 @@ func (dc *diffCmd) Run(ctx context.Context, a subcommands.Application, args []st
 	}
 	e := job.GetJobSpec().GetExperiment()
 	if e == nil {
-		return errors.Reason("unsupported job kind: %+v", job).Err()
+		return errors.Fmt("unsupported job kind: %+v", job)
 	}
 	diffs, err := diffJob(job)
 	if err != nil {

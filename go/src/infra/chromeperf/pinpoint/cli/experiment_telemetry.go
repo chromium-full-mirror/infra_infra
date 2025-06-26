@@ -348,12 +348,12 @@ func runBatchJob(e *experimentTelemetryRun,
 func (e *experimentTelemetryRun) Run(ctx context.Context, a subcommands.Application, args []string) error {
 	c, err := e.pinpointClient(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to create a Pinpoint client").Err()
+		return errors.Fmt("failed to create a Pinpoint client: %w", err)
 	}
 
 	p, err := e.getPreset(ctx)
 	if err != nil {
-		return errors.Annotate(err, "unable to load preset").Err()
+		return errors.Fmt("unable to load preset: %w", err)
 	}
 	if e.presetsMixin.presetName != "" && p.TelemetryExperiment == nil && p.TelemetryBatchExperiment == nil {
 		return fmt.Errorf("Preset must be a telemetry_batch_experiment or telemetry_experiment")
@@ -385,14 +385,14 @@ func (e *experimentTelemetryRun) Run(ctx context.Context, a subcommands.Applicat
 	jobs, err := runBatchJob(e, ctx, a.GetOut(), c, batch_id,
 		batch_experiments, experiment)
 	if err != nil {
-		return errors.Annotate(err, "Failed to start all jobs: ").Err()
+		return errors.Fmt("Failed to start all jobs: : %w", err)
 	}
 
 	err = waitAndDownloadJobList(&e.baseCommandRun,
 		e.waitForJobMixin, e.downloadResultsMixin,
 		e.downloadArtifactsMixin, e.analyzeExperimentMixin, ctx, a.GetOut(), c, jobs)
 	if err != nil {
-		return errors.Annotate(err, "Failed to wait and download jobs: ").Err()
+		return errors.Fmt("Failed to wait and download jobs: : %w", err)
 	}
 
 	return nil

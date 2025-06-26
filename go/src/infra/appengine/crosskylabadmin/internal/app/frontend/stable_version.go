@@ -50,7 +50,7 @@ func (is *ServerImpl) DumpStableVersionToDatastore(ctx context.Context, in *flee
 	client, err := is.newStableVersionGitClient(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "get git client: %s", err)
-		return nil, errors.Annotate(err, "get git client").Err()
+		return nil, errors.Fmt("get git client: %w", err)
 	}
 	return dumpStableVersionToDatastoreImpl(ctx, client.GetFile)
 }
@@ -72,7 +72,7 @@ func deviceInfo(ctx context.Context, hostname string) (*device.DeviceInfo, error
 	cfg := config.Get(ctx)
 	httpClient, err := ufs.NewHTTPClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "device info: fail create http client").Err()
+		return nil, errors.Fmt("device info: fail create http client: %w", err)
 	}
 	// We only support chromeos DUTs at this point.
 	// TODO: Create RPC interpreters to read the namespace from the header.
@@ -81,7 +81,7 @@ func deviceInfo(ctx context.Context, hostname string) (*device.DeviceInfo, error
 	logging.Infof(ctx, "Set namespace %q for UFS client before getting device info: %q", namespace, hostname)
 	client, err := ufs.NewClient(ufsCtx, httpClient, cfg.GetUFS().GetHost())
 	if err != nil {
-		return nil, errors.Annotate(err, "device info: fail create ufs client").Err()
+		return nil, errors.Fmt("device info: fail create ufs client: %w", err)
 	}
 	return device.GetDeviceInfo(ufsCtx, client, hostname)
 }
@@ -94,7 +94,7 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 	model := req.GetModel()
 	pools := req.GetPools()
 	if hostname == "" && (board == "" || model == "") {
-		return nil, errors.Reason("get version: search criteria not provided").Err()
+		return nil, errors.New("get version: search criteria not provided")
 	}
 	// Satlab case supported only when hostname provided.
 	if hostname != "" && heuristics.LooksLikeSatlabDevice(hostname) {
@@ -115,7 +115,7 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 			// Do nothing. If there is no override for the hostname.
 			// Proceed with next options.
 		default:
-			return nil, errors.Annotate(err, "get version: for satlab").Err()
+			return nil, errors.Fmt("get version: for satlab: %w", err)
 		}
 	}
 	if hostname != "" && (board == "" || model == "") {
@@ -123,13 +123,13 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 		// Only read data for internal usage, no partners at this point.
 		di, err := deviceInfo(ctx, hostname)
 		if err != nil {
-			return nil, errors.Annotate(err, "get version").Err()
+			return nil, errors.Fmt("get version: %w", err)
 		}
 		board = di.Board
 		model = di.Model
 		pools = di.Pools
 		if board == "" || model == "" {
-			return nil, errors.Reason("get version: board or model not found").Err()
+			return nil, errors.New("get version: board or model not found")
 		}
 	}
 	logging.Infof(ctx, "Finding a version for board:%q, model:%q, poools:%q", board, model, pools)
@@ -142,7 +142,7 @@ func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.Client
 	}
 	hc, err := getAuthenticatedHTTPClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "newStableVersionGitClient").Err()
+		return nil, errors.Fmt("newStableVersionGitClient: %w", err)
 	}
 	return getStableVersionGitClient(ctx, hc)
 }
@@ -152,14 +152,14 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 	dataPath := config.Get(ctx).StableVersionConfig.StableVersionDataPath
 	contents, err := getFile(ctx, dataPath)
 	if err != nil {
-		return nil, errors.Annotate(err, "fetch file").Err()
+		return nil, errors.Fmt("fetch file: %w", err)
 	}
 	stableVersions, err := parseStableVersions(contents)
 	if err != nil {
-		return nil, errors.Annotate(err, "parse json").Err()
+		return nil, errors.Fmt("parse json: %w", err)
 	}
 	if err := dssv.WriteVersions(ctx, stableVersions.GetVersions()); err != nil {
-		return nil, errors.Annotate(err, "dump stable version: new versions").Err()
+		return nil, errors.Fmt("dump stable version: new versions: %w", err)
 	}
 	logging.Infof(ctx, "successfully wrote new stable versions")
 	return &fleet.DumpStableVersionToDatastoreResponse{}, nil
@@ -168,7 +168,7 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 func parseStableVersions(contents string) (*lab_platform.StableVersions, error) {
 	var stableVersions lab_platform.StableVersions
 	if err := jsonpb.Unmarshal(strings.NewReader(contents), &stableVersions); err != nil {
-		return nil, errors.Annotate(err, "unmarshal stableversions json").Err()
+		return nil, errors.Fmt("unmarshal stableversions json: %w", err)
 	}
 	return &stableVersions, nil
 }
@@ -176,7 +176,7 @@ func parseStableVersions(contents string) (*lab_platform.StableVersions, error) 
 func getAuthenticatedHTTPClient(ctx context.Context) (*http.Client, error) {
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesApi.OAuthScope))
 	if err != nil {
-		return nil, errors.Annotate(err, "new authenticated http client").Err()
+		return nil, errors.Fmt("new authenticated http client: %w", err)
 	}
 	return &http.Client{Transport: transport}, nil
 }
@@ -189,7 +189,7 @@ func getStableVersionGitClient(ctx context.Context, hc *http.Client) (git.Client
 	}
 	client, err := git.NewClient(ctx, hc, s.GerritHost, s.GitilesHost, s.Project, s.Branch)
 	if err != nil {
-		return nil, errors.Annotate(err, "get git client").Err()
+		return nil, errors.Fmt("get git client: %w", err)
 	}
 	return client, nil
 }

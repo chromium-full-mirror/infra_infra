@@ -39,7 +39,7 @@ func (*alertsServer) ListAlerts(ctx context.Context, req *pb.ListAlertsRequest) 
 	}
 	summary, err := handler.GetAlerts(ctx, tree, true, false)
 	if err != nil {
-		return nil, errors.Annotate(err, "getting alerts").Err()
+		return nil, errors.Fmt("getting alerts: %w", err)
 	}
 	result := &pb.ListAlertsResponse{}
 	for _, alert := range summary.Alerts {
@@ -48,7 +48,7 @@ func (*alertsServer) ListAlerts(ctx context.Context, req *pb.ListAlertsRequest) 
 		}
 		bytes, err := json.Marshal(alert)
 		if err != nil {
-			return nil, errors.Annotate(err, "json encoding extension").Err()
+			return nil, errors.Fmt("json encoding extension: %w", err)
 		}
 		a := &pb.Alert{
 			Key:       alert.Key,

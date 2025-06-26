@@ -143,13 +143,13 @@ func (pdb *presetDb) GetPreset(pName string) (preset, error) {
 
 func loadPresets(pfile io.Reader) (*presetDb, error) {
 	if pfile == nil {
-		return nil, errors.Reason("pfile must not be nil").Err()
+		return nil, errors.New("pfile must not be nil")
 	}
 	pd := &presetDb{}
 	d := yaml.NewDecoder(pfile)
 	d.SetStrict(true)
 	if err := d.Decode(pd); err != nil {
-		return nil, errors.Annotate(err, "failed loading presets").Err()
+		return nil, errors.Fmt("failed loading presets: %w", err)
 	}
 
 	return pd, nil
@@ -180,17 +180,17 @@ func (pm *presetsMixin) getPreset(ctx context.Context) (preset, error) {
 	b, err := os.ReadFile(pm.presetFile)
 	if err != nil {
 		logging.Warningf(ctx, "failed reading preset file %q", pm.presetFile)
-		return preset{}, errors.Annotate(err, "failed reading preset file %q", pm.presetFile).Err()
+		return preset{}, errors.Fmt("failed reading preset file %q: %w", pm.presetFile, err)
 	}
 
 	pdb, err := loadPresets(bytes.NewReader(b))
 	if err != nil {
-		return preset{}, errors.Annotate(err, "potentially malformed presets file %q", pm.presetFile).Err()
+		return preset{}, errors.Fmt("potentially malformed presets file %q: %w", pm.presetFile, err)
 	}
 
 	p, err := pdb.GetPreset(pm.presetName)
 	if err != nil {
-		return p, errors.Annotate(err, "failed getting preset %q", pm.presetName).Err()
+		return p, errors.Fmt("failed getting preset %q: %w", pm.presetName, err)
 	}
 
 	return p, nil

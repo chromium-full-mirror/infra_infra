@@ -87,7 +87,7 @@ func (r *baseCommandRun) pinpointClient(ctx context.Context) (proto.PinpointClie
 	}
 	conn, err := r.clientFactory.grpc(endpoint)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed dial grpc").Err()
+		return nil, errors.Fmt("failed dial grpc: %w", err)
 	}
 	return proto.NewPinpointClient(conn), nil
 }
@@ -112,7 +112,7 @@ func (r *baseCommandRun) writeJSON(out io.Writer, data any) error {
 	enc := json.NewEncoder(out)
 	enc.SetIndent(r.jsonPrefix, r.jsonIndent)
 	if err := enc.Encode(data); err != nil {
-		return errors.Annotate(err, "could not render json").Err()
+		return errors.Fmt("could not render json: %w", err)
 	}
 	return nil
 }
@@ -158,7 +158,7 @@ func removeExisting(path string) error {
 	}
 
 	if err := os.RemoveAll(path); err != nil {
-		return errors.Annotate(err, "failed removing: %s", path).Err()
+		return errors.Fmt("failed removing: %s: %w", path, err)
 	}
 	return nil
 }
@@ -189,7 +189,7 @@ func (f *clientFactory) grpc(endpoint string) (*grpc.ClientConn, error) {
 	conn, err, _ := f.grpcConns.Do(endpoint, func() (any, error) {
 		cred, err := f.idTokenAuth.PerRPCCredentials()
 		if err != nil {
-			return nil, errors.Annotate(err, "failed get per rpc credentials from luci auth").Err()
+			return nil, errors.Fmt("failed get per rpc credentials from luci auth: %w", err)
 		}
 		return grpc.Dial(
 			endpoint,
@@ -198,7 +198,7 @@ func (f *clientFactory) grpc(endpoint string) (*grpc.ClientConn, error) {
 		)
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "failed get grpc conn").Err()
+		return nil, errors.Fmt("failed get grpc conn: %w", err)
 	}
 	return conn.(*grpc.ClientConn), nil
 }
