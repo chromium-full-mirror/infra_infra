@@ -130,7 +130,7 @@ func NewSwarmingClient(c context.Context, host string) (SwarmingClient, error) {
 	// trigger privilege) This app is authorized to make those API calls.
 	t, err := auth.GetRPCTransport(c, auth.AsSelf)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport for host %s", host).Err()
+		return nil, errors.Fmt("failed to get RPC transport for host %s: %w", host, err)
 	}
 	prpcClient := &prpc.Client{
 		C:    &http.Client{Transport: t},
@@ -173,7 +173,7 @@ func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(ctx context.Context, pool 
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)
-			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).Err()
+			return nil, errors.Fmt("failed to list alive and idle bots in pool %s", pool)
 		}
 		out = append(out, resp.GetItems()...)
 		cursor = resp.GetCursor()
@@ -208,7 +208,7 @@ func (sc *swarmingClientImpl) ListAliveBotsInPool(ctx context.Context, pool stri
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)
-			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).Err()
+			return nil, errors.Fmt("failed to list alive and idle bots in pool %s", pool)
 		}
 		out = append(out, resp.GetItems()...)
 		cursor = resp.GetCursor()
@@ -228,7 +228,7 @@ func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args 
 	dims, err := convertToDimensions(args)
 	if err != nil {
 		logging.Errorf(ctx, "convertToDimensions failed: %s", err)
-		return "", errors.Reason("Failed to create dimentions").Err()
+		return "", errors.New("Failed to create dimentions")
 	}
 
 	req := &swarmingv2.NewTaskRequest{
@@ -258,7 +258,7 @@ func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args 
 	resp, err := sc.tasksClient.NewTask(ctx, req)
 	if err != nil {
 		logging.Errorf(ctx, "tasksClient.NewTask failed: ", err)
-		return "", errors.Reason("Failed to create task").Err()
+		return "", errors.New("Failed to create task")
 	}
 	return resp.TaskId, nil
 }
@@ -268,7 +268,7 @@ func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args 
 // Minimum required one of BotID, DutID or DutName
 func convertToDimensions(args *SwarmingCreateTaskArgs) ([]*swarmingv2.StringPair, error) {
 	if args.DutID == "" && args.DutName == "" && args.BotID == "" {
-		return nil, errors.Reason("invalid argument: one of (DutID, DutName, BotID) need to be specified").Err()
+		return nil, errors.New("invalid argument: one of (DutID, DutName, BotID) need to be specified")
 	}
 	dims := []*swarmingv2.StringPair{
 		{
@@ -307,7 +307,7 @@ func (sc *swarmingClientImpl) GetTaskResult(ctx context.Context, tid string) (*s
 		TaskId: tid,
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get result for task %s", tid).Err()
+		return nil, errors.Fmt("failed to get result for task %s: %w", tid, err)
 	}
 	return resp, nil
 }
@@ -330,7 +330,7 @@ func (sc *swarmingClientImpl) ListRecentTasks(ctx context.Context, tags []string
 	resp, err := sc.tasksClient.ListTasks(ctx, req)
 	if err != nil {
 		logging.Errorf(ctx, "tasksClient.ListTasks failed: %s", err)
-		return nil, errors.Reason("failed to list tasks with tags %s", strings.Join(tags, " ")).Err()
+		return nil, errors.Fmt("failed to list tasks with tags %s", strings.Join(tags, " "))
 	}
 
 	return resp.GetItems(), nil
@@ -425,7 +425,7 @@ func TimeSinceBotTaskN(tr *swarmingv2.TaskResultResponse, now time.Time) (*durat
 	}
 	t, err := TaskDoneTime(tr)
 	if err != nil {
-		return nil, errors.Annotate(err, "get time since bot task").Err()
+		return nil, errors.Fmt("get time since bot task: %w", err)
 	}
 	if t.IsZero() {
 		return nil, nil
@@ -451,7 +451,7 @@ func TaskDoneTime(tr *swarmingv2.TaskResultResponse) (time.Time, error) {
 		// These states do not indicate any actual run of a task on the dut.
 		return time.Time{}, nil
 	default:
-		return time.Time{}, errors.Reason("get task done time: unknown task state %s", tr.State).Err()
+		return time.Time{}, errors.Fmt("get task done time: unknown task state %s", tr.State)
 	}
 }
 

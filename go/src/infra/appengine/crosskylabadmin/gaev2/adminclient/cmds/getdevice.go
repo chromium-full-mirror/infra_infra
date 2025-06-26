@@ -57,22 +57,22 @@ func (c *getDeviceRun) Run(a subcommands.Application, args []string, env subcomm
 func (c *getDeviceRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx = shivasUtils.SetupContext(ctx, ufsUtil.OSNamespace)
 	if len(args) != 0 {
-		return errors.Reason("get machine lse: positional arguments are unacceptable").Err()
+		return errors.New("get machine lse: positional arguments are unacceptable")
 	}
 	authOptions, err := c.authFlags.Options()
 	if err != nil {
-		return errors.Annotate(err, "get machine lse: authenticating").Err()
+		return errors.Fmt("get machine lse: authenticating: %w", err)
 	}
 	hc, err := auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOptions).Client()
 	if err != nil {
-		return errors.Annotate(err, "get machine lse").Err()
+		return errors.Fmt("get machine lse: %w", err)
 	}
 	client, err := ufs.NewClient(ctx, hc, c.ufs)
 	if err != nil {
-		return errors.Annotate(err, "get machine lse: creating client").Err()
+		return errors.Fmt("get machine lse: creating client: %w", err)
 	}
 	if c.name == "" {
-		return errors.Reason("name cannot be empty").Err()
+		return errors.New("name cannot be empty")
 	}
 	req := &ufsAPI.GetDeviceDataRequest{
 		Hostname: c.name,
@@ -80,7 +80,7 @@ func (c *getDeviceRun) innerRun(ctx context.Context, a subcommands.Application, 
 	jsonMarshaler.Marshal(a.GetErr(), req)
 	res, err := client.GetDeviceData(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "get machine lse: inner run").Err()
+		return errors.Fmt("get machine lse: inner run: %w", err)
 	}
 	jsonMarshaler.Marshal(a.GetOut(), res)
 	return nil

@@ -25,11 +25,11 @@ type board struct {
 func parseArc(path string) (map[string]bool, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
-		return nil, errors.Annotate(err, "load arc json %s", path).Err()
+		return nil, errors.Fmt("load arc json %s: %w", path, err)
 	}
 	arcs := make([]arcTruth, 0)
 	if err := json.Unmarshal(b, &arcs); err != nil {
-		return nil, errors.Annotate(err, "parse arc json").Err()
+		return nil, errors.Fmt("parse arc json: %w", err)
 	}
 
 	arcBoards := make(map[string]bool, 0)
@@ -44,11 +44,11 @@ func parseArc(path string) (map[string]bool, error) {
 func parseBoards(path string) ([]string, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
-		return nil, errors.Annotate(err, "load existing boards json file %s", path).Err()
+		return nil, errors.Fmt("load existing boards json file %s: %w", path, err)
 	}
 	boards := make([]board, 0)
 	if err := json.Unmarshal(b, &boards); err != nil {
-		return nil, errors.Annotate(err, "parse boards json file").Err()
+		return nil, errors.Fmt("parse boards json file: %w", err)
 	}
 	bstrs := make([]string, len(boards))
 	for i, b := range boards {

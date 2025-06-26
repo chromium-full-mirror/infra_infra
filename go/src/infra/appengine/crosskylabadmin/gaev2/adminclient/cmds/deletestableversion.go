@@ -61,17 +61,17 @@ func (c *deleteStableVersionRun) Run(a subcommands.Application, args []string, e
 func (c *deleteStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 
 	host, err := c.GetHost()
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 
 	options, err := c.GetOptions()
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 
 	invWithSVClient := fleet.NewInventoryPRPCClient(
@@ -101,17 +101,17 @@ func (c *deleteStableVersionRun) innerRun(ctx context.Context, a subcommands.App
 
 	out, err := protojson.Marshal(req)
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 	log.Printf("Request Body: %s\n", out)
 
 	resp, err := invWithSVClient.DeleteSatlabStableVersion(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 	out, err = protojson.Marshal(resp)
 	if err != nil {
-		return errors.Annotate(err, "delete stable version").Err()
+		return errors.Fmt("delete stable version: %w", err)
 	}
 	fmt.Fprintf(a.GetOut(), "%s\n", out)
 	return nil

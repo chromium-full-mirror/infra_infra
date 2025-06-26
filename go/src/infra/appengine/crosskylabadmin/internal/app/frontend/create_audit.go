@@ -42,7 +42,7 @@ func CreateAuditTask(ctx context.Context, dutName, pool, taskname, actions strin
 		dutName:  dutName,
 	})
 	if cErr != nil {
-		return "", errors.Annotate(cErr, "create audit task").Err()
+		return "", errors.Fmt("create audit task: %w", cErr)
 	}
 
 	logging.Infof(ctx, "Successfully launched audit task %q for dut %q", bbURL, dutName)

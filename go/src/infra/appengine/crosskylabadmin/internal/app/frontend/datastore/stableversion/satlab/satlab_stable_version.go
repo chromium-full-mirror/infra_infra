@@ -40,7 +40,7 @@ type SatlabStableVersionEntry struct {
 // MakeSatlabStableVersionEntry creates a stable version entry from a stable version request.
 func MakeSatlabStableVersionEntry(req *fleet.SetSatlabStableVersionRequest, normalizeCase bool) (*SatlabStableVersionEntry, error) {
 	if req == nil {
-		return nil, errors.Reason("make satlab stable version: request cannot be nil").Err()
+		return nil, errors.New("make satlab stable version: request cannot be nil")
 	}
 	var hostname string
 	var board string
@@ -63,7 +63,7 @@ func MakeSatlabStableVersionEntry(req *fleet.SetSatlabStableVersionRequest, norm
 	var base64Req string
 	bytes, err := proto.Marshal(req)
 	if err != nil {
-		return nil, errors.Annotate(err, "make satlab stable version entry: marshalling proto failed").Err()
+		return nil, errors.Fmt("make satlab stable version entry: marshalling proto failed: %w", err)
 	}
 	base64Req = base64.StdEncoding.EncodeToString(bytes)
 	return &SatlabStableVersionEntry{
@@ -78,7 +78,7 @@ func MakeSatlabStableVersionEntry(req *fleet.SetSatlabStableVersionRequest, norm
 // PutSatlabStableVersionEntry puts a single SatlabStableVersionEntry in datastore.
 func PutSatlabStableVersionEntry(ctx context.Context, entry *SatlabStableVersionEntry) error {
 	if err := datastore.Put(ctx, entry); err != nil {
-		return errors.Annotate(err, "put satlab stable version entry").Err()
+		return errors.Fmt("put satlab stable version entry: %w", err)
 	}
 	return nil
 }
@@ -87,7 +87,7 @@ func PutSatlabStableVersionEntry(ctx context.Context, entry *SatlabStableVersion
 func GetSatlabStableVersionEntryByRawID(ctx context.Context, id string) (*SatlabStableVersionEntry, error) {
 	entry := &SatlabStableVersionEntry{ID: id}
 	if err := datastore.Get(ctx, entry); err != nil {
-		return nil, errors.Annotate(err, "get satlab stable version entry").Err()
+		return nil, errors.Fmt("get satlab stable version entry: %w", err)
 	}
 	return entry, nil
 }

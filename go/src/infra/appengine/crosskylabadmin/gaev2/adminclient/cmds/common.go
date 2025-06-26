@@ -44,7 +44,7 @@ func (r *crOSAdminRPCRun) getType() (string, error) {
 	case true:
 		switch r.prod {
 		case true:
-			return "", errors.Reason("crosadm RPC flags: -local and -prod are mutually exclusive").Err()
+			return "", errors.New("crosadm RPC flags: -local and -prod are mutually exclusive")
 		default:
 			return local, nil
 		}
@@ -75,7 +75,7 @@ func (r *crOSAdminRPCRun) GetHost() (string, error) {
 	case staging:
 		return site.StagingService, nil
 	}
-	return "", errors.Reason("internal error").Err()
+	return "", errors.New("internal error")
 }
 
 // GetHost gets the PRPC options for the correct CrOSAdmin instance.
@@ -94,7 +94,7 @@ func (r *crOSAdminRPCRun) GetOptions() (*prpc.Options, error) {
 	case staging:
 		return options, nil
 	}
-	return nil, errors.Reason("internal error").Err()
+	return nil, errors.New("internal error")
 }
 
 // Indent is the indentation to use for JSON. Set it once for consistency.

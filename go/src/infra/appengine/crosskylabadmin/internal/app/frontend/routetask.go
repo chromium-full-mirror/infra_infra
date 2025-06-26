@@ -73,7 +73,7 @@ func routeRepairTask(ctx context.Context, dutName string, expectedState string, 
 	isLabstation := heuristics.LooksLikeLabstation(dutName)
 	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
 	if err != nil {
-		return heuristics.ProdTaskType, errors.Annotate(err, "route repair task").Err()
+		return heuristics.ProdTaskType, errors.Fmt("route repair task: %w", err)
 	}
 	out, r := routeRepairTaskImpl(
 		ctx,

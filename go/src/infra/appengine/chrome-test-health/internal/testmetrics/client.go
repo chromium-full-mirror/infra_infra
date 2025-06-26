@@ -352,7 +352,7 @@ func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequ
 			break
 		}
 		if err != nil {
-			return nil, errors.Annotate(err, "obtain next component row").Err()
+			return nil, errors.Fmt("obtain next component row: %w", err)
 		}
 		response.Components = append(response.Components, rowVals.Component)
 	}
@@ -363,16 +363,16 @@ func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequ
 func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
 	q, err := c.createFetchMetricsQuery(req)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to parse the request into a query").Err()
+		return nil, errors.Fmt("failed to parse the request into a query: %w", err)
 	}
 
 	job, err := q.Run(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to run start the query").Err()
+		return nil, errors.Fmt("failed to run start the query: %w", err)
 	}
 	it, err := job.Read(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "the query failed to complete").Err()
+		return nil, errors.Fmt("the query failed to complete: %w", err)
 	}
 
 	return c.readFetchTestMetricsResponse(it, req)
@@ -402,7 +402,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 
 	table, ok := periodToTestMetricTable[req.Period]
 	if !ok {
-		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
+		return nil, errors.Fmt("Received unsupported period request: '%s'", req.Period)
 	}
 
 	sortMetric := "test_id"
@@ -411,7 +411,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME && req.Sort.Metric != api.SortType_UNKNOWN_SORTTYPE {
 		sortMetric, ok = sortTypeSqlLookup[req.Sort.Metric]
 		if !ok {
-			return nil, errors.Reason("Received an unsupported sort metric").Err()
+			return nil, errors.New("Received an unsupported sort metric")
 		}
 	}
 	sortDirection := "ASC"
@@ -497,7 +497,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 			break
 		}
 		if err != nil {
-			return nil, errors.Annotate(err, "obtain next test summary row").Err()
+			return nil, errors.Fmt("obtain next test summary row: %w", err)
 		}
 		testId := rowVals.String("test_id")
 		testIdData, ok := testIdToTestDateMetricData[testId]
@@ -548,7 +548,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 				break
 			}
 			if err != nil {
-				return nil, errors.Annotate(err, "obtain next variant summary row").Err()
+				return nil, errors.Fmt("obtain next variant summary row: %w", err)
 			}
 
 			builder := variantRowVals.NullString("builder").StringVal
@@ -617,11 +617,11 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 
 	fileTable, ok := periodToFileMetricTable[req.Period]
 	if !ok {
-		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
+		return nil, errors.Fmt("Received unsupported period request: '%s'", req.Period)
 	}
 	testTable, ok := periodToTestMetricTable[req.Period]
 	if !ok {
-		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
+		return nil, errors.Fmt("Received unsupported period request: '%s'", req.Period)
 	}
 
 	sortMetric := "node_name"
@@ -630,7 +630,7 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME && req.Sort.Metric != api.SortType_UNKNOWN_SORTTYPE {
 		sortMetric, ok = sortTypeSqlLookup[req.Sort.Metric]
 		if !ok {
-			return nil, errors.Reason("Received an unsupported sort metric").Err()
+			return nil, errors.New("Received an unsupported sort metric")
 		}
 	}
 	sortDirection := "ASC"
@@ -714,7 +714,7 @@ func (*Client) readFetchDirectoryMetricsResponse(it *bigquery.RowIterator, req *
 			break
 		}
 		if err != nil {
-			return nil, errors.Annotate(err, "obtain next test summary row").Err()
+			return nil, errors.Fmt("obtain next test summary row: %w", err)
 		}
 		nodeName := rowVals.String("node_name")
 		dirNode, ok := filenameToTestDateMetricData[nodeName]
@@ -793,12 +793,12 @@ func (c *Client) runUpdateSummary(ctx context.Context, fromDate civil.Date, toDa
 
 	job, err := q.Run(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to start the job").Err()
+		return errors.Fmt("failed to start the job: %w", err)
 	}
 
 	job_status, err := job.Wait(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to finish the query").Err()
+		return errors.Fmt("failed to finish the query: %w", err)
 	}
 	return job_status.Err()
 }

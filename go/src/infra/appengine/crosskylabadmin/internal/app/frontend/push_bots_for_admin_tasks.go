@@ -137,7 +137,7 @@ func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swa
 	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 
 	if err != nil {
-		return errors.Annotate(err, "failed to list alive idle bots with dut_state %q", dutState).Err()
+		return errors.Fmt("failed to list alive idle bots with dut_state %q: %w", dutState, err)
 	}
 	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q in pool %q.", len(rawBots), dutState, swarmingPool)
 	//Parse BOT id to schedule tasks for readability.
@@ -146,7 +146,7 @@ func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swa
 	err = clients.PushRepairDUTs(ctx, repairBOTs, dutState, swarmingPool)
 	if err != nil {
 		logging.Infof(ctx, "Push repair bots in pool %q: %v", swarmingPool, err)
-		return errors.Annotate(err, "Failed to push repair duts in pool %q", swarmingPool).Err()
+		return errors.Fmt("Failed to push repair duts in pool %q: %w", swarmingPool, err)
 	}
 	return nil
 }
@@ -156,7 +156,7 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	now := time.Now()
 
 	if p.swarmingClient == nil {
-		return nil, errors.Reason("swarming client cannot be nil").Err()
+		return nil, errors.New("swarming client cannot be nil")
 	}
 	cfg := config.Get(ctx)
 	dutState, ok := clients.DutStateRevMap[req.GetTargetDutState()]
@@ -200,7 +200,7 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	// Loop through all the Swarming Pool configs and push duts for repair.
 	for _, pool := range cfg.GetSwarming().GetPoolCfgs() {
 		if err := p.pushRepairDUTsForGivenPool(ctx, pool.GetPoolName(), dutState, dims, skipHostMap); err != nil {
-			e := errors.Annotate(err, "Failed to push repair duts in pool %q", pool.GetPoolName()).Err()
+			e := errors.Fmt("Failed to push repair duts in pool %q: %w", pool.GetPoolName(), err)
 			logging.Infof(ctx, "Fail to pushed repair duts with dut_state %q in pool %q: %s", dutState, pool.GetPoolName(), e)
 			merr = append(merr, e)
 		} else {

@@ -422,7 +422,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 			},
 		}, nil)
 
-		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return(nil, errors.Reason("Fake Error").Err())
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return(nil, errors.New("Fake Error"))
 
 		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return([]*swarmingv2.BotInfo{
 			{

@@ -52,14 +52,14 @@ func (r *rowLoader) fieldIndex(fieldName string) (index int, ok bool) {
 func (r *rowLoader) valueWithType(fieldName string, expectedType bigquery.FieldType, repeated bool) (bigquery.Value, error) {
 	i, ok := r.fieldIndex(fieldName)
 	if !ok {
-		return nil, errors.Reason("field %s is not defined", fieldName).Err()
+		return nil, errors.Fmt("field %s is not defined", fieldName)
 	}
 	fieldType := r.schema[i]
 	if fieldType.Type != expectedType {
-		return nil, errors.Reason("field %s has type %s, expected type %s", fieldName, fieldType.Type, expectedType).Err()
+		return nil, errors.Fmt("field %s has type %s, expected type %s", fieldName, fieldType.Type, expectedType)
 	}
 	if fieldType.Repeated != repeated {
-		return nil, errors.Reason("field %s repeated=%v, expected repeated=%v", fieldName, fieldType.Repeated, repeated).Err()
+		return nil, errors.Fmt("field %s repeated=%v, expected repeated=%v", fieldName, fieldType.Repeated, repeated)
 	}
 	return r.vals[i], nil
 }
@@ -88,7 +88,7 @@ func (r *rowLoader) NullDate(fieldName string) bigquery.NullDate {
 func (r *rowLoader) Date(fieldName string) civil.Date {
 	val := r.NullDate(fieldName)
 	if !val.Valid {
-		r.reportError(errors.Reason("field %s value is NULL, expected non-null date", fieldName).Err())
+		r.reportError(errors.Fmt("field %s value is NULL, expected non-null date", fieldName))
 		return civil.Date{}
 	}
 	return val.Date
@@ -117,7 +117,7 @@ func (r *rowLoader) NullBool(fieldName string) bigquery.NullBool {
 func (r *rowLoader) Bool(fieldName string) bool {
 	val := r.NullBool(fieldName)
 	if !val.Valid {
-		r.reportError(errors.Reason("field %s value is NULL, expected non-null string", fieldName).Err())
+		r.reportError(errors.Fmt("field %s value is NULL, expected non-null string", fieldName))
 		return false
 	}
 	return val.Bool
@@ -146,7 +146,7 @@ func (r *rowLoader) NullString(fieldName string) bigquery.NullString {
 func (r *rowLoader) String(fieldName string) string {
 	val := r.NullString(fieldName)
 	if !val.Valid {
-		r.reportError(errors.Reason("field %s value is NULL, expected non-null string", fieldName).Err())
+		r.reportError(errors.Fmt("field %s value is NULL, expected non-null string", fieldName))
 		return ""
 	}
 	return val.String()
@@ -171,7 +171,7 @@ func (r *rowLoader) NullFloat64(fieldName string) bigquery.NullFloat64 {
 func (r *rowLoader) Float64(fieldName string) float64 {
 	val := r.NullFloat64(fieldName)
 	if !val.Valid {
-		r.reportError(errors.Reason("field %s value is NULL, expected non-null float", fieldName).Err())
+		r.reportError(errors.Fmt("field %s value is NULL, expected non-null float", fieldName))
 		return -1
 	}
 	return val.Float64
@@ -199,7 +199,7 @@ func (r *rowLoader) NullInt64(fieldName string) bigquery.NullInt64 {
 func (r *rowLoader) Int64(fieldName string) int64 {
 	val := r.NullInt64(fieldName)
 	if !val.Valid {
-		r.reportError(errors.Reason("field %s value is NULL, expected non-null integer", fieldName).Err())
+		r.reportError(errors.Fmt("field %s value is NULL, expected non-null integer", fieldName))
 		return -1
 	}
 	return val.Int64

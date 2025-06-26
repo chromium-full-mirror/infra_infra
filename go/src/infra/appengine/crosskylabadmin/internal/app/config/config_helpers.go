@@ -36,15 +36,15 @@ func (d *PermilleData) ChooseImplementation(ctx context.Context, randFloat float
 
 func validatePattern(pattern string) error {
 	if len(pattern) < 2 {
-		return errors.Reason("pattern is too short").Err()
+		return errors.New("pattern is too short")
 	}
 	if pattern == "^$" {
-		return errors.Reason(`pattern "^$" is not useful`).Err()
+		return errors.New(`pattern "^$" is not useful`)
 	}
 	if pattern[0] == '^' || pattern[len(pattern)-1] == '$' {
 		return nil
 	}
-	return errors.Reason(`pattern missing "^" or "$" anchor`).Err()
+	return errors.New(`pattern missing "^" or "$" anchor`)
 }
 
 // matches returns true if and only if pattern and hostname are both nonempty and
@@ -54,14 +54,14 @@ func validatePattern(pattern string) error {
 // or the regular expression pattern fails to compile.
 func matches(pattern string, hostname string) (bool, error) {
 	if err := validatePattern(pattern); err != nil {
-		return false, errors.Annotate(err, "matches").Err()
+		return false, errors.Fmt("matches: %w", err)
 	}
 	if hostname == "" {
-		return false, errors.Reason("matches: hostname cannot be empty").Err()
+		return false, errors.New("matches: hostname cannot be empty")
 	}
 	r, err := regexp.Compile(pattern)
 	if err != nil {
-		return false, errors.Annotate(err, "matches").Err()
+		return false, errors.Fmt("matches: %w", err)
 	}
 	return r.MatchString(hostname), nil
 }
@@ -77,7 +77,7 @@ func (x *RolloutConfig) getLastMatch(hostname string) (*PermilleData, error) {
 	for i := -1 + len(patterns); i >= 0; i-- {
 		ok, err := matches(patterns[i].GetPattern(), hostname)
 		if err != nil {
-			return nil, errors.Annotate(err, "get specific pattern").Err()
+			return nil, errors.Fmt("get specific pattern: %w", err)
 		}
 
 		if ok {

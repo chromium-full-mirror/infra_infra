@@ -60,7 +60,7 @@ func GetServerInterface(ctx context.Context) (*InterfaceFactory, error) {
 	if esif := ctx.Value(InterfaceFactoryKey); esif != nil {
 		return esif.(*InterfaceFactory), nil
 	}
-	return nil, errors.Reason("InterfaceFactory not initialized in context").Err()
+	return nil, errors.New("InterfaceFactory not initialized in context")
 }
 
 // WithServerInterface adds the external server interface to context.
@@ -81,7 +81,7 @@ func (es *InterfaceFactory) NewUFSInterfaceFactory(ctx context.Context, host str
 func ufsInterfaceFactoryImpl(ctx context.Context, host string) (UFSClient, error) {
 	t, err := auth.GetRPCTransport(ctx, auth.AsCredentialsForwarder)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport to UFS service").Err()
+		return nil, errors.Fmt("failed to get RPC transport to UFS service: %w", err)
 	}
 	return ufsapi.NewFleetPRPCClient(&prpc.Client{
 		C:    &http.Client{Transport: t},

@@ -66,17 +66,17 @@ func (c *setStableVersionRun) Run(a subcommands.Application, args []string, env 
 func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	}
 
 	host, err := c.GetHost()
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	}
 
 	options, err := c.GetOptions()
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	}
 
 	invWithSVClient := fleet.NewInventoryPRPCClient(
@@ -107,7 +107,7 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 	req.FirmwareImage = c.fwImage
 
 	if out, err := protojson.Marshal(req); err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	} else {
 		// The request is diagnostic info, write to stderr.
 		fmt.Fprintf(a.GetErr(), "%s\n", out)
@@ -115,10 +115,10 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 
 	resp, err := invWithSVClient.SetSatlabStableVersion(ctx, req)
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	}
 	if out, err := protojson.Marshal(resp); err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Fmt("set stable version: %w", err)
 	} else {
 		fmt.Fprintf(a.GetOut(), "%s\n", out)
 	}

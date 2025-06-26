@@ -45,10 +45,10 @@ func findVersion(ctx context.Context, key keys.Builder) (*lab_platform.StableVer
 func FindVersion(ctx context.Context, deviceType, board, model string, pools []string) (*lab_platform.StableVersion, error) {
 	logging.Infof(ctx, "Starting search for a version by board=%q, model=%q, pool=%v", board, model, pools)
 	if board == "" {
-		return nil, errors.Reason("find version: board cannot be empty").Err()
+		return nil, errors.New("find version: board cannot be empty")
 	}
 	if model == "" {
-		return nil, errors.Reason("find version: model cannot be empty").Err()
+		return nil, errors.New("find version: model cannot be empty")
 	}
 	// Add empty pool to validate version by board and model only as last option.
 	pools = append(pools, "")
@@ -61,7 +61,7 @@ func FindVersion(ctx context.Context, deviceType, board, model string, pools []s
 			return v, nil
 		}
 	}
-	return nil, errors.Reason("find version: no version found").Err()
+	return nil, errors.New("find version: no version found")
 }
 
 // WriteVersions writes versions to datastore.
@@ -75,7 +75,7 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 	logging.Infof(ctx, "Found %d good version records to save!", len(versionMap))
 	var oldRecords []*StableVersionEntity
 	if err := datastore.GetAll(ctx, datastore.NewQuery(StableVersionKind), &oldRecords); err != nil {
-		return errors.Annotate(err, "write versions: fail to read record from datastore").Err()
+		return errors.Fmt("write versions: fail to read record from datastore: %w", err)
 	}
 	logging.Infof(ctx, "Service has %d version records before update.", len(oldRecords))
 	for _, record := range oldRecords {
@@ -85,7 +85,7 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 		if v == nil {
 			logging.Infof(ctx, "Version: %q doesn't exist anymore! Removing...", foundKey)
 			if err := datastore.Delete(ctx, record); err != nil {
-				return errors.Annotate(err, "write versions: fail to remove expired records").Err()
+				return errors.Fmt("write versions: fail to remove expired records: %w", err)
 			}
 		}
 	}
@@ -97,7 +97,7 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 				ID:      key,
 				Version: v,
 			}); err != nil {
-				return errors.Annotate(err, "write versions: fail to save new records").Err()
+				return errors.Fmt("write versions: fail to save new records: %w", err)
 			}
 		}
 	}
@@ -107,23 +107,23 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 
 func validateTarget(t *lab_platform.StableVersionTarget) error {
 	if t == nil {
-		return errors.Reason("validate target: target is empty").Err()
+		return errors.New("validate target: target is empty")
 	}
 	t.Board = strings.TrimSpace(strings.ToLower(t.GetBoard()))
 	t.Model = strings.TrimSpace(strings.ToLower(t.GetModel()))
 	t.Pool = strings.TrimSpace(strings.ToLower(t.GetPool()))
 	if t.Board == "" || t.Model == "" {
-		return errors.Reason("validate target: board/model is empty").Err()
+		return errors.New("validate target: board/model is empty")
 	}
 	return nil
 }
 
 func validateVersion(v *lab_platform.StableVersion) error {
 	if err := validateTarget(v.GetTarget()); err != nil {
-		return errors.Annotate(err, "validate version").Err()
+		return errors.Fmt("validate version: %w", err)
 	}
 	if v.GetOsVersion() == "" || v.GetOsImagePath() == "" {
-		return errors.Reason("validate version: os data is empty").Err()
+		return errors.New("validate version: os data is empty")
 	}
 	return nil
 }

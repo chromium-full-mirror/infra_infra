@@ -36,34 +36,34 @@ var (
 
 // GetCrosDevices retrieves requested Chrome OS devices from the inventory.
 func (is *InventoryServerImpl) GetCrosDevices(ctx context.Context, req *api.GetCrosDevicesRequest) (resp *api.GetCrosDevicesResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	GetCrosDevices is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // UpdateDutsStatus updates selected Duts' status labels, metas related to testing.
 func (is *InventoryServerImpl) UpdateDutsStatus(ctx context.Context, req *api.UpdateDutsStatusRequest) (resp *api.UpdateDutsStatusResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	UpdateDutsStatus is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // GetHwidData retrieves requested Chrome OS device Hwid Data from the inventory.
 func (is *InventoryServerImpl) GetHwidData(ctx context.Context, req *api.GetHwidDataRequest) (resp *api.HwidData, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	GetHwidData is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // GetManufacturingConfig retrieves requested Chrome OS device manufacturing config from the inventory.
 func (is *InventoryServerImpl) GetManufacturingConfig(ctx context.Context, req *api.GetManufacturingConfigRequest) (resp *manufacturing.Config, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	GetManufacturingConfig is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 func getFallbackDeviceConfigID(oldConfigID *device.ConfigId) *device.ConfigId {
@@ -83,7 +83,7 @@ func (is *InventoryServerImpl) ListCrosDevicesLabConfig(ctx context.Context, req
 	allDevices, err := datastore.GetAllDevices(ctx)
 	logging.Debugf(ctx, "got devices (%d)", len(allDevices))
 	if err != nil {
-		return nil, errors.Annotate(err, "get all devices").Err()
+		return nil, errors.Fmt("get all devices: %w", err)
 	}
 	labConfigs := make([]*api.ListCrosDevicesLabConfigResponse_LabConfig, 0, len(allDevices))
 	for _, d := range allDevices {
@@ -133,28 +133,28 @@ func (is *InventoryServerImpl) DeviceConfigsExists(ctx context.Context, req *api
 // GetDeviceManualRepairRecord checks and returns a manual repair record for
 // a given device hostname if it exists.
 func (is *InventoryServerImpl) GetDeviceManualRepairRecord(ctx context.Context, req *api.GetDeviceManualRepairRecordRequest) (rsp *api.GetDeviceManualRepairRecordResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	GetDeviceManualRepairRecord is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // CreateDeviceManualRepairRecord adds a new submitted manual repair record for
 // a given device.
 func (is *InventoryServerImpl) CreateDeviceManualRepairRecord(ctx context.Context, req *api.CreateDeviceManualRepairRecordRequest) (rsp *api.CreateDeviceManualRepairRecordResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	CreateDeviceManualRepairRecord is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // UpdateDeviceManualRepairRecord updates an existing manual repair record with
 // new submitted info for a given device.
 func (is *InventoryServerImpl) UpdateDeviceManualRepairRecord(ctx context.Context, req *api.UpdateDeviceManualRepairRecordRequest) (rsp *api.UpdateDeviceManualRepairRecordResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	UpdateDeviceManualRepairRecord is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // ListManualRepairRecords takes filtering parameters and returns a list of
@@ -168,10 +168,10 @@ func (is *InventoryServerImpl) UpdateDeviceManualRepairRecord(ctx context.Contex
 // - limit (number of records)
 // - offset - used for pagination
 func (is *InventoryServerImpl) ListManualRepairRecords(ctx context.Context, req *api.ListManualRepairRecordsRequest) (rsp *api.ListManualRepairRecordsResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	ListManualRepairRecords is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // GetDeviceConfig retrieves requested Chrome OS device device config from the inventory.
@@ -221,19 +221,19 @@ func (is *InventoryServerImpl) GetDeviceConfig(ctx context.Context, req *api.Get
 // in the list of given hostnames. If no open record is found, an empty object
 // will be returned for that hostname.
 func (is *InventoryServerImpl) BatchGetManualRepairRecords(ctx context.Context, req *api.BatchGetManualRepairRecordsRequest) (rsp *api.BatchGetManualRepairRecordsResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	BatchGetManualRepairRecords is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // BatchCreateManualRepairRecords creates new submitted manual repair records
 // for a batch of given devices. All records will have the same CreatedTime.
 func (is *InventoryServerImpl) BatchCreateManualRepairRecords(ctx context.Context, req *api.BatchCreateManualRepairRecordsRequest) (rsp *api.BatchCreateManualRepairRecordsResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.New(`
 	BatchCreateManualRepairRecords is deprecated.
 	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
-	`).Err())
+	`))
 }
 
 // ListDeviceConfigs lists all device configs inventory has in datastore.

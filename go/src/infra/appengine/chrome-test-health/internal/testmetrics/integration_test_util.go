@@ -428,12 +428,12 @@ func ensureTables(ctx context.Context, client *bigquery.Client) error {
 
 		job, err := query.Run(ctx)
 		if err != nil {
-			return errors.Annotate(err, "failed to start the job").Err()
+			return errors.Fmt("failed to start the job: %w", err)
 		}
 
 		jobStatus, err := job.Wait(ctx)
 		if err != nil {
-			return errors.Annotate(err, "failed to finish the query").Err()
+			return errors.Fmt("failed to finish the query: %w", err)
 		}
 		err = jobStatus.Err()
 		if err != nil {

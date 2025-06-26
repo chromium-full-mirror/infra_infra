@@ -34,20 +34,20 @@ const maxConsequentRecFailureCount = 4
 // getRolloutConfig gets the applicable rolloutConfig.
 func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, expectedState string) (*config.RolloutConfig, error) {
 	if taskType == "" {
-		return nil, errors.Reason("get rollout config: taskType cannot be empty").Err()
+		return nil, errors.New("get rollout config: taskType cannot be empty")
 	}
 	if taskType != "repair" {
-		return nil, errors.Reason("getRolloutConfig: tasks other than repair are not supported, %q given", taskType).Err()
+		return nil, errors.Fmt("getRolloutConfig: tasks other than repair are not supported, %q given", taskType)
 	}
 	if isLabstation {
 		return config.Get(ctx).GetParis().GetLabstationRepair(), nil
 	}
 	if expectedState == "" {
-		return nil, errors.Reason("get rollout config: expectedState cannot be empty").Err()
+		return nil, errors.New("get rollout config: expectedState cannot be empty")
 	}
 	switch expectedState {
 	case "ready":
-		return nil, errors.Reason("get rollout config: refusing to schedule repair task on ready dut").Err()
+		return nil, errors.New("get rollout config: refusing to schedule repair task on ready dut")
 	case "needs_repair":
 		return config.Get(ctx).GetParis().GetDutRepair(), nil
 	case "repair_failed":
@@ -55,14 +55,14 @@ func getRolloutConfig(ctx context.Context, taskType string, isLabstation bool, e
 	case "needs_manual_repair":
 		return config.Get(ctx).GetParis().GetDutRepairOnNeedsManualRepair(), nil
 	}
-	return nil, errors.Reason("get rollout config: expected state %q is not recognized", expectedState).Err()
+	return nil, errors.Fmt("get rollout config: expected state %q is not recognized", expectedState)
 }
 
 func createKarteClient(ctx context.Context) (metrics.Metrics, error) {
 	cfg := config.Get(ctx)
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
+		return nil, errors.Fmt("failed to get RPC transport: %w", err)
 	}
 	return karte.NewMetricsWithHttp(ctx, &http.Client{
 		Transport: transport,
@@ -259,15 +259,15 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 		params.taskName = buildbucket.Recovery
 	}
 	if err := buildbucket.ValidateTaskName(params.taskName); err != nil {
-		return "", errors.Annotate(err, "create buildbucket task: unsupported task name: %q", params.taskName).Err()
+		return "", errors.Fmt("create buildbucket task: unsupported task name: %q: %w", params.taskName, err)
 	}
 	if err := params.taskType.Validate(); err != nil {
-		return "", errors.Annotate(err, "create buildbucket repair task: invalid task type %v", params.taskType).Err()
+		return "", errors.Fmt("create buildbucket repair task: invalid task type %v: %w", params.taskType, err)
 	}
 	logging.Infof(ctx, "Using new repair flow for dut %q with expected state %q", params.dutName, params.expectedState)
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to get RPC transport").Err()
+		return "", errors.Fmt("failed to get RPC transport: %w", err)
 	}
 	hc := &http.Client{
 		Transport: transport,
@@ -275,7 +275,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		logging.Errorf(ctx, "error creating buildbucket client: %q", err)
-		return "", errors.Annotate(err, "create buildbucket repair task").Err()
+		return "", errors.Fmt("create buildbucket repair task: %w", err)
 	}
 	p := &buildbucket.Params{
 		UnitName:    params.dutName,
@@ -303,7 +303,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 	if err != nil {
 		// CrOSSkylabAdmin is getting an error periodically where we fail to create a buildbucket task as of 2023-11-16.
 		logging.Errorf(ctx, "error scheduling task %q on builder %q for device %q with expected state %q: %s", p.TaskName, p.BuilderName, p.UnitName, p.ExpectedState, err)
-		return "", errors.Annotate(err, "create buildbucket repair task").Err()
+		return "", errors.Fmt("create buildbucket repair task: %w", err)
 	}
 	return url, nil
 }
