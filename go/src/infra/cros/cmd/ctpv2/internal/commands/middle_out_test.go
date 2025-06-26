@@ -752,7 +752,7 @@ func TestGreedyDistroIterations(t *testing.T) {
 		},
 	}
 
-	expectedTcs := []string{"a", "a", "a", "b", "b", "b", "c", "c", "c", "d", "d", "d", "e", "e", "e", "f", "f", "f", "g", "g", "g", "h", "h", "h", "i", "i", "i", "j", "j", "j", "k", "k", "k"}
+	expectedTcs := []string{"a", "a", "b", "b", "c", "c", "d", "d", "d", "e", "e", "e", "f", "g", "h", "i", "j", "k"}
 	correct, err := validateDistro(finalAssignments, flatHWUUIDMap, cfg, expectedTcs, expected)
 	if !correct {
 		t.Fatal(err)

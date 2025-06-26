@@ -574,12 +574,14 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 			for range solverData.cfg.requestsPerSchedulingUnitOptions {
 				logging.Infof(ctx, fmt.Sprintf("Looking for Tcs: %s", shardedtc))
 				selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness, hwCache, modelCache, solverData.cfg.multiEqcByModel)
-				// Handle a device not found case
-				if selectedDevice != 0 {
-					logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
-					logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
-					assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, hwHash)
+				// If a device is not found, then there is no need to keep checking the eqc for devices
+				// for multi requests.
+				if selectedDevice == 0 {
+					break
 				}
+				logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
+				logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
+				assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, hwHash)
 			}
 		}
 	}
@@ -1385,15 +1387,17 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 	// If no new devices were selected, then this means all available real devices
 	// have been selected.
 	if hwCacheSizePrev == len(hwCache) {
-		// Then there may be a choice left within the devices we have already selected
-		// based on the hwCache. Now look through those selected devices again
-		// by clearing out the cache and do a recursive look.
+		// If the hwCache is populated, we need to check if the multiEqcByModel flag is set
 		if len(hwCache) > 0 {
-			if !multiEqcByModel {
-				clear(hwCache)
+			// If the flag is set, then we have iterated through all possible available device selections
+			// by unique model and next we need to iterate through all unique device selections
+			// by a recursive call with the mulitEqcByModel set to false.
+			if multiEqcByModel {
+				return getDevices(solverData, numTests, hwHash, harness, hwCache, modelCache, false)
 			}
-			clear(modelCache)
-			return getDevices(solverData, numTests, hwHash, harness, hwCache, modelCache, false)
+			// If the flag is not set, we have iterated through all possible available unique device selections
+			// and there is nothing left and reset the selectedDevice.
+			selectedDevice = uint64(0)
 		}
 		// If the cache is empty, then there are no other choices left and
 		// return the bestChoice selected device, which is one that will be rejected
