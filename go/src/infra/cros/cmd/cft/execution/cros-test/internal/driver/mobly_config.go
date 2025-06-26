@@ -198,8 +198,13 @@ func NewMoblyConfig(logger *log.Logger, serials []string, metadata []*api.Arg,
 			logger.Println(d, k, v)
 		}
 	}
-	for k, v := range lsnexues {
-		configParams.TestParams[k] = v
+	if lsnexues != nil {
+		if configParams.TestParams == nil {
+			configParams.TestParams = make(paramMap)
+		}
+		for k, v := range lsnexues {
+			configParams.TestParams[k] = v
+		}
 	}
 
 	Controllers := &Controllers{

@@ -601,3 +601,36 @@ func TestGenerateConfigs(t *testing.T) {
 		})
 	}
 }
+
+// TestGenerateConfigs verifies the Mobly config generation does not crash
+// if Metadata is nil.
+func TestGenerateConfigsNoMetadata(t *testing.T) {
+	lsnexues := map[string]string{
+		"lsnexus_device1":         "lsnexus_primary",
+		"lsnexus_companiondevice": "lsnexus_companion_1:2345",
+	}
+	expected := &MoblyTestConfig{
+		TestBeds: []*TestBed{
+			{
+				Name: "LocalTestBed",
+				Controllers: &Controllers{
+					OpenWrtDevices:    []*OpenWrtDevice{},
+					AndroidDevices:    []*AndroidDevice{},
+					BtReferenceDevice: []*BtReferenceDevice{},
+					ChameleonDevice:   []*ChameleonDevice{},
+				},
+				TestParams: &TestParams{
+					Params: paramMap{
+						"lsnexus_device1":         "lsnexus_primary",
+						"lsnexus_companiondevice": "lsnexus_companion_1:2345",
+					},
+				},
+			},
+		},
+	}
+
+	config := NewMoblyConfig(log.Default(), nil, nil, nil, lsnexues)
+	if diff := cmp.Diff(config, expected); diff != "" {
+		t.Errorf("Got unexpected argument from NewMoblyConfig (-got +want):\n%s", diff)
+	}
+}
