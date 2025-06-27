@@ -119982,6 +119982,14 @@ plans:
           exec_name: pasit_audit_switches
           docs:
             - Verifies that the switches reported by passport match those reported by PassPort.
+        - name: Reset USB testers (Allow to fail) (time:'2m0s')
+          exec_name: ctr_passport_reset_usb_testers
+          docs:
+            - Resets all USB testers connected to the host.
+        - name: Audit USB testers (Allow to fail)
+          exec_name: pasit_audit_usb_testers
+          docs:
+            - Verifies that the USB testers reported by passport match those reported by PassPort.
         - name: Stop container (Allow to fail)
           exec_name: ctr_passport_stop
           docs:

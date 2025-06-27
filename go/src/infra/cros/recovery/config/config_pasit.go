@@ -16,6 +16,8 @@ func pasitRepairPlan() *Plan {
 			"Start container",
 			"Reset switches",
 			"Audit switches",
+			"Reset USB testers",
+			"Audit USB testers",
 			"Stop container",
 		},
 		Actions: map[string]*Action{
@@ -58,6 +60,21 @@ func pasitRepairPlan() *Plan {
 					"the tool expected to start as part of system preparation.",
 				},
 				ExecName: "ctr_is_up",
+			},
+			"Reset USB testers": {
+				Docs: []string{
+					"Resets all USB testers connected to the host.",
+				},
+				ExecName:               "ctr_passport_reset_usb_testers",
+				AllowFailAfterRecovery: true,
+				ExecTimeout:            &durationpb.Duration{Seconds: 120},
+			},
+			"Audit USB testers": {
+				Docs: []string{
+					"Verifies that the USB testers reported by passport match those reported by PassPort.",
+				},
+				ExecName:               "pasit_audit_usb_testers",
+				AllowFailAfterRecovery: true,
 			},
 			"Stop container": {
 				Docs: []string{

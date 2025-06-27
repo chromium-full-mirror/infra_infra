@@ -4135,6 +4135,8 @@ plans:
             - name: CrosToolRunner is up ('ctr_is_up')
         - name: Reset switches ('ctr_passport_reset_switches') (time:'2m0s')
         - name: Audit switches (Allow to fail) ('pasit_audit_switches')
+        - name: Reset USB testers (Allow to fail) ('ctr_passport_reset_usb_testers') (time:'2m0s')
+        - name: Audit USB testers (Allow to fail) ('pasit_audit_usb_testers')
         - name: Stop container (Allow to fail) ('ctr_passport_stop')
     - name: close (Allow to fail)
       criticalactions:
