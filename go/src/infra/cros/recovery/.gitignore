@@ -1,2 +1,5 @@
 /logs
 /swarming_state
+
+# gemini can create a hiden folder.
+**/.gemini/
