@@ -100,8 +100,8 @@ func (c *updateDevboardLSE) innerRun(a subcommands.Application, args []string, e
 	res, err := ic.UpdateMachineLSE(ctx, &ufsAPI.UpdateMachineLSERequest{
 		MachineLSE: lse,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"pools":       "pools-devboard",
-			"removePools": "pools-devboard-remove",
+			"pools":       ufsUtil.DevboardPoolsPath,
+			"removePools": ufsUtil.DevboardPoolsRemovePath,
 		}),
 	})
 	if err != nil {

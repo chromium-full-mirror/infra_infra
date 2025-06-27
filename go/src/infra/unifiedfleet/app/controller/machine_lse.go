@@ -541,7 +541,7 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 	// update the fields in the existing machinelse
 	for _, path := range mask.Paths {
 		switch path {
-		case "machines":
+		case util.MachinesPath:
 			// Get machine to get zone and rack info for machinelse table indexing
 			machine, err := GetMachine(ctx, machinelse.GetMachines()[0])
 			if err != nil {
@@ -556,73 +556,102 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 			if err := updateIndexingForMachineLSEResources(ctx, oldMachinelse, map[string]string{"zone": machine.GetLocation().GetZone().String()}); err != nil {
 				return oldMachinelse, errors.Annotate(err, "failed to update zone indexing").Err()
 			}
-		case "mlseprototype":
+		case util.MachineLsePrototypePath, util.MlseprototypePath:
 			oldMachinelse.MachineLsePrototype = machinelse.GetMachineLsePrototype()
-		case "osVersion":
+		case util.OsVersionValuePath, util.OsVersionCamelPath:
 			if oldMachinelse.GetChromeBrowserMachineLse() != nil {
-				if oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil {
-					oldMachinelse.GetChromeBrowserMachineLse().OsVersion = &ufspb.OSVersion{
-						Value: machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetValue(),
-					}
-				} else {
-					oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion().Value = machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetValue()
-				}
+				processBrowserOsVersionValue(oldMachinelse, machinelse)
 			} else if oldMachinelse.GetAttachedDeviceLse() != nil {
-				if oldMachinelse.GetAttachedDeviceLse().GetOsVersion() == nil {
-					oldMachinelse.GetAttachedDeviceLse().OsVersion = &ufspb.OSVersion{
-						Value: machinelse.GetAttachedDeviceLse().GetOsVersion().GetValue(),
-					}
-				} else {
-					oldMachinelse.GetAttachedDeviceLse().GetOsVersion().Value = machinelse.GetAttachedDeviceLse().GetOsVersion().GetValue()
-				}
+				processAttachedDeviceOsVersionValue(oldMachinelse, machinelse)
 			}
-		case "virtualDatacenter":
+		case util.OsVersionImagePath, util.OsImageCamelPath:
+			if oldMachinelse.GetChromeBrowserMachineLse() != nil {
+				processBrowserOsVersionImage(oldMachinelse, machinelse)
+			} else if oldMachinelse.GetAttachedDeviceLse() != nil {
+				processAttachedDeviceOsVersionImage(oldMachinelse, machinelse)
+			}
+		case util.ChromeBrowserMachineLseOsVersionValuePath:
+			processBrowserOsVersionValue(oldMachinelse, machinelse)
+		case util.ChromeBrowserMachineLseOsVersionImagePath:
+			processBrowserOsVersionImage(oldMachinelse, machinelse)
+		case util.AttachedDeviceLseOsVersionValuePath:
+			processAttachedDeviceOsVersionValue(oldMachinelse, machinelse)
+		case util.AttachedDeviceLseOsVersionImagePath:
+			processAttachedDeviceOsVersionImage(oldMachinelse, machinelse)
+		case util.ChromeBrowserMachineLseVirtualDatacenterPath, util.VirtualDatacenterCamelPath:
 			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
 				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
 					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 				}
 			}
 			oldMachinelse.GetChromeBrowserMachineLse().VirtualDatacenter = machinelse.GetChromeBrowserMachineLse().GetVirtualDatacenter()
-		case "osImage":
-			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
-				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
-					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
-				}
-			}
-			if oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil {
-				oldMachinelse.GetChromeBrowserMachineLse().OsVersion = &ufspb.OSVersion{
-					Image: machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetImage(),
-				}
-			} else {
-				oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion().Image = machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetImage()
-			}
-		case "vmCapacity":
+		case util.ChromeBrowserMachineLseVmCapacityPath, util.VmCapacityCamelPath:
 			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
 				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
 					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 				}
 			}
 			oldMachinelse.GetChromeBrowserMachineLse().VmCapacity = machinelse.GetChromeBrowserMachineLse().GetVmCapacity()
-		case "resourceState":
+		case util.ResourceStatePath, util.ResourceStateCamelPath:
 			oldMachinelse.ResourceState = machinelse.GetResourceState()
-		case "tags":
+		case util.TagsPath:
 			oldMachinelse.Tags = mergeTags(oldMachinelse.GetTags(), machinelse.GetTags())
-		case "description":
+		case util.DescriptionPath:
 			oldMachinelse.Description = machinelse.Description
-		case "deploymentTicket":
+		case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
 			oldMachinelse.DeploymentTicket = machinelse.GetDeploymentTicket()
-		case "assocHostname":
+		case util.AttachedDeviceLseHostnamePath, util.AssocHostnamePath:
 			oldMachinelse.GetAttachedDeviceLse().AssociatedHostname = machinelse.GetAttachedDeviceLse().GetAssociatedHostname()
-		case "assocHostPort":
+		case util.AttachedDeviceLseHostPortPath, util.AssocHostPortPath:
 			oldMachinelse.GetAttachedDeviceLse().AssociatedHostPort = machinelse.GetAttachedDeviceLse().GetAssociatedHostPort()
-		case "schedulable":
+		case util.SchedulablePath:
 			oldMachinelse.Schedulable = machinelse.GetSchedulable()
-		case "logicalZone":
+		case util.LogicalZonePath, util.LogicalZoneCamelPath:
 			oldMachinelse.LogicalZone = machinelse.GetLogicalZone()
 		}
 	}
 	// return existing/old machinelse with new updated values
 	return oldMachinelse, nil
+}
+
+func processBrowserOsVersionValue(oldMachinelse, machinelse *ufspb.MachineLSE) {
+	if oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil {
+		oldMachinelse.GetChromeBrowserMachineLse().OsVersion = &ufspb.OSVersion{
+			Value: machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetValue(),
+		}
+	} else {
+		oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion().Value = machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetValue()
+	}
+}
+
+func processBrowserOsVersionImage(oldMachinelse, machinelse *ufspb.MachineLSE) {
+	if oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil {
+		oldMachinelse.GetChromeBrowserMachineLse().OsVersion = &ufspb.OSVersion{
+			Image: machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetImage(),
+		}
+	} else {
+		oldMachinelse.GetChromeBrowserMachineLse().GetOsVersion().Image = machinelse.GetChromeBrowserMachineLse().GetOsVersion().GetImage()
+	}
+}
+
+func processAttachedDeviceOsVersionValue(oldMachinelse, machinelse *ufspb.MachineLSE) {
+	if oldMachinelse.GetAttachedDeviceLse().GetOsVersion() == nil {
+		oldMachinelse.GetAttachedDeviceLse().OsVersion = &ufspb.OSVersion{
+			Value: machinelse.GetAttachedDeviceLse().GetOsVersion().GetValue(),
+		}
+	} else {
+		oldMachinelse.GetAttachedDeviceLse().GetOsVersion().Value = machinelse.GetAttachedDeviceLse().GetOsVersion().GetValue()
+	}
+}
+
+func processAttachedDeviceOsVersionImage(oldMachinelse, machinelse *ufspb.MachineLSE) {
+	if oldMachinelse.GetAttachedDeviceLse().GetOsVersion() == nil {
+		oldMachinelse.GetAttachedDeviceLse().OsVersion = &ufspb.OSVersion{
+			Image: machinelse.GetAttachedDeviceLse().GetOsVersion().GetImage(),
+		}
+	} else {
+		oldMachinelse.GetAttachedDeviceLse().GetOsVersion().Image = machinelse.GetAttachedDeviceLse().GetOsVersion().GetImage()
+	}
 }
 
 // GetMachineLSE returns machinelse for the given id from datastore.
@@ -1618,18 +1647,35 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.M
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case "name":
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - name cannot be updated, delete and create a new machinelse instead")
-			case "update_time":
+			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - update_time cannot be updated, it is a Output only field")
-			case "machines":
+			case util.MachinesPath:
 				if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) == 0 || machinelse.GetMachines()[0] == "" {
 					return status.Error(codes.InvalidArgument, "machines field cannot be empty/nil.")
 				}
-			case "mlseprototype":
-			case "osImage":
+			case util.ChromeBrowserMachineLseOsVersionImagePath:
 				fallthrough
-			case "osVersion":
+			case util.ChromeBrowserMachineLseOsVersionValuePath:
+				if machinelse.GetChromeBrowserMachineLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - browser machine lse cannot be empty/nil.")
+				}
+				if machinelse.GetChromeBrowserMachineLse().GetOsVersion() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
+				}
+			case util.AttachedDeviceLseOsVersionImagePath:
+				fallthrough
+			case util.AttachedDeviceLseOsVersionValuePath:
+				if machinelse.GetAttachedDeviceLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - attached device machine lse cannot be empty/nil.")
+				}
+				if machinelse.GetAttachedDeviceLse().GetOsVersion() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
+				}
+			case util.OsVersionImagePath, util.OsImageCamelPath:
+				fallthrough
+			case util.OsVersionValuePath, util.OsVersionCamelPath:
 				if machinelse.GetChromeBrowserMachineLse() == nil && machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - browser / attached device machine lse cannot be empty/nil.")
 				}
@@ -1637,31 +1683,32 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.M
 					(machinelse.GetAttachedDeviceLse() != nil && machinelse.GetAttachedDeviceLse().GetOsVersion() == nil) {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
 				}
-			case "virtualDatacenter":
+			case util.ChromeBrowserMachineLseVirtualDatacenterPath, util.VirtualDatacenterCamelPath:
 				if machinelse.GetChromeBrowserMachineLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - it has to be a browser host to update vdc.")
 				}
-			case "vmCapacity":
+			case util.ChromeBrowserMachineLseVmCapacityPath, util.VmCapacityCamelPath:
 				if machinelse.GetChromeBrowserMachineLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - browser machine lse cannot be empty/nil.")
 				}
-			case "assocHostname":
+			case util.AttachedDeviceLseHostnamePath, util.AssocHostnamePath:
 				if machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
 				}
-			case "assocHostPort":
+			case util.AttachedDeviceLseHostPortPath, util.AssocHostPortPath:
 				if machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
 				}
-			case "logicalZone":
+			case util.LogicalZonePath, util.LogicalZoneCamelPath:
 				if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
 					return err
 				}
-			case "schedulable":
-			case "deploymentTicket":
-			case "tags":
-			case "description":
-			case "resourceState":
+			case util.SchedulablePath:
+			case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
+			case util.TagsPath:
+			case util.DescriptionPath:
+			case util.ResourceStatePath, util.ResourceStateCamelPath:
+			case util.MachineLsePrototypePath, util.MlseprototypePath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateMachineLSEUpdateMask - unsupported update mask path %q", path)
@@ -2430,10 +2477,10 @@ func validateUpdateMachineLSEDDevboardMask(mask *field_mask.FieldMask, machinels
 	// validate the given field mask
 	for _, path := range mask.Paths {
 		switch path {
-		case "name":
+		case util.NamePath:
 			return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDevboardUpdateMask - name cannot be updated, delete and create a new machinelse instead.")
-		case "pools-devboard":
-		case "pools-devboard-remove":
+		case util.ChromeosMachineLseDeviceLseDevboardPoolsPath, util.DevboardPoolsPath, util.PoolsDevboardPath:
+		case util.ChromeosMachineLseDeviceLseDevboardPoolsRemovePath, util.DevboardPoolsRemovePath, util.PoolsDevboardRemovePath:
 		default:
 			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSEDevboardUpdateMask - unsupported update mask path %q", path)
 		}
@@ -2448,10 +2495,10 @@ func processUpdateMachineLSEDevboardUpdateMask(ctx context.Context, oldMachineLs
 	for _, path := range mask.Paths {
 		switch path {
 		// Appends the contents of pools from rpc to the devboard pools.
-		case "pools-devboard":
+		case util.ChromeosMachineLseDeviceLseDevboardPoolsPath, util.DevboardPoolsPath, util.PoolsDevboardPath:
 			oldDevboard.Pools = mergeTags(oldDevboard.GetPools(), newDevboard.GetPools())
 		// Removes the contents of pools from rpc to the devboard pools.
-		case "pools-devboard-remove":
+		case util.ChromeosMachineLseDeviceLseDevboardPoolsRemovePath, util.DevboardPoolsRemovePath, util.PoolsDevboardRemovePath:
 			oldPools := oldDevboard.GetPools()
 			for _, p := range newDevboard.GetPools() {
 				oldPools = util.RemoveStringEntry(oldPools, p)

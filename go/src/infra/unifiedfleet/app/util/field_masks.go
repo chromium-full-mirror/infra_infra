@@ -21,12 +21,11 @@ const (
 	ChromePlatformPath          string = "chrome_platform"
 	DeploymentTicketPath        string = "deployment_ticket"
 	DescriptionPath             string = "description"
-	LogicalZonePath             string = "logicalZone"
+	LogicalZonePath             string = "logical_zone"
 	MacAddressPath              string = "mac_address"
 	MachinePath                 string = "machine"
 	MachinesPath                string = "machines"
 	ManufacturerPath            string = "manufacturer"
-	MlseprototypePath           string = "mlseprototype"
 	NamePath                    string = "name"
 	PlatformPath                string = "platform"
 	RackPath                    string = "rack"
@@ -44,9 +43,8 @@ const (
 	ZonesRemovePath             string = "zones.remove"
 	// Non-standard paths for backwards compatibility.
 	DeploymentTicketCamelPath string = "deploymentTicket"
+	LogicalZoneCamelPath      string = "logicalZone"
 	MacAddressCamelPath       string = "macAddress"
-	OsImageCamelPath          string = "osImage"
-	OsVersionCamelPath        string = "osVersion"
 	PortNameCamelPath         string = "portName"
 	ResourceStateCamelPath    string = "resourceState"
 	SerialNumberCamelPath     string = "serialNumber"
@@ -140,43 +138,54 @@ const (
 	PrimaryDutKebabPath string = "primary-dut"
 
 	// Chrome Browser Host
-	KvmInterfaceKvmPath      string = "kvm_interface.kvm"
-	KvmInterfacePortNamePath string = "kvm_interface.port_name"
-	VirtualDatacenterPath    string = "virtualDatacenter"
-	VmCapacityPath           string = "vmCapacity"
+	KvmInterfaceKvmPath                          string = "kvm_interface.kvm"
+	KvmInterfacePortNamePath                     string = "kvm_interface.port_name"
+	ChromeBrowserMachineLseVirtualDatacenterPath string = "chrome_browser_machine_lse.virtual_datacenter"
+	ChromeBrowserMachineLseVmCapacityPath        string = "chrome_browser_machine_lse.vm_capacity"
+	ChromeBrowserMachineLseOsVersionImagePath    string = "chrome_browser_machine_lse.os_version.image"
+	ChromeBrowserMachineLseOsVersionValuePath    string = "chrome_browser_machine_lse.os_version.value"
 	// Non-standard
-	KvmPath     string = "kvm"
-	KvmPortPath string = "kvmport"
+	KvmPath                    string = "kvm"
+	KvmPortPath                string = "kvmport"
+	VirtualDatacenterCamelPath string = "virtualDatacenter"
+	VmCapacityCamelPath        string = "vmCapacity"
 
 	// VM
-	CpuCoresPath       string = "cpu_cores"
-	MachineLseIdPath   string = "machine_lse_id"
-	MemoryPath         string = "memory"
-	OsVersionImagePath string = "os_version.image"
-	OsVersionValuePath string = "os_version.value"
-	StoragePath        string = "storage"
-	VmidPath           string = "vmid"
+	CpuCoresPath     string = "cpu_cores"
+	MachineLseIdPath string = "machine_lse_id"
+	MemoryPath       string = "memory"
+	StoragePath      string = "storage"
+	VmidPath         string = "vmid"
 	// Non-standard
 	CpuCoresCamelPath     string = "cpuCores"
 	MachineLseIdCamelPath string = "machineLseId"
 
 	// AttachedDevice
-	AttachedDeviceBuildTargetPath  string = "attached_device.build_target"
-	AttachedDeviceDeviceTypePath   string = "attached_device.device_type"
-	AttachedDeviceManufacturerPath string = "attached_device.manufacturer"
-	AttachedDeviceModelPath        string = "attached_device.model"
-	AssocHostnamePath              string = "assocHostname"
-	AssocHostPortPath              string = "assocHostPort"
+	AttachedDeviceBuildTargetPath       string = "attached_device.build_target"
+	AttachedDeviceDeviceTypePath        string = "attached_device.device_type"
+	AttachedDeviceManufacturerPath      string = "attached_device.manufacturer"
+	AttachedDeviceModelPath             string = "attached_device.model"
+	AttachedDeviceLseHostnamePath       string = "attached_device_lse.associated_hostname"
+	AttachedDeviceLseHostPortPath       string = "attached_device_lse.associated_host_port"
+	AttachedDeviceLseOsVersionImagePath string = "attached_device_lse.os_version.image"
+	AttachedDeviceLseOsVersionValuePath string = "attached_device_lse.os_version.value"
 	// Non-standard
 	AdmBuildTargetPath  string = "admBuildTarget"
 	AdmDeviceTypePath   string = "admDeviceType"
 	AdmManufacturerPath string = "admManufacturer"
 	AdmModelPath        string = "admModel"
+	AssocHostnamePath   string = "assocHostname"
+	AssocHostPortPath   string = "assocHostPort"
 
 	// Devboard
-	AndreiboardUltradebugSerialPath string = "devboard.andreiboard.ultradebug_serial"
-	PoolsDevboardPath               string = "pools-devboard"
-	PoolsDevboardRemovePath         string = "pools-devboard-remove"
+	AndreiboardUltradebugSerialPath                    string = "devboard.andreiboard.ultradebug_serial"
+	ChromeosMachineLseDeviceLseDevboardPoolsPath       string = "chromeos_machine_lse.device_lse.devboard.pools"
+	ChromeosMachineLseDeviceLseDevboardPoolsRemovePath string = "chromeos_machine_lse.device_lse.devboard.pools.remove"
+	DevboardPoolsPath                                  string = "devboard.pools"
+	DevboardPoolsRemovePath                            string = "devboard.pools.remove"
+	// Non-standard
+	PoolsDevboardPath       string = "pools-devboard"
+	PoolsDevboardRemovePath string = "pools-devboard-remove"
 
 	// ServerMachine
 	ServerMachineCpuTypePath    string = "server_machine.cpu_type"
@@ -186,7 +195,17 @@ const (
 	ServerMachineStoragePath    string = "server_machine.storage"
 
 	// MachineLSE
-	SchedulablePath string = "schedulable"
+	MachineLsePrototypePath string = "machine_lse_prototype"
+	SchedulablePath         string = "schedulable"
+	// Non-standard
+	MlseprototypePath string = "mlseprototype"
+
+	// OSVersion
+	OsVersionImagePath string = "os_version.image"
+	OsVersionValuePath string = "os_version.value"
+	// Non-standard
+	OsImageCamelPath   string = "osImage"
+	OsVersionCamelPath string = "osVersion"
 
 	// MachineLSEDeployment
 	ConfigsToPushPath        string = "configs_to_push"
