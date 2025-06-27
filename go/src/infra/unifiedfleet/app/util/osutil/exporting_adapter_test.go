@@ -352,6 +352,7 @@ var devUFSState = chromeosLab.DutState{
 	WifiPeripheralState:      chromeosLab.PeripheralState_WORKING,
 	PeripheralBtpeerState:    chromeosLab.PeripheralState_WORKING,
 	AudioLatencyToolkitState: chromeosLab.PeripheralState_WORKING,
+	PasitState:               chromeosLab.PeripheralState_BROKEN,
 	GpuId:                    "test_gpu_id",
 	AudioBeamforming:         "intelligo",
 	CameraState:              chromeosLab.HardwareState_HARDWARE_NORMAL,
@@ -763,6 +764,7 @@ common {
 			pasit_components: "MONITOR-1"
 			pasit_components: "MONITOR-2"
 			pasit_components: "DOCKING_STATION-1"
+			pasit_state: BROKEN
 			amt_manager_state: UNKNOWN
 			audio_beamforming: "intelligo"
 			camera_state: HARDWARE_NORMAL
@@ -887,6 +889,7 @@ common {
 			amt_manager_state: UNKNOWN
 			audio_beamforming: "intelligo"
 			camera_state: HARDWARE_NORMAL
+			pasit_state: BROKEN
 		}
 		platform:""
 		test_coverage_hints {
