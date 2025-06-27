@@ -45,21 +45,21 @@ const (
 // error, the protobuf message and command will both be nil and the error will be non-nil.
 func DownloadPackages(ctx context.Context, input *Input, packagesRoot string, packageChannels map[string]chan<- string) (*BootstrappedExe, []string, error) {
 	if input == nil {
-		return nil, nil, errors.Reason("nil input provided").Err()
+		return nil, nil, errors.New("nil input provided")
 	}
 	if packagesRoot == "" {
-		return nil, nil, errors.Reason("empty packagesRoot provided").Err()
+		return nil, nil, errors.New("empty packagesRoot provided")
 	}
 	for id, ch := range packageChannels {
 		switch id {
 		case DepotToolsId:
 		case ExeId:
-			return nil, nil, errors.Reason("channel provided for ExeId").Err()
+			return nil, nil, errors.New("channel provided for ExeId")
 		default:
-			return nil, nil, errors.Reason("channel provided for unknown package ID %s", id).Err()
+			return nil, nil, errors.Fmt("channel provided for unknown package ID %s", id)
 		}
 		if cap(ch) == 0 {
-			return nil, nil, errors.Reason("channel for package ID %s is unbuffered", id).Err()
+			return nil, nil, errors.Fmt("channel for package ID %s is unbuffered", id)
 		}
 	}
 
@@ -77,7 +77,7 @@ func DownloadPackages(ctx context.Context, input *Input, packagesRoot string, pa
 			}
 
 		default:
-			return nil, nil, errors.Reason("package handling for type %T is not implemented", x).Err()
+			return nil, nil, errors.Fmt("package handling for type %T is not implemented", x)
 		}
 	}
 

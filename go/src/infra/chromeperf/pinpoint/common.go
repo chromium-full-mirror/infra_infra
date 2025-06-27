@@ -42,12 +42,12 @@ var jobNameRe = regexp.MustCompile(`^jobs/legacy-(?P<id>[a-f0-9]+)$`)
 func LegacyJobID(jobName string) (string, error) {
 	// Ensure that the jobName suffix is a hex number.
 	if !jobNameRe.MatchString(jobName) {
-		return "", errors.Reason("invalid id format %q: must match %s", jobName, jobNameRe).Err()
+		return "", errors.Fmt("invalid id format %q: must match %s", jobName, jobNameRe)
 	}
 	matches := jobNameRe.FindStringSubmatch(jobName)
 	legacyID := string(matches[jobNameRe.SubexpIndex("id")])
 	if len(legacyID) == 0 {
-		return "", errors.Reason("future ids not supported yet").Err()
+		return "", errors.New("future ids not supported yet")
 	}
 	return legacyID, nil
 }

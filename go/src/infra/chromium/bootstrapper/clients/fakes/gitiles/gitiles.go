@@ -93,7 +93,7 @@ func Factory(fakes map[string]*Host) gitiles.GitilesClientFactory {
 		if !ok {
 			fake = &Host{}
 		} else if fake == nil {
-			return nil, errors.Reason("%s is not a gitiles host", host).Err()
+			return nil, errors.Fmt("%s is not a gitiles host", host)
 		}
 		return &Client{host, fake}, nil
 	}

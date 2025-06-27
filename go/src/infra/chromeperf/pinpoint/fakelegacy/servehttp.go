@@ -116,7 +116,7 @@ func (s *Server) getJob(req *http.Request) (*legacyResult, int, error) {
 func (s *Server) listJobs(req *http.Request) (*legacyResult, int, error) {
 	args := req.URL.Query()
 	if args.Get("filter") != "" {
-		return nil, 400, errors.Reason("TODO: implement filter").Err()
+		return nil, 400, errors.New("TODO: implement filter")
 	}
 
 	s.mu.Lock()
@@ -139,16 +139,16 @@ func (s *Server) listJobs(req *http.Request) (*legacyResult, int, error) {
 // As of now it ignores all parameters other than 'user'.
 func (s *Server) newJob(req *http.Request) (*legacyResult, int, error) {
 	if req.Method != "POST" {
-		return nil, 400, errors.Reason("only POST supported").Err()
+		return nil, 400, errors.New("only POST supported")
 	}
 	if err := req.ParseForm(); err != nil {
-		return nil, 400, errors.Annotate(err, "error parsing HTTP request").Err()
+		return nil, 400, errors.Fmt("error parsing HTTP request: %w", err)
 	}
 	q := req.Form
 
 	user := q.Get("user")
 	if user == "" {
-		return nil, 400, errors.Reason("must set user").Err()
+		return nil, 400, errors.New("must set user")
 	}
 
 	s.mu.Lock()

@@ -43,16 +43,16 @@ func downloadResultsToDir(ctx context.Context, gcs *storage.Client, dstDir strin
 	filename := filepath.Base(path)
 	dstFile, err := filepath.Abs(filepath.Join(dstDir, filename))
 	if err != nil {
-		return "", errors.Annotate(err, "failed getting absolute file path from %q %q", dstFile, filename).Err()
+		return "", errors.Fmt("failed getting absolute file path from %q %q: %w", dstFile, filename, err)
 	}
 
 	if err := removeExisting(dstFile); err != nil {
-		return "", errors.Annotate(err, "cannot download result file").Err()
+		return "", errors.Fmt("cannot download result file: %w", err)
 	}
 
 	src, err := gcs.Bucket(bucket).Object(path).NewReader(ctx)
 	if err != nil {
-		return "", errors.Annotate(err, "error requesting gs://%v/%v", bucket, path).Err()
+		return "", errors.Fmt("error requesting gs://%v/%v: %w", bucket, path, err)
 	}
 	defer src.Close()
 
@@ -66,10 +66,10 @@ func downloadResultsToDir(ctx context.Context, gcs *storage.Client, dstDir strin
 	defer tmp.Close()
 
 	if _, err := io.Copy(tmp, src); err != nil {
-		return "", errors.Annotate(err, "error downloading gs://%v/%v to file %q", bucket, path, tmp.Name()).Err()
+		return "", errors.Fmt("error downloading gs://%v/%v to file %q: %w", bucket, path, tmp.Name(), err)
 	}
 	if err := tmp.Close(); err != nil {
-		return "", errors.Annotate(err, "error flushing %v", tmp.Name()).Err()
+		return "", errors.Fmt("error flushing %v: %w", tmp.Name(), err)
 	}
 	if err := os.Rename(tmp.Name(), dstFile); err != nil {
 		return "", err
@@ -116,9 +116,9 @@ func (drm *downloadResultsMixin) doDownloadResults(ctx context.Context, job *pro
 		// The error for not finding credentials is not structured in any way,
 		// so, we have to guess based on error text.
 		if strings.Contains(err.Error(), "could not find default credentials") {
-			return errors.Reason("failed to initialize Google Cloud Storage connection, error was: %v\n\nConsider running this command:\n\n\tgcloud auth application-default login\n", err).Err()
+			return errors.Fmt("failed to initialize Google Cloud Storage connection, error was: %v\n\nConsider running this command:\n\n\tgcloud auth application-default login\n", err)
 		}
-		return errors.Annotate(err, "couldn't connect to Google Cloud Storage (GCS)").Err()
+		return errors.Fmt("couldn't connect to Google Cloud Storage (GCS): %w", err)
 	}
 	defer gcs.Close()
 
@@ -179,7 +179,7 @@ func (wjm *waitForJobMixin) waitForJob(
 	for {
 		resp, err := c.GetJob(ctx, req)
 		if err != nil {
-			return j, errors.Annotate(err, "failed during GetJob").Err()
+			return j, errors.Fmt("failed during GetJob: %w", err)
 		}
 		if !wjm.quiet && lastJob.GetLastUpdateTime().AsTime() != resp.GetLastUpdateTime().AsTime() {
 			out := prototext.MarshalOptions{Multiline: true}.Format(lastJob)

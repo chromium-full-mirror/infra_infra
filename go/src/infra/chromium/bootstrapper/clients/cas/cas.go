@@ -62,7 +62,7 @@ func (c *Client) clientForInstance(ctx context.Context, instance string) (CasCli
 		return nil, err
 	}
 	if client == nil {
-		return nil, errors.Reason("returned client for %s is nil", instance).Err()
+		return nil, errors.Fmt("returned client for %s is nil", instance)
 	}
 	c.clients[instance] = client
 	return client, nil

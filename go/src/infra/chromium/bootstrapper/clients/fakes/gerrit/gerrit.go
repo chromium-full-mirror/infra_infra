@@ -73,7 +73,7 @@ func Factory(fakes map[string]*Host) gerrit.GerritClientFactory {
 		if !ok {
 			fake = &Host{}
 		} else if fake == nil {
-			return nil, errors.Reason("%s is not a gerrit host", host).Err()
+			return nil, errors.Fmt("%s is not a gerrit host", host)
 		}
 		return &Client{host, fake}, nil
 	}

@@ -43,7 +43,7 @@ func gerritChangeToURL(c *proto.GerritChange) (string, error) {
 		notFound = append(notFound, "change")
 	}
 	if len(notFound) > 0 {
-		return "", errors.Reason("the following fields are required but are not set: %v", notFound).Err()
+		return "", errors.Fmt("the following fields are required but are not set: %v", notFound)
 	}
 	// Patchset is optional, in which case we'll omit it.
 	if c.Patchset == 0 {
@@ -57,19 +57,19 @@ func gerritChangeToURL(c *proto.GerritChange) (string, error) {
 func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 	v := url.Values{}
 	if len(userEmail) == 0 {
-		return nil, errors.Reason("user email is required").Err()
+		return nil, errors.New("user email is required")
 	}
 	v.Set("user", userEmail)
 
 	// Lift the configuration into a key.
 	if len(job.Config) == 0 {
-		return nil, errors.Reason("configuration is required").Err()
+		return nil, errors.New("configuration is required")
 	}
 	v.Set("configuration", job.Config)
 
 	// Always set the target into a key.
 	if len(job.Target) == 0 {
-		return nil, errors.Reason("target is required").Err()
+		return nil, errors.New("target is required")
 	}
 	v.Set("target", job.Target)
 
@@ -107,7 +107,7 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		case proto.JobSpec_FUNCTIONAL:
 			v.Set("comparison_mode", "functional")
 		default:
-			return nil, errors.Reason("Unknown comparison mode provided: %v", job.GetComparisonMode()).Err()
+			return nil, errors.Fmt("Unknown comparison mode provided: %v", job.GetComparisonMode())
 		}
 
 		// We ignore the repository here, because legacy Pinpoint's API didn't support those.
@@ -118,7 +118,7 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 			p := jk.Bisection.Patch
 			patchURL, err := gerritChangeToURL(p)
 			if err != nil {
-				return nil, errors.Annotate(err, "invalid patch provided").Err()
+				return nil, errors.Fmt("invalid patch provided: %w", err)
 			}
 			v.Set("patch", patchURL)
 		}
@@ -133,22 +133,22 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		case proto.JobSpec_FUNCTIONAL:
 			// We're failing gracefully here in cases where we're still proxying to the legacy API.
 			// In the future, we should support functional experiments too.
-			return nil, errors.Reason("functional experiments not supported by legacy API").Err()
+			return nil, errors.New("functional experiments not supported by legacy API")
 		default:
-			return nil, errors.Reason("Unknown comparison mode provided: %v", job.GetComparisonMode()).Err()
+			return nil, errors.Fmt("Unknown comparison mode provided: %v", job.GetComparisonMode())
 		}
 
 		// The legacy Pinpoint API doesn't support specifying the Gitiles host/project as it assumes the only
 		// the Chromium codebase is being worked on.
 		if jk.Experiment.BaseCommit == nil {
-			return nil, errors.Reason("a base commit is required").Err()
+			return nil, errors.New("a base commit is required")
 		}
 		v.Set("base_git_hash", jk.Experiment.BaseCommit.GitHash)
 
 		if jk.Experiment.ExperimentPatch != nil {
 			experimentPatchURL, err := gerritChangeToURL(jk.Experiment.ExperimentPatch)
 			if err != nil {
-				return nil, errors.Annotate(err, "invalid experiment patch").Err()
+				return nil, errors.Fmt("invalid experiment patch: %w", err)
 			}
 			v.Set("experiment_patch", experimentPatchURL)
 		}
@@ -160,7 +160,7 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		if jk.Experiment.BasePatch != nil {
 			basePatchURL, err := gerritChangeToURL(jk.Experiment.BasePatch)
 			if err != nil {
-				return nil, errors.Annotate(err, "invalid base patch").Err()
+				return nil, errors.Fmt("invalid base patch: %w", err)
 			}
 			v.Set("base_patch", basePatchURL)
 		}
@@ -185,12 +185,12 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		case *proto.TelemetryBenchmark_StoryTags:
 			v.Set("story_tags", strings.Join(s.StoryTags.StoryTags, ","))
 		default:
-			return nil, errors.Reason("Unsupported story_selection in TelemetryBenchmark").Err()
+			return nil, errors.New("Unsupported story_selection in TelemetryBenchmark")
 		}
 		if tb.ExtraArgs != nil {
 			e, err := json.Marshal(tb.ExtraArgs)
 			if err != nil {
-				return nil, errors.Reason("failed to marshal extra args").Err()
+				return nil, errors.New("failed to marshal extra args")
 			}
 			v.Set("extra_test_args", string(e))
 		}
@@ -200,7 +200,7 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		v.Set("trace", gb.Test)
 		v.Set("chart", gb.Measurement)
 	default:
-		return nil, errors.Reason("unsupported arguments in JobSpec").Err()
+		return nil, errors.New("unsupported arguments in JobSpec")
 	}
 
 	return v, nil
@@ -291,7 +291,7 @@ type jsonJob struct {
 func JobToProto(jsonSrc io.Reader) (*proto.Job, error) {
 	l := new(jsonJob)
 	if err := json.NewDecoder(jsonSrc).Decode(l); err != nil {
-		return nil, errors.Annotate(err, "received ill-formed response from legacy service").Err()
+		return nil, errors.Fmt("received ill-formed response from legacy service: %w", err)
 	}
 
 	return jsonJobToProto(l)
@@ -338,7 +338,7 @@ func jsonJobToProto(l *jsonJob) (*proto.Job, error) {
 	// Only set ResultFiles if the job is finished, as documented in the API.
 	if j.State == proto.Job_SUCCEEDED {
 		if resultFile, err := urlToResultFile(l.ResultsURL); err != nil {
-			errs = append(errs, errors.Annotate(err, "invalid results_url from legacy service").Err())
+			errs = append(errs, errors.Fmt("invalid results_url from legacy service: %w", err))
 		} else {
 			j.ResultFiles = []*proto.ResultFile{resultFile}
 		}
@@ -387,7 +387,7 @@ func jsonJobToProto(l *jsonJob) (*proto.Job, error) {
 func addExperimentDetails(l *jsonJob, j *proto.Job) errors.MultiError {
 	var errs errors.MultiError
 	if expectedStates, foundStates := 2, len(l.State); expectedStates != foundStates {
-		errs = append(errs, errors.Reason("invalid state count in legacy response: want %d got %d", expectedStates, foundStates).Err())
+		errs = append(errs, errors.Fmt("invalid state count in legacy response: want %d got %d", expectedStates, foundStates))
 		return errs
 	}
 
@@ -544,11 +544,11 @@ type gerritParts struct {
 func parseGerritURL(s string) (*gerritParts, error) {
 	u, err := url.Parse(s)
 	if err != nil {
-		return nil, errors.Reason("invalid patch url gotten from legacy service").Err()
+		return nil, errors.New("invalid patch url gotten from legacy service")
 	}
 	m := gerritRe.FindStringSubmatch(u.Path)
 	if m == nil {
-		return nil, errors.Reason("invalid CL path in URL gotten from legacy service: %s", u.Path).Err()
+		return nil, errors.Fmt("invalid CL path in URL gotten from legacy service: %s", u.Path)
 	}
 	project := m[gerritProjectIdx]
 	clStr := m[gerritClIdx]
@@ -557,11 +557,11 @@ func parseGerritURL(s string) (*gerritParts, error) {
 
 	cl, err := strconv.ParseInt(clStr, 10, 64)
 	if err != nil {
-		return nil, errors.Reason("invalid CL number in URL gotten from legacy service").Err()
+		return nil, errors.New("invalid CL number in URL gotten from legacy service")
 	}
 	patchSet, err := strconv.ParseInt(patchSetStr, 10, 32)
 	if err != nil {
-		return nil, errors.Reason("invalid patchset number in URL gotten from legacy service").Err()
+		return nil, errors.New("invalid patchset number in URL gotten from legacy service")
 	}
 	return &gerritParts{
 		project: project, repo: repo, cl: cl, patchSet: patchSet,
@@ -573,7 +573,7 @@ var resultsURLRe = regexp.MustCompile(`https://storage.cloud.google.com/([^/]+)/
 func urlToResultFile(url string) (*proto.ResultFile, error) {
 	m := resultsURLRe.FindStringSubmatch(url)
 	if m == nil {
-		return nil, errors.Reason("unknown ResultFile format %q: must match %q", url, resultsURLRe).Err()
+		return nil, errors.Fmt("unknown ResultFile format %q: must match %q", url, resultsURLRe)
 	}
 	return &proto.ResultFile{
 		GcsBucket: m[1],
@@ -589,7 +589,7 @@ func JobListToProto(jsonSrc io.Reader) ([]*proto.Job, error) {
 		Jobs []*jsonJob `json:"jobs"`
 	}
 	if err := json.NewDecoder(jsonSrc).Decode(&l); err != nil {
-		return nil, errors.Annotate(err, "received ill-formed response from legacy service").Err()
+		return nil, errors.Fmt("received ill-formed response from legacy service: %w", err)
 	}
 
 	ret := make([]*proto.Job, 0, len(l.Jobs))

@@ -50,7 +50,7 @@ func compile(intoDir string) (testPaths, error) {
 
 		out, err := exec.Command("go", "build", "-o", outPath, bin.packagePath).CombinedOutput()
 		if err != nil {
-			return testPaths{}, errors.Reason("failed to build %q; output was:\n\n%s", bin.name, out).Err()
+			return testPaths{}, errors.Fmt("failed to build %q; output was:\n\n%s", bin.name, out)
 		}
 	}
 	return paths, nil
@@ -64,7 +64,7 @@ func startProcess(onError func(error), path string, args ...string) (cancel func
 
 	name := filepath.Base(path)
 	if err := cmd.Start(); err != nil {
-		return nil, errors.Annotate(err, "failed to start %q", name).Err()
+		return nil, errors.Fmt("failed to start %q: %w", name, err)
 	}
 
 	exited := make(chan struct{})
@@ -72,7 +72,7 @@ func startProcess(onError func(error), path string, args ...string) (cancel func
 		defer close(exited)
 
 		if err := cmd.Wait(); err != nil {
-			err = errors.Reason("unexpected unclean process exit: process %q exited with %v; output was:\n\n%s", name, err, output).Err()
+			err = errors.Fmt("unexpected unclean process exit: process %q exited with %v; output was:\n\n%s", name, err, output)
 			onError(err)
 		}
 	}()
@@ -80,7 +80,7 @@ func startProcess(onError func(error), path string, args ...string) (cancel func
 		if err := cmd.Process.Signal(os.Interrupt); err != nil {
 			// If we failed to signal the process, pass an error to the caller
 			// return rather than waiting for the process to exit.
-			onError(errors.Annotate(err, "failed to signal process").Err())
+			onError(errors.Fmt("failed to signal process: %w", err))
 			return
 		}
 		<-exited
@@ -149,7 +149,7 @@ func start(ctx context.Context, t testing.TB, paths testPaths) (cleanup func(), 
 		args = append(args, "--endpoint", grpcEndpoint)
 		out, err := exec.Command(paths.pinpointCLI, args...).CombinedOutput()
 		if err != nil {
-			return "", errors.Reason("`pinpoint %q` failed with status %v; output was:\n\n%s", args, err, out).Err()
+			return "", errors.Fmt("`pinpoint %q` failed with status %v; output was:\n\n%s", args, err, out)
 		}
 		return string(out), nil
 	}
@@ -168,7 +168,7 @@ func waitForServices(ctx context.Context, grpcEndpoint string) error {
 	})
 	conn, err := grpc.DialContext(ctx, grpcEndpoint, params, grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
-		return errors.Annotate(err, "failed to dial gRPC endpoint %v", grpcEndpoint).Err()
+		return errors.Fmt("failed to dial gRPC endpoint %v: %w", grpcEndpoint, err)
 	}
 	defer conn.Close()
 	client := proto.NewPinpointClient(conn)

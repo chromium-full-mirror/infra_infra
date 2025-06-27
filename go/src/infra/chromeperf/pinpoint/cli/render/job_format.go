@@ -34,11 +34,11 @@ func JobURL(j *proto.Job) (string, error) {
 
 func JobID(j *proto.Job) (string, error) {
 	if len(j.Name) == 0 {
-		return "", errors.Reason("invalid job, the Name field is required").Err()
+		return "", errors.New("invalid job, the Name field is required")
 	}
 	m := legacyJobRe.FindStringSubmatch(j.Name)
 	if m == nil {
-		return "", errors.Reason("unsupported job id format: %s", j.Name).Err()
+		return "", errors.Fmt("unsupported job id format: %s", j.Name)
 	}
 	return m[legacyJobIDIdx], nil
 }

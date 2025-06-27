@@ -49,7 +49,7 @@ func loadTemplates(dir string) (*Templates, error) {
 	tmpls := template.New("fakelegacy-templates")
 	tmpls, err := tmpls.ParseGlob(filepath.Join(dir, "*.tmpl"))
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to loadTemplates").Err()
+		return nil, errors.Fmt("failed to loadTemplates: %w", err)
 	}
 	return &Templates{
 		Job:  Template{tmpls, "job.tmpl"},

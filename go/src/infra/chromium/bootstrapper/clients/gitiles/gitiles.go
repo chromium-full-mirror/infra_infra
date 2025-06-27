@@ -77,7 +77,7 @@ func (c *Client) gitilesClientForHost(ctx context.Context, host string) (Gitiles
 		return nil, err
 	}
 	if client == nil {
-		return nil, errors.Reason("returned client for %s is nil", host).Err()
+		return nil, errors.Fmt("returned client for %s is nil", host)
 	}
 	c.clients[host] = client
 	return client, nil
@@ -174,7 +174,7 @@ func (c *Client) GetSubmoduleRevision(ctx context.Context, host, project, revisi
 		return "", err
 	}
 	if s.Revision == "" {
-		return "", errors.Reason("no revision found for %s/%s/+/%s/%s", host, project, revision, path).Err()
+		return "", errors.Fmt("no revision found for %s/%s/+/%s/%s", host, project, revision, path)
 	}
 	return s.Revision, nil
 }

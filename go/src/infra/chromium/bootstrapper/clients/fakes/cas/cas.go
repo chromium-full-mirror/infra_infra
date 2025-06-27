@@ -44,7 +44,7 @@ func Factory(fakes map[string]*Instance) bscas.CasClientFactory {
 		if !ok {
 			fake = &Instance{}
 		} else if fake == nil {
-			return nil, errors.Reason("%s is not a CAS instance", instance).Err()
+			return nil, errors.Fmt("%s is not a CAS instance", instance)
 		}
 		return &Client{instance, fake}, nil
 	}
@@ -53,7 +53,7 @@ func Factory(fakes map[string]*Instance) bscas.CasClientFactory {
 func (c *Client) DownloadDirectory(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error) {
 	blobExists, ok := c.instance.Blobs[d.Hash]
 	if ok && !blobExists {
-		return nil, nil, errors.Reason("hash %s does not identify any blobs in instance %s", d.Hash, c.name).Err()
+		return nil, nil, errors.Fmt("hash %s does not identify any blobs in instance %s", d.Hash, c.name)
 	}
 	return nil, nil, nil
 }

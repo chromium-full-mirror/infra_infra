@@ -134,11 +134,11 @@ func (b *BuildBootstrapper) GetBootstrapConfig(ctx context.Context, input *Input
 			}
 
 		default:
-			return nil, errors.Reason("config_project handling for type %T is not implemented", x).Err()
+			return nil, errors.Fmt("config_project handling for type %T is not implemented", x)
 		}
 
 		if err := b.getPropertiesFromFile(ctx, input.propsProperties.PropertiesFile, input.propsProperties.ShadowPropertiesFile, input.shadowBuild, config); err != nil {
-			return nil, errors.Annotate(err, "failed to get properties from properties file %s", input.propsProperties.PropertiesFile).Err()
+			return nil, errors.Fmt("failed to get properties from properties file %s: %w", input.propsProperties.PropertiesFile, err)
 		}
 	}
 
@@ -203,12 +203,12 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		}
 
 	default:
-		return nil, errors.Reason("config_repo_locator handling for type %T is not implemented", x).Err()
+		return nil, errors.Fmt("config_repo_locator handling for type %T is not implemented", x)
 	}
 
 	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, commit, change, locator)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get dependency revision for %s/%s", dependency.ConfigRepo.Host, dependency.ConfigRepo.Project).Err()
+		return nil, errors.Fmt("failed to get dependency revision for %s/%s: %w", dependency.ConfigRepo.Host, dependency.ConfigRepo.Project, err)
 	}
 
 	// If the DEPS pin for the config repo has changed, find out if the properties file has
@@ -217,7 +217,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	if oldDependencyRevision != "" {
 		propertiesDiff, err := b.gitiles.DownloadDiff(ctx, dependency.ConfigRepo.Host, dependency.ConfigRepo.Project, dependencyRevision, oldDependencyRevision, propsFile)
 		if err != nil {
-			return nil, errors.Annotate(err, "failed to determine if properties file was affected").Err()
+			return nil, errors.Fmt("failed to determine if properties file was affected: %w", err)
 		}
 		if propertiesDiff != "" {
 			skipAnalysisReasons = append(skipAnalysisReasons, fmt.Sprintf("properties file %s is affected by CL (via DEPS change)", propsFile))
@@ -305,11 +305,11 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, topLevelR
 			},
 		})
 		if err != nil {
-			return "", "", errors.Annotate(err, "failed to get dependency revision for CL %s", topLevelRepoChange).Err()
+			return "", "", errors.Fmt("failed to get dependency revision for CL %s: %w", topLevelRepoChange, err)
 		}
 		baseRevision, err := b.gitiles.GetParentRevision(ctx, topLevelRepoCommit.Host, topLevelRepoCommit.Project, topLevelRepoChange.gitilesRevision)
 		if err != nil {
-			return "", "", errors.Annotate(err, "failed to get base revision for CL %s", topLevelRepoChange).Err()
+			return "", "", errors.Fmt("failed to get base revision for CL %s: %w", topLevelRepoChange, err)
 		}
 		baseDependencyRevision, err := locator.getRevision(ctx, &gitilesCommit{
 			GitilesCommit: &buildbucketpb.GitilesCommit{
@@ -319,7 +319,7 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, topLevelR
 			},
 		})
 		if err != nil {
-			return "", "", errors.Annotate(err, "failed to get dependency revision for base of CL %s", topLevelRepoChange).Err()
+			return "", "", errors.Fmt("failed to get dependency revision for base of CL %s: %w", topLevelRepoChange, err)
 		}
 		if clDependencyRevision != baseDependencyRevision {
 			return clDependencyRevision, baseDependencyRevision, nil
@@ -330,7 +330,7 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, topLevelR
 	// DEPS file
 	revision, err := locator.getRevision(ctx, topLevelRepoCommit)
 	if err != nil {
-		return "", "", errors.Annotate(err, "failed to get dependency revision from commit %s", topLevelRepoCommit).Err()
+		return "", "", errors.Fmt("failed to get dependency revision from commit %s: %w", topLevelRepoCommit, err)
 	}
 	return revision, "", nil
 }
@@ -346,7 +346,7 @@ func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input
 		logging.Infof(ctx, "getting change info for config change %s", change)
 		info, err := b.gerrit.GetChangeInfo(ctx, change.Host, change.Project, change.Change, int32(change.Patchset))
 		if err != nil {
-			return nil, nil, errors.Annotate(err, "failed to get change info for config change %s", change).Err()
+			return nil, nil, errors.Fmt("failed to get change info for config change %s: %w", change, err)
 		}
 		ref = info.TargetRef
 		change.gitilesRevision = info.GitilesRevision
@@ -391,14 +391,14 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 			logging.Infof(ctx, "patching properties file %s", f)
 			contents, err = patchFile(ctx, f, contents, diff)
 			if err != nil {
-				return nil, errors.Annotate(err, "failed to patch properties file %s", f).Err()
+				return nil, errors.Fmt("failed to patch properties file %s: %w", f, err)
 			}
 		}
 
 		properties := &structpb.Struct{}
 		logging.Infof(ctx, "unmarshalling builder properties file %s", f)
 		if err := protojson.Unmarshal([]byte(contents), properties); err != nil {
-			err := errors.Annotate(err, "failed to unmarshall builder properties file %s", f).Err()
+			err := errors.Fmt("failed to unmarshall builder properties file %s: %w", f, err)
 			logging.Errorf(ctx, err.Error())
 			logging.Errorf(ctx, "properties file contents: {%s}", contents)
 			return nil, err
@@ -423,7 +423,7 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 	logging.Infof(ctx, "getting last changed commit for properties file")
 	changedRev, err := b.gitiles.FetchLatestRevisionForPath(ctx, config.configCommit.Host, config.configCommit.Project, config.configCommit.Id, propsFile)
 	if err != nil {
-		return errors.Annotate(err, "failed to get last changed commit for properties file %s", propsFile).Err()
+		return errors.Fmt("failed to get last changed commit for properties file %s: %w", propsFile, err)
 	}
 	configSource := &ConfigSource{
 		LastChangedCommit: &buildbucketpb.GitilesCommit{
@@ -492,11 +492,11 @@ func (b *BuildBootstrapper) downloadPropertiesFile(ctx context.Context, propsFil
 		// The revision exists in the repo and we still got a not found error, so the file
 		// doesn't exist at the pinned revision. Create an error with a helpful message for
 		// users and a tag so the top-level code will sleep.
-		err = errors.Reason(`dependency properties file %s does not exist in pinned revision %s
+		err = errors.Fmt(`dependency properties file %s does not exist in pinned revision %s
 This should resolve once the CL that adds this builder rolls into %s/%s
 If you believe you are seeing this message in error, please contact a trooper
 This build will sleep for 10 minutes to avoid the builder cycling too quickly`,
-			propsFile, config.configCommit, config.inputCommit.Host, config.inputCommit.Project).Err()
+			propsFile, config.configCommit, config.inputCommit.Host, config.inputCommit.Project)
 		err = SleepBeforeExiting.ApplyValue(err, 10*time.Minute)
 		return err
 	})
@@ -513,7 +513,7 @@ func (b *BuildBootstrapper) downloadFile(ctx context.Context, commit *gitilesCom
 	logging.Infof(ctx, "downloading %s/%s", commit, file)
 	contents, err := b.gitiles.DownloadFile(ctx, commit.Host, commit.Project, commit.Id, file)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to get %s/%s", commit, file).Err()
+		return "", errors.Fmt("failed to get %s/%s: %w", commit, file, err)
 	}
 	return contents, nil
 }
@@ -522,7 +522,7 @@ func (b *BuildBootstrapper) getDiffForMaybeAffectedFile(ctx context.Context, cha
 	logging.Infof(ctx, "getting diff for %s", change)
 	diff, err := b.gitiles.DownloadDiff(ctx, convertGerritHostToGitilesHost(change.Host), change.Project, change.gitilesRevision, gitiles.PARENT, file)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to get diff from %s", change).Err()
+		return "", errors.Fmt("failed to get diff from %s: %w", change, err)
 	}
 	if diff != "" {
 		logging.Infof(ctx, "%s was affected by %s", file, change)
@@ -537,7 +537,7 @@ func (b *BuildBootstrapper) populateCommitId(ctx context.Context, commit *gitile
 		logging.Infof(ctx, "getting revision for %s", commit)
 		revision, err := b.gitiles.FetchLatestRevision(ctx, commit.Host, commit.Project, commit.Ref)
 		if err != nil {
-			return nil, errors.Annotate(err, "failed to populate commit ID for %s", commit).Err()
+			return nil, errors.Fmt("failed to populate commit ID for %s: %w", commit, err)
 		}
 		commit = &gitilesCommit{proto.Clone(commit.GitilesCommit).(*buildbucketpb.GitilesCommit)}
 		if revision == commit.Ref {
@@ -629,7 +629,7 @@ func (c *BootstrapConfig) UpdateBuild(build *buildbucketpb.Build, bootstrappedEx
 	if err := exe.WriteProperties(properties, map[string]any{
 		"$build/chromium_bootstrap": modProperties,
 	}); err != nil {
-		return errors.Annotate(err, "failed to write out properties for chromium_bootstrap module: {%s}", modProperties).Err()
+		return errors.Fmt("failed to write out properties for chromium_bootstrap module: {%s}: %w", modProperties, err)
 	}
 
 	build.Input.Properties = properties

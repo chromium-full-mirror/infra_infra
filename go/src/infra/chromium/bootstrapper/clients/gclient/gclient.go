@@ -31,7 +31,7 @@ func NewClient(gclientPath string) *Client {
 func NewClientForTesting() (*Client, error) {
 	gclientPath, err := exec.LookPath("gclient")
 	if err != nil {
-		return nil, errors.Annotate(err, "gclient not on $PATH, please install depot_tools").Err()
+		return nil, errors.Fmt("gclient not on $PATH, please install depot_tools: %w", err)
 	}
 	return &Client{gclientPath}, nil
 }
@@ -58,7 +58,7 @@ func (c *Client) GetDep(ctx context.Context, depsContents, depPath string) (stri
 	if err != nil {
 		var exitErr *exec.ExitError
 		if stderrors.As(err, &exitErr) {
-			return "", errors.Annotate(err, "gclient failed with output:\n%s", exitErr.Stderr).Err()
+			return "", errors.Fmt("gclient failed with output:\n%s: %w", exitErr.Stderr, err)
 		}
 		return "", err
 	}

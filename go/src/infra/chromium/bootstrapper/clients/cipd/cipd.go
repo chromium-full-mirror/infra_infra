@@ -72,13 +72,13 @@ func Ensure(ctx context.Context, serviceUrl, cipdRoot string, packages map[strin
 			return nil, errors.New("empty subdir in packages")
 		}
 		if pkg == nil {
-			return nil, errors.Reason("nil package for subdir %#v", subdir).Err()
+			return nil, errors.Fmt("nil package for subdir %#v", subdir)
 		}
 		if pkg.Name == "" {
-			return nil, errors.Reason("empty package name for subdir %#v", subdir).Err()
+			return nil, errors.Fmt("empty package name for subdir %#v", subdir)
 		}
 		if pkg.Version == "" {
-			return nil, errors.Reason("empty package version for subdir %#v", subdir).Err()
+			return nil, errors.Fmt("empty package version for subdir %#v", subdir)
 		}
 	}
 	factory, _ := ctx.Value(&ctxKey).(ClientFactory)
@@ -123,7 +123,7 @@ func (c defaultClient) Ensure(ctx context.Context, serviceUrl, cipdRoot string, 
 	}
 	ensureFile := "cipd.ensure"
 	if err := os.WriteFile(ensureFile, []byte(ensureContents.String()), 0440); err != nil {
-		return nil, errors.Annotate(err, "failed to write out CIPD ensure file").Err()
+		return nil, errors.Fmt("failed to write out CIPD ensure file: %w", err)
 	}
 
 	jsonOutFile := "cipd.json.out"
@@ -132,17 +132,17 @@ func (c defaultClient) Ensure(ctx context.Context, serviceUrl, cipdRoot string, 
 	cmdCtx.Stderr = os.Stderr
 	err := cmdCtx.Run()
 	if err != nil {
-		return nil, errors.Annotate(err, "cipd ensure failed").Err()
+		return nil, errors.Fmt("cipd ensure failed: %w", err)
 	}
 
 	jsonOutContents, err := os.ReadFile(jsonOutFile)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read json output for cipd ensure").Err()
+		return nil, errors.Fmt("failed to read json output for cipd ensure: %w", err)
 	}
 
 	out, err := unmarshalEnsureJsonOut(jsonOutContents)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to unmarshal json output for cipd ensure, contents: %s", jsonOutContents).Err()
+		return nil, errors.Fmt("failed to unmarshal json output for cipd ensure, contents: %s: %w", jsonOutContents, err)
 	}
 
 	resolvedVersions := make(map[string]string, len(packages))

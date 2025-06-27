@@ -123,7 +123,7 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	}
 	if len(missingProps) != 0 {
 		sort.Strings(missingProps)
-		return nil, errors.Reason("the following required properties are not set: %s", strings.Join(missingProps, ", ")).Err()
+		return nil, errors.Fmt("the following required properties are not set: %s", strings.Join(missingProps, ", "))
 	}
 
 	if o.PropertiesOptional {
@@ -141,16 +141,16 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	propsToParse["led_removed_properties"] = &ledRemovedProperties
 
 	if err := exe.ParseProperties(properties, propsToParse); err != nil {
-		return nil, errors.Annotate(err, "failed to parse properties").Err()
+		return nil, errors.Fmt("failed to parse properties: %w", err)
 	}
 
 	if propsProperties != nil {
 		if err := validate(propsProperties, "$bootstrap/properties"); err != nil {
-			return nil, errors.Annotate(err, "failed to validate $bootstrap/properties property").Err()
+			return nil, errors.Fmt("failed to validate $bootstrap/properties property: %w", err)
 		}
 	}
 	if err := validate(exeProperties, "$bootstrap/exe"); err != nil {
-		return nil, errors.Annotate(err, "failed to validate $bootstrap/exe property").Err()
+		return nil, errors.Fmt("failed to validate $bootstrap/exe property: %w", err)
 	}
 
 	if casRecipeBundle.Digest == nil {

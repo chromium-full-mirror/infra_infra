@@ -77,7 +77,7 @@ var listTmpl = template.Must(template.New("Jobs").Funcs(
 // JobListText takes a slice of jobs and renders a human-readable list of jobs.
 func JobListText(out io.Writer, jobs []*proto.Job) error {
 	if err := listTmpl.Execute(out, jobs); err != nil {
-		return errors.Annotate(err, "could not render jobs list").Err()
+		return errors.Fmt("could not render jobs list: %w", err)
 	}
 	return nil
 }

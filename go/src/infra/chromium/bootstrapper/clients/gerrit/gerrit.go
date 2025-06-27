@@ -72,7 +72,7 @@ func (c *Client) gerritClientForHost(ctx context.Context, host string) (GerritCl
 		return nil, err
 	}
 	if client == nil {
-		return nil, errors.Reason("returned client for %s is nil", host).Err()
+		return nil, errors.Fmt("returned client for %s is nil", host)
 	}
 	c.clients[host] = client
 	return client, nil

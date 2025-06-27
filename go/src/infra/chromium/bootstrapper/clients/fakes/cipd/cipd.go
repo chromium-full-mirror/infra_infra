@@ -65,7 +65,7 @@ func (c *Client) Ensure(ctx context.Context, serviceUrl, cipdRoot string, packag
 		if !ok {
 			pkg = &Package{}
 		} else if pkg == nil {
-			return nil, errors.Reason("unknown package %#v", pin.Name).Err()
+			return nil, errors.Fmt("unknown package %#v", pin.Name)
 		}
 		instanceId := pin.Version
 		if _, ok := pkg.Instances[pin.Version]; !ok {
@@ -82,7 +82,7 @@ func (c *Client) Ensure(ctx context.Context, serviceUrl, cipdRoot string, packag
 			}
 		}
 		if instance == nil {
-			return nil, errors.Reason("unknown version %#v of package %#v", pin.Version, pin.Name).Err()
+			return nil, errors.Fmt("unknown version %#v of package %#v", pin.Version, pin.Name)
 		}
 		packageVersions[subdir] = instanceId
 
