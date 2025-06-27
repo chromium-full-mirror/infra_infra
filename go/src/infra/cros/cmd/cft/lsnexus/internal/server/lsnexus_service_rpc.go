@@ -88,6 +88,124 @@ func (s *LsNexus) CallServod(ctx context.Context, req *lsnexus.CallServodRequest
 	return nil, status.Error(codes.Unimplemented, "the specified call servod method not implemented")
 }
 
+// GetFile gets a file from the labstation by proxying the request to the BOLS service.
+// It streams the file content back to the client.
+func (s *LsNexus) GetFile(req *lsnexus.GetFileRequest, stream lsnexus.LSNexusService_GetFileServer) error {
+	ctx := stream.Context()
+
+	// 1. Create the request for the underlying BOLS service.
+	bolsReq := &bols.GetFileRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    s.servodPort,
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+		Filename: req.GetFilename(),
+	}
+
+	// 2. Call the BOLS GetFile RPC to get a stream of file chunks.
+	bolsStream, err := s.cl.GetFile(ctx, bolsReq)
+	if err != nil {
+		return s.logAndReturnErr(fmt.Errorf("BOLS GetFile call failed: %w", err))
+	}
+
+	// 3. Loop to receive chunks from BOLS and forward them to the LSNexus client.
+	for {
+		// Receive a chunk from the BOLS service stream.
+		bolsResp, err := bolsStream.Recv()
+		if err == io.EOF {
+			// End of file, the BOLS stream is finished. We're done.
+			break
+		}
+		if err != nil {
+			return s.logAndReturnErr(fmt.Errorf("failed to receive file chunk from BOLS: %w", err))
+		}
+
+		// Forward the received chunk to the LSNexus client.
+		lsnexusResp := &lsnexus.GetFileResponse{
+			Data: bolsResp.GetData(),
+		}
+		if err := stream.Send(lsnexusResp); err != nil {
+			return s.logAndReturnErr(fmt.Errorf("failed to send file chunk to client: %w", err))
+		}
+	}
+
+	return nil
+}
+
+// PutFile receives a file from a client and proxies it to the BOLS service.
+// This is a client-streaming RPC.
+func (s *LsNexus) PutFile(stream lsnexus.LSNexusService_PutFileServer) error {
+	ctx := stream.Context()
+
+	// 1. Initiate the client-stream to the backing BOLS service.
+	bolsStream, err := s.cl.PutFile(ctx)
+	if err != nil {
+		return s.logAndReturnErr(fmt.Errorf("failed to initiate PutFile stream to BOLS: %w", err))
+	}
+
+	// isFirstRequest is used to ensure the first message contains file info.
+	isFirstRequest := true
+
+	// 2. Loop to receive messages from the LSNexus client.
+	for {
+		req, err := stream.Recv()
+
+		// Check if the client has finished sending data.
+		if err == io.EOF {
+			// 5. Close the stream to BOLS and wait for its response.
+			_, err := bolsStream.CloseAndRecv()
+			if err != nil {
+				return s.logAndReturnErr(fmt.Errorf("BOLS service returned an error on file close: %w", err))
+			}
+			// Send the final response to the LSNexus client and close the stream.
+			return stream.SendAndClose(&lsnexus.PutFileResponse{})
+		}
+		if err != nil {
+			return s.logAndReturnErr(fmt.Errorf("failed to receive from client stream: %w", err))
+		}
+
+		// 3. Process the first message (must contain ReqInfo).
+		if isFirstRequest {
+			if req.GetReqInfo() == nil {
+				return s.logAndReturnErr(fmt.Errorf("protocol error: first PutFile message must contain ReqInfo"))
+			}
+			info := req.GetReqInfo()
+			// Construct and send the initial request to BOLS.
+			bolsReq := &bols.PutFileRequest{
+				Source: &bols.PutFileRequest_ReqInfo{
+					ReqInfo: &bols.PutFileRequestInitInfo{
+						StationId: &bols.StationIdentifier{
+							ServodPort:    s.servodPort,
+							ServoSerial:   s.servodSerial,
+							ContainerName: s.servodContainer,
+						},
+						Filename: info.GetFilename(),
+					},
+				},
+			}
+			if err := bolsStream.Send(bolsReq); err != nil {
+				return s.logAndReturnErr(fmt.Errorf("failed to send initial file info to BOLS: %w", err))
+			}
+			isFirstRequest = false
+		} else {
+			// 4. Process subsequent messages (must contain data chunks).
+			if req.GetData() == nil {
+				return s.logAndReturnErr(fmt.Errorf("protocol error: subsequent PutFile messages must contain data"))
+			}
+			// Construct and forward the data chunk to BOLS.
+			bolsReq := &bols.PutFileRequest{
+				Source: &bols.PutFileRequest_Data{
+					Data: req.GetData(),
+				},
+			}
+			if err := bolsStream.Send(bolsReq); err != nil {
+				return s.logAndReturnErr(fmt.Errorf("failed to stream file data to BOLS: %w", err))
+			}
+		}
+	}
+}
+
 func (s *LsNexus) RemoveFile(ctx context.Context, req *lsnexus.RemoveFileRequest) (*lsnexus.RemoveFileResponse, error) {
 	s.log("Serving RemoveFile request for file:", req.GetFileName())
 	if s.cl == nil {

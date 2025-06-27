@@ -48,6 +48,10 @@ func verify(ctx context.Context, logger *log.Logger, a *args) error {
 	if err := verifyServodAPIs(ctx, logger, a, cl); err != nil {
 		return fmt.Errorf("failed to verify servod related APIs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
 	}
+	// Verify file-related APIs.
+	if err := verifyFileAPIs(ctx, logger, a, cl); err != nil {
+		return fmt.Errorf("failed to verify file related APIs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
+	}
 
 	logger.Println("Verifying DownloadServoLogs API...")
 	if _, err := cl.DownloadServoLogs(ctx, &lsnexus.DownloadServoLogsRequest{}); err != nil {
