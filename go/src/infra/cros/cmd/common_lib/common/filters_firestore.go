@@ -48,11 +48,18 @@ func NewContainerInfoItem(host, project, digest, name, binary string) *Container
 	}
 }
 
-var firestoreSyncMap = sync.Map{}
+var (
+	// Type: *api.ContainerInfo
+	firestoreSyncMap = sync.Map{}
+	// Type: time.Time
+	firestoreExpiration = sync.Map{}
+)
 
 func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName, tag, name string, clientOpts ...option.ClientOption) (containerInfo *api.ContainerInfo, err error) {
 	mapKey := fmt.Sprint(firestoreDatabaseName, tag, name)
-	if containerInfoAny, ok := firestoreSyncMap.Load(mapKey); ok {
+	containerInfoAny, ok := firestoreSyncMap.Load(mapKey)
+	containerInfoExpiration, _ := firestoreExpiration.LoadOrStore(mapKey, time.Now().Add(30*time.Minute))
+	if ok && time.Now().Before(containerInfoExpiration.(time.Time)) {
 		return containerInfoAny.(*api.ContainerInfo), nil
 	}
 	firestoreClient, err := EstablishFirestoreConnection(ctx, firestoreDatabaseName, clientOpts...)
@@ -71,6 +78,7 @@ func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName,
 	containerInfo, err = fetchContainerInfoFromFirestoreCollection(ctx, collection, name)
 
 	firestoreSyncMap.Store(mapKey, containerInfo)
+	firestoreExpiration.Store(mapKey, time.Now().Add(30*time.Minute))
 	return
 }
 
