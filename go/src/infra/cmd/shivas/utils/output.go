@@ -59,7 +59,7 @@ var (
 	NicTitle                   = []string{"Nic Name", "MAC Address", "Switch", "Switch Port", "Zone", "Rack", "Machine", "UpdateTime"}
 	BrowserMachineTitle        = []string{"Machine Name", "Serial Number", "Zone", "Rack", "KVM", "KVM Port", "ChromePlatform", "DeploymentTicket", "Description", "State", "Realm", "UpdateTime"}
 	OSMachineTitle             = []string{"Machine Name", "Zone", "Rack", "Barcode", "Hardware ID", "Model", "DeviceType", "MacAddress", "SKU", "Phase", "Build Target", "State", "Realm", "UpdateTime"}
-	AttachedDeviceMachineTitle = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "State", "Realm", "UpdateTime"}
+	AttachedDeviceMachineTitle = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "Phase", "State", "Realm", "UpdateTime"}
 	ServerMachineTitle         = []string{"Machine Name", "Zone", "Rack", "Model", "CpuType", "DriveModel", "State", "Realm", "UpdateTime"}
 	DevboardMachineTitle       = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Board Type", "State", "Realm", "UpdateTime"}
 	MachinelseprototypeTitle   = []string{"Machine Prototype Name", "Occupied Capacity", "PeripheralTypes", "VirtualTypes", "Tags", "UpdateTime"}
@@ -971,6 +971,7 @@ func machineOutputStrs(pm proto.Message) []string {
 			m.GetAttachedDevice().GetDeviceType().String(),
 			m.GetAttachedDevice().GetModel(),
 			m.GetAttachedDevice().GetBuildTarget(),
+			m.GetAttachedDevice().GetPhase(),
 			ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
 			m.GetRealm(),
 			ts,
