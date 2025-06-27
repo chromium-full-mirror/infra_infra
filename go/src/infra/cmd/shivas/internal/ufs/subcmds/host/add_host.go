@@ -44,12 +44,17 @@ var AddHostCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.vlanName, "vlan", "", "name of the vlan to assign this host to")
 		c.Flags.StringVar(&c.nicName, "nic", "", "name of the nic to associate the ip to")
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the host to")
+		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this device is connected to")
+		c.Flags.StringVar(&c.switchPort, "switch-port", "", "the port of the switch that this device is connected to")
 
 		c.Flags.StringVar(&c.hostName, "name", "", "name of the host")
 		c.Flags.StringVar(&c.machineName, "machine", "", "name of the machine to associate the host")
 		c.Flags.StringVar(&c.prototype, "prototype", "", "name of the prototype to be used to deploy this host")
 		c.Flags.StringVar(&c.osVersion, "os", "", "name of the os version of the machine (browser lab only)")
 		c.Flags.IntVar(&c.vmCapacity, "vm-capacity", 0, "the number of the vms that this machine supports (browser lab only)")
+		c.Flags.StringVar(&c.usbHub, "usb-hub", "", cmdhelp.UsbHubHelpText)
+		c.Flags.StringVar(&c.biosVersion, "bios", "", "the bios version of the machine (android lab only)")
+		c.Flags.StringVar(&c.kernelVersion, "kernel", "", "the kernel version of the machine (android lab only)")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this host")
 		return c
@@ -69,10 +74,15 @@ type addHost struct {
 	vlanName         string
 	nicName          string
 	ip               string
+	switchName       string
+	switchPort       string
 	hostName         string
 	prototype        string
 	osVersion        string
 	vmCapacity       int
+	usbHub           string
+	biosVersion      string
+	kernelVersion    string
 	tags             []string
 	deploymentTicket string
 }
@@ -199,6 +209,21 @@ func (c *addHost) parseArgs(lse *ufspb.MachineLSE, ufsZone ufspb.Zone) {
 				VmCapacity: int32(c.vmCapacity),
 			},
 		}
+	} else if ufsUtil.IsInAndroidZone(ufsZone.String()) {
+		lse.Lse = &ufspb.MachineLSE_AndroidHostLse{
+			AndroidHostLse: &ufspb.AndroidHostLSE{
+				OsVersion: &ufspb.OSVersion{
+					Value: c.osVersion,
+				},
+				SwitchInterface: &ufspb.SwitchInterface{
+					Switch:   c.switchName,
+					PortName: c.switchPort,
+				},
+				UsbHub:        ufsUtil.ToUsbHub(c.usbHub),
+				BiosVersion:   c.biosVersion,
+				KernelVersion: c.kernelVersion,
+			},
+		}
 	} else {
 		lse.Lse = &ufspb.MachineLSE_ChromeosMachineLse{
 			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{},
@@ -251,6 +276,21 @@ func (c *addHost) validateArgs() error {
 		if c.deploymentTicket != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-ticket' cannot be specified at the same time.")
 		}
+		if c.switchName != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-switch' cannot be specified at the same time.")
+		}
+		if c.switchPort != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-switch-port' cannot be specified at the same time.")
+		}
+		if c.usbHub != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-usb-hub' cannot be specified at the same time.")
+		}
+		if c.biosVersion != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-bios' cannot be specified at the same time.")
+		}
+		if c.kernelVersion != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-kernel' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.hostName == "" {
@@ -261,6 +301,9 @@ func (c *addHost) validateArgs() error {
 		}
 		if c.prototype == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-prototype' is required, no mode ('-f' or '-i') is specified. Please run `shivas get machine-prototype` to check valid prototypes for your host")
+		}
+		if c.usbHub != "" && !ufsUtil.IsUsbHub(c.usbHub) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Invalid usb hub %s", c.usbHub)
 		}
 	}
 	return nil

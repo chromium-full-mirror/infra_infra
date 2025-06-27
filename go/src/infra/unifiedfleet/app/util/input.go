@@ -1249,6 +1249,38 @@ func ToUFSDevicePhase(devicePhase string) ufsmfg.ManufacturingConfig_Phase {
 	return ufsmfg.ManufacturingConfig_Phase(ufsmfg.ManufacturingConfig_Phase_value[v])
 }
 
+// StrToUsbHub refers a map between a string to a UsbHub map.
+var StrToUsbHub = map[string]string{
+	"undefined":   "USB_HUB_UNDEFINED",
+	"pluggable":   "USB_HUB_PLUGGABLE",
+	"thundersync": "USB_HUB_THUNDERSYNC",
+}
+
+// IsUsbHub checks if a string is a valid usb hub
+func IsUsbHub(usbHub string) bool {
+	_, ok := StrToUsbHub[usbHub]
+	return ok
+}
+
+// ToUsbHub returns a UsbHub object corresponding to string
+func ToUsbHub(usbHub string) ufspb.AndroidHostLSE_USBHub {
+	usbHub = RemoveGivenPrefix(usbHub, "usb_hub_")
+	v, ok := StrToUsbHub[usbHub]
+	if !ok {
+		return ufspb.AndroidHostLSE_USB_HUB_UNDEFINED
+	}
+	return ufspb.AndroidHostLSE_USBHub(ufspb.AndroidHostLSE_USBHub_value[v])
+}
+
+// ValidUsbHubStr returns a valid str list for UsbHub
+func ValidUsbHubStr() []string {
+	ks := make([]string, 0, len(StrToUsbHub))
+	for k := range StrToUsbHub {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
 // GetNicNameForHost returns a nic name for a ChromeOS DUT
 func GetNicNameForHost(hostname string) string {
 	return fmt.Sprintf("%s:eth0", hostname)
