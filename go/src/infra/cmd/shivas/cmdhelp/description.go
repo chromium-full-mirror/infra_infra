@@ -1688,6 +1688,12 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	// AttachedDeviceTypeHelpText help text for attached device type filters
 	AttachedDeviceTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidAttachedDeviceTypeStr(), ", "))
 
+	// BatteryStatusHelpText help text for attached device battery status filters
+	BatteryStatusHelpText string = fmt.Sprintf("\nValid battery status filters [%s]", strings.Join(ufsUtil.ValidBatteryStatusStr(), ", "))
+
+	// SimTypeHelpText help text for attached device battery status filters
+	SimTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidAttachedDeviceSimTypeStr(), ", "))
+
 	// DevboardTypeHelpText help text for devboard type filters
 	DevboardTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidDevboardTypeStr(), ", "))
 

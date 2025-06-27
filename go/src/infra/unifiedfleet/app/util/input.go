@@ -1281,6 +1281,71 @@ func ValidUsbHubStr() []string {
 	return ks
 }
 
+// StrToBatteryStatus refers a map between a string to a AttachedDevice_BatteryStatus map.
+var StrToBatteryStatus = map[string]string{
+	"undefined": "BATTERY_STATUS_UNDEFINED",
+	"physical":  "BATTERY_STATUS_PHYSICAL",
+	"fake":      "BATTERY_STATUS_FAKE",
+}
+
+// IsBatteryStatus checks if a string is a valid battery status
+func IsBatteryStatus(batteryStatus string) bool {
+	_, ok := StrToBatteryStatus[batteryStatus]
+	return ok
+}
+
+// ToBatteryStatus returns a AttachedDevice_BatteryStatus object corresponding to string
+func ToBatteryStatus(batteryStatus string) ufspb.AttachedDevice_BatteryStatus {
+	batteryStatus = RemoveGivenPrefix(batteryStatus, "battery_status_")
+	v, ok := StrToBatteryStatus[batteryStatus]
+	if !ok {
+		return ufspb.AttachedDevice_BATTERY_STATUS_UNDEFINED
+	}
+	return ufspb.AttachedDevice_BatteryStatus(ufspb.AttachedDevice_BatteryStatus_value[v])
+}
+
+// ValidBatteryStatusStr returns a valid str list for AttachedDevice_BatteryStatus
+func ValidBatteryStatusStr() []string {
+	ks := make([]string, 0, len(StrToBatteryStatus))
+	for k := range StrToBatteryStatus {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// StrToAttachedDeviceSimType refers a map between a string to a AttachedDevice_SIM_SIMType map.
+var StrToAttachedDeviceSimType = map[string]string{
+	"undefined": "SIM_TYPE_UNDEFINED",
+	"none":      "SIM_TYPE_NONE",
+	"physical":  "SIM_TYPE_PHYSICAL",
+	"esim":      "SIM_TYPE_ESIM",
+}
+
+// IsAttachedDeviceSimType checks if a string is a valid sim type
+func IsAttachedDeviceSimType(simType string) bool {
+	_, ok := StrToAttachedDeviceSimType[simType]
+	return ok
+}
+
+// ToAttachedDeviceSimType returns a AttachedDevice_SIM_SIMType object corresponding to string
+func ToAttachedDeviceSimType(simType string) ufspb.AttachedDevice_SIM_SIMType {
+	simType = RemoveGivenPrefix(simType, "sim_type_")
+	v, ok := StrToAttachedDeviceSimType[simType]
+	if !ok {
+		return ufspb.AttachedDevice_SIM_SIM_TYPE_UNDEFINED
+	}
+	return ufspb.AttachedDevice_SIM_SIMType(ufspb.AttachedDevice_SIM_SIMType_value[v])
+}
+
+// ValidAttachedDeviceSimTypeStr returns a valid str list for AttachedDevice_SIM_SIMType
+func ValidAttachedDeviceSimTypeStr() []string {
+	ks := make([]string, 0, len(StrToAttachedDeviceSimType))
+	for k := range StrToAttachedDeviceSimType {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
 // GetNicNameForHost returns a nic name for a ChromeOS DUT
 func GetNicNameForHost(hostname string) string {
 	return fmt.Sprintf("%s:eth0", hostname)

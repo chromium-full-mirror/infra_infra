@@ -55,6 +55,16 @@ func addADMCommandRun() subcommands.CommandRun {
 	c.Flags.StringVar(&c.deviceType, "devicetype", "", "The device type for this attached device machine. "+cmdhelp.AttachedDeviceTypeHelpText)
 	c.Flags.StringVar(&c.buildTarget, "build-target", "", "The build target for this attached device machine.")
 	c.Flags.StringVar(&c.model, "model", "", "The model for this attached device machine.")
+	c.Flags.StringVar(&c.phase, "phase", "", "The phase for this attached device machine.")
+	c.Flags.StringVar(&c.revision, "revision", "", "The revision for this attached device machine.")
+	c.Flags.StringVar(&c.chipId, "chip-id", "", "The chip id for this attached device machine.")
+	c.Flags.StringVar(&c.imei1, "imei1", "", "IMEI 1 for this attached device machine.")
+	c.Flags.StringVar(&c.imei2, "imei2", "", "IMEI 2 for this attached device machine.")
+	c.Flags.StringVar(&c.batteryStatus, "battery-status", "", "The battery status for this attached device machine."+cmdhelp.BatteryStatusHelpText)
+	c.Flags.StringVar(&c.storageMan, "storage-man", "", "The storage manufacturer for this attached device machine.")
+	c.Flags.StringVar(&c.storageCap, "storage-cap", "", "The storage capacity for this attached device machine in bytes assigned. "+cmdhelp.ByteUnitsAcceptedText)
+	c.Flags.Var(flag.StringSlice(&c.simTypes), "sim-type", "Sim type(s) for this attached device machine. Can be specified multiple times."+cmdhelp.SimTypeHelpText)
+	c.Flags.StringVar(&c.simEid, "eid", "", "The sim EID for this attached device machine.")
 	c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 	return c
 }
@@ -68,15 +78,25 @@ type addAttachedDeviceMachine struct {
 
 	newSpecsFile string
 
-	machineName  string
-	zoneName     string
-	rackName     string
-	tags         []string
-	serialNumber string
-	manufacturer string
-	deviceType   string
-	buildTarget  string
-	model        string
+	machineName   string
+	zoneName      string
+	rackName      string
+	tags          []string
+	serialNumber  string
+	manufacturer  string
+	deviceType    string
+	buildTarget   string
+	model         string
+	phase         string
+	revision      string
+	chipId        string
+	imei1         string
+	imei2         string
+	batteryStatus string
+	storageMan    string
+	storageCap    string
+	simTypes      []string
+	simEid        string
 }
 
 func (c *addAttachedDeviceMachine) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -139,6 +159,11 @@ func (c *addAttachedDeviceMachine) innerRun(a subcommands.Application, args []st
 
 func (c *addAttachedDeviceMachine) parseArgs(req *ufsAPI.MachineRegistrationRequest) {
 	ufsZone := ufsUtil.ToUFSZone(c.zoneName)
+	capacityBytes, _ := utils.ConvertToBytes(c.storageCap)
+	types := make([]ufspb.AttachedDevice_SIM_SIMType, 0, len(c.simTypes))
+	for _, t := range c.simTypes {
+		types = append(types, ufsUtil.ToAttachedDeviceSimType(t))
+	}
 	req.Machine = &ufspb.Machine{
 		Name: c.machineName,
 		Location: &ufspb.Location{
@@ -150,10 +175,24 @@ func (c *addAttachedDeviceMachine) parseArgs(req *ufsAPI.MachineRegistrationRequ
 		SerialNumber: c.serialNumber,
 		Device: &ufspb.Machine_AttachedDevice{
 			AttachedDevice: &ufspb.AttachedDevice{
-				Manufacturer: c.manufacturer,
-				DeviceType:   ufsUtil.ToUFSAttachedDeviceType(c.deviceType),
-				BuildTarget:  c.buildTarget,
-				Model:        c.model,
+				Manufacturer:  c.manufacturer,
+				DeviceType:    ufsUtil.ToUFSAttachedDeviceType(c.deviceType),
+				BuildTarget:   c.buildTarget,
+				Model:         c.model,
+				Phase:         c.phase,
+				Revision:      c.revision,
+				ChipId:        c.chipId,
+				Imei1:         c.imei1,
+				Imei2:         c.imei2,
+				BatteryStatus: ufsUtil.ToBatteryStatus(c.batteryStatus),
+				Storage: &ufspb.AttachedDevice_Storage{
+					Manufacturer: c.storageMan,
+					Capacity:     capacityBytes,
+				},
+				Sim: &ufspb.AttachedDevice_SIM{
+					Types: types,
+					Eid:   c.simEid,
+				},
 			},
 		},
 	}
@@ -188,6 +227,36 @@ func (c *addAttachedDeviceMachine) validateArgs() error {
 		if len(c.tags) > 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-tags' cannot be specified at the same time.")
 		}
+		if c.phase != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-phase' cannot be specified at the same time.")
+		}
+		if c.revision != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-revision' cannot be specified at the same time.")
+		}
+		if c.chipId != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-chip-id' cannot be specified at the same time.")
+		}
+		if c.imei1 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-imei1' cannot be specified at the same time.")
+		}
+		if c.imei2 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-imei2' cannot be specified at the same time.")
+		}
+		if c.batteryStatus != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-battery-status' cannot be specified at the same time.")
+		}
+		if c.storageMan != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-storage-man' cannot be specified at the same time.")
+		}
+		if c.storageCap != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-storage-cap' cannot be specified at the same time.")
+		}
+		if len(c.simTypes) > 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim-type' cannot be specified at the same time.")
+		}
+		if c.simEid != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim-eid' cannot be specified at the same time.")
+		}
 	} else {
 		if c.machineName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f') is setup.")
@@ -207,11 +276,21 @@ func (c *addAttachedDeviceMachine) validateArgs() error {
 		if c.deviceType != "" && !ufsUtil.IsAttachedDeviceType(c.deviceType) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid attached device type, please check help info for '-devicetype'.", c.deviceType)
 		}
-		if c.buildTarget == "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-build-target' is required, no mode ('-f') is setup.")
-		}
 		if c.model == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-model' is required, no mode ('-f') is setup.")
+		}
+		if _, err := utils.ConvertToBytes(c.storageCap); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe -storage-cap flag was used incorrectly: %w", err)
+		}
+		if c.batteryStatus != "" && !ufsUtil.IsBatteryStatus(c.batteryStatus) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid battery status, please check help info for '-battery-status'.", c.batteryStatus)
+		}
+		if len(c.simTypes) > 0 {
+			for _, t := range c.simTypes {
+				if !ufsUtil.IsAttachedDeviceSimType(t) {
+					return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid sim type, please check help info for '-sim-type'.", t)
+				}
+			}
 		}
 		if !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zoneName)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid zone name, please check help info for '-zone'.", c.zoneName)
