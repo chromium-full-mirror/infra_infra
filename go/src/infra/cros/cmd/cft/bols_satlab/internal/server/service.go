@@ -306,8 +306,45 @@ func (s *service) MakeDir(ctx context.Context, req *bols.MakeDirRequest) (*bols.
 	return &bols.MakeDirResponse{}, nil
 }
 
-func (s *service) MakeTempDir(context.Context, *bols.MakeTempDirRequest) (*bols.MakeTempDirResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MakeTempDir not implemented")
+func (s *service) MakeTempDir(ctx context.Context, req *bols.MakeTempDirRequest) (*bols.MakeTempDirResponse, error) {
+	s.logger.Println("Receive MakeTempDir Request")
+	containerName := req.GetStationId().GetContainerName()
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("MakeTempDir: fail to create docker client: %w", err)
+	}
+
+	args := []string{"mktemp", "-d"}
+	if d := req.GetDir(); d != "" {
+		// Use --tmpdir for mktemp to specify the parent directory.
+		args = append(args, fmt.Sprintf("--tmpdir=%s", d))
+	}
+	if p := req.GetPattern(); p != "" {
+		// mktemp uses a template that must end in X's.
+		// If the pattern contains a '*', replace it with 'XXXXX' to create
+		// a valid mktemp template. Otherwise, use the pattern as is.
+		p = strings.ReplaceAll(p, "*", "XXXXX")
+		args = append(args, p)
+	}
+
+	stdout, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx))
+	if err != nil {
+		return nil, s.logAndReturnErrorf("MakeTempDir: failed to execute mktemp: %w", err)
+	}
+
+	tempDirPath := strings.TrimSpace(stdout)
+	if tempDirPath == "" {
+		return nil, s.logAndReturnErrorf("MakeTempDir: mktemp did not return a path")
+	}
+
+	s.logger.Println("Served MakeTempDir Request Successfully, created", tempDirPath)
+	return &bols.MakeTempDirResponse{
+		Info: &bols.DirectoryInfo{
+			Path:      tempDirPath,
+			FileStats: []*bols.FileStat{}, // A new temp directory is empty.
+		},
+	}, nil
 }
 
 func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*bols.RemoveDirResponse, error) {
@@ -401,12 +438,53 @@ func (s *service) ReadFileByBlock(*bols.ReadFileByBlockRequest, bols.BolsService
 	return status.Errorf(codes.Unimplemented, "method ReadFileByBlock not implemented")
 }
 
-func (s *service) RunMount(context.Context, *bols.RunMountRequest) (*bols.RunMountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunMount not implemented")
+func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bols.RunMountResponse, error) {
+	s.logger.Printf("Receive RunMount Request: src=%s, dest=%s", req.GetSrc(), req.GetDest())
+
+	containerName := req.GetStationId().GetContainerName()
+	src := req.GetSrc()
+	dest := req.GetDest()
+	if src == "" || dest == "" {
+		return nil, s.logAndReturnErrorf("RunMount: container name, source, and destination are required")
+	}
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("RunMount: fail to create docker client: %w", err)
+	}
+
+	args := []string{"mount"}
+	args = append(args, req.GetParams()...)
+	args = append(args, src, dest)
+
+	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErrorf("RunMount: failed to execute mount command: %w", err)
+	}
+	s.logger.Println("Served RunMount Request Successfully")
+	return &bols.RunMountResponse{}, nil
 }
 
-func (s *service) RunUMount(context.Context, *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunUMount not implemented")
+func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
+	s.logger.Printf("Receive RunUMount Request for path %s", req.GetPath())
+
+	containerName := req.GetStationId().GetContainerName()
+	path := req.GetPath()
+	if path == "" {
+		return nil, s.logAndReturnErrorf("RunUMount: container name and path are required")
+	}
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("RunUMount: fail to create docker client: %w", err)
+	}
+
+	args := []string{"umount", path}
+
+	if _, _, err := containerExecCmd(ctx, c, containerName, args, timeRemaining(ctx)); err != nil {
+		return nil, s.logAndReturnErrorf("RunUMount: failed to execute umount command: %w", err)
+	}
+	s.logger.Println("Served RunUMount Request Successfully")
+	return &bols.RunUMountResponse{}, nil
 }
 
 func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
