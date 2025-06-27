@@ -126,6 +126,10 @@ func setDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
 	allowOverride := args.AsBool(ctx, "allow_override", true)
 	reason := args.AsString(ctx, "reason", "")
+	if info.GetDut() == nil {
+		log.Debugf(ctx, "DUT is not present")
+		return nil
+	}
 	if info.GetDut().DutStateReason.NotEmpty() && !allowOverride {
 		log.Debugf(ctx, "DUT state reason already specified")
 		return nil
