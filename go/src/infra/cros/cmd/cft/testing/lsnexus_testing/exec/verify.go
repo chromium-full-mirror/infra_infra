@@ -49,6 +49,11 @@ func verify(ctx context.Context, logger *log.Logger, a *args) error {
 		return fmt.Errorf("failed to verify servod related APIs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
 	}
 
+	logger.Println("Verifying DownloadServoLogs API...")
+	if _, err := cl.DownloadServoLogs(ctx, &lsnexus.DownloadServoLogsRequest{}); err != nil {
+		return fmt.Errorf("failed to download servo logs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
+	}
+
 	logger.Println("LSNexus verification completed successfully.")
 	return nil
 }

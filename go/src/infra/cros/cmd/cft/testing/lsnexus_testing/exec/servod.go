@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
@@ -17,7 +18,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/lsnexus"
 )
 
-// verifyFileAPIs verifies file related APIs of lsnexus.
+// verifyServodAPIs verifies servod related APIs of lsnexus.
 func verifyServodAPIs(ctx context.Context, logger *log.Logger, a *args, cl lsnexus.LSNexusServiceClient) error {
 	req := &lsnexus.StartServodRequest{}
 	if _, err := cl.StartServod(ctx, req); err != nil {
@@ -26,6 +27,27 @@ func verifyServodAPIs(ctx context.Context, logger *log.Logger, a *args, cl lsnex
 	if err := verifyServodSetGetlidOpen(ctx, logger, cl); err != nil {
 		return err
 	}
+	if err := verifyEcho(ctx, logger, cl); err != nil {
+		return err
+	}
+	return nil
+}
+
+func verifyEcho(ctx context.Context, logger *log.Logger, cl lsnexus.LSNexusServiceClient) error {
+	logger.Println("verifyEcho: Verifying Echo request to LSNexus")
+	testMsg := "hello lsnexus echo"
+	req := &lsnexus.EchoRequest{Msg: testMsg}
+
+	rsp, err := cl.Echo(ctx, req)
+	if err != nil {
+		return fmt.Errorf("failed to call Echo: %w", err)
+	}
+
+	if !strings.Contains(rsp.GetResult(), testMsg) {
+		return fmt.Errorf("unexpected echo response: got %q, want %q", rsp.GetResult(), testMsg)
+	}
+
+	logger.Println("verifyEcho: verification was successful")
 	return nil
 }
 
@@ -62,7 +84,7 @@ func verifyServodSetGet(ctx context.Context, logger *log.Logger, cl lsnexus.LSNe
 		return fmt.Errorf("failed to send get control request to BOLS: %w", err)
 	}
 	if diff := cmp.Diff(result, value, protocmp.Transform()); diff != "" {
-		return fmt.Errorf("Got unexpected results (-got +want):%s", diff)
+		return fmt.Errorf("got unexpected results (-got +want):%s", diff)
 	}
 	return nil
 }
