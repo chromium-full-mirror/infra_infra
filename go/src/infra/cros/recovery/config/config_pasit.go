@@ -13,12 +13,14 @@ func pasitRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Do not run on Mobile Harness box",
+			"Set state to BROKEN",
 			"Start container",
 			"Reset switches",
 			"Audit switches",
 			"Reset USB testers",
 			"Audit USB testers",
 			"Stop container",
+			"Set state to WORKING",
 		},
 		Actions: map[string]*Action{
 			"Do not run on Mobile Harness box": {
@@ -47,12 +49,31 @@ func pasitRepairPlan() *Plan {
 				ExecName:    "ctr_passport_reset_switches",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 			},
+			"Set state to WORKING": {
+				Docs: []string{
+					"Sets the PASIT state to 'WORKING'",
+				},
+				ExecExtraArgs: []string{
+					"state:working",
+				},
+				ExecName:      "pasit_set_state",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Set state to BROKEN": {
+				Docs: []string{
+					"Sets the PASIT state to 'BROKEN'",
+				},
+				ExecExtraArgs: []string{
+					"state:broken",
+				},
+				ExecName:      "pasit_set_state",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
 			"Audit switches": {
 				Docs: []string{
 					"Verifies that the switches reported by passport match those reported by PassPort.",
 				},
-				ExecName:               "pasit_audit_switches",
-				AllowFailAfterRecovery: true,
+				ExecName: "pasit_audit_switches",
 			},
 			"CrosToolRunner is up": {
 				Docs: []string{

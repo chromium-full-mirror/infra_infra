@@ -131379,6 +131379,12 @@ plans:
           exec_name: env_is_not_mh_box
           docs:
             - Check that the process is not running on Mobile Harness box.
+        - name: Set state to BROKEN
+          exec_name: pasit_set_state
+          exec_args:
+            - state:broken
+          docs:
+            - Sets the PASIT state to 'BROKEN'
         - name: Start container (time:'2m0s')
           exec_name: ctr_passport_start
           docs:
@@ -131395,7 +131401,7 @@ plans:
           exec_name: ctr_passport_reset_switches
           docs:
             - Resets all switches connected to the host.
-        - name: Audit switches (Allow to fail)
+        - name: Audit switches
           exec_name: pasit_audit_switches
           docs:
             - Verifies that the switches reported by passport match those reported by PassPort.
@@ -131411,6 +131417,12 @@ plans:
           exec_name: ctr_passport_stop
           docs:
             - Stops the PassPort container (crt only).
+        - name: Set state to WORKING
+          exec_name: pasit_set_state
+          exec_args:
+            - state:working
+          docs:
+            - Sets the PASIT state to 'WORKING'
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail)

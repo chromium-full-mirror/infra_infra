@@ -38293,15 +38293,17 @@ plans:
     - name: pasit (Allow to fail)
       criticalactions:
         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+        - name: Set state to BROKEN ('pasit_set_state')
         - name: Start container ('ctr_passport_start') (time:'2m0s')
           conditions:
             - name: ctr_passport_address_not_in_scope
             - name: CrosToolRunner is up ('ctr_is_up')
         - name: Reset switches ('ctr_passport_reset_switches') (time:'2m0s')
-        - name: Audit switches (Allow to fail) ('pasit_audit_switches')
+        - name: Audit switches ('pasit_audit_switches')
         - name: Reset USB testers (Allow to fail) ('ctr_passport_reset_usb_testers') (time:'2m0s')
         - name: Audit USB testers (Allow to fail) ('pasit_audit_usb_testers')
         - name: Stop container (Allow to fail) ('ctr_passport_stop')
+        - name: Set state to WORKING ('pasit_set_state')
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail) ('amt_manager_set_state')
