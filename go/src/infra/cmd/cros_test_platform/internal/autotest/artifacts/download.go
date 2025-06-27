@@ -26,10 +26,10 @@ func DownloadFromGoogleStorage(ctx context.Context, client gs.Client, remoteDir 
 		TestSuitesArchive:   filepath.Join(outDir, "test_suites.tar.bz2"),
 	}
 	if err := downloadOne(client, remoteDir.Concat("control_files.tar"), lp.ControlFilesArchive); err != nil {
-		return lp, errors.Annotate(err, "download from gs").Err()
+		return lp, errors.Fmt("download from gs: %w", err)
 	}
 	if err := downloadOne(client, remoteDir.Concat("test_suites.tar.bz2"), lp.TestSuitesArchive); err != nil {
-		return lp, errors.Annotate(err, "download from gs").Err()
+		return lp, errors.Fmt("download from gs: %w", err)
 	}
 	return lp, nil
 }
@@ -37,14 +37,14 @@ func DownloadFromGoogleStorage(ctx context.Context, client gs.Client, remoteDir 
 func downloadOne(client gs.Client, gsPath gs.Path, localPath string) error {
 	r, err := client.NewReader(gsPath, 0, -1)
 	if err != nil {
-		return errors.Annotate(err, "download one").Err()
+		return errors.Fmt("download one: %w", err)
 	}
 	w, err := os.Create(localPath)
 	if err != nil {
-		return errors.Annotate(err, "download one").Err()
+		return errors.Fmt("download one: %w", err)
 	}
 	if _, err := io.Copy(w, r); err != nil {
-		return errors.Annotate(err, "download %s to %s", gsPath, localPath).Err()
+		return errors.Fmt("download %s to %s: %w", gsPath, localPath, err)
 	}
 	return nil
 }

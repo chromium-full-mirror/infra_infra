@@ -23,7 +23,7 @@ import (
 func Build(ctx context.Context, context io.Reader, args []string) (string, error) {
 	tmpDir, err := os.MkdirTemp("", "cloudbuildhelper")
 	if err != nil {
-		return "", errors.Annotate(err, "failed to create temp directory").Err()
+		return "", errors.Fmt("failed to create temp directory: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -39,12 +39,12 @@ func Build(ctx context.Context, context io.Reader, args []string) (string, error
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return "", errors.Annotate(err, "docker build invocation failed").Err()
+		return "", errors.Fmt("docker build invocation failed: %w", err)
 	}
 
 	out, err := os.ReadFile(filepath.Join(tmpDir, "imageid"))
 	if err != nil {
-		return "", errors.Annotate(err, "failed read --iidfile produced by docker build").Err()
+		return "", errors.Fmt("failed read --iidfile produced by docker build: %w", err)
 	}
 	return strings.TrimSpace(string(out)), nil
 }

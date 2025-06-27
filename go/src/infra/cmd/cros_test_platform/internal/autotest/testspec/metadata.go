@@ -52,10 +52,10 @@ type getter struct {
 func (m *testMetadata) Validate() errors.MultiError {
 	var merr errors.MultiError
 	if m.AutotestTest.GetName() == "" {
-		merr = append(merr, errors.Reason("missing name").Err())
+		merr = append(merr, errors.New("missing name"))
 	}
 	if m.AutotestTest.GetExecutionEnvironment() == api.AutotestTest_EXECUTION_ENVIRONMENT_UNSPECIFIED {
-		merr = append(merr, errors.Reason("unspecified execution environment").Err())
+		merr = append(merr, errors.New("unspecified execution environment"))
 	}
 	return removeNilErrors(merr)
 }
@@ -68,7 +68,7 @@ func (g *getter) Get(root string) (*api.TestMetadataResponse, errors.MultiError)
 				Tests:  []*api.AutotestTest{},
 			},
 		}
-		return tm, errors.NewMultiError(errors.Annotate(err, "get autotest metadata").Err())
+		return tm, errors.NewMultiError(errors.Fmt("get autotest metadata: %w", err))
 	}
 
 	var merr errors.MultiError
@@ -93,7 +93,7 @@ func (g *getter) parseTests(controls map[string]io.Reader) ([]*testMetadata, err
 	for n, t := range controls {
 		bt, err := ioutil.ReadAll(t)
 		if err != nil {
-			merr = append(merr, errors.Annotate(err, "parse test %s", n).Err())
+			merr = append(merr, errors.Fmt("parse test %s: %w", n, err))
 			continue
 		}
 		tm, errs := g.parseTestControlFn(string(bt))
@@ -116,7 +116,7 @@ func (g *getter) parseSuites(controls map[string]io.Reader) ([]*api.AutotestSuit
 	for n, t := range controls {
 		bt, err := ioutil.ReadAll(t)
 		if err != nil {
-			merr = append(merr, errors.Annotate(err, "parse suite %s", n).Err())
+			merr = append(merr, errors.Fmt("parse suite %s: %w", n, err))
 			continue
 		}
 		sm, errs := g.parseSuiteControlFn(string(bt))

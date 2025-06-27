@@ -89,11 +89,11 @@ func (c *cmdUploadRun) exec(ctx context.Context) error {
 	// Initialize Storage instance based on what's in the manifest.
 	ts, err := c.tokenSource(ctx)
 	if err != nil {
-		return errors.Annotate(err, "failed to setup auth").Err()
+		return errors.Fmt("failed to setup auth: %w", err)
 	}
 	store, err := storage.New(ctx, ts, m.Infra.Storage)
 	if err != nil {
-		return errors.Annotate(err, "failed to initialize Storage").Err()
+		return errors.Fmt("failed to initialize Storage: %w", err)
 	}
 
 	// Execute the main logic.
@@ -115,7 +115,7 @@ func (c *cmdUploadRun) exec(ctx context.Context) error {
 		res.Error = err.Error()
 	}
 	if jerr := c.writeJSONOutput(&res); jerr != nil {
-		return errors.Annotate(jerr, "failed to write JSON output").Err()
+		return errors.Fmt("failed to write JSON output: %w", jerr)
 	}
 	return err
 }
@@ -155,7 +155,7 @@ func buildAndUpload(ctx context.Context, p uploadParams) (obj *storage.Object, d
 	err = stage(ctx, p.Manifest, func(out *fileset.Set) error {
 		var f *os.File
 		if f, digest, err = writeToTemp(ctx, out); err != nil {
-			return errors.Annotate(err, "failed to write the tarball with context dir").Err()
+			return errors.Fmt("failed to write the tarball with context dir: %w", err)
 		}
 
 		// Cleanup no matter what. Note that we don't care about IO flush errors in
@@ -236,7 +236,7 @@ func writeToTemp(ctx context.Context, out *fileset.Set) (tmp *os.File, digest st
 
 	size, err := f.Seek(0, 1)
 	if err != nil {
-		return nil, "", errors.Annotate(err, "failed to query the size of the temp file").Err()
+		return nil, "", errors.Fmt("failed to query the size of the temp file: %w", err)
 	}
 
 	logging.Infof(ctx, "Tarball digest: %s", digest)
@@ -252,14 +252,14 @@ func uploadToStorage(ctx context.Context, s storageImpl, obj, digest string, f *
 
 	switch uploaded, err := s.Check(ctx, obj); {
 	case err != nil:
-		return nil, errors.Annotate(err, "failed to query the storage for presence of uploaded tarball").Err()
+		return nil, errors.Fmt("failed to query the storage for presence of uploaded tarball: %w", err)
 	case uploaded != nil:
 		return uploaded, nil
 	}
 
 	// Rewind the temp file we have open in read/write mode.
 	if _, err := f.Seek(0, 0); err != nil {
-		return nil, errors.Annotate(err, "failed to seek inside the temp file").Err()
+		return nil, errors.Fmt("failed to seek inside the temp file: %w", err)
 	}
 
 	uploaded, err := s.Upload(ctx, obj, digest, f)

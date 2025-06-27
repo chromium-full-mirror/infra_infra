@@ -38,7 +38,7 @@ func (d *controlFilesLoaderImpl) Discover(root string) error {
 	d.reset()
 	if err := filepath.Walk(root, d.walkFunc); err != nil {
 		d.reset()
-		return errors.Annotate(err, "Load(%s)", root).Err()
+		return errors.Fmt("Load(%s): %w", root, err)
 	}
 	return nil
 }

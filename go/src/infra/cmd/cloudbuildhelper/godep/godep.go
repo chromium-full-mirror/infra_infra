@@ -105,14 +105,14 @@ func NewDeps(base *modfile.File) *Deps {
 // from this module's `go.mod`.
 func (s *Deps) Add(pkg, mod, goVer string) error {
 	if pkg != mod && !strings.HasPrefix(pkg, mod+"/") {
-		return errors.Reason("package %q is not in module %q", pkg, mod).Err()
+		return errors.Fmt("package %q is not in module %q", pkg, mod)
 	}
 
 	newPkg := true
 	if prevMod := s.packages[pkg]; prevMod != "" {
 		newPkg = false
 		if prevMod != mod {
-			return errors.Reason("conflicting modules for package %q: %q vs %q", pkg, mod, prevMod).Err()
+			return errors.Fmt("conflicting modules for package %q: %q vs %q", pkg, mod, prevMod)
 		}
 	}
 
@@ -127,7 +127,7 @@ func (s *Deps) Add(pkg, mod, goVer string) error {
 	}
 
 	if modDep.goVer != goVer {
-		return errors.Reason("conflicting go version requirement for module %q: %q vs %q", mod, goVer, modDep.goVer).Err()
+		return errors.Fmt("conflicting go version requirement for module %q: %q vs %q", mod, goVer, modDep.goVer)
 	}
 
 	if newPkg {
@@ -158,7 +158,7 @@ func (s *Deps) Save() (SerializedState, error) {
 
 	mod, err := modfile.Parse("go.mod", []byte(strings.Join(lines, "\n")), nil)
 	if err != nil {
-		return SerializedState{}, errors.Annotate(err, "bad go.mod").Err()
+		return SerializedState{}, errors.Fmt("bad go.mod: %w", err)
 	}
 
 	sortedModDeps := make([]*moduleDep, 0, len(s.modules))
@@ -174,7 +174,7 @@ func (s *Deps) Save() (SerializedState, error) {
 		if modDep.replacedName != "" {
 			err := mod.AddReplace(modDep.name, "", modDep.replacedName, modDep.replacedVer)
 			if err != nil {
-				return SerializedState{}, errors.Annotate(err, "adding replacement for %q", modDep.name).Err()
+				return SerializedState{}, errors.Fmt("adding replacement for %q: %w", modDep.name, err)
 			}
 		}
 	}
@@ -182,7 +182,7 @@ func (s *Deps) Save() (SerializedState, error) {
 
 	goModBlob, err := mod.Format()
 	if err != nil {
-		return SerializedState{}, errors.Annotate(err, "formating go.mod").Err()
+		return SerializedState{}, errors.Fmt("formating go.mod: %w", err)
 	}
 
 	// modules.txt looks like this:
@@ -257,7 +257,7 @@ func (s *Deps) Load(blobs SerializedState) error {
 
 	mod, err := modfile.Parse("go.mod", blobs.GoMod, nil)
 	if err != nil {
-		return errors.Annotate(err, "when loading go.mod with bundle deps").Err()
+		return errors.Fmt("when loading go.mod with bundle deps: %w", err)
 	}
 
 	// Loaded go.mod module name must match the original go.mod. This check should
@@ -270,7 +270,7 @@ func (s *Deps) Load(blobs SerializedState) error {
 		return ""
 	}
 	if got, want := modName(s.base), modName(mod); got != want {
-		return errors.Reason("a bundle for %q is reused for another module %q", want, got).Err()
+		return errors.Fmt("a bundle for %q is reused for another module %q", want, got)
 	}
 
 	// Information in modules.txt and in the original go.mod is enough to
@@ -293,11 +293,11 @@ func (s *Deps) Load(blobs SerializedState) error {
 			// in the original go.mod, and the entries must agree.
 			loadMod, err := lookupMod(mod, modName)
 			if err != nil {
-				return errors.Annotate(err, "modules.txt doesn't match bundled go.mod").Err()
+				return errors.Fmt("modules.txt doesn't match bundled go.mod: %w", err)
 			}
 			baseMod, err := lookupMod(s.base, modName)
 			if err != nil {
-				return errors.Annotate(err, "modules.txt doesn't match original go.mod").Err()
+				return errors.Fmt("modules.txt doesn't match original go.mod: %w", err)
 			}
 			if loadVer, baseVer := loadMod.summary(), baseMod.summary(); loadVer != baseVer {
 				return errors.Fmt("conflict between original and bundled go.mod: %s != %s", loadVer, baseVer)
@@ -311,7 +311,7 @@ func (s *Deps) Load(blobs SerializedState) error {
 		// "## explicit" or "## explicit; go 1.23".
 		if strings.HasPrefix(line, "## explicit") {
 			if curMod == nil {
-				return errors.Reason("malformed modules.txt: explicit directive before the module name").Err()
+				return errors.New("malformed modules.txt: explicit directive before the module name")
 			}
 			if strings.HasPrefix(line, "## explicit; go ") {
 				curMod.goVer = strings.TrimSpace(line[len("## explicit; go "):])
@@ -324,10 +324,10 @@ func (s *Deps) Load(blobs SerializedState) error {
 		// Here we should see a list of package names, all for the current module.
 		// This will be checked by Add.
 		if curMod == nil {
-			return errors.Reason("malformed modules.txt: no module directive before the list of packages").Err()
+			return errors.New("malformed modules.txt: no module directive before the list of packages")
 		}
 		if err := s.Add(line, curMod.name, curMod.goVer); err != nil {
-			return errors.Annotate(err, "malformed modules.txt").Err()
+			return errors.Fmt("malformed modules.txt: %w", err)
 		}
 	}
 
@@ -347,9 +347,9 @@ func lookupMod(f *modfile.File, mod string) (*moduleDep, error) {
 	}
 	switch {
 	case len(vers) == 0:
-		return nil, errors.Reason("module %q is not present in go.mod", mod).Err()
+		return nil, errors.Fmt("module %q is not present in go.mod", mod)
 	case len(vers) > 1:
-		return nil, errors.Reason("module %q is required more than once in go.mod", mod).Err()
+		return nil, errors.Fmt("module %q is required more than once in go.mod", mod)
 	}
 	dep.requiredVer = vers[0].Version
 
@@ -362,7 +362,7 @@ func lookupMod(f *modfile.File, mod string) (*moduleDep, error) {
 	}
 	switch {
 	case len(replaces) > 1:
-		return nil, errors.Reason("module %q is replaced more than once in go.mod", mod).Err()
+		return nil, errors.Fmt("module %q is replaced more than once in go.mod", mod)
 	case len(replaces) == 1:
 		dep.replacedName = replaces[0].Path
 		dep.replacedVer = replaces[0].Version

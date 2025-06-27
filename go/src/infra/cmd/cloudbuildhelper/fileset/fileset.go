@@ -38,7 +38,7 @@ type File struct {
 // ReadAll reads the body of this file if this is a regular file.
 func (f *File) ReadAll() ([]byte, error) {
 	if f.Body == nil {
-		return nil, errors.Reason("not a regular file").Err()
+		return nil, errors.New("not a regular file")
 	}
 	rc, err := f.Body()
 	if err != nil {
@@ -60,7 +60,7 @@ func (f *File) ReadAll() ([]byte, error) {
 func (f *File) normalize() error {
 	f.Path = path.Clean(filepath.ToSlash(f.Path))
 	if f.Path == "." || strings.HasPrefix(f.Path, "../") {
-		return errors.Reason("bad file path %q, not in the set", f.Path).Err()
+		return errors.Fmt("bad file path %q, not in the set", f.Path)
 	}
 	switch {
 	case f.Directory:
@@ -73,7 +73,7 @@ func (f *File) normalize() error {
 		f.SymlinkTarget = path.Clean(filepath.ToSlash(f.SymlinkTarget))
 		targetAbs := path.Clean(path.Join(path.Dir(f.Path), f.SymlinkTarget))
 		if targetAbs == "." || strings.HasPrefix(targetAbs, "../") {
-			return errors.Reason("bad symlink %q, its target %q is not in the set", f.Path, f.SymlinkTarget).Err()
+			return errors.Fmt("bad symlink %q, its target %q is not in the set", f.Path, f.SymlinkTarget)
 		}
 		f.Size = 0
 		f.Writable = false
@@ -148,7 +148,7 @@ func (s *Set) Add(f File) error {
 			case !ok:
 				s.files[cur] = File{Path: cur, Directory: true}
 			case ok && !existing.Directory:
-				return errors.Reason("%q in file path %q is not a directory", cur, f.Path).Err()
+				return errors.Fmt("%q in file path %q is not a directory", cur, f.Path)
 			}
 		}
 		cur += string(chr)
@@ -199,7 +199,7 @@ func (s *Set) AddFromMemory(setPath string, blob []byte, f *File) error {
 // Doesn't verify that the target exists in the set.
 func (s *Set) AddSymlink(setPath, target string) error {
 	if target == "" {
-		return errors.Reason("symlink target can't be empty").Err()
+		return errors.New("symlink target can't be empty")
 	}
 	return s.Add(File{
 		Path:          setPath,
@@ -260,7 +260,7 @@ func (s *Set) File(setPath string) (File, bool) {
 // Doesn't cleanup on errors.
 func (s *Set) Materialize(root string) error {
 	if err := os.MkdirAll(root, 0777); err != nil {
-		return errors.Annotate(err, "failed to create the output directory").Err()
+		return errors.Fmt("failed to create the output directory: %w", err)
 	}
 	buf := make([]byte, 64*1024)
 	return s.Enumerate(func(f File) error {
@@ -289,7 +289,7 @@ func (s *Set) Materialize(root string) error {
 			return err
 		}
 		if copied != f.Size {
-			return errors.Reason("file %q has unexpected size (expecting %d, got %d)", f.Path, f.Size, copied).Err()
+			return errors.Fmt("file %q has unexpected size (expecting %d, got %d)", f.Path, f.Size, copied)
 		}
 		return w.Close()
 	})
@@ -301,7 +301,7 @@ func (s *Set) ToTar(w *tar.Writer) error {
 	return s.Enumerate(func(f File) (err error) {
 		defer func() {
 			if err != nil {
-				err = errors.Annotate(err, "when tarring %q", f.Path).Err()
+				err = errors.Fmt("when tarring %q: %w", f.Path, err)
 			}
 		}()
 
@@ -369,15 +369,15 @@ func (s *Set) ToTarGz(w io.Writer) error {
 func (s *Set) ToTarGzFile(path string) (sha256hex string, err error) {
 	out, err := os.Create(path)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to open for writing %s", path).Err()
+		return "", errors.Fmt("failed to open for writing %s: %w", path, err)
 	}
 	defer func() { _ = out.Close() }() // for early exits
 	h := sha256.New()
 	if err := s.ToTarGz(io.MultiWriter(out, h)); err != nil {
-		return "", errors.Annotate(err, "failed to write to %s", path).Err()
+		return "", errors.Fmt("failed to write to %s: %w", path, err)
 	}
 	if err := out.Close(); err != nil {
-		return "", errors.Annotate(err, "failed to flush %s", path).Err()
+		return "", errors.Fmt("failed to flush %s: %w", path, err)
 	}
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
@@ -430,7 +430,7 @@ func (s *Set) addImpl(fsPath, setPath string, exclude Excluder) error {
 		}
 		return s.addDir(fsPath, setPath, exclude)
 	default:
-		return errors.Reason("file %q has unsupported type, its mode is %s", fsPath, stat.Mode()).Err()
+		return errors.Fmt("file %q has unsupported type, its mode is %s", fsPath, stat.Mode())
 	}
 }
 

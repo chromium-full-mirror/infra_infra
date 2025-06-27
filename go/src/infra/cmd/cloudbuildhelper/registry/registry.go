@@ -84,7 +84,7 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 	// gcr.io/project/image:tag => (gcr.io, project/image, tag).
 	registry, repo, ref, err := splitImageName(image)
 	if err != nil {
-		return nil, errors.Annotate(err, "bad image reference %q", image).Err()
+		return nil, errors.Fmt("bad image reference %q: %w", image, err)
 	}
 
 	req, _ := http.NewRequest("GET", manifestURL(registry, repo, ref), nil)
@@ -96,18 +96,18 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 
 	// Attach Authorization header, if the registry needs it.
 	if err := c.authorizeRequest(ctx, req, registry, repo, "pull"); err != nil {
-		return nil, errors.Annotate(err, "failed to authorize the pull request").Err()
+		return nil, errors.Fmt("failed to authorize the pull request: %w", err)
 	}
 
 	resp, body, err := sendJSONRequest(ctx, req, nil)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to grab the image manifest").Err()
+		return nil, errors.Fmt("failed to grab the image manifest: %w", err)
 	}
 
 	// The media type is required and should be one of the requested ones.
 	mt := resp.Header.Get("Content-Type")
 	if !knownImageMediaType(mt) {
-		return nil, errors.Annotate(ErrBadRegistryResponse, "unexpected image media type %q", mt).Err()
+		return nil, errors.Fmt("unexpected image media type %q: %w", mt, ErrBadRegistryResponse)
 	}
 
 	// The manifest body digest is what we are after. It uniquely identifies
@@ -115,16 +115,16 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 	digest := strings.ToLower(resp.Header.Get("Docker-Content-Digest"))
 	switch {
 	case digest == "":
-		return nil, errors.Annotate(ErrBadRegistryResponse, "no Docker-Content-Digest header").Err()
+		return nil, errors.Fmt("no Docker-Content-Digest header: %w", ErrBadRegistryResponse)
 	case !strings.HasPrefix(digest, "sha256:"):
-		return nil, errors.Annotate(ErrBadRegistryResponse, "unrecognized digest algo in %q, we support only sha256", digest).Err()
+		return nil, errors.Fmt("unrecognized digest algo in %q, we support only sha256: %w", digest, ErrBadRegistryResponse)
 	}
 
 	// Verify the manifest body matches reported hash.
 	h := sha256.Sum256(body)
 	dgst := "sha256:" + hex.EncodeToString(h[:])
 	if digest != dgst {
-		return nil, errors.Annotate(ErrBadRegistryResponse, "expected a manifest with digest %q, but got %q", digest, dgst).Err()
+		return nil, errors.Fmt("expected a manifest with digest %q, but got %q: %w", digest, dgst, ErrBadRegistryResponse)
 	}
 
 	return &Image{
@@ -142,11 +142,11 @@ func (c *Client) GetImage(ctx context.Context, image string) (*Image, error) {
 func (c *Client) TagImage(ctx context.Context, img *Image, tag string) error {
 	req, err := http.NewRequest("PUT", manifestURL(img.Registry, img.Repo, tag), bytes.NewReader(img.RawManifest))
 	if err != nil {
-		return errors.Annotate(err, "failed to create HTTP request").Err()
+		return errors.Fmt("failed to create HTTP request: %w", err)
 	}
 	req.Header.Set("Content-Type", img.MediaType)
 	if err := c.authorizeRequest(ctx, req, img.Registry, img.Repo, "push"); err != nil {
-		return errors.Annotate(err, "failed to authorize the push request").Err()
+		return errors.Fmt("failed to authorize the push request: %w", err)
 	}
 	_, _, err = sendJSONRequest(ctx, req, nil)
 	return errors.WrapIf(err, "failed to attach a tag")
@@ -156,10 +156,10 @@ func (c *Client) TagImage(ctx context.Context, img *Image, tag string) error {
 func (c *Client) authorizeRequest(ctx context.Context, req *http.Request, registry, repo, scopes string) error {
 	switch auth, err := c.authServiceFor(ctx, registry); {
 	case err != nil:
-		return errors.Annotate(err, "no authorization service").Err()
+		return errors.Fmt("no authorization service: %w", err)
 	case auth != nil:
 		if err := auth.authorizeRequest(ctx, req, repo, scopes); err != nil {
-			return errors.Annotate(err, "failed to get docker registry auth token").Err()
+			return errors.Fmt("failed to get docker registry auth token: %w", err)
 		}
 	}
 	return nil
@@ -199,7 +199,7 @@ func (c *Client) authServiceFor(ctx context.Context, registry string) (*authServ
 	case registry == "mcr.microsoft.com":
 		auth = nil // anonymous access
 	default:
-		return nil, errors.Annotate(ErrUnrecognizedRegistry, "unknown registry %q", registry).Err()
+		return nil, errors.Fmt("unknown registry %q: %w", registry, ErrUnrecognizedRegistry)
 	}
 
 	if c.auth == nil {

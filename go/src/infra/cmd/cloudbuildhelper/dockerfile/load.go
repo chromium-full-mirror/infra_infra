@@ -22,26 +22,26 @@ import (
 func LoadAndResolve(dockerfile, pins string) ([]byte, error) {
 	body, err := os.ReadFile(dockerfile)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read Dockerfile").Err()
+		return nil, errors.Fmt("failed to read Dockerfile: %w", err)
 	}
 
 	var p *Pins
 	if pins != "" {
 		pf, err := os.Open(pins)
 		if err != nil {
-			return nil, errors.Annotate(err, "failed to open pins YAML").Err()
+			return nil, errors.Fmt("failed to open pins YAML: %w", err)
 		}
 		defer pf.Close()
 		p, err = ReadPins(pf)
 		if err != nil {
-			return nil, errors.Annotate(err, "failed to load pins YAML from %q", pins).Err()
+			return nil, errors.Fmt("failed to load pins YAML from %q: %w", pins, err)
 		}
 	} else {
 		p = &Pins{} // empty DB, rejects all tags
 	}
 
 	if body, err = Resolve(body, p.Resolver()); err != nil {
-		return nil, errors.Annotate(err, "failed to resolve tags in %q", dockerfile).Err()
+		return nil, errors.Fmt("failed to resolve tags in %q: %w", dockerfile, err)
 	}
 	return body, nil
 }

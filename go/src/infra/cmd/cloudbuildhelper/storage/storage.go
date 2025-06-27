@@ -92,14 +92,14 @@ func (o *Object) setAttrs(a *storage.ObjectAttrs) {
 func New(ctx context.Context, ts oauth2.TokenSource, location string) (*Storage, error) {
 	url, err := url.Parse(location)
 	if err != nil {
-		return nil, errors.Annotate(err, "bad format in %q", location).Err()
+		return nil, errors.Fmt("bad format in %q: %w", location, err)
 	}
 	if url.Scheme != "gs" {
-		return nil, errors.Reason("expecting gs:// storage, got %q", location).Err()
+		return nil, errors.Fmt("expecting gs:// storage, got %q", location)
 	}
 	client, err := storage.NewClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to initialize storage.Client").Err()
+		return nil, errors.Fmt("failed to initialize storage.Client: %w", err)
 	}
 	return &Storage{
 		bucket: url.Host,
@@ -123,7 +123,7 @@ func (s *Storage) Check(ctx context.Context, name string) (*Object, error) {
 	case err == storage.ErrObjectNotExist:
 		return nil, nil
 	case err != nil:
-		return nil, errors.Annotate(err, "failed to check object attrs").Err()
+		return nil, errors.Fmt("failed to check object attrs: %w", err)
 	default:
 		obj.setAttrs(attrs)
 		return obj, nil
@@ -163,15 +163,15 @@ func (s *Storage) Upload(ctx context.Context, name, digest string, r io.Reader) 
 
 	h := sha256.New()
 	if _, err := io.Copy(io.MultiWriter(wr, h), r); err != nil {
-		return nil, errors.Annotate(err, "upload failed").Err()
+		return nil, errors.Fmt("upload failed: %w", err)
 	}
 	if got := hex.EncodeToString(h.Sum(nil)); got != digest {
-		return nil, errors.Reason("digest of uploaded data is %q, expecting %q; did the file change on disk?", got, digest).Err()
+		return nil, errors.Fmt("digest of uploaded data is %q, expecting %q; did the file change on disk?", got, digest)
 	}
 
 	// This actually materializes the Google Storage object.
 	if err := wr.Close(); err != nil {
-		return nil, errors.Annotate(err, "failed to finalize the upload").Err()
+		return nil, errors.Fmt("failed to finalize the upload: %w", err)
 	}
 
 	// Attrs() are available only after successful Close().
@@ -228,7 +228,7 @@ func (s *Storage) UpdateMetadata(ctx context.Context, obj *Object, cb func(m *Me
 		return err
 	}
 
-	return errors.Reason("too many collisions, giving up").Err()
+	return errors.New("too many collisions, giving up")
 }
 
 // object returns partially filled Object struct.

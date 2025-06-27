@@ -68,7 +68,7 @@ func LoadAppYAML(blob []byte) (*AppYAML, error) {
 	for _, handler := range handlersRaw {
 		handler, ok := handler.(map[string]any)
 		if !ok {
-			return nil, errors.Reason("bad `handlers` structure").Err()
+			return nil, errors.New("bad `handlers` structure")
 		}
 		handlers = append(handlers, &HandlerYAML{
 			StaticDir:   take(handler, "static_dir"),

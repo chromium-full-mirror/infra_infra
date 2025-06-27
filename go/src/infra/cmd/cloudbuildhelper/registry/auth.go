@@ -91,7 +91,7 @@ func (s *authService) mintAuthToken(ctx context.Context, scope string) (cachedTo
 	if s.ts != nil {
 		oauthTok, err := s.ts.Token()
 		if err != nil {
-			return cachedToken{}, errors.Annotate(err, "failed to grab OAuth2 token").Err()
+			return cachedToken{}, errors.Fmt("failed to grab OAuth2 token: %w", err)
 		}
 		oauthTok.SetAuthHeader(req)
 	}
@@ -101,7 +101,7 @@ func (s *authService) mintAuthToken(ctx context.Context, scope string) (cachedTo
 		Token     string `json:"token"`
 	}
 	if _, _, err := sendJSONRequest(ctx, req, &parsed); err != nil {
-		return cachedToken{}, errors.Annotate(err, "failed to call authorization service").Err()
+		return cachedToken{}, errors.Fmt("failed to call authorization service: %w", err)
 	}
 	if parsed.ExpiresIn == 0 {
 		parsed.ExpiresIn = 60 // the default, per the doc

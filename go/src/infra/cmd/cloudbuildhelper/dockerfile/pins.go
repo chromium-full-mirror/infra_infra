@@ -41,19 +41,19 @@ func (p *Pin) ImageRef() string {
 func ReadPins(r io.Reader) (*Pins, error) {
 	body, err := io.ReadAll(r)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read the pins file").Err()
+		return nil, errors.Fmt("failed to read the pins file: %w", err)
 	}
 	out := Pins{}
 	if err = yaml.Unmarshal(body, &out); err != nil {
-		return nil, errors.Annotate(err, "failed to parse the pins file").Err()
+		return nil, errors.Fmt("failed to parse the pins file: %w", err)
 	}
 	seen := stringset.New(len(out.Pins))
 	for idx, p := range out.Pins {
 		if p, err = NormalizePin(p, true); err != nil {
-			return nil, errors.Annotate(err, "pin #%d", idx+1).Err()
+			return nil, errors.Fmt("pin #%d: %w", idx+1, err)
 		}
 		if !seen.Add(p.ImageRef()) {
-			return nil, errors.Reason("pin #%d: duplicate entry for %q", idx+1, p.ImageRef()).Err()
+			return nil, errors.Fmt("pin #%d: duplicate entry for %q", idx+1, p.ImageRef())
 		}
 		out.Pins[idx] = p
 	}
@@ -75,7 +75,7 @@ func WritePins(w io.Writer, p *Pins) error {
 
 	blob, err := yaml.Marshal(pins)
 	if err != nil {
-		return errors.Annotate(err, "failed to serialize pins").Err()
+		return errors.Fmt("failed to serialize pins: %w", err)
 	}
 
 	_, err = fmt.Fprintf(w, `# Managed by cloudbuildhelper.
@@ -134,11 +134,11 @@ func (p *Pins) Visit(cb func(p *Pin) error) error {
 				pin := p.Pins[i]
 				key := pin.ImageRef()
 				if err := cb(&pin); err != nil {
-					return errors.Annotate(err, "visiting %q", key).Err()
+					return errors.Fmt("visiting %q: %w", key, err)
 				}
 				pin, err := NormalizePin(pin, true)
 				if err != nil {
-					return errors.Annotate(err, "visiting %q", key).Err()
+					return errors.Fmt("visiting %q: %w", key, err)
 				}
 				if pin.ImageRef() != key {
 					panic(fmt.Sprintf("the callback changed the pin key from %q to %q", key, pin.ImageRef()))
@@ -159,7 +159,7 @@ func PinFromString(image string) (Pin, error) {
 	case len(chunks) == 2:
 		pin.Image, pin.Tag = chunks[0], chunks[1]
 	default:
-		return pin, errors.Reason("bad image reference %q, should have form <image>[:<tag>]", image).Err()
+		return pin, errors.Fmt("bad image reference %q, should have form <image>[:<tag>]", image)
 	}
 	return NormalizePin(pin, false)
 }
@@ -170,9 +170,9 @@ func PinFromString(image string) (Pin, error) {
 func NormalizePin(p Pin, requireDigest bool) (Pin, error) {
 	switch {
 	case p.Image == "":
-		return p, errors.Reason("'image' field is required").Err()
+		return p, errors.New("'image' field is required")
 	case requireDigest && p.Digest == "":
-		return p, errors.Reason("'digest' field is required").Err()
+		return p, errors.New("'digest' field is required")
 	}
 
 	// See https://github.com/docker/distribution/blob/master/reference/normalize.go
@@ -205,12 +205,12 @@ type pinsResolver map[string]string
 
 func (p pinsResolver) ResolveTag(image, tag string) (digest string, err error) {
 	if len(p) == 0 {
-		return "", errors.Reason("not using pins YAML, the Dockerfile must use @<digest> refs").Err()
+		return "", errors.New("not using pins YAML, the Dockerfile must use @<digest> refs")
 	}
 
 	pin, err := NormalizePin(Pin{Image: image, Tag: tag}, false)
 	if err != nil {
-		return "", errors.Annotate(err, "bad image:tag combination").Err()
+		return "", errors.Fmt("bad image:tag combination: %w", err)
 	}
 
 	d, ok := p[pin.ImageRef()]

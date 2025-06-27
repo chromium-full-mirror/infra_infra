@@ -49,7 +49,7 @@ func NewExcluder(dir, ignoreFile string) (fileset.Excluder, error) {
 	for _, path := range paths {
 		parsed, err := readIgnoreFile(path)
 		if err != nil {
-			return nil, errors.Annotate(err, "when parsing %q", path).Err()
+			return nil, errors.Fmt("when parsing %q: %w", path, err)
 		}
 		pats = append(pats, parsed...)
 	}
@@ -85,7 +85,7 @@ func findRepoRoot(start string) (string, error) {
 		case err == nil && stat.IsDir():
 			return cur, nil
 		case err != nil && !os.IsNotExist(err):
-			return "", errors.Annotate(err, "when searching for repo root of %q", start).Err()
+			return "", errors.Fmt("when searching for repo root of %q: %w", start, err)
 		}
 		par := filepath.Dir(cur)
 		if par == cur {
@@ -127,7 +127,7 @@ func scanDown(paths []string, start, ignoreFile string) ([]string, error) {
 		return err
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "when scanning for .gitignore in %q", start).Err()
+		return nil, errors.Fmt("when scanning for .gitignore in %q: %w", start, err)
 	}
 	return paths, nil
 }

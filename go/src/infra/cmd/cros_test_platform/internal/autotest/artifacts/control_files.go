@@ -49,10 +49,10 @@ func unwrapMultiErrorIfNil(merr errors.MultiError) error {
 func unarchiveControlFiles(archive string, outdir string) error {
 	r, err := os.Open(archive)
 	if err != nil {
-		return errors.Annotate(err, "unarchiveControlFiles").Err()
+		return errors.Fmt("unarchiveControlFiles: %w", err)
 	}
 	if err := untarAll(r, outdir); err != nil {
-		return errors.Annotate(err, "unarchiveControlFiles from %s", archive).Err()
+		return errors.Fmt("unarchiveControlFiles from %s: %w", archive, err)
 	}
 	return nil
 }
@@ -60,11 +60,11 @@ func unarchiveControlFiles(archive string, outdir string) error {
 func unarchiveTestSuites(archive string, outdir string) error {
 	r, err := os.Open(archive)
 	if err != nil {
-		return errors.Annotate(err, "unarchiveTestSuites").Err()
+		return errors.Fmt("unarchiveTestSuites: %w", err)
 	}
 	gr := bzip2.NewReader(r)
 	if err := untarAll(gr, outdir); err != nil {
-		return errors.Annotate(err, "unarchiveTestSuites from %s", archive).Err()
+		return errors.Fmt("unarchiveTestSuites from %s: %w", archive, err)
 	}
 	return nil
 }
@@ -78,10 +78,10 @@ func untarAll(r io.Reader, outdir string) error {
 			// Scanned all files.
 			return nil
 		case err != nil:
-			return errors.Annotate(err, "untarMatching").Err()
+			return errors.Fmt("untarMatching: %w", err)
 		default:
 			if err := extractOne(tr, h, outdir); err != nil {
-				return errors.Annotate(err, "untarMatching").Err()
+				return errors.Fmt("untarMatching: %w", err)
 			}
 		}
 	}
@@ -102,19 +102,19 @@ func createDir(path string) error {
 // writeFile writes one file of given size from a Read()er to path.
 func writeFile(r io.Reader, path string, size int64) error {
 	if err := createContainingDir(path); err != nil {
-		return errors.Annotate(err, "writeFile").Err()
+		return errors.Fmt("writeFile: %w", err)
 	}
 	f, err := os.Create(path)
 	if err != nil {
-		return errors.Annotate(err, "writeFile").Err()
+		return errors.Fmt("writeFile: %w", err)
 	}
 
 	n, err := io.CopyN(f, r, size)
 	if err != nil {
-		return errors.Annotate(err, "writeFile to %s", path).Err()
+		return errors.Fmt("writeFile to %s: %w", path, err)
 	}
 	if n != size {
-		return errors.Reason("writeFile to %s: wrote %d bytes, want %d", path, n, size).Err()
+		return errors.Fmt("writeFile to %s: wrote %d bytes, want %d", path, n, size)
 	}
 	return nil
 }

@@ -86,22 +86,22 @@ func sendJSONRequest(ctx context.Context, req *http.Request, out any) (resp *htt
 	req = req.WithContext(ctx)
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {
-		err = errors.Annotate(err, "HTTP call failed").Err()
+		err = errors.Fmt("HTTP call failed: %w", err)
 		return
 	}
 	defer resp.Body.Close()
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		err = errors.Annotate(err, "failed to read HTTP response body").Err()
+		err = errors.Fmt("failed to read HTTP response body: %w", err)
 		return
 	}
 	if err = maybeRegistryError(resp, body); err != nil {
-		err = errors.Annotate(err, "docker registry returned an error").Err()
+		err = errors.Fmt("docker registry returned an error: %w", err)
 		return
 	}
 	if out != nil {
 		if err = json.Unmarshal(body, out); err != nil {
-			err = errors.Annotate(err, "failed to unmarshal HTTP response body").Err()
+			err = errors.Fmt("failed to unmarshal HTTP response body: %w", err)
 		}
 	}
 	return

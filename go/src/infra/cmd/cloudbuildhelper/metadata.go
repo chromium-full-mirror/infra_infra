@@ -108,7 +108,7 @@ func updateMetadata(ctx context.Context, obj *storage.Object, s storageImpl, img
 	if img != nil {
 		var err error
 		if imgRefJSON, err = json.Marshal(img); err != nil {
-			return nil, errors.Annotate(err, "marshalling imageRef %v", img).Err()
+			return nil, errors.Fmt("marshalling imageRef %v: %w", img, err)
 		}
 	}
 
@@ -116,7 +116,7 @@ func updateMetadata(ctx context.Context, obj *storage.Object, s storageImpl, img
 	if b != nil {
 		var err error
 		if buildRefJSON, err = json.Marshal(b); err != nil {
-			return nil, errors.Annotate(err, "marshalling buildRef %v", b).Err()
+			return nil, errors.Fmt("marshalling buildRef %v: %w", b, err)
 		}
 	}
 
@@ -160,7 +160,7 @@ func updateMetadata(ctx context.Context, obj *storage.Object, s storageImpl, img
 	})
 
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to update tarball metadata").Err()
+		return nil, errors.Fmt("failed to update tarball metadata: %w", err)
 	}
 	return oldest, nil
 }

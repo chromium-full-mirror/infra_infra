@@ -338,15 +338,15 @@ func (c *CloudBuildConfig) rebaseOnTop(b CloudBuildConfig) {
 // Cloud Build.
 func (i *Infra) ResolveCloudBuildConfig(cfg CloudBuildConfig) (*CloudBuildBuilder, error) {
 	if cfg.Builder == "" {
-		return nil, errors.Reason("cloudbuild.builder is required when using Cloud Build").Err()
+		return nil, errors.New("cloudbuild.builder is required when using Cloud Build")
 	}
 	builder, ok := i.CloudBuild[cfg.Builder]
 	if !ok {
-		return nil, errors.Reason("cloudbuild.builder references unknown Cloud Build builder %q", cfg.Builder).Err()
+		return nil, errors.Fmt("cloudbuild.builder references unknown Cloud Build builder %q", cfg.Builder)
 	}
 
 	if builder.Project == "" {
-		return nil, errors.Reason("infra[...].cloudbuild[...].project is required when using Cloud Build").Err()
+		return nil, errors.New("infra[...].cloudbuild[...].project is required when using Cloud Build")
 	}
 
 	// By default do regular "docker build" calls.
@@ -537,7 +537,7 @@ func (s *RunBuildStep) isEmpty() bool { return len(s.Run) == 0 && len(s.Outputs)
 
 func (s *RunBuildStep) initStep(bs *BuildStep, dirs map[string]string) (err error) {
 	if len(s.Run) == 0 {
-		return errors.Reason("bad `run` value: must not be empty").Err()
+		return errors.New("bad `run` value: must not be empty")
 	}
 
 	for i, val := range s.Run {
@@ -549,7 +549,7 @@ func (s *RunBuildStep) initStep(bs *BuildStep, dirs map[string]string) (err erro
 			// We are going to pass these arguments to a command with different cwd,
 			// need to make sure they are absolute.
 			if s.Run[i], err = filepath.Abs(rel); err != nil {
-				return errors.Annotate(err, "bad `run[%d]` %q", i, rel).Err()
+				return errors.Fmt("bad `run[%d]` %q: %w", i, rel, err)
 			}
 		}
 	}
@@ -627,11 +627,11 @@ func Load(path string) (*Manifest, error) {
 func parse(r io.Reader, cwd string) (*Manifest, error) {
 	body, err := io.ReadAll(r)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to read the manifest body").Err()
+		return nil, errors.Fmt("failed to read the manifest body: %w", err)
 	}
 	out := Manifest{}
 	if err = yaml.Unmarshal(body, &out); err != nil {
-		return nil, errors.Annotate(err, "failed to parse the manifest").Err()
+		return nil, errors.Fmt("failed to parse the manifest: %w", err)
 	}
 	if err := out.initBase(cwd); err != nil {
 		return nil, err
@@ -644,23 +644,23 @@ func parse(r io.Reader, cwd string) (*Manifest, error) {
 func loadRecursive(path string, fileCount int) (*Manifest, error) {
 	r, err := os.Open(path)
 	if err != nil {
-		return nil, errors.Annotate(err, "when opening manifest file").Err()
+		return nil, errors.Fmt("when opening manifest file: %w", err)
 	}
 	defer r.Close()
 
 	m, err := parse(r, filepath.Dir(path))
 	switch {
 	case err != nil:
-		return nil, errors.Annotate(err, "when parsing %q", path).Err()
+		return nil, errors.Fmt("when parsing %q: %w", path, err)
 	case m.Extends == "":
 		return m, nil
 	case fileCount > 10:
-		return nil, errors.Reason("too much nesting").Err()
+		return nil, errors.New("too much nesting")
 	}
 
 	base, err := loadRecursive(m.Extends, fileCount+1)
 	if err != nil {
-		return nil, errors.Annotate(err, "when loading %q", path).Err()
+		return nil, errors.Fmt("when loading %q: %w", path, err)
 	}
 	m.rebaseOnTop(base)
 	return m, nil
@@ -688,12 +688,12 @@ func (m *Manifest) initBase(cwd string) error {
 	}
 	for k, v := range m.Infra {
 		if err := validateInfra(v); err != nil {
-			return errors.Annotate(err, "in infra section %q", k).Err()
+			return errors.Fmt("in infra section %q: %w", k, err)
 		}
 	}
 	for i, b := range m.Build {
 		if err := wireStep(b, m, i); err != nil {
-			return errors.Annotate(err, "bad build step #%d", i+1).Err()
+			return errors.Fmt("bad build step #%d: %w", i+1, err)
 		}
 	}
 	return nil
@@ -720,7 +720,7 @@ func (m *Manifest) Finalize() error {
 			"manifestdir": b.manifest.ManifestDir,
 		}
 		if err := b.concrete.initStep(b, dirs); err != nil {
-			return errors.Annotate(err, "bad build step #%d in %q", b.index+1, b.manifest.ManifestDir).Err()
+			return errors.Fmt("bad build step #%d in %q: %w", b.index+1, b.manifest.ManifestDir, err)
 		}
 	}
 	return nil
@@ -787,9 +787,9 @@ func validateName(t string) error {
 	const forbidden = "\\:@"
 	switch {
 	case t == "":
-		return errors.Reason("can't be empty, it's required").Err()
+		return errors.New("can't be empty, it's required")
 	case strings.ContainsAny(t, forbidden):
-		return errors.Reason("%q contains forbidden symbols (any of %q)", t, forbidden).Err()
+		return errors.Fmt("%q contains forbidden symbols (any of %q)", t, forbidden)
 	default:
 		return nil
 	}
@@ -799,19 +799,19 @@ func validateInfra(i Infra) error {
 	if i.Storage != "" {
 		url, err := url.Parse(i.Storage)
 		if err != nil {
-			return errors.Annotate(err, "bad storage %q", i.Storage).Err()
+			return errors.Fmt("bad storage %q: %w", i.Storage, err)
 		}
 		switch {
 		case url.Scheme != "gs":
-			return errors.Reason("bad storage %q, only gs:// is supported currently", i.Storage).Err()
+			return errors.Fmt("bad storage %q, only gs:// is supported currently", i.Storage)
 		case url.Host == "":
-			return errors.Reason("bad storage %q, bucket name is missing", i.Storage).Err()
+			return errors.Fmt("bad storage %q, bucket name is missing", i.Storage)
 		}
 	}
 
 	for idx, notify := range i.Notify {
 		if err := validateNotify(notify); err != nil {
-			return errors.Annotate(err, "bad notify config #%d", idx+1).Err()
+			return errors.Fmt("bad notify config #%d: %w", idx+1, err)
 		}
 	}
 
@@ -820,17 +820,17 @@ func validateInfra(i Infra) error {
 
 func validateNotify(n NotifyConfig) error {
 	if n.Kind != "git" {
-		return errors.Reason("unsupported notify kind %q", n.Kind).Err()
+		return errors.Fmt("unsupported notify kind %q", n.Kind)
 	}
 	if !strings.HasPrefix(n.Repo, "https://") {
-		return errors.Reason("`repo` should be an https:// URL, not %q", n.Repo).Err()
+		return errors.Fmt("`repo` should be an https:// URL, not %q", n.Repo)
 	}
 	if path.Clean(filepath.ToSlash(n.Script)) != n.Script {
-		return errors.Reason("bad `script` %q, should be a normalized slash-separate path", n.Script).Err()
+		return errors.Fmt("bad `script` %q, should be a normalized slash-separate path", n.Script)
 	}
 	if n.Script == "." || n.Script == ".." ||
 		strings.HasPrefix(n.Script, "../") || strings.HasPrefix(n.Script, "/") {
-		return errors.Reason("bad `script` %q, not a path inside the repo", n.Script).Err()
+		return errors.Fmt("bad `script` %q, not a path inside the repo", n.Script)
 	}
 	return nil
 }
@@ -853,9 +853,9 @@ func wireStep(bs *BuildStep, m *Manifest, index int) error {
 	// One and only one substruct should be populated.
 	switch {
 	case len(set) == 0:
-		return errors.Reason("unrecognized or empty").Err()
+		return errors.New("unrecognized or empty")
 	case len(set) > 1:
-		return errors.Reason("ambiguous").Err()
+		return errors.New("ambiguous")
 	default:
 		bs.manifest = m
 		bs.index = index
@@ -883,7 +883,7 @@ func isTemplatedPath(p string) bool {
 // dirs[<something>], and normalizes the result.
 func renderPath(title, p string, dirs map[string]string) (string, error) {
 	if p == "" {
-		return "", errors.Reason("bad `%s`: must not be empty", title).Err()
+		return "", errors.Fmt("bad `%s`: must not be empty", title)
 	}
 
 	// Helper for error messages.
@@ -898,14 +898,14 @@ func renderPath(title, p string, dirs map[string]string) (string, error) {
 
 	parts := strings.SplitN(p, "/", 2)
 	if !strings.HasPrefix(parts[0], "${") || !strings.HasSuffix(parts[0], "}") {
-		return "", errors.Reason("bad `%s`: must start with %s", title, keys()).Err()
+		return "", errors.Fmt("bad `%s`: must start with %s", title, keys())
 	}
 
 	switch val, ok := dirs[strings.TrimSuffix(strings.TrimPrefix(parts[0], "${"), "}")]; {
 	case !ok:
-		return "", errors.Reason("bad `%s`: unknown dir variable %s, expecting %s", title, parts[0], keys()).Err()
+		return "", errors.Fmt("bad `%s`: unknown dir variable %s, expecting %s", title, parts[0], keys())
 	case val == "":
-		return "", errors.Reason("bad `%s`: dir variable %s it not set", title, parts[0]).Err()
+		return "", errors.Fmt("bad `%s`: dir variable %s it not set", title, parts[0])
 	case len(parts) == 1:
 		return val, nil
 	default:

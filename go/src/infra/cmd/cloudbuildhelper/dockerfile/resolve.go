@@ -56,7 +56,7 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 		line, err := r.ReadString('\n')
 		if err != nil && err != io.EOF {
 			// This should not be possible, we are reading from memory.
-			panic(errors.Annotate(err, "unexpected IO error").Err())
+			panic(errors.Fmt("unexpected IO error: %w", err))
 		}
 
 		lineno++
@@ -65,7 +65,7 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 		terms := strings.Fields(line)
 		if len(terms) >= 1 && strings.ToLower(terms[0]) == "from" {
 			if err := resolveFromLine(terms, resolver, locallyResolved); err != nil {
-				return nil, errors.Annotate(err, "line %d", lineno).Err()
+				return nil, errors.Fmt("line %d: %w", lineno, err)
 			}
 			newLine := strings.Join(terms, " ")
 			if strings.HasSuffix(line, "\n") {
@@ -86,7 +86,7 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 // 'terms' is ["FROM", "<image>", ...].
 func resolveFromLine(terms []string, r Resolver, locallyResolved map[string]bool) error {
 	if len(terms) < 2 {
-		return errors.Reason("expecting 'FROM <image>', got only FROM").Err()
+		return errors.New("expecting 'FROM <image>', got only FROM")
 	}
 
 	// In happy case this is one of:
@@ -99,7 +99,7 @@ func resolveFromLine(terms []string, r Resolver, locallyResolved map[string]bool
 	var img, tag string
 	switch imgRef := terms[1]; {
 	case strings.ContainsRune(imgRef, '$'):
-		return errors.Reason("bad FROM reference %q, ARGs in FROM are not supported by cloudbuildhelper", imgRef).Err()
+		return errors.Fmt("bad FROM reference %q, ARGs in FROM are not supported by cloudbuildhelper", imgRef)
 	case strings.ContainsRune(imgRef, '@'):
 		return nil // already using a digest, no need to resolve anything
 	case strings.ContainsRune(imgRef, ':'):
@@ -117,7 +117,7 @@ func resolveFromLine(terms []string, r Resolver, locallyResolved map[string]bool
 
 	digest, err := r.ResolveTag(img, tag)
 	if err != nil {
-		return errors.Annotate(err, "resolving %q", img+":"+tag).Err()
+		return errors.Fmt("resolving %q: %w", img+":"+tag, err)
 	}
 
 	if len(terms) == 4 && strings.EqualFold(terms[2], "AS") {

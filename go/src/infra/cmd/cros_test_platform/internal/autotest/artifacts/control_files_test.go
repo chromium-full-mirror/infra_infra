@@ -45,7 +45,7 @@ func formatDirectoryTreeOrDie(root string) string {
 	paths := []string{}
 	err := filepath.Walk(root, func(p string, fi os.FileInfo, err error) error {
 		if err != nil {
-			return errors.Annotate(err, "format %s", p).Err()
+			return errors.Fmt("format %s: %w", p, err)
 		}
 		paths = append(paths, p)
 		return nil
