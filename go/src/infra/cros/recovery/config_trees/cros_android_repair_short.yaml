@@ -3230,6 +3230,9 @@ plans:
             - name: Create log collection info ('cros_create_log_collection_info') (RUN_ONCE)
               conditions:
                 - name: Confirm log collection info does not exist ('cros_confirm_file_not_exists')
+            - name: Collect logs from DUT on /sys/fs/pstore/* (Allow to fail) ('cros_copy_to_logs') (RUN_ONCE)
+              conditions:
+                - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
             - name: 'Android: Collect dmesg logs from DUT (Allow to fail) (''cros_dmesg'')'
         - name: Read bootId ('cros_read_bootid')
           recoveries:

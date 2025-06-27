@@ -406,6 +406,7 @@ func androidActions(actions map[string]*Action) {
 			},
 			Dependencies: []string{
 				"Create log collection info",
+				"Collect logs from DUT on /sys/fs/pstore/*",
 				"Android: Collect dmesg logs from DUT",
 			},
 			ExecName:               "sample_pass",

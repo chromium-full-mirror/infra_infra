@@ -127550,6 +127550,24 @@ plans:
                         - 'exists in the file system. A pre-existing file indicates that '
                         - 'the collection of any pre-existing logs has already been '
                         - tried to be collected.
+                - name: Collect logs from DUT on /sys/fs/pstore/* (Allow to fail) (RUN_ONCE)
+                  exec_name: cros_copy_to_logs
+                  exec_args:
+                    - src_host_type:dut
+                    - src_path:/sys/fs/pstore
+                    - src_type:dir
+                    - use_host_dir:true
+                    - dest_suffix:prior_pstore
+                  docs:
+                    - 'We collect kernel persistent storage file system before '
+                    - 'executing repairs on the DUT. Any failures with this initial '
+                    - log collection are not critical.
+                  conditions:
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
                 - name: 'Android: Collect dmesg logs from DUT (Allow to fail)'
                   exec_name: cros_dmesg
                   exec_args:
