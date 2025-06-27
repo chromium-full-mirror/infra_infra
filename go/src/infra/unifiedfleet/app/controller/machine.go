@@ -415,9 +415,7 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 	// update the fields in the existing nic
 	for _, path := range mask.Paths {
 		switch path {
-		case util.ZonePath:
-			fallthrough
-		case util.LocationZonePath:
+		case util.LocationZonePath, util.ZonePath:
 			if machine.GetLocation().GetZone().String() == oldMachine.GetLocation().GetZone().String() {
 				// If the zone is not updated, then don't do anything.
 				continue
@@ -432,9 +430,7 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			}
 			oldMachine.GetLocation().Zone = machine.GetLocation().GetZone()
 			oldMachine.Realm = machine.GetRealm()
-		case util.RackPath:
-			fallthrough
-		case util.LocationRackPath:
+		case util.LocationRackPath, util.RackPath:
 			if machine.GetLocation().GetRack() == oldMachine.GetLocation().GetRack() {
 				continue
 			}
@@ -447,18 +443,14 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 				oldMachine.Location = &ufspb.Location{}
 			}
 			oldMachine.GetLocation().Rack = machine.GetLocation().GetRack()
-		case util.PlatformPath:
-			fallthrough
-		case util.ChromePlatformPath:
+		case util.ChromePlatformPath, util.PlatformPath:
 			if oldMachine.GetChromeBrowserMachine() == nil {
 				oldMachine.Device = &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				}
 			}
 			oldMachine.GetChromeBrowserMachine().ChromePlatform = machine.GetChromeBrowserMachine().GetChromePlatform()
-		case util.KvmPath:
-			fallthrough
-		case util.KvmInterfaceKvmPath:
+		case util.KvmInterfaceKvmPath, util.KvmPath:
 			if oldMachine.GetChromeBrowserMachine() == nil {
 				oldMachine.Device = &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
@@ -468,9 +460,7 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 				oldMachine.GetChromeBrowserMachine().KvmInterface = &ufspb.KVMInterface{}
 			}
 			oldMachine.GetChromeBrowserMachine().GetKvmInterface().Kvm = machine.GetChromeBrowserMachine().GetKvmInterface().GetKvm()
-		case util.KvmPortPath:
-			fallthrough
-		case util.KvmInterfacePortNamePath:
+		case util.KvmInterfacePortNamePath, util.KvmPortPath:
 			if oldMachine.GetChromeBrowserMachine() == nil {
 				oldMachine.Device = &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
@@ -480,9 +470,7 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 				oldMachine.GetChromeBrowserMachine().KvmInterface = &ufspb.KVMInterface{}
 			}
 			oldMachine.GetChromeBrowserMachine().GetKvmInterface().PortName = machine.GetChromeBrowserMachine().GetKvmInterface().GetPortName()
-		case util.DeploymentTicketCamelPath:
-			fallthrough
-		case util.DeploymentTicketPath:
+		case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
 			if oldMachine.GetChromeBrowserMachine() == nil {
 				oldMachine.Device = &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
@@ -491,13 +479,9 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.GetChromeBrowserMachine().DeploymentTicket = machine.GetChromeBrowserMachine().GetDeploymentTicket()
 		case util.TagsPath:
 			oldMachine.Tags = mergeTags(oldMachine.GetTags(), machine.GetTags())
-		case util.SerialNumberCamelPath:
-			fallthrough
-		case util.SerialNumberPath:
+		case util.SerialNumberPath, util.SerialNumberCamelPath:
 			oldMachine.SerialNumber = machine.GetSerialNumber()
-		case util.ResourceStateCamelPath:
-			fallthrough
-		case util.ResourceStatePath:
+		case util.ResourceStatePath, util.ResourceStateCamelPath:
 			oldMachine.ResourceState = machine.GetResourceState()
 		case util.DescriptionPath:
 			oldMachine.GetChromeBrowserMachine().Description = machine.GetChromeBrowserMachine().GetDescription()
@@ -511,21 +495,13 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.GetServerMachine().CpuType = machine.GetServerMachine().GetCpuType()
 		case util.ServerMachineDriveModelPath:
 			oldMachine.GetServerMachine().DriveModel = machine.GetServerMachine().GetDriveModel()
-		case util.AdmManufacturerPath:
-			fallthrough
-		case util.AttachedDeviceManufacturerPath:
+		case util.AttachedDeviceManufacturerPath, util.AdmManufacturerPath:
 			oldMachine.GetAttachedDevice().Manufacturer = machine.GetAttachedDevice().GetManufacturer()
-		case util.AdmDeviceTypePath:
-			fallthrough
-		case util.AttachedDeviceDeviceTypePath:
+		case util.AttachedDeviceDeviceTypePath, util.AdmDeviceTypePath:
 			oldMachine.GetAttachedDevice().DeviceType = machine.GetAttachedDevice().GetDeviceType()
-		case util.AdmBuildTargetPath:
-			fallthrough
-		case util.AttachedDeviceBuildTargetPath:
+		case util.AttachedDeviceBuildTargetPath, util.AdmBuildTargetPath:
 			oldMachine.GetAttachedDevice().BuildTarget = machine.GetAttachedDevice().GetBuildTarget()
-		case util.AdmModelPath:
-			fallthrough
-		case util.AttachedDeviceModelPath:
+		case util.AttachedDeviceModelPath, util.AdmModelPath:
 			oldMachine.GetAttachedDevice().Model = machine.GetAttachedDevice().GetModel()
 		case util.AndreiboardUltradebugSerialPath:
 			d := oldMachine.GetDevboard()
@@ -1217,9 +1193,7 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - name cannot be updated, delete and create a new machine instead")
 			case util.UpdateTimePath:
 				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - update_time cannot be updated, it is a output only field")
-			case util.ZonePath:
-				fallthrough
-			case util.LocationZonePath:
+			case util.LocationZonePath, util.ZonePath:
 				if machine.GetLocation() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location cannot be empty/nil.")
 				} else if machine.GetLocation().GetZone() == ufspb.Zone_ZONE_UNSPECIFIED {
@@ -1227,25 +1201,17 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 				} else if machine.GetLocation().GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - Cannot update zone without updating rack")
 				}
-			case util.RackPath:
-				fallthrough
-			case util.LocationRackPath:
+			case util.LocationRackPath, util.RackPath:
 				if machine.GetLocation() == nil || machine.GetLocation().GetRack() == "" {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location/rack cannot be empty/nil.")
 				}
-			case util.PlatformPath:
-				fallthrough
-			case util.ChromePlatformPath:
+			case util.ChromePlatformPath, util.PlatformPath:
 				if machine.GetChromeBrowserMachine() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
 				}
-			case util.KvmPath:
+			case util.KvmInterfaceKvmPath, util.KvmPath:
 				fallthrough
-			case util.KvmPortPath:
-				fallthrough
-			case util.KvmInterfaceKvmPath:
-				fallthrough
-			case util.KvmInterfacePortNamePath:
+			case util.KvmInterfacePortNamePath, util.KvmPortPath:
 				// Check kvm interface validity in processMachineUpdateMask later.
 				if machine.GetChromeBrowserMachine() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
@@ -1253,9 +1219,7 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 				if machine.GetChromeBrowserMachine().GetKvmInterface() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - kvm interface cannot be empty/nil.")
 				}
-			case util.DeploymentTicketCamelPath:
-				fallthrough
-			case util.DeploymentTicketPath:
+			case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
 				if machine.GetChromeBrowserMachine() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
 				}
@@ -1263,27 +1227,19 @@ func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMas
 				if machine.GetChromeBrowserMachine() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
 				}
-			case util.AdmManufacturerPath:
-				fallthrough
-			case util.AttachedDeviceManufacturerPath:
+			case util.AttachedDeviceManufacturerPath, util.AdmManufacturerPath:
 				if machine.GetAttachedDevice() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
 				}
-			case util.AdmDeviceTypePath:
-				fallthrough
-			case util.AttachedDeviceDeviceTypePath:
+			case util.AttachedDeviceDeviceTypePath, util.AdmDeviceTypePath:
 				if machine.GetAttachedDevice() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
 				}
-			case util.AdmBuildTargetPath:
-				fallthrough
-			case util.AttachedDeviceBuildTargetPath:
+			case util.AttachedDeviceBuildTargetPath, util.AdmBuildTargetPath:
 				if machine.GetAttachedDevice() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
 				}
-			case util.AdmModelPath:
-				fallthrough
-			case util.AttachedDeviceModelPath:
+			case util.AttachedDeviceModelPath, util.AdmModelPath:
 				if machine.GetAttachedDevice() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
 				}
