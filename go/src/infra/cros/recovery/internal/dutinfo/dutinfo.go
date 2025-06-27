@@ -218,7 +218,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Camera:              createDUTCamera(ds),
 			Fingerprint:         createDUTFingerprint(ds),
 			OsRestriction:       osRestriction,
-			Pasit:               createPasit(p.GetPasit()),
+			Pasit:               createPasit(ds, p.GetPasit()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -468,13 +468,14 @@ func createDUTBluetooth(ds *ufslab.DutState, rc *ufspb.RecoveryConfig) *tlw.Blue
 	}
 }
 
-func createPasit(pasit *ufslab.Pasit) *tlw.Pasit {
+func createPasit(ds *ufslab.DutState, pasit *ufslab.Pasit) *tlw.Pasit {
 	if pasit == nil {
 		return &tlw.Pasit{}
 	}
 
 	res := &tlw.Pasit{
 		Hostname: pasit.GetHostname(),
+		State:    convertPasitStates(ds.GetPasitState()),
 	}
 
 	for _, d := range pasit.GetDevices() {
@@ -798,6 +799,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		if c := chromeos.GetCellular(); c != nil {
 			state.CellularModemState = convertHardwareStateToUFS(c.GetModemState())
 			state.StarfishState = convertStarfishStateToUFS(c.GetStarfishState())
+		}
+		if p := chromeos.GetPasit(); p != nil {
+			state.PasitState = convertPasitStateToUFS(p.GetState())
 		}
 		if ch := chromeos.GetChameleon(); ch != nil {
 			for us, rs := range chameleonStates {

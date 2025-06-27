@@ -1112,6 +1112,7 @@ message Pasit {
   repeated Device devices = 2;
   // The connections between devices/components in the testbed.
   repeated Connection connections = 3;
+  State state = 4;
 
   // A single connection between two components in the topology.
   message Connection {
@@ -1166,5 +1167,14 @@ message Pasit {
       float voltage = 2;
       float power = 3;
     }
+  }
+
+  enum State {
+    // State not specified.
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    STATE_WORKING = 1;
+    // Device is broken or not working as expected.
+    STATE_BROKEN = 2;
   }
 }

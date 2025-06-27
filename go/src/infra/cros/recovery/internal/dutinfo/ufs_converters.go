@@ -632,3 +632,27 @@ func convertOSRestriction(v ufslab.DeviceUnderTest_OSRestriction) tlw.ChromeOS_O
 	}
 	return tlw.ChromeOS_OSR_ANY
 }
+
+// pasitStates maps the ufs peripheral states to tlw pasit states.
+var pasitStates = map[ufslab.PeripheralState]tlw.Pasit_State{
+	ufslab.PeripheralState_WORKING: tlw.Pasit_STATE_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.Pasit_STATE_BROKEN,
+}
+
+// convertPasitStates converts UFS state to TLW pasit states.
+func convertPasitStates(s ufslab.PeripheralState) tlw.Pasit_State {
+	if ns, ok := pasitStates[s]; ok {
+		return ns
+	}
+	return tlw.Pasit_STATE_UNSPECIFIED
+}
+
+// convertPasitStateToUFS TLW modem types to UFS pasit states.
+func convertPasitStateToUFS(s tlw.Pasit_State) ufslab.PeripheralState {
+	for us, ls := range pasitStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
