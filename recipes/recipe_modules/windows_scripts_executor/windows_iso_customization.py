@@ -366,7 +366,7 @@ class WinISOCustomization(customization.Customization):
         '*',
         '--udf',  # include UDF filesystem support
         '-iso-level',
-        '3',  # Use level 3
+        '4',  # Use level 4 to eliminate error: 'Directories to deep'
         '-allow-limited-size',  # allow files bigger than 4GB
         '-V',
         '{}'.format(name),  # name for the iso being generated
