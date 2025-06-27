@@ -18,7 +18,7 @@ import (
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetMachineLSEDeployment returns the deployment record for the given id.
@@ -73,7 +73,7 @@ func UpdateMachineLSEDeployment(ctx context.Context, dr *ufspb.MachineLSEDeploym
 			}
 		}
 		if dr.GetHostname() == "" {
-			dr.Hostname = ufsUtil.GetHostnameWithNoHostPrefix(dr.GetSerialNumber())
+			dr.Hostname = util.GetHostnameWithNoHostPrefix(dr.GetSerialNumber())
 		}
 
 		logging.Infof(ctx, "The deployment record to update is %#v", dr)
@@ -95,13 +95,13 @@ func processDeploymentUpdateMask(ctx context.Context, oldCs *ufspb.MachineLSEDep
 	// Update the fields in the existing/old object
 	for _, path := range mask.Paths {
 		switch path {
-		case "hostname":
+		case util.HostnamePath:
 			oldCs.Hostname = cs.Hostname
-		case "deployment_identifier":
+		case util.DeploymentIdentifierPath:
 			oldCs.DeploymentIdentifier = cs.GetDeploymentIdentifier()
-		case "deployment_env":
+		case util.DeploymentEnvPath:
 			oldCs.DeploymentEnv = cs.GetDeploymentEnv()
-		case "configs_to_push":
+		case util.ConfigsToPushPath:
 			oldCs.ConfigsToPush = cs.GetConfigsToPush()
 		}
 	}
@@ -115,12 +115,12 @@ func validateDeploymentUpdateMask(mask *field_mask.FieldMask) error {
 		// Validate the give field mask.
 		for _, path := range mask.Paths {
 			switch path {
-			case "serial_number":
+			case util.SerialNumberPath:
 				return status.Error(codes.InvalidArgument, "serial number cannot be updated")
-			case "hostname":
-			case "deployment_identifier":
-			case "deployment_env":
-			case "configs_to_push":
+			case util.HostnamePath:
+			case util.DeploymentIdentifierPath:
+			case util.DeploymentEnvPath:
+			case util.ConfigsToPushPath:
 				// Valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "unsupported update mask path %q", path)

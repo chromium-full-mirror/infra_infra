@@ -98,10 +98,10 @@ func (c *updateMachineLSEDeployment) innerRun(a subcommands.Application, args []
 	res, err := ic.UpdateMachineLSEDeployment(ctx, &ufsAPI.UpdateMachineLSEDeploymentRequest{
 		MachineLseDeployment: dr,
 		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"deployment-id":  "deployment_identifier",
-			"deployment-env": "deployment_env",
-			"host":           "hostname",
-			"no-host-yet":    "hostname",
+			"deployment-id":  ufsUtil.DeploymentIdentifierPath,
+			"deployment-env": ufsUtil.DeploymentEnvPath,
+			"host":           ufsUtil.HostnamePath,
+			"no-host-yet":    ufsUtil.HostnamePath,
 		}),
 	})
 	if err != nil {
