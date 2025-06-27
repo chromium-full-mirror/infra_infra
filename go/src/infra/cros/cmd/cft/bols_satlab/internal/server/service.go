@@ -500,8 +500,30 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 	return &bols.StartServodResponse{}, nil
 }
 
-func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.StopServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StopServod not implemented")
+func (s *service) StopServod(ctx context.Context, req *bols.StopServodRequest) (*bols.StopServodResponse, error) {
+	s.logger.Println("Receive StopServod Request")
+	containerName := req.GetStationId().GetContainerName()
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("StopServod: fail to create docker client: %w", err)
+	}
+
+	isUp, err := c.IsUp(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("StopServod: failed to check status of container %q: %w", containerName, err)
+	}
+	if !isUp {
+		s.logger.Printf("StopServod: container %q is not running, considering it already stopped.", containerName)
+		return &bols.StopServodResponse{}, nil
+	}
+
+	if err := c.Remove(ctx, containerName, true); err != nil {
+		return nil, s.logAndReturnErrorf("StopServod: failed to remove container %q: %w", containerName, err)
+	}
+
+	s.logger.Println("Served StopServod Request Successfully")
+	return &bols.StopServodResponse{}, nil
 }
 
 func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatusRequest) (*bols.GetServodStatusResponse, error) {

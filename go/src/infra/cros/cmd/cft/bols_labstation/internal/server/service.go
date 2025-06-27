@@ -412,8 +412,24 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 }
 
 // StopServod stops the servod daemon.
-func (s *service) StopServod(context.Context, *bols.StopServodRequest) (*bols.StopServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StopServod not implemented")
+func (s *service) StopServod(ctx context.Context, req *bols.StopServodRequest) (*bols.StopServodResponse, error) {
+	s.logger.Println("Receive StopServod Request")
+	port := req.GetStationId().GetServodPort()
+
+	// Check if a servod instance is running for the given port before trying to stop it.
+	checkCmd := []string{"instance", "show", "-p", fmt.Sprintf("%d", port)}
+	if err := exec.CommandContext(ctx, "servodtool", checkCmd...).Run(); err != nil {
+		s.logger.Printf("servod process not found for port %d, considering it already stopped.", port)
+		return &bols.StopServodResponse{}, nil
+	}
+
+	args := []string{"servod", fmt.Sprintf("PORT=%d", port)}
+	if out, err := exec.CommandContext(ctx, "stop", args...).CombinedOutput(); err != nil {
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to stop servod at port %d: %s: %w", port, string(out), err))
+	}
+	s.logger.Println("Served StopServod Request Successfully")
+	return &bols.StopServodResponse{}, nil
 }
 
 // GetServodStatus gets the current status of servod.
