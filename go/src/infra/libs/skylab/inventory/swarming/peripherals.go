@@ -223,6 +223,11 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			dims["label-peripheral_wifi_state"] = []string{pwsState}
 		}
 	}
+	if pasitState := p.GetPasitState(); pasitState != inventory.PeripheralState_UNKNOWN {
+		if state, ok := lab.PeripheralState_name[int32(pasitState)]; ok {
+			appendDim(dims, "label-pasit_state", state)
+		}
+	}
 	for _, v := range p.GetSimFeatures() {
 		appendDim(dims, "label-sim_features", v.String())
 	}
@@ -428,6 +433,13 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 			p.StarfishState = &state
 		}
 		delete(d, "label-starfish_state")
+	}
+	if pasitState, ok := getLastStringValue(d, "label-pasit_state"); ok {
+		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(pasitState)]; ok {
+			state := inventory.PeripheralState(sIndex)
+			p.PasitState = &state
+		}
+		delete(d, "label-pasit_state")
 	}
 	if pbsStateName, ok := getLastStringValue(d, "label-peripheral_btpeer_state"); ok {
 		pbsState := inventory.PeripheralState_UNKNOWN

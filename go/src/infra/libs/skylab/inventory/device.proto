@@ -463,7 +463,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 57
+// NEXT TAG: 58
 message Peripherals {
   reserved 32;
 
@@ -581,6 +581,7 @@ message Peripherals {
   // and is not populated directly in UFS.
   optional int32 working_sims = 49;
   optional PeripheralState rpm_state = 25;
+  optional PeripheralState pasit_state = 57;
 
   // The overall state of all btpeer peripherals in the testbed.
   // Sourced from unifiedfleet.api.v1.models.chromeos.lab.DutState.peripheral_btpeer_state.

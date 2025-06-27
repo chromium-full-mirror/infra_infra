@@ -91,6 +91,7 @@ peripherals: {
   pasit_components: "MONITOR-1"
   pasit_components: "MONITOR-2"
   pasit_components: "DOCKING_STATION-1"
+  pasit_state: 3
   amt_manager_state: 1
   audio_beamforming: "intelligo"
   camera_state: 2
@@ -278,6 +279,7 @@ peripherals: {
   pasit_components: "MONITOR-1"
   pasit_components: "MONITOR-2"
   pasit_components: "DOCKING_STATION-1"
+  pasit_state: 3
   amt_manager_state: 1
   audio_beamforming: "intelligo"
   camera_state: 2
@@ -531,6 +533,7 @@ var fullDimensions = Dimensions{
 	"label-wifi_on_site":             {"True"},
 	"label-working_bluetooth_btpeer": {"1", "2", "3"},
 	"label-pasit_components":         {"CAMERA-1", "MONITOR-1", "MONITOR-2", "DOCKING_STATION-1"},
+	"label-pasit_state":              {"BROKEN"},
 	"label-amt_manager_state":        {"WORKING"},
 	"label-audio_beamforming":        {"intelligo"},
 	"label-camera_state":             {"ACCEPTABLE"},
