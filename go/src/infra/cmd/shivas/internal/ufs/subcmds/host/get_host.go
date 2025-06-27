@@ -197,7 +197,12 @@ func printHostNormal(msgs []proto.Message, tsv, keysOnly bool) error {
 		utils.PrintTSVMachineLSEs(msgs, keysOnly)
 		return nil
 	}
-	utils.PrintTableTitle(utils.MachineLSETitle, tsv, keysOnly)
+	lse := msgs[0].(*ufspb.MachineLSE)
+	if lse.GetChromeBrowserMachineLse() != nil {
+		utils.PrintTableTitle(utils.BrowserMachineLSETitle, tsv, keysOnly)
+	} else if lse.GetAndroidHostLse() != nil {
+		utils.PrintTableTitle(utils.AndroidHostLSETitle, tsv, keysOnly)
+	}
 	utils.PrintMachineLSEs(msgs, keysOnly)
 	return nil
 }

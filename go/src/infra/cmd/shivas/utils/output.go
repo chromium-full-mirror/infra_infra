@@ -71,7 +71,8 @@ var (
 	RackTitle                  = []string{"Rack Name", "Bbnum", "Zone", "Capacity", "State", "Realm", "UpdateTime"}
 	AttachedDeviceLSETitle     = []string{"Host", "OS Version", "OS Image", "Zone", "Rack", "Machine(s)", "State", "Schedulable", "Associated Hostname", "Associated Host Port", "Description", "UpdateTime"}
 	DevboardLSETitle           = []string{"Machine Name", "Serial Number", "Zone", "Rack", "Manufacturer", "DeviceType", "Model", "Build Target", "State", "Realm", "UpdateTime"} // XXXXXXXXXx
-	MachineLSETitle            = []string{"Host", "OS Version", "OS Image", "Zone", "Virtual Datacenter", "Rack", "Machine(s)", "Nic", "Vlan", "IP", "State", "VM capacity", "DeploymentTicket", "Description", "UpdateTime"}
+	BrowserMachineLSETitle     = []string{"Host", "OS Version", "OS Image", "Zone", "Virtual Datacenter", "Rack", "Machine(s)", "Nic", "Vlan", "IP", "State", "VM capacity", "DeploymentTicket", "Description", "UpdateTime"}
+	AndroidHostLSETitle        = []string{"Host", "OS Version", "OS Image", "Zone", "Rack", "Machine(s)", "Switch", "Switch Port", "Nic", "Vlan", "IP", "State", "DeploymentTicket", "Description", "UpdateTime"}
 	MachineLSEFullTitle        = []string{"Host", "OS Version", "OS Image", "Manufacturer", "Machine", "Zone", "Virtual Datacenter", "Rack", "Nic", "IP", "Vlan", "MAC Address", "State", "VM capacity", "Description", "UpdateTime"}
 	MachineLSEDeploymentTitle  = []string{"Serial Number", "Hostname", "Deployment Identifier", "Deployment Env", "UpdateTime"}
 	VMFreeSlotTitle            = []string{"Host", "OS Version", "Zone", "Virtual Datacenter", "Rack", "Machine(s)", "Nic", "Vlan", "IP", "State", "Free slots", "DeploymentTicket", "Description", "UpdateTime"}
@@ -1697,23 +1698,44 @@ func machineLSEOutputStrs(pm proto.Message) []string {
 	if m.GetAttachedDeviceLse() != nil {
 		return nil
 	}
-	return []string{
-		ufsUtil.RemovePrefix(m.GetName()),
-		m.GetChromeBrowserMachineLse().GetOsVersion().GetValue(),
-		m.GetChromeBrowserMachineLse().GetOsVersion().GetImage(),
-		ufsUtil.RemoveZonePrefix(m.GetZone()),
-		m.GetChromeBrowserMachineLse().GetVirtualDatacenter(),
-		m.GetRack(),
-		machine,
-		m.GetNic(),
-		m.GetVlan(),
-		m.GetIp(),
-		ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
-		fmt.Sprintf("%d", m.GetChromeBrowserMachineLse().GetVmCapacity()),
-		m.GetDeploymentTicket(),
-		m.GetDescription(),
-		ts,
+	if m.GetChromeBrowserMachineLse() != nil {
+		return []string{
+			ufsUtil.RemovePrefix(m.GetName()),
+			m.GetChromeBrowserMachineLse().GetOsVersion().GetValue(),
+			m.GetChromeBrowserMachineLse().GetOsVersion().GetImage(),
+			ufsUtil.RemoveZonePrefix(m.GetZone()),
+			m.GetChromeBrowserMachineLse().GetVirtualDatacenter(),
+			m.GetRack(),
+			machine,
+			m.GetNic(),
+			m.GetVlan(),
+			m.GetIp(),
+			ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
+			fmt.Sprintf("%d", m.GetChromeBrowserMachineLse().GetVmCapacity()),
+			m.GetDeploymentTicket(),
+			m.GetDescription(),
+			ts,
+		}
+	} else if m.GetAndroidHostLse() != nil {
+		return []string{
+			ufsUtil.RemovePrefix(m.GetName()),
+			m.GetAndroidHostLse().GetOsVersion().GetValue(),
+			m.GetAndroidHostLse().GetOsVersion().GetImage(),
+			ufsUtil.RemoveZonePrefix(m.GetZone()),
+			m.GetRack(),
+			machine,
+			m.GetAndroidHostLse().GetSwitchInterface().GetSwitch(),
+			m.GetAndroidHostLse().GetSwitchInterface().GetPortName(),
+			m.GetNic(),
+			m.GetVlan(),
+			m.GetIp(),
+			ufsUtil.RemoveStatePrefix(m.GetResourceState().String()),
+			m.GetDeploymentTicket(),
+			m.GetDescription(),
+			ts,
+		}
 	}
+	return nil
 }
 
 func printMachineLSE(m *ufspb.MachineLSE, keysOnly bool) {
