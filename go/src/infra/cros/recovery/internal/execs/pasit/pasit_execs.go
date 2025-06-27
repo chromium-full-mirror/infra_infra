@@ -103,7 +103,29 @@ func auditUSBTestersExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// setPasitStateExec sets the DUT's pasit state to the requested value.
+func setPasitStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	p := info.GetChromeos().GetPasit()
+	if p == nil {
+		return errors.Reason("set pasit state: pasit data is not present in dut info").Err()
+	}
+
+	actionMap := info.GetActionArgs(ctx)
+	state := strings.ToUpper(actionMap.AsString(ctx, "state", ""))
+	if state == "" {
+		return errors.Reason("set pasit state: state is not provided").Err()
+	}
+	s, ok := tlw.Pasit_State_value["STATE_"+state]
+	if !ok {
+		return errors.Reason("set pasit state state: state %q is invalid", state).Err()
+	}
+
+	p.State = tlw.Pasit_State(s)
+	return nil
+}
+
 func init() {
 	execs.Register("pasit_audit_switches", auditSwitchesExec)
 	execs.Register("pasit_audit_usb_testers", auditUSBTestersExec)
+	execs.Register("pasit_set_state", setPasitStateExec)
 }
