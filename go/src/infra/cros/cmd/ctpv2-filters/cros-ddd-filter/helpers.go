@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -100,6 +101,9 @@ var (
 	// Lock the solutionCache down by pool and variant.
 	// Type: map[string]sync.Mutex{}
 	solutionCacheLocksByPoolAndVariant = sync.Map{}
+	// Track the expiration of the cache per pool.
+	// Type: time.Time
+	solutionCacheExpiration = sync.Map{}
 )
 
 func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, inventoryInfo []*deviceinfo.TargetVariant, pool string) (*solver_proto.SolvedCategory, error) {
@@ -114,7 +118,8 @@ func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, invent
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	v, solutionFound := solutionCache.Load(cacheKey)
-	if solutionFound {
+	solutionExpiration, _ := solutionCacheExpiration.LoadOrStore(pool, time.Now().Add(8*time.Hour))
+	if solutionFound && time.Now().Before(solutionExpiration.(time.Time)) {
 		return v.(*solver_proto.SolvedCategory), nil
 	}
 
@@ -140,6 +145,7 @@ func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, invent
 		return nil, err
 	}
 	solutionCache.Store(cacheKey, solution)
+	solutionCacheExpiration.Store(pool, time.Now().Add(8*time.Hour))
 	return solution, nil
 }
 

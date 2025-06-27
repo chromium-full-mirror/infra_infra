@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/mitchellh/hashstructure/v2"
 	"google.golang.org/protobuf/proto"
@@ -830,6 +831,9 @@ var (
 	// Lock the inventoryByHwidCache down by pool.
 	// Type: map[string]sync.Mutex{}
 	inventoryByHwidCacheLocksByPool = sync.Map{}
+	// Track the expiration of the cache per pool.
+	// Type: time.Time
+	inventoryByHwidCacheExpiration = sync.Map{}
 )
 
 func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingdata.SwarmingdataEntry {
@@ -837,7 +841,8 @@ func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingd
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	inventoryByHwid, ok := inventoryByHwidCache.Load(pool)
-	if ok {
+	inventoryByHwidExpiration, _ := inventoryByHwidCacheExpiration.LoadOrStore(pool, time.Now().Add(8*time.Hour))
+	if ok && time.Now().Before(inventoryByHwidExpiration.(time.Time)) {
 		return inventoryByHwid.(map[string][]*swarmingdata.SwarmingdataEntry)
 	}
 	// Get the lab data which is cached if data on the pool has been queried
@@ -855,6 +860,7 @@ func getInventoryByHWID(pool string, logger *log.Logger) map[string][]*swarmingd
 		log.Fatal(errors.ApiError(err))
 	}
 	inventoryByHwidCache.Store(pool, swarmData)
+	inventoryByHwidCacheExpiration.Store(pool, time.Now().Add(8*time.Hour))
 	return swarmData
 }
 

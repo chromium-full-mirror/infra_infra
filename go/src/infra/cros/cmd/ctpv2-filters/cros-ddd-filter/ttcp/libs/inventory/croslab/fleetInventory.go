@@ -9,6 +9,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/iterator"
@@ -37,12 +38,18 @@ var (
 	// Lock the inventoryCache down by pool. Saves on resources when pulling from bigquery.
 	// Type: map[string]sync.Mutex{}
 	inventoryCacheLocksByPool = sync.Map{}
+	// Track the expiration of the cache per pool.
+	// Type: time.Time
+	inventoryCacheExpiration = sync.Map{}
 
 	// Type: map[string][]*deviceinfo.TargetVariant
 	deviceInfosCache = sync.Map{}
 	// Lock the deviceInfosCache down by pool.
 	// Type: map[string]sync.Mutex{}
 	deviceInfosCacheLocksByPool = sync.Map{}
+	// Track the expiration of the cache per pool.
+	// Type: time.Time
+	deviceInfosCacheExpiration = sync.Map{}
 )
 
 func GenerateAvailableDevicesInfo(resc *datasets.AllDatasetsResources, pool string, logger *log.Logger, clientOpts ...option.ClientOption) []*deviceinfo.TargetVariant {
@@ -61,7 +68,8 @@ func GeneratePropertiesFromInventory(pool string, inventory *swarmingdata.SwarmD
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	deviceInfos, ok := deviceInfosCache.Load(pool)
-	if ok {
+	deviceInfosExpiration, _ := deviceInfosCacheExpiration.LoadOrStore(pool, time.Now().Add(8*time.Hour))
+	if ok && time.Now().Before(deviceInfosExpiration.(time.Time)) {
 		return deviceInfos.([]*deviceinfo.TargetVariant)
 	}
 
@@ -76,6 +84,7 @@ func GeneratePropertiesFromInventory(pool string, inventory *swarmingdata.SwarmD
 	allDeviceProperties := HwidToProperties(hwids, resc)
 	mergeSwarmPropsToHwid(inventory, allDeviceProperties)
 	deviceInfosCache.Store(pool, allDeviceProperties)
+	deviceInfosCacheExpiration.Store(pool, time.Now().Add(8*time.Hour))
 	return allDeviceProperties
 }
 
@@ -206,7 +215,8 @@ func getSwarmingInventory(pool string, logger *log.Logger, clientOpts ...option.
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	inventoryData, ok := inventoryCache.Load(pool)
-	if ok {
+	inventoryExpiration, _ := inventoryCacheExpiration.LoadOrStore(pool, time.Now().Add(8*time.Hour))
+	if ok && time.Now().Before(inventoryExpiration.(time.Time)) {
 		return inventoryData.(*swarmingdata.SwarmDataResources), nil
 	}
 	c, err = bigquery.NewClient(ctx, projectID, clientOpts...)
@@ -276,6 +286,7 @@ func getSwarmingInventory(pool string, logger *log.Logger, clientOpts ...option.
 	swarmingResource.SwarmDb = fleetData
 	// Cache for future inventory data requests
 	inventoryCache.Store(pool, swarmingResource)
+	inventoryCacheExpiration.Store(pool, time.Now().Add(8*time.Hour))
 	return swarmingResource, nil
 }
 
