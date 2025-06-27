@@ -58,7 +58,7 @@ func (s SetupUSBState) getProvisionOSImagePath(ctx context.Context, log *log.Log
 	board := s.params.Dut.GetChromeos().GetDutModel().GetBuildTarget()
 	// TODO: chromeos-throw-away-bucket/kimjae is a private GCS bucket, we need a new home to
 	// store provision images.
-	imageFileName := fmt.Sprintf("%s-provision-v7.0.1.bin", board)
+	imageFileName := fmt.Sprintf("%s-provision-v7.0.1-a.bin", board)
 	provisionOSImagePath := fmt.Sprintf("gs://chromeos-throw-away-bucket/kimjae/%s", imageFileName)
 	if partnerGCSBucket := s.params.PartnerMetadata.GetPartnerGcsBucket(); partnerGCSBucket != "" {
 		provisionOSImagePath = fmt.Sprintf("gs://%s/provision_images/%s", partnerGCSBucket, imageFileName)
