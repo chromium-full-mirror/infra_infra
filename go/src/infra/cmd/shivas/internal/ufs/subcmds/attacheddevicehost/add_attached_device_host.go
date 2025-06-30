@@ -54,6 +54,9 @@ func addADHCommandRun() subcommands.CommandRun {
 	c.Flags.StringVar(&c.osVersion, "os", "", "name of the os version of the host")
 	c.Flags.StringVar(&c.assocHostname, "associated-hostname", "", "the hostname of the device that the attached device is attached to")
 	c.Flags.StringVar(&c.assocHostPort, "associated-hostport", "", "the port used of the device that the attached device is attached to")
+	c.Flags.StringVar(&c.wlanMac, "wlan-mac", "", "wlan mac of the attached device")
+	c.Flags.StringVar(&c.sim1, "sim1", "", "SIM 1 for this attached device")
+	c.Flags.StringVar(&c.sim2, "sim2", "", "SIM 2 for this attached device")
 	c.Flags.BoolVar(&c.schedulable, "schedulable", true, "whether this host should be exposed to the scheduling layer or not (default to true)")
 	c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 	return c
@@ -73,6 +76,9 @@ type addAttachedDeviceHost struct {
 	osVersion     string
 	assocHostname string
 	assocHostPort string
+	wlanMac       string
+	sim1          string
+	sim2          string
 	schedulable   bool
 	tags          []string
 }
@@ -180,6 +186,9 @@ func (c *addAttachedDeviceHost) parseArgs(lse *ufspb.MachineLSE) {
 			},
 			AssociatedHostname: c.assocHostname,
 			AssociatedHostPort: c.assocHostPort,
+			WlanMacAddress:     c.wlanMac,
+			Sim1:               c.sim1,
+			Sim2:               c.sim2,
 		},
 	}
 }
@@ -203,6 +212,15 @@ func (c *addAttachedDeviceHost) validateArgs() error {
 		}
 		if c.assocHostPort != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-associated-hostport' cannot be specified at the same time.")
+		}
+		if c.wlanMac != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-wlan-mac' cannot be specified at the same time.")
+		}
+		if c.sim1 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim1' cannot be specified at the same time.")
+		}
+		if c.sim2 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim2' cannot be specified at the same time.")
 		}
 		if len(c.tags) > 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-tag' cannot be specified at the same time.")
