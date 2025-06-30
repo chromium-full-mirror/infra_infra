@@ -14,7 +14,6 @@ import (
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
-	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 const maxPageSize int = 1000
@@ -23,7 +22,7 @@ const maxPageSize int = 1000
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (_ *fleetconsolerpc.ListDevicesResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
-	offset, err := listDevicesPageTokenToOffset(req)
+	offset, err := pageTokenToOffset(req.PageToken, req.Filter, req.OrderBy)
 	if err != nil {
 		logging.Errorf(ctx, "failed to extract page token: %s", err)
 		return nil, err
@@ -56,7 +55,7 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 
 	var nextPageToken string
 	if hasMoreData {
-		nextPageToken, err = listDevicesOffsetToPageToken(offset+pageSize, req)
+		nextPageToken, err = offsetToPageToken(offset+pageSize, req.Filter, req.OrderBy)
 		if err != nil {
 			logging.Errorf(ctx, "failed to encode next page token: %s", err)
 			return nil, err
@@ -67,18 +66,4 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		Devices:       results,
 		NextPageToken: nextPageToken,
 	}, nil
-}
-
-func listDevicesPageTokenToOffset(req *fleetconsolerpc.ListDevicesRequest) (int, error) {
-	return utils.PageTokenToOffset(req.GetPageToken(), []string{
-		req.GetFilter(),
-		req.GetOrderBy(),
-	})
-}
-
-func listDevicesOffsetToPageToken(offset int, req *fleetconsolerpc.ListDevicesRequest) (string, error) {
-	return utils.OffsetToPageToken(offset, []string{
-		req.GetFilter(),
-		req.GetOrderBy(),
-	})
 }

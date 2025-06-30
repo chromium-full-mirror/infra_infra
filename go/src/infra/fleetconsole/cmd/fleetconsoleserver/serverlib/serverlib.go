@@ -55,27 +55,33 @@ func Modules() []module.Module {
 }
 
 var ACLMap rpcacl.Map = map[string]string{
-	"/fleetconsole.FleetConsole/CleanExit":                                  "googlers",
-	"/fleetconsole.FleetConsole/CountDevices":                               "googlers",
-	"/fleetconsole.FleetConsole/ExportDevicesToCSV":                         "googlers",
-	"/fleetconsole.FleetConsole/GetDeviceDimensions":                        "googlers",
-	"/fleetconsole.FleetConsole/ListDevices":                                "googlers",
+	"/fleetconsole.FleetConsole/CleanExit":         "googlers",
+	"/fleetconsole.FleetConsole/Ping":              "googlers",
+	"/fleetconsole.FleetConsole/PingDB":            "googlers",
+	"/fleetconsole.FleetConsole/PingBigQuery":      "googlers",
+	"/fleetconsole.FleetConsole/PingDeviceManager": "googlers",
+	"/fleetconsole.FleetConsole/PingUfs":           "googlers",
+
+	"/fleetconsole.FleetConsole/CountDevices":        "googlers",
+	"/fleetconsole.FleetConsole/ExportDevicesToCSV":  "googlers",
+	"/fleetconsole.FleetConsole/GetDeviceDimensions": "googlers",
+	"/fleetconsole.FleetConsole/ListDevices":         "googlers",
+	"/fleetconsole.FleetConsole/LogFrontend":         "googlers",
+
+	// ************** RESOURCE REQUEST INSIGHTS *********************
 	"/fleetconsole.FleetConsole/ListResourceRequests":                       "googlers",
 	"/fleetconsole.FleetConsole/GetResourceRequestsMultiselectFilterValues": "googlers",
 	"/fleetconsole.FleetConsole/CountResourceRequests":                      "googlers",
-	"/fleetconsole.FleetConsole/Ping":                                       "googlers",
-	"/fleetconsole.FleetConsole/PingDB":                                     "googlers",
-	"/fleetconsole.FleetConsole/PingBigQuery":                               "googlers",
-	"/fleetconsole.FleetConsole/PingDeviceManager":                          "googlers",
-	"/fleetconsole.FleetConsole/PingUfs":                                    "googlers",
-	"/fleetconsole.FleetConsole/LogFrontend":                                "googlers",
-	"/fleetconsole.FleetConsole/RepopulateCache":                            "mdb/fleet-console-eng",
-	"/discovery.Discovery/Describe":                                         rpcacl.All,
-	"/grpc.health.v1.Health/Watch":                                          rpcacl.All,
-	"/grpc.health.v1.Health/Check":                                          rpcacl.All,
 
 	// ************** REPAIR METRICS *********************
+	"/fleetconsole.FleetConsole/ListRepairMetrics": "googlers",
+
+	"/fleetconsole.FleetConsole/RepopulateCache":      "mdb/fleet-console-eng",
 	"/fleetconsole.FleetConsole/UpdateAndroidDevices": "mdb/fleet-console-eng",
+
+	"/discovery.Discovery/Describe": rpcacl.All,
+	"/grpc.health.v1.Health/Watch":  rpcacl.All,
+	"/grpc.health.v1.Health/Check":  rpcacl.All,
 }
 
 func ServerMain(srv *server.Server) error {
