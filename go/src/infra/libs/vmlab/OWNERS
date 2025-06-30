@@ -5,4 +5,3 @@ include chromiumos/owners:v1:/infra/OWNERS.ci
 fqj@chromium.org
 shaochuan@chromium.org
 mingkong@google.com
-justinsuen@google.com
