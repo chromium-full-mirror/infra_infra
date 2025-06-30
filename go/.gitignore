@@ -3,3 +3,6 @@
 /golang
 /pkg
 .tools_spec.json
+
+# gemini-cli creates a hiden folder.
+**/.gemini/
