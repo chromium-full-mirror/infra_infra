@@ -1070,10 +1070,26 @@ func TestUpdateMachine(t *testing.T) {
 				Name: "adm-1",
 				Device: &ufspb.Machine_AttachedDevice{
 					AttachedDevice: &ufspb.AttachedDevice{
-						DeviceType:   ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE,
-						Manufacturer: "test-man",
-						BuildTarget:  "test-target",
-						Model:        "test-model",
+						DeviceType:    ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE,
+						Manufacturer:  "test-man",
+						BuildTarget:   "test-target",
+						Model:         "test-model",
+						Phase:         "test-phase",
+						Revision:      "test-revision",
+						ChipId:        "test-chip-id",
+						Imei1:         "test-imei1",
+						Imei2:         "test-imei2",
+						BatteryStatus: ufspb.AttachedDevice_BATTERY_STATUS_FAKE,
+						Storage: &ufspb.AttachedDevice_Storage{
+							Manufacturer: "test-man",
+							Capacity:     10,
+						},
+						Sim: &ufspb.AttachedDevice_SIM{
+							Types: []ufspb.AttachedDevice_SIM_SIMType{
+								ufspb.AttachedDevice_SIM_SIM_TYPE_NONE,
+							},
+							Eid: "",
+						},
 					},
 				},
 			}
@@ -1084,10 +1100,26 @@ func TestUpdateMachine(t *testing.T) {
 				Name: "adm-1",
 				Device: &ufspb.Machine_AttachedDevice{
 					AttachedDevice: &ufspb.AttachedDevice{
-						DeviceType:   ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE,
-						Manufacturer: "test-man-1",
-						BuildTarget:  "test-target-1",
-						Model:        "test-model-1",
+						DeviceType:    ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE,
+						Manufacturer:  "test-man-1",
+						BuildTarget:   "test-target-1",
+						Model:         "test-model-1",
+						Phase:         "test-phase-1",
+						Revision:      "test-revision-1",
+						ChipId:        "test-chip-id-1",
+						Imei1:         "test-imei1-1",
+						Imei2:         "test-imei2-1",
+						BatteryStatus: ufspb.AttachedDevice_BATTERY_STATUS_PHYSICAL,
+						Storage: &ufspb.AttachedDevice_Storage{
+							Manufacturer: "test-man-1",
+							Capacity:     20,
+						},
+						Sim: &ufspb.AttachedDevice_SIM{
+							Types: []ufspb.AttachedDevice_SIM_SIMType{
+								ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM,
+							},
+							Eid: "eid",
+						},
 					},
 				},
 			}
@@ -1096,13 +1128,34 @@ func TestUpdateMachine(t *testing.T) {
 				"admDeviceType",
 				"admBuildTarget",
 				"admModel",
+				"attached_device.phase",
+				"attached_device.revision",
+				"attached_device.chip_id",
+				"attached_device.imei1",
+				"attached_device.imei2",
+				"attached_device.battery_status",
+				"attached_device.storage.manufacturer",
+				"attached_device.storage.capacity",
+				"attached_device.sim.types",
+				"attached_device.sim.eid",
 			}})
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetAttachedDevice().GetDeviceType(), should.Equal(ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE))
-			assert.Loosely(t, resp.GetAttachedDevice().GetManufacturer(), should.Equal("test-man-1"))
-			assert.Loosely(t, resp.GetAttachedDevice().GetBuildTarget(), should.Equal("test-target-1"))
-			assert.Loosely(t, resp.GetAttachedDevice().GetModel(), should.Equal("test-model-1"))
+			assert.That(t, resp.GetAttachedDevice().GetDeviceType(), should.Equal(ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE))
+			assert.That(t, resp.GetAttachedDevice().GetManufacturer(), should.Equal("test-man-1"))
+			assert.That(t, resp.GetAttachedDevice().GetBuildTarget(), should.Equal("test-target-1"))
+			assert.That(t, resp.GetAttachedDevice().GetModel(), should.Equal("test-model-1"))
+			assert.That(t, resp.GetAttachedDevice().GetPhase(), should.Equal("test-phase-1"))
+			assert.That(t, resp.GetAttachedDevice().GetRevision(), should.Equal("test-revision-1"))
+			assert.That(t, resp.GetAttachedDevice().GetChipId(), should.Equal("test-chip-id-1"))
+			assert.That(t, resp.GetAttachedDevice().GetImei1(), should.Equal("test-imei1-1"))
+			assert.That(t, resp.GetAttachedDevice().GetImei2(), should.Equal("test-imei2-1"))
+			assert.That(t, resp.GetAttachedDevice().GetBatteryStatus(), should.Equal(ufspb.AttachedDevice_BATTERY_STATUS_PHYSICAL))
+			assert.That(t, resp.GetAttachedDevice().GetStorage().GetManufacturer(), should.Equal("test-man-1"))
+			assert.Loosely(t, resp.GetAttachedDevice().GetStorage().GetCapacity(), should.Equal(20))
+			assert.Loosely(t, resp.GetAttachedDevice().GetSim().GetTypes(), should.HaveLength(1))
+			assert.That(t, resp.GetAttachedDevice().GetSim().GetTypes()[0], should.Equal(ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM))
+			assert.That(t, resp.GetAttachedDevice().GetSim().GetEid(), should.Equal("eid"))
 		})
 
 		t.Run("Partial Update server machine", func(t *ftt.Test) {

@@ -503,6 +503,26 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.GetAttachedDevice().BuildTarget = machine.GetAttachedDevice().GetBuildTarget()
 		case util.AttachedDeviceModelPath, util.AdmModelPath:
 			oldMachine.GetAttachedDevice().Model = machine.GetAttachedDevice().GetModel()
+		case util.AttachedDevicePhasePath:
+			oldMachine.GetAttachedDevice().Phase = machine.GetAttachedDevice().GetPhase()
+		case util.AttachedDeviceRevisionPath:
+			oldMachine.GetAttachedDevice().Revision = machine.GetAttachedDevice().GetRevision()
+		case util.AttachedDeviceChipIdPath:
+			oldMachine.GetAttachedDevice().ChipId = machine.GetAttachedDevice().GetChipId()
+		case util.AttachedDeviceImei1Path:
+			oldMachine.GetAttachedDevice().Imei1 = machine.GetAttachedDevice().GetImei1()
+		case util.AttachedDeviceImei2Path:
+			oldMachine.GetAttachedDevice().Imei2 = machine.GetAttachedDevice().GetImei2()
+		case util.AttachedDeviceBatteryStatusPath:
+			oldMachine.GetAttachedDevice().BatteryStatus = machine.GetAttachedDevice().GetBatteryStatus()
+		case util.AttachedDeviceStorageManufacturerPath:
+			oldMachine.GetAttachedDevice().GetStorage().Manufacturer = machine.GetAttachedDevice().GetStorage().Manufacturer
+		case util.AttachedDeviceStorageCapacityPath:
+			oldMachine.GetAttachedDevice().GetStorage().Capacity = machine.GetAttachedDevice().GetStorage().Capacity
+		case util.AttachedDeviceSimTypesPath:
+			oldMachine.GetAttachedDevice().GetSim().Types = machine.GetAttachedDevice().GetSim().GetTypes()
+		case util.AttachedDeviceSimEidPath:
+			oldMachine.GetAttachedDevice().GetSim().Eid = machine.GetAttachedDevice().GetSim().GetEid()
 		case util.AndreiboardUltradebugSerialPath:
 			d := oldMachine.GetDevboard()
 			if d == nil {
@@ -1061,8 +1081,9 @@ func validateMachineRegistration(ctx context.Context, machine *ufspb.Machine) er
 	}
 
 	if machine.GetAttachedDevice() != nil {
-		sim := machine.GetAttachedDevice().GetSim()
-		if slices.Contains(sim.GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM) != (sim.GetEid() != "") {
+		hasEsim := slices.Contains(machine.GetAttachedDevice().GetSim().GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM)
+		hasEid := (machine.GetAttachedDevice().GetSim().GetEid() != "")
+		if hasEsim != hasEid {
 			return status.Errorf(codes.InvalidArgument, "SIM types must include ESIM if and only if SIM EID is set")
 		}
 	}
@@ -1174,7 +1195,7 @@ func validateUpdateMachine(ctx context.Context, oldMachine *ufspb.Machine, machi
 		return err
 	}
 	// Validate partial update first to avoid unnecessary validations
-	if err := validateMachineUpdateMask(machine, mask); err != nil {
+	if err := validateMachineUpdateMask(oldMachine, machine, mask); err != nil {
 		return err
 	}
 	if err := validateKVMPort(ctx, machine.GetName(), machine.GetChromeBrowserMachine().GetKvmInterface()); err != nil {
@@ -1184,83 +1205,141 @@ func validateUpdateMachine(ctx context.Context, oldMachine *ufspb.Machine, machi
 }
 
 // validateMachineUpdateMask validates the update mask for machine update
-func validateMachineUpdateMask(machine *ufspb.Machine, mask *field_mask.FieldMask) error {
-	if mask != nil {
-		// validate the give field mask
-		for _, path := range mask.Paths {
-			switch path {
-			case util.NamePath:
-				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - name cannot be updated, delete and create a new machine instead")
-			case util.UpdateTimePath:
-				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - update_time cannot be updated, it is a output only field")
-			case util.LocationZonePath, util.ZonePath:
-				if machine.GetLocation() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location cannot be empty/nil.")
-				} else if machine.GetLocation().GetZone() == ufspb.Zone_ZONE_UNSPECIFIED {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - zone cannot be unspecified")
-				} else if machine.GetLocation().GetRack() == "" {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - Cannot update zone without updating rack")
-				}
-			case util.LocationRackPath, util.RackPath:
-				if machine.GetLocation() == nil || machine.GetLocation().GetRack() == "" {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location/rack cannot be empty/nil.")
-				}
-			case util.ChromePlatformPath, util.PlatformPath:
-				if machine.GetChromeBrowserMachine() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
-				}
-			case util.KvmInterfaceKvmPath, util.KvmPath:
-				fallthrough
-			case util.KvmInterfacePortNamePath, util.KvmPortPath:
-				// Check kvm interface validity in processMachineUpdateMask later.
-				if machine.GetChromeBrowserMachine() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
-				}
-				if machine.GetChromeBrowserMachine().GetKvmInterface() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - kvm interface cannot be empty/nil.")
-				}
-			case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
-				if machine.GetChromeBrowserMachine() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
-				}
-			case util.DescriptionPath:
-				if machine.GetChromeBrowserMachine() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
-				}
-			case util.AttachedDeviceManufacturerPath, util.AdmManufacturerPath:
-				if machine.GetAttachedDevice() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
-				}
-			case util.AttachedDeviceDeviceTypePath, util.AdmDeviceTypePath:
-				if machine.GetAttachedDevice() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
-				}
-			case util.AttachedDeviceBuildTargetPath, util.AdmBuildTargetPath:
-				if machine.GetAttachedDevice() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
-				}
-			case util.AttachedDeviceModelPath, util.AdmModelPath:
-				if machine.GetAttachedDevice() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
-				}
-			case util.AndreiboardUltradebugSerialPath:
-				if machine.GetDevboard().GetAndreiboard() == nil {
-					return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - andreiboard cannot be empty/nil.")
-				}
-			case util.TagsPath:
-			case util.SerialNumberCamelPath:
-			case util.SerialNumberPath:
-			case util.ResourceStateCamelPath:
-			case util.ResourceStatePath:
-			case util.ServerMachineModelPath:
-			case util.ServerMachineMemoryPath:
-			case util.ServerMachineStoragePath:
-			case util.ServerMachineCpuTypePath:
-			case util.ServerMachineDriveModelPath:
-				// valid fields, nothing to validate.
-			default:
-				return status.Errorf(codes.InvalidArgument, "validateMachineUpdateMask - unsupported update mask path %q", path)
+func validateMachineUpdateMask(oldMachine, machine *ufspb.Machine, mask *field_mask.FieldMask) error {
+	if mask == nil || len(mask.Paths) == 0 {
+		return nil
+	}
+
+	maskSet := make(map[string]struct{}) // Set of all the masks
+	for _, path := range mask.Paths {
+		maskSet[path] = struct{}{}
+	}
+	// validate the give field mask
+	for _, path := range mask.Paths {
+		switch path {
+		case util.NamePath:
+			return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - name cannot be updated, delete and create a new machine instead")
+		case util.UpdateTimePath:
+			return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - update_time cannot be updated, it is a output only field")
+		case util.LocationZonePath, util.ZonePath:
+			if machine.GetLocation() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location cannot be empty/nil.")
+			} else if machine.GetLocation().GetZone() == ufspb.Zone_ZONE_UNSPECIFIED {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - zone cannot be unspecified")
+			} else if machine.GetLocation().GetRack() == "" {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - Cannot update zone without updating rack")
 			}
+		case util.LocationRackPath, util.RackPath:
+			if machine.GetLocation() == nil || machine.GetLocation().GetRack() == "" {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - location/rack cannot be empty/nil.")
+			}
+		case util.ChromePlatformPath, util.PlatformPath:
+			if machine.GetChromeBrowserMachine() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
+			}
+		case util.KvmInterfaceKvmPath, util.KvmPath:
+			fallthrough
+		case util.KvmInterfacePortNamePath, util.KvmPortPath:
+			// Check kvm interface validity in processMachineUpdateMask later.
+			if machine.GetChromeBrowserMachine() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
+			}
+			if machine.GetChromeBrowserMachine().GetKvmInterface() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - kvm interface cannot be empty/nil.")
+			}
+		case util.DeploymentTicketPath, util.DeploymentTicketCamelPath:
+			if machine.GetChromeBrowserMachine() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
+			}
+		case util.DescriptionPath:
+			if machine.GetChromeBrowserMachine() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - browser machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceManufacturerPath, util.AdmManufacturerPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceDeviceTypePath, util.AdmDeviceTypePath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceBuildTargetPath, util.AdmBuildTargetPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceModelPath, util.AdmModelPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDevicePhasePath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceRevisionPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceChipIdPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceImei1Path:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceImei2Path:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceBatteryStatusPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceStorageManufacturerPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceStorageCapacityPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+		case util.AttachedDeviceSimTypesPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+			hasEsim := slices.Contains(machine.GetAttachedDevice().GetSim().GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM)
+			hasNewEid := (machine.GetAttachedDevice().GetSim().GetEid() != "")
+			hasExistingEid := (oldMachine.GetAttachedDevice().GetSim().GetEid() != "")
+			if _, ok := maskSet[util.AttachedDeviceSimEidPath]; (ok && hasNewEid != hasEsim) || (!ok && hasExistingEid != hasEsim) {
+				return status.Errorf(codes.InvalidArgument, "SIM types must include ESIM if and only if SIM EID is set.")
+			}
+		case util.AttachedDeviceSimEidPath:
+			if machine.GetAttachedDevice() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - attached device machine cannot be empty/nil.")
+			}
+			hasEid := (machine.GetAttachedDevice().GetSim().GetEid() != "")
+			hasNewEsim := slices.Contains(machine.GetAttachedDevice().GetSim().GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM)
+			hasExistingEsim := slices.Contains(oldMachine.GetAttachedDevice().GetSim().GetTypes(), ufspb.AttachedDevice_SIM_SIM_TYPE_ESIM)
+			if _, ok := maskSet[util.AttachedDeviceSimTypesPath]; (ok && hasEid != hasNewEsim) || (!ok && hasEid != hasExistingEsim) {
+				return status.Errorf(codes.InvalidArgument, "SIM types must include ESIM if and only if SIM EID is set.")
+			}
+		case util.AndreiboardUltradebugSerialPath:
+			if machine.GetDevboard().GetAndreiboard() == nil {
+				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - andreiboard cannot be empty/nil.")
+			}
+		case util.TagsPath:
+		case util.SerialNumberCamelPath:
+		case util.SerialNumberPath:
+		case util.ResourceStateCamelPath:
+		case util.ResourceStatePath:
+		case util.ServerMachineModelPath:
+		case util.ServerMachineMemoryPath:
+		case util.ServerMachineStoragePath:
+		case util.ServerMachineCpuTypePath:
+		case util.ServerMachineDriveModelPath:
+			// valid fields, nothing to validate.
+		default:
+			return status.Errorf(codes.InvalidArgument, "validateMachineUpdateMask - unsupported update mask path %q", path)
 		}
 	}
 	return nil

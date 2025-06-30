@@ -161,21 +161,34 @@ const (
 	MachineLseIdCamelPath string = "machineLseId"
 
 	// AttachedDevice
-	AttachedDeviceBuildTargetPath       string = "attached_device.build_target"
-	AttachedDeviceDeviceTypePath        string = "attached_device.device_type"
-	AttachedDeviceManufacturerPath      string = "attached_device.manufacturer"
-	AttachedDeviceModelPath             string = "attached_device.model"
-	AttachedDeviceLseHostnamePath       string = "attached_device_lse.associated_hostname"
-	AttachedDeviceLseHostPortPath       string = "attached_device_lse.associated_host_port"
-	AttachedDeviceLseOsVersionImagePath string = "attached_device_lse.os_version.image"
-	AttachedDeviceLseOsVersionValuePath string = "attached_device_lse.os_version.value"
+	AttachedDeviceBuildTargetPath         string = "attached_device.build_target"
+	AttachedDeviceDeviceTypePath          string = "attached_device.device_type"
+	AttachedDeviceManufacturerPath        string = "attached_device.manufacturer"
+	AttachedDeviceModelPath               string = "attached_device.model"
+	AttachedDevicePhasePath               string = "attached_device.phase"
+	AttachedDeviceRevisionPath            string = "attached_device.revision"
+	AttachedDeviceChipIdPath              string = "attached_device.chip_id"
+	AttachedDeviceImei1Path               string = "attached_device.imei1"
+	AttachedDeviceImei2Path               string = "attached_device.imei2"
+	AttachedDeviceBatteryStatusPath       string = "attached_device.battery_status"
+	AttachedDeviceStorageManufacturerPath string = "attached_device.storage.manufacturer"
+	AttachedDeviceStorageCapacityPath     string = "attached_device.storage.capacity"
+	AttachedDeviceSimTypesPath            string = "attached_device.sim.types"
+	AttachedDeviceSimEidPath              string = "attached_device.sim.eid"
 	// Non-standard
 	AdmBuildTargetPath  string = "admBuildTarget"
 	AdmDeviceTypePath   string = "admDeviceType"
 	AdmManufacturerPath string = "admManufacturer"
 	AdmModelPath        string = "admModel"
-	AssocHostnamePath   string = "assocHostname"
-	AssocHostPortPath   string = "assocHostPort"
+
+	// AttachedDeviceLse
+	AttachedDeviceLseHostnamePath       string = "attached_device_lse.associated_hostname"
+	AttachedDeviceLseHostPortPath       string = "attached_device_lse.associated_host_port"
+	AttachedDeviceLseOsVersionImagePath string = "attached_device_lse.os_version.image"
+	AttachedDeviceLseOsVersionValuePath string = "attached_device_lse.os_version.value"
+	// Non-standard
+	AssocHostnamePath string = "assocHostname"
+	AssocHostPortPath string = "assocHostPort"
 
 	// Devboard
 	AndreiboardUltradebugSerialPath                    string = "devboard.andreiboard.ultradebug_serial"
