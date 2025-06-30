@@ -66,7 +66,8 @@ func AdbCmd(args []string, log *log.Logger, retryCount, deadlineSeconds int) (st
 	for range retryCount {
 		cmd, outStr, err = f(deadlineSeconds, args)
 		if err != nil {
-			log.Printf("ADB command %s failed: %s", cmd, err.Error())
+			log.Printf("ADB command '%s' failed: %s", cmd, err.Error())
+			time.Sleep(retryInterval)
 			continue
 		}
 

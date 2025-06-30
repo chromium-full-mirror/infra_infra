@@ -100,7 +100,7 @@ func makeExecutable(path string) error {
 }
 
 func (s *DownloadArtifactsState) Next() commonutils.ServiceState {
-	return NewEnterFastbootdState(s.service)
+	return NewDisableVerityState(s.service)
 }
 
 func (s *DownloadArtifactsState) Name() string {
