@@ -58,6 +58,9 @@ func updateADHCommandRun() subcommands.CommandRun {
 
 	c.Flags.StringVar(&c.assocHostname, "associated-hostname", "", "the hostname of the device that the attached device is attached to")
 	c.Flags.StringVar(&c.assocHostPort, "associated-hostport", "", "the port used of the device that the attached device is attached to")
+	c.Flags.StringVar(&c.wlanMac, "wlan-mac", "", "wlan mac of the attached device. "+cmdhelp.ClearFieldHelpText)
+	c.Flags.StringVar(&c.sim1, "sim1", "", "SIM 1 for this attached device. "+cmdhelp.ClearFieldHelpText)
+	c.Flags.StringVar(&c.sim2, "sim2", "", "SIM 2 for this attached device. "+cmdhelp.ClearFieldHelpText)
 
 	c.Flags.StringVar(&c.description, "desc", "", "description for the lse. "+cmdhelp.ClearFieldHelpText)
 	c.Flags.Var(luciflag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
@@ -81,6 +84,9 @@ type updateAttachedDeviceHost struct {
 	state         string
 	assocHostname string
 	assocHostPort string
+	wlanMac       string
+	sim1          string
+	sim2          string
 	description   string
 	tags          []string
 
@@ -161,6 +167,9 @@ func (c *updateAttachedDeviceHost) innerRun(a subcommands.Application, args []st
 			"tag":                 "tags",
 			"desc":                "description",
 			"state":               "resourceState",
+			"wlan-mac":            ufsUtil.AttachedDeviceLseWlanMacAddressPath,
+			"sim1":                ufsUtil.AttachedDeviceLseSim1Path,
+			"sim2":                ufsUtil.AttachedDeviceLseSim2Path,
 		}),
 	})
 	if err != nil {
@@ -212,6 +221,21 @@ func (c *updateAttachedDeviceHost) parseArgs(lse *ufspb.MachineLSE) {
 	} else if c.assocHostPort != "" {
 		lse.GetAttachedDeviceLse().AssociatedHostPort = c.assocHostPort
 	}
+	if c.wlanMac == utils.ClearFieldValue {
+		lse.GetAttachedDeviceLse().WlanMacAddress = ""
+	} else {
+		lse.GetAttachedDeviceLse().WlanMacAddress = c.wlanMac
+	}
+	if c.sim1 == utils.ClearFieldValue {
+		lse.GetAttachedDeviceLse().Sim1 = ""
+	} else {
+		lse.GetAttachedDeviceLse().Sim1 = c.sim1
+	}
+	if c.sim2 == utils.ClearFieldValue {
+		lse.GetAttachedDeviceLse().Sim2 = ""
+	} else {
+		lse.GetAttachedDeviceLse().Sim2 = c.sim2
+	}
 
 	if c.description == utils.ClearFieldValue {
 		lse.Description = ""
@@ -248,6 +272,15 @@ func (c *updateAttachedDeviceHost) validateArgs() error {
 		if c.assocHostPort != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-associated-hostport' cannot be specified at the same time.")
 		}
+		if c.wlanMac != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-wlan-mac' cannot be specified at the same time.")
+		}
+		if c.sim1 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim1' cannot be specified at the same time.")
+		}
+		if c.sim2 != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-sim2' cannot be specified at the same time.")
+		}
 		if c.description != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-desc' cannot be specified at the same time.")
 		}
@@ -266,7 +299,8 @@ func (c *updateAttachedDeviceHost) validateArgs() error {
 		}
 		if c.osVersion == "" && c.assocHostname == "" && c.assocHostPort == "" &&
 			c.description == "" && len(c.tags) == 0 && c.state == "" &&
-			!c.flagInputs["schedulable"] && c.machineName == "" {
+			!c.flagInputs["schedulable"] && c.machineName == "" &&
+			c.wlanMac == "" && c.sim1 == "" && c.sim2 == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 	}
