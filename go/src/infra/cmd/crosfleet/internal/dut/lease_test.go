@@ -146,6 +146,7 @@ var testBotDimsAndBuildTagsData = []struct {
 		map[string]string{
 			"dut_id":     "C12345",
 			"label-pool": "p2",
+			"dut_name":   "sample hostname",
 		},
 		map[string]string{
 			"crosfleet-tool": "lease",

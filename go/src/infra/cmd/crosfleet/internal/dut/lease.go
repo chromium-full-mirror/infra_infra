@@ -223,6 +223,7 @@ func botDimsAndBuildTags(leaseFlags leaseFlags) (dims, tags map[string]string, e
 		tags["lease-by"] = dutIDLabelName
 		tags[deviceNameLabelName] = leaseFlags.host
 		dims[dutIDLabelName] = leaseFlags.dutID
+		dims[deviceNameLabelName] = leaseFlags.host
 	} else {
 		// Swarming dimension-based lease.
 		dims["dut_state"] = "ready"
