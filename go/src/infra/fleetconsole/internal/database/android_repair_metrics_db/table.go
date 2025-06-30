@@ -10,6 +10,7 @@ import (
 
 var (
 	// Columns
+	Id                   = queryutils.NewColumn("id").Build()
 	PriorityColumn       = queryutils.NewColumn("priority").Build()
 	LabName              = queryutils.NewColumn("lab_name").Build()
 	HostGroupColumn      = queryutils.NewColumn("host_group").Build()
@@ -17,6 +18,8 @@ var (
 	MinimumRepairsColumn = queryutils.NewColumn("minimum_repairs").Build()
 	DevicesOfflineColumn = queryutils.NewColumn("devices_offline").Build()
 	TotalDevicesColumn   = queryutils.NewColumn("total_devices").Build()
+	Hostname             = queryutils.NewColumn("hostname").Build()
+	State                = queryutils.NewColumn("state").Build()
 
 	// Table
 	AndroidRepairMetricsTable = queryutils.NewTableBuilder("android_repair_metrics").WithColumns(
@@ -27,5 +30,21 @@ var (
 		MinimumRepairsColumn,
 		DevicesOfflineColumn,
 		TotalDevicesColumn,
+	).Build()
+
+	// AndroidDevicesTable
+	AndroidDevicesTable = queryutils.NewTableBuilder("android_devices").WithColumns(
+		Id,
+		LabName,
+		HostGroupColumn,
+		RunTargetColumn,
+		State,
+	).Build()
+
+	// AndroidHostsTable
+	AndroidHostsTable = queryutils.NewTableBuilder("android_hosts").WithColumns(
+		Hostname,
+		HostGroupColumn,
+		State,
 	).Build()
 )
