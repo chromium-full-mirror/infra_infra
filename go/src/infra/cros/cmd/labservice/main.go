@@ -21,7 +21,6 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	lsapi "go.chromium.org/infra/cros/cmd/labservice/api"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
@@ -42,7 +41,6 @@ func innerMain() error {
 		preferredCachingServices strSlice
 		serviceAccountPath       = flag.String("service-account-json", "",
 			"Path to service account JSON file")
-		tkoSocket  = flag.String("tko-socket", "", "Path to TKO database socket file.")
 		ufsService = flag.String("ufs-service", "ufs.api.cr.dev", "UFS service host")
 	)
 	flag.Var(&preferredCachingServices, "preferred-caching-services", "Comma separated preferred caching services (each in format: [http://]server[:port]) which superseded the ones fetche from UFS")
@@ -55,7 +53,6 @@ func innerMain() error {
 	gs := newGRPCServer(&serverConfig{
 		preferredCachingServices: preferredCachingServices,
 		serviceAccountPath:       *serviceAccountPath,
-		tkoSocket:                *tkoSocket,
 		ufsService:               *ufsService,
 	})
 	c := make(chan os.Signal, 1)
@@ -79,7 +76,6 @@ func newGRPCServer(c *serverConfig) *grpc.Server {
 	gs := grpc.NewServer(ic.unaryOption(), grpc.StreamInterceptor(streamNamespaceInterceptor))
 	s := newServer(c)
 	labapi.RegisterInventoryServiceServer(gs, s)
-	lsapi.RegisterLabServiceServer(gs, s)
 	return gs
 }
 

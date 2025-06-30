@@ -5,14 +5,11 @@
 package main
 
 import (
-	"context"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	lsapi "go.chromium.org/infra/cros/cmd/labservice/api"
 	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs"
 	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs/cache"
 )
@@ -26,9 +23,6 @@ type server struct {
 	ufsClientFactory ufs.ClientFactory
 	// cacheLocator is used to cache available caching servers across requests.
 	cacheLocator *cache.Locator
-
-	// Path to TKO database socket file.
-	tkoSocket string
 }
 
 func newServer(c *serverConfig) *server {
@@ -40,7 +34,6 @@ func newServer(c *serverConfig) *server {
 			ServiceAccountPath: c.serviceAccountPath,
 		},
 		cacheLocator: l,
-		tkoSocket:    c.tkoSocket,
 	}
 }
 
@@ -48,7 +41,6 @@ func newServer(c *serverConfig) *server {
 type serverConfig struct {
 	preferredCachingServices []string
 	serviceAccountPath       string
-	tkoSocket                string
 	ufsService               string
 }
 
@@ -77,10 +69,4 @@ func (s *server) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi
 			},
 		},
 	})
-}
-
-func (s *server) GetTkoAddress(ctx context.Context, in *lsapi.GetTkoAddressRequest) (*lsapi.GetTkoAddressResponse, error) {
-	return &lsapi.GetTkoAddressResponse{
-		SocketPath: s.tkoSocket,
-	}, nil
 }
