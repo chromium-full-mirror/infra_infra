@@ -101,7 +101,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 
 	if !isAospTradefed() {
 
-		cmd = append(cmd, "--cts-use-partial-download", "--cts-version", "2",
+		cmd = append(cmd, "--cts-version", "2",
 			"--gdevice-flash:disable",
 			"--android-build-api-log-saver:no-remove-staged-files", "--no-use-event-streaming",
 			"--google-device-setup:set-global-setting", "verifier_verify_adb_installs=0",
@@ -111,22 +111,27 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 			"--google-device-setup:run-command", "am switch-user 10",
 		)
 
+		if testType != "csuite" {
+			cmd = append(cmd, "--cts-use-partial-download")
+		}
+
 		// Adding cts-params with prefix for each one.
 		ctsParams := []string{
 			"--log-level", "VERBOSE",
 			"--max-log-size", "62914560", "--max-tmp-logcat-file", "62914560",
 			"--logcat-on-failure", "--screenshot-on-failure",
 		}
-		if testType != "gts" && testType != "vts" && testType != "sts" && testType != "apts" {
+		if testType == "cts" || testType == "dts" {
 			ctsParams = append(ctsParams, "--property-check:no-throw-error")
 		}
 		if testType == "sts" {
 			ctsParams = append(ctsParams, "--ghidra-preparer:disable")
 		}
 		if testType == "csuite" {
+			cmd = append(cmd, "--no-throw-if-extra-not-found")
 			ctsParams = append(ctsParams, "--compatibility:enable-module-dynamic-download",
 				"--dynamic-download-args com.android.csuite.config.AppRemoteFileResolver:uri-template=pstash://{package}",
-				"--dynamic-download-args pstash:include-obb=true", "--no-throw-if-extra-not-found",
+				"--dynamic-download-args pstash:include-obb=true",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:collect-app-version:true",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:screenshot-after-launch:true",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:app-launch-timeout-ms:20000",
