@@ -9,41 +9,46 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
+	"strconv"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
-	androidrepairmetricsdb "go.chromium.org/infra/fleetconsole/internal/database/android_repair_metrics"
+	androidrepairmetricsdb "go.chromium.org/infra/fleetconsole/internal/database/android_repair_metrics_db"
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 )
 
-func updateAndroidRepairMetricsTable(ctx context.Context, tx *sql.Tx, runTargetLabNameHostGroup runTargetsLabNamesHostGroups) (err error) {
-	slo, minimumRepairs, devicesOffline, totalDevices := calculateSlo(ctx, tx, runTargetLabNameHostGroup)
-	_, err = tx.ExecContext(ctx, `
-			INSERT into android_repair_metrics (
-				priority,
-				lab_name,
-				host_group,
-				run_target,
-				minimum_repairs,
-				devices_offline,
-				total_devices
-			) VALUES ($1, $2, $3, $4, $5, $6, $7)
-			ON CONFLICT (lab_name, host_group, run_target) DO UPDATE SET
-				priority=EXCLUDED.priority,
-				minimum_repairs=EXCLUDED.minimum_repairs,
-				devices_offline=EXCLUDED.devices_offline,
-				total_devices=EXCLUDED.total_devices
-			`,
-		slo,
-		runTargetLabNameHostGroup.labName,
-		runTargetLabNameHostGroup.hostGroup,
-		runTargetLabNameHostGroup.runTarget,
-		minimumRepairs,
-		devicesOffline,
-		totalDevices,
-	)
+func updateAndroidRepairMetricsTable(
+	ctx context.Context,
+	tx *sql.Tx,
+	runTargetLabNameHostGroup runTargetsLabNamesHostGroups,
+	priority fleetconsolerpc.RepairMetric_Priority, minimumRepairs int, devicesOffline int, totalDevices int,
+) error {
+	q, err := queryutils.NewInsertBuilder(androidrepairmetricsdb.AndroidRepairMetricsTable).
+		AllColumns().
+		Values(
+			priority.String(),
+			runTargetLabNameHostGroup.labName,
+			runTargetLabNameHostGroup.hostGroup,
+			runTargetLabNameHostGroup.runTarget,
+			strconv.Itoa(minimumRepairs),
+			strconv.Itoa(devicesOffline),
+			strconv.Itoa(totalDevices),
+		).
+		OnConflict(
+			queryutils.ConflictOn(
+				androidrepairmetricsdb.LabName,
+				androidrepairmetricsdb.HostGroup,
+				androidrepairmetricsdb.RunTarget,
+			).Replace(androidrepairmetricsdb.AndroidRepairMetricsTable.Columns...),
+		).Build()
+	if err != nil {
+		return errors.Annotate(err, "failed to build query").Err()
+	}
+
+	_, err = tx.ExecContext(ctx, q.Statement, q.Parameters...)
+
 	return errors.WrapIf(err, "failed to update android repair metrics")
 }
 

@@ -7,7 +7,6 @@ package updateandroiddevices
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"iter"
 	"maps"
 
@@ -39,13 +38,16 @@ func UpdateAndroidDevices(ctx context.Context, tx *sql.Tx, labResource *omnilab_
 			return err
 		}
 
-		err = updateAndroidRepairMetricsTable(ctx, tx, runTargetLabNameHostGroup)
+		slo, minimumRepairs, devicesOffline, totalDevices := calculateSlo(ctx, tx, runTargetLabNameHostGroup)
+		err = updateAndroidRepairMetricsTable(ctx, tx,
+			runTargetLabNameHostGroup,
+			slo, minimumRepairs, devicesOffline, totalDevices,
+		)
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Println("DONE")
 	return nil
 }
 

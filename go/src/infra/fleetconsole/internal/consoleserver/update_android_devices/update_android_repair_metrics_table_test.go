@@ -7,10 +7,12 @@ package updateandroiddevices
 import (
 	"context"
 	"regexp"
+	"strconv"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
@@ -205,5 +207,71 @@ func TestCalculateSlo(t *testing.T) {
 		assert.Loosely(t, offline, should.Equal(0))
 		assert.Loosely(t, total, should.Equal(0))
 		assert.Loosely(t, mock.ExpectationsWereMet(), should.BeNil)
+	})
+}
+
+func TestUpdateAndroidRepairMetricsTable(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	ftt.Run("UpdateAndroidRepairMetricsTable", t, func(t *ftt.Test) {
+		db, mock, err := sqlmock.New()
+		assert.Loosely(t, err, should.BeNil)
+		defer db.Close()
+
+		mockTarget := runTargetsLabNamesHostGroups{
+			runTarget: "test-target",
+			labName:   "test-lab",
+			hostGroup: "test-group",
+		}
+
+		mock.ExpectBegin()
+
+		expectedSLO := fleetconsolerpc.RepairMetric_WATCH
+		expectedMinimumRepairs := 0
+		expectedDevicesOffline := 10
+		expectedTotalDevices := 100
+
+		mock.ExpectExec(regexp.QuoteMeta(`
+			INSERT INTO "android_repair_metrics" (
+				priority,
+				lab_name,
+				host_group,
+				run_target,
+				minimum_repairs,
+				devices_offline,
+				total_devices
+			) VALUES ($1, $2, $3, $4, $5, $6, $7)
+			ON CONFLICT (lab_name, host_group, run_target) DO UPDATE SET
+				priority = EXCLUDED.priority,
+				lab_name = EXCLUDED.lab_name,
+				host_group = EXCLUDED.host_group,
+				run_target = EXCLUDED.run_target,
+				minimum_repairs = EXCLUDED.minimum_repairs,
+				devices_offline = EXCLUDED.devices_offline,
+				total_devices = EXCLUDED.total_devices;
+			`)).WithArgs(
+			expectedSLO.String(),
+			mockTarget.labName,
+			mockTarget.hostGroup,
+			mockTarget.runTarget,
+			strconv.Itoa(expectedMinimumRepairs),
+			strconv.Itoa(expectedDevicesOffline),
+			strconv.Itoa(expectedTotalDevices),
+		).WillReturnResult(sqlmock.NewResult(1, 1))
+
+		tx, err := db.BeginTx(ctx, nil)
+		assert.Loosely(t, err, should.BeNil)
+
+		err = updateAndroidRepairMetricsTable(ctx, tx, mockTarget,
+			expectedSLO,
+			expectedMinimumRepairs,
+			expectedDevicesOffline,
+			expectedTotalDevices,
+		)
+		assert.Loosely(t, err, should.BeNil)
+
+		err = mock.ExpectationsWereMet()
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

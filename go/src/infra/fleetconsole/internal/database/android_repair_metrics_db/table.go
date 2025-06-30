@@ -10,41 +10,40 @@ import (
 
 var (
 	// Columns
-	Id                   = queryutils.NewColumn("id").Build()
-	PriorityColumn       = queryutils.NewColumn("priority").Build()
-	LabName              = queryutils.NewColumn("lab_name").Build()
-	HostGroupColumn      = queryutils.NewColumn("host_group").Build()
-	RunTargetColumn      = queryutils.NewColumn("run_target").Build()
-	MinimumRepairsColumn = queryutils.NewColumn("minimum_repairs").Build()
-	DevicesOfflineColumn = queryutils.NewColumn("devices_offline").Build()
-	TotalDevicesColumn   = queryutils.NewColumn("total_devices").Build()
-	Hostname             = queryutils.NewColumn("hostname").Build()
-	State                = queryutils.NewColumn("state").Build()
+	Id             = queryutils.NewColumn("id").Build()
+	Priority       = queryutils.NewColumn("priority").Build()
+	LabName        = queryutils.NewColumn("lab_name").Build()
+	HostGroup      = queryutils.NewColumn("host_group").Build()
+	RunTarget      = queryutils.NewColumn("run_target").Build()
+	MinimumRepairs = queryutils.NewColumn("minimum_repairs").Build()
+	DevicesOffline = queryutils.NewColumn("devices_offline").Build()
+	TotalDevices   = queryutils.NewColumn("total_devices").Build()
+	Hostname       = queryutils.NewColumn("hostname").Build()
+	State          = queryutils.NewColumn("state").Build()
 
 	// Table
 	AndroidRepairMetricsTable = queryutils.NewTableBuilder("android_repair_metrics").WithColumns(
-		PriorityColumn,
+		Priority,
 		LabName,
-		HostGroupColumn,
-		RunTargetColumn,
-		MinimumRepairsColumn,
-		DevicesOfflineColumn,
-		TotalDevicesColumn,
+		HostGroup,
+		RunTarget,
+		MinimumRepairs,
+		DevicesOffline,
+		TotalDevices,
 	).Build()
 
-	// AndroidDevicesTable
 	AndroidDevicesTable = queryutils.NewTableBuilder("android_devices").WithColumns(
 		Id,
 		LabName,
-		HostGroupColumn,
-		RunTargetColumn,
+		HostGroup,
+		RunTarget,
 		State,
 	).Build()
 
 	// AndroidHostsTable
 	AndroidHostsTable = queryutils.NewTableBuilder("android_hosts").WithColumns(
 		Hostname,
-		HostGroupColumn,
+		HostGroup,
 		State,
 	).Build()
 )
