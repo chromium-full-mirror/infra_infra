@@ -1859,6 +1859,18 @@ wheel: <
 
 * *universal*
 
+### 2025.6.15
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2025.6.15"
+>
+```
+
+
+* *universal*
+
 ## **cffi**
 
 ### 1.15.1.chromium.2
@@ -9943,6 +9955,18 @@ wheel: <
 
 * *universal*
 
+### 4.34.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/selenium-py3"
+  version: "version:4.34.0"
+>
+```
+
+
+* *universal*
+
 ## **semantic-version**
 
 ### 2.10.0
@@ -10967,6 +10991,18 @@ wheel: <
 
 * *universal*
 
+### 4.14.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.14.0"
+>
+```
+
+
+* *universal*
+
 ## **typing-inspect-py3**
 
 ### 0.7.1
@@ -11207,6 +11243,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/urllib3-py3"
   version: "version:2.4.0"
+>
+```
+
+
+* *universal*
+
+### 2.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/urllib3-py3"
+  version: "version:2.5.0"
 >
 ```
 
