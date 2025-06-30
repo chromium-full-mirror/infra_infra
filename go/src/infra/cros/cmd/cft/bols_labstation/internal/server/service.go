@@ -378,10 +378,25 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to mark in use file: %w", err))
 	}
+	// 1. Check if servod process is running.
 	if getServodStatus(ctx, port) == bols.ServodStatus_SERVOD_RUNNING {
-		// Since servod has already been started, do not need to start again.
-		return &bols.StartServodResponse{}, nil
+		// 2. If it is running and StartServodRequest.ReuseExisting is true, just return.
+		if req.GetReuseExisting() {
+			s.logger.Println("Servod is already running and reuse is allowed. Skipping start.")
+			return &bols.StartServodResponse{}, nil
+		}
+		// 3. If it is running and StartServodRequest.ReuseExisting is not true, stop servod.
+		s.logger.Println("Servod is already running and reuse is not allowed. Stopping before start again...")
+		stopArgs := []string{"servod", fmt.Sprintf("PORT=%d", port)}
+		if out, err := exec.CommandContext(ctx, "stop", stopArgs...).CombinedOutput(); err != nil {
+			// Log the error but proceed, as 'stop' might fail if the process is unresponsive,
+			// but 'start' might still succeed in cleaning up and starting a new one.
+			s.logger.Printf("failed to stop existing servod at port %d, proceeding with start anyway: %s: %v", port, string(out), err)
+		}
+		// Sleep for three second to make sure.
+		time.Sleep(3 * time.Second)
 	}
+	// 4. Start servod.
 	args := []string{"servod"}
 	args = append(args, fmt.Sprintf("PORT=%d", port))
 	if board := req.GetBoard(); board != "" {
@@ -405,7 +420,8 @@ func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest)
 	}
 	if out, err := exec.CommandContext(ctx, "servodtool", "instance", "wait-for-active",
 		"--timeout", "120", "-p", fmt.Sprintf("%d", port)).Output(); err != nil {
-		s.logger.Printf("Failed to check if servod is ready: %s: %v", string(out), err)
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("failed to check if servod is ready: %s: %v", string(out), err))
 	}
 	s.logger.Println("Served StartServod Request Successfully")
 	return &bols.StartServodResponse{}, nil
@@ -427,6 +443,12 @@ func (s *service) StopServod(ctx context.Context, req *bols.StopServodRequest) (
 	if out, err := exec.CommandContext(ctx, "stop", args...).CombinedOutput(); err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to stop servod at port %d: %s: %w", port, string(out), err))
+	}
+	// Sleep for three second to make sure.
+	time.Sleep(3 * time.Second)
+	if getServodStatus(ctx, port) != bols.ServodStatus_SERVOD_STOPPED {
+		return nil, s.logAndReturnErr(
+			fmt.Errorf("servo is still running after trying to stop servod at port %d", port))
 	}
 	s.logger.Println("Served StopServod Request Successfully")
 	return &bols.StopServodResponse{}, nil

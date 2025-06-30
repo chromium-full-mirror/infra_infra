@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -487,23 +486,56 @@ func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*b
 	return &bols.RunUMountResponse{}, nil
 }
 
+// StartServod is the gRPC handler for starting a servod instance.
 func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
 	s.logger.Println("Receive StartServod Request")
-	if err := startServod(ctx,
-		req.GetStationId().GetContainerName(),
-		req.GetBoard(), req.GetModel(), req.GetStationId().GetServoSerial(), req.GetConfig(),
-		req.GetRecoveryMode(),
-		req.GetStationId().GetServodPort(), s.logger); err != nil {
+	containerName := req.GetStationId().GetContainerName()
+	reuseExisting := req.GetReuseExisting()
+
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("StartServod: fail to create docker client: %w", err)
+	}
+
+	// 1. Check if servod container is up and running.
+	isUp, err := c.IsUp(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("fail to check if servod container %s is up: %v",
+			containerName, err)
+	}
+
+	if isUp {
+		// 2. If servod is running in the container and bols.StartServodRequest.ReuseExisting is true, return.
+		servodStatus := getServodStatus(ctx, c, containerName, req.GetStationId().GetServodPort())
+		if servodStatus == bols.ServodStatus_SERVOD_RUNNING {
+			s.logger.Printf("Container %q is already running with servod", containerName)
+		} else {
+			s.logger.Printf("Container %q is already running, but servod is not", containerName)
+		}
+		if reuseExisting && servodStatus == bols.ServodStatus_SERVOD_RUNNING {
+			s.logger.Printf("Reusing existing container %q", containerName)
+			return &bols.StartServodResponse{}, nil
+		}
+		// 3. If it is up and bols.StartServodRequest.ReuseExisting is false, call stopServod
+		s.logger.Printf("Restarting container %q", containerName)
+		if err := s.stopContainer(ctx, c, containerName); err != nil {
+			return nil, s.logAndReturnErrorf("StartServod: failed to stop existing container for restart: %w", err)
+		}
+	}
+
+	// 4. call startServod
+	s.logger.Printf("Starting servod container %q...", containerName)
+	if err := s.startServod(ctx, containerName, req.GetBoard(), req.GetModel(), req.GetStationId().GetServoSerial(), req.GetConfig(), req.GetRecoveryMode(), req.GetStationId().GetServodPort()); err != nil {
 		return nil, s.logAndReturnErrorf("fail to start servod: %w", err)
 	}
 	s.logger.Println("Served StartServod Request Successfully")
 	return &bols.StartServodResponse{}, nil
 }
 
+// StopServod is the gRPC handler for stopping a servod instance.
 func (s *service) StopServod(ctx context.Context, req *bols.StopServodRequest) (*bols.StopServodResponse, error) {
 	s.logger.Println("Receive StopServod Request")
 	containerName := req.GetStationId().GetContainerName()
-
 	c, err := dockerClient(ctx, containerName)
 	if err != nil {
 		return nil, s.logAndReturnErrorf("StopServod: fail to create docker client: %w", err)
@@ -518,10 +550,10 @@ func (s *service) StopServod(ctx context.Context, req *bols.StopServodRequest) (
 		return &bols.StopServodResponse{}, nil
 	}
 
-	if err := c.Remove(ctx, containerName, true); err != nil {
-		return nil, s.logAndReturnErrorf("StopServod: failed to remove container %q: %w", containerName, err)
+	if err := s.stopContainer(ctx, c, containerName); err != nil {
+		// The helper function returns a detailed error, so we just wrap it.
+		return nil, s.logAndReturnErrorf("failed to stop servod: %w", err)
 	}
-
 	s.logger.Println("Served StopServod Request Successfully")
 	return &bols.StopServodResponse{}, nil
 }
@@ -693,10 +725,11 @@ func (s *service) FindDolosUART(context.Context, *bols.FindDolosUARTRequest) (*b
 	return nil, status.Errorf(codes.Unimplemented, "method FindDolosUART not implemented")
 }
 
-// Helper functions (unchanged from original, unless noted)
+// Helper functions.
 
-func startServod(ctx context.Context, containerName, board, model, serial, config string,
-	recoveryMode bool, port int32, logger *log.Logger) error {
+// startServod creates and starts a new servod docker container.
+func (s *service) startServod(ctx context.Context, containerName, board, model, serial, config string,
+	recoveryMode bool, port int32) error {
 	const (
 		servodRegistryUri             = "SERVOD_REGISTRY_URI"
 		servodContainerlLabel         = "SERVOD_CONTAINER_LABEL"
@@ -704,7 +737,7 @@ func startServod(ctx context.Context, containerName, board, model, serial, confi
 		servodContainerlLabelFallback = "release"
 	)
 	if containerName == "" {
-		return errors.New("servod docker container name is required") // Not using s.logAndReturnErrorf as logger might not be s.logger
+		return errors.New("servod docker container name is required")
 	}
 	servodDockerImagePath := fmt.Sprintf(
 		"%s/servod:%s",
@@ -714,12 +747,6 @@ func startServod(ctx context.Context, containerName, board, model, serial, confi
 	c, err := docker.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("fail to create docker client: %w", err)
-	}
-	// Force remove servod container if existed.
-	// Ignore error if container does not exist.
-	err = c.Remove(ctx, containerName, true)
-	if err != nil {
-		logger.Printf("Fail to remove container `%s`. Non-fatal\n", containerName)
 	}
 
 	containerEnvVars := []string{
@@ -756,6 +783,15 @@ func startServod(ctx context.Context, containerName, board, model, serial, confi
 	}
 	if err := verifyServodDaemonIsUp(ctx, c, containerName, port, 60); err != nil {
 		return fmt.Errorf("fail to verify docker client: %w", err)
+	}
+	return nil
+}
+
+// stopContainer stops and removes a docker container.
+func (s *service) stopContainer(ctx context.Context, c docker.Client, containerName string) error {
+	s.logger.Printf("Stopping and removing container %q...", containerName)
+	if err := c.Remove(ctx, containerName, true); err != nil {
+		return fmt.Errorf("failed to remove container %q: %w", containerName, err)
 	}
 	return nil
 }
