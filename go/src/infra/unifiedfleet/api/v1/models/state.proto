@@ -67,4 +67,14 @@ message StateRecord {
   string description = 5;
   // Record the last update timestamp of this machine (In UTC timezone)
   google.protobuf.Timestamp update_time = 6;
+  // pending_requests records pending (queued) requests to change the state.
+  // UFS uses this to manage conflicts and determine the eventual state if
+  // needed.
+  repeated StateRequest pending_requests = 7;
+}
+
+message StateRequest {
+  string user = 1; // i.e. requester email
+  State state = 2;
+  // We may extend this proto message to include fields like 'reason', etc.
 }
