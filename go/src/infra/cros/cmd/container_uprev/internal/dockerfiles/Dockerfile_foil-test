@@ -102,7 +102,7 @@ ENV GOOGLE_APPLICATION_CREDENTIALS=/creds/service_accounts/skylab-drone.json
 ENV APE_API_KEY=/tmp/test/gts-arc.json
 ENV TZ=Etc/UTC
 ENV USE_HOST_ADB=true
-ENV TF_GLOBAL_CONFIG=configs/cluster/ate/common.xml
+ENV TF_GLOBAL_CONFIG=configs/cluster/al-ate/al-lab-host-config.xml
 ENV TF_GLOBAL_CONFIG_SERVER_CONFIG=google/atp/gcs-lab-config-server-config
 ENV GLOBAL_LOG_PATH=/tmp/test/logs
 
