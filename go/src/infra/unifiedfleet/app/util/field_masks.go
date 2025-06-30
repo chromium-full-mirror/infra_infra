@@ -186,6 +186,9 @@ const (
 	AttachedDeviceLseHostPortPath       string = "attached_device_lse.associated_host_port"
 	AttachedDeviceLseOsVersionImagePath string = "attached_device_lse.os_version.image"
 	AttachedDeviceLseOsVersionValuePath string = "attached_device_lse.os_version.value"
+	AttachedDeviceLseWlanMacAddressPath string = "attached_device_lse.wlan_mac_address"
+	AttachedDeviceLseSim1Path           string = "attached_device_lse.sim1"
+	AttachedDeviceLseSim2Path           string = "attached_device_lse.sim2"
 	// Non-standard
 	AssocHostnamePath string = "assocHostname"
 	AssocHostPortPath string = "assocHostPort"

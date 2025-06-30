@@ -1831,7 +1831,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			lse := &ufspb.MachineLSE{
 				Name:     "adh-lse-1",
@@ -1843,12 +1843,15 @@ func TestUpdateMachineLSE(t *testing.T) {
 						},
 						AssociatedHostname: "adm-1",
 						AssociatedHostPort: "test-port-1",
+						WlanMacAddress:     "test-mac-1",
+						Sim1:               "test-sim1-1",
+						Sim2:               "test-sim2-1",
 					},
 				},
 				Schedulable: false,
 			}
 			_, err = inventory.CreateMachineLSE(ctx, lse)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			lse1 := &ufspb.MachineLSE{
 				Name:     "adh-lse-1",
@@ -1860,6 +1863,9 @@ func TestUpdateMachineLSE(t *testing.T) {
 						},
 						AssociatedHostname: "adm-1",
 						AssociatedHostPort: "test-port-2",
+						WlanMacAddress:     "test-mac-2",
+						Sim1:               "test-sim1-2",
+						Sim2:               "test-sim2-2",
 					},
 				},
 				Schedulable: true,
@@ -1869,16 +1875,22 @@ func TestUpdateMachineLSE(t *testing.T) {
 				"assocHostname",
 				"assocHostPort",
 				"schedulable",
+				"attached_device_lse.wlan_mac_address",
+				"attached_device_lse.sim1",
+				"attached_device_lse.sim2",
 			}})
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetMachines(), should.Match([]string{"adm-1"}))
-			assert.Loosely(t, resp.GetAttachedDeviceLse().GetOsVersion().GetValue(), should.Equal("test-os-2"))
-			assert.Loosely(t, resp.GetAttachedDeviceLse().GetAssociatedHostname(), should.Equal("adm-1"))
-			assert.Loosely(t, resp.GetAttachedDeviceLse().GetAssociatedHostPort(), should.Equal("test-port-2"))
-			assert.Loosely(t, resp.GetSchedulable(), should.BeTrue)
+			assert.That(t, resp.GetAttachedDeviceLse().GetOsVersion().GetValue(), should.Equal("test-os-2"))
+			assert.That(t, resp.GetAttachedDeviceLse().GetAssociatedHostname(), should.Equal("adm-1"))
+			assert.That(t, resp.GetAttachedDeviceLse().GetAssociatedHostPort(), should.Equal("test-port-2"))
+			assert.That(t, resp.GetAttachedDeviceLse().GetWlanMacAddress(), should.Equal("test-mac-2"))
+			assert.That(t, resp.GetAttachedDeviceLse().GetSim1(), should.Equal("test-sim1-2"))
+			assert.That(t, resp.GetAttachedDeviceLse().GetSim2(), should.Equal("test-sim2-2"))
+			assert.That(t, resp.GetSchedulable(), should.BeTrue)
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/adh-lse-1")
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 

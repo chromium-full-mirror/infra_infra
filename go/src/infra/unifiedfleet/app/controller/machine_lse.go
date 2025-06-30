@@ -634,6 +634,12 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 			oldMachinelse.GetAttachedDeviceLse().AssociatedHostname = machinelse.GetAttachedDeviceLse().GetAssociatedHostname()
 		case util.AttachedDeviceLseHostPortPath, util.AssocHostPortPath:
 			oldMachinelse.GetAttachedDeviceLse().AssociatedHostPort = machinelse.GetAttachedDeviceLse().GetAssociatedHostPort()
+		case util.AttachedDeviceLseWlanMacAddressPath:
+			oldMachinelse.GetAttachedDeviceLse().WlanMacAddress = machinelse.GetAttachedDeviceLse().GetWlanMacAddress()
+		case util.AttachedDeviceLseSim1Path:
+			oldMachinelse.GetAttachedDeviceLse().Sim1 = machinelse.GetAttachedDeviceLse().GetSim1()
+		case util.AttachedDeviceLseSim2Path:
+			oldMachinelse.GetAttachedDeviceLse().Sim2 = machinelse.GetAttachedDeviceLse().GetSim2()
 		case util.SchedulablePath:
 			oldMachinelse.Schedulable = machinelse.GetSchedulable()
 		case util.LogicalZonePath, util.LogicalZoneCamelPath:
@@ -1735,6 +1741,18 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.M
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
 				}
 			case util.AttachedDeviceLseHostPortPath, util.AssocHostPortPath:
+				if machinelse.GetAttachedDeviceLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
+				}
+			case util.AttachedDeviceLseWlanMacAddressPath:
+				if machinelse.GetAttachedDeviceLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
+				}
+			case util.AttachedDeviceLseSim1Path:
+				if machinelse.GetAttachedDeviceLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
+				}
+			case util.AttachedDeviceLseSim2Path:
 				if machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
 				}
