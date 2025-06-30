@@ -1970,6 +1970,85 @@ func TestUpdateMachineLSE(t *testing.T) {
 	})
 }
 
+func TestUpdateMachineLSEAndroidHost(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ftt.Run("UpdateMachineLSE for an android host lse", t, func(t *ftt.Test) {
+		t.Run("Partial Update android host lse", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name:         "sm-1",
+				SerialNumber: "sm-1-serial",
+				Device: &ufspb.Machine_ServerMachine{
+					ServerMachine: &ufspb.ServerMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+
+			lse := &ufspb.MachineLSE{
+				Name:     "ah-1",
+				Machines: []string{"sm-1"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "test-os-1",
+						},
+						SwitchInterface: &ufspb.SwitchInterface{
+							Switch:   "test-switch-1",
+							PortName: "test-port-1",
+						},
+						UsbHub:        ufspb.AndroidHostLSE_USB_HUB_PLUGGABLE,
+						BiosVersion:   "test-bios-1",
+						KernelVersion: "test-kernel-1",
+					},
+				},
+				Schedulable: false,
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse)
+			assert.Loosely(t, err, should.BeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name:     "ah-1",
+				Machines: []string{"sm-1"},
+				Lse: &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "test-os-2",
+						},
+						SwitchInterface: &ufspb.SwitchInterface{
+							Switch:   "test-switch-2",
+							PortName: "test-port-2",
+						},
+						UsbHub:        ufspb.AndroidHostLSE_USB_HUB_THUNDERSYNC,
+						BiosVersion:   "test-bios-2",
+						KernelVersion: "test-kernel-2",
+					},
+				},
+				Schedulable: true,
+			}
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{
+				"android_host_lse.os_version.value",
+				"android_host_lse.switch_interface.switch",
+				"android_host_lse.switch_interface.port_name",
+				"android_host_lse.usb_hub",
+				"android_host_lse.bios_version",
+				"android_host_lse.kernel_version",
+				"schedulable",
+			}})
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachines(), should.Match([]string{"sm-1"}))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetOsVersion().GetValue(), should.Equal("test-os-2"))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetSwitchInterface().GetSwitch(), should.Equal("test-switch-2"))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetSwitchInterface().GetPortName(), should.Equal("test-port-2"))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetUsbHub(), should.Equal(ufspb.AndroidHostLSE_USB_HUB_THUNDERSYNC))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetBiosVersion(), should.Equal("test-bios-2"))
+			assert.Loosely(t, resp.GetAndroidHostLse().GetKernelVersion(), should.Equal("test-kernel-2"))
+			assert.Loosely(t, resp.GetSchedulable(), should.BeTrue)
+		})
+	})
+}
+
 func TestUpdateLabMeta(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

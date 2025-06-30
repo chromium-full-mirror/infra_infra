@@ -367,7 +367,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 
 	var oldMachinelse *ufspb.MachineLSE
 	var updatedMachinelse *ufspb.MachineLSE
-	// If its a Chrome browser host, ChromeOS server or a ChromeOS labstation
+	// If its a Chrome browser host, ChromeOS server,ChromeOS labstation, or Android host
 	// ChromeBrowserMachineLSE, ChromeOSMachineLSE for a Server and Labstation
 	f := func(ctx context.Context) error {
 		hc := getHostHistoryClient(machinelse)
@@ -393,6 +393,10 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			case *ufspb.MachineLSE_AttachedDeviceLse:
 				oldMachinelse.Lse = &ufspb.MachineLSE_AttachedDeviceLse{
 					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{},
+				}
+			case *ufspb.MachineLSE_AndroidHostLse:
+				oldMachinelse.Lse = &ufspb.MachineLSE_AndroidHostLse{
+					AndroidHostLse: &ufspb.AndroidHostLSE{},
 				}
 			case nil:
 				// The update is not for anything inside the lse proto. Better log this
@@ -578,6 +582,32 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 			processAttachedDeviceOsVersionValue(oldMachinelse, machinelse)
 		case util.AttachedDeviceLseOsVersionImagePath:
 			processAttachedDeviceOsVersionImage(oldMachinelse, machinelse)
+		case util.AndroidHostLseOsVersionValuePath:
+			if oldMachinelse.GetAndroidHostLse().GetOsVersion() == nil {
+				oldMachinelse.GetAndroidHostLse().OsVersion = &ufspb.OSVersion{
+					Value: machinelse.GetAndroidHostLse().GetOsVersion().GetValue(),
+				}
+			} else {
+				oldMachinelse.GetAndroidHostLse().GetOsVersion().Value = machinelse.GetAndroidHostLse().GetOsVersion().GetValue()
+			}
+		case util.AndroidHostLseOsVersionImagePath:
+			if oldMachinelse.GetAndroidHostLse().GetOsVersion() == nil {
+				oldMachinelse.GetAndroidHostLse().OsVersion = &ufspb.OSVersion{
+					Image: machinelse.GetAndroidHostLse().GetOsVersion().GetImage(),
+				}
+			} else {
+				oldMachinelse.GetAndroidHostLse().GetOsVersion().Image = machinelse.GetAndroidHostLse().GetOsVersion().GetImage()
+			}
+		case util.AndroidHostLseSwitchInterfaceSwitchPath:
+			oldMachinelse.GetAndroidHostLse().GetSwitchInterface().Switch = machinelse.GetAndroidHostLse().GetSwitchInterface().GetSwitch()
+		case util.AndroidHostLseSwitchInterfacePortNamePath:
+			oldMachinelse.GetAndroidHostLse().GetSwitchInterface().PortName = machinelse.GetAndroidHostLse().GetSwitchInterface().GetPortName()
+		case util.AndroidHostLseBiosVersionPath:
+			oldMachinelse.GetAndroidHostLse().BiosVersion = machinelse.GetAndroidHostLse().GetBiosVersion()
+		case util.AndroidHostLseKernelVersionPath:
+			oldMachinelse.GetAndroidHostLse().KernelVersion = machinelse.GetAndroidHostLse().GetKernelVersion()
+		case util.AndroidHostLseUsbHubPath:
+			oldMachinelse.GetAndroidHostLse().UsbHub = machinelse.GetAndroidHostLse().GetUsbHub()
 		case util.ChromeBrowserMachineLseVirtualDatacenterPath, util.VirtualDatacenterCamelPath:
 			if oldMachinelse.GetChromeBrowserMachineLse() == nil {
 				oldMachinelse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
@@ -1673,6 +1703,15 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.M
 				if machinelse.GetAttachedDeviceLse().GetOsVersion() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
 				}
+			case util.AndroidHostLseOsVersionImagePath:
+				fallthrough
+			case util.AndroidHostLseOsVersionValuePath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - android host machine lse cannot be empty/nil.")
+				}
+				if machinelse.GetAndroidHostLse().GetOsVersion() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - OsVersion cannot be empty/nil.")
+				}
 			case util.OsVersionImagePath, util.OsImageCamelPath:
 				fallthrough
 			case util.OsVersionValuePath, util.OsVersionCamelPath:
@@ -1698,6 +1737,26 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.M
 			case util.AttachedDeviceLseHostPortPath, util.AssocHostPortPath:
 				if machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
+				}
+			case util.AndroidHostLseSwitchInterfaceSwitchPath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an android host")
+				}
+			case util.AndroidHostLseSwitchInterfacePortNamePath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an android host")
+				}
+			case util.AndroidHostLseBiosVersionPath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an android host")
+				}
+			case util.AndroidHostLseKernelVersionPath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an android host")
+				}
+			case util.AndroidHostLseUsbHubPath:
+				if machinelse.GetAndroidHostLse() == nil {
+					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an android host")
 				}
 			case util.LogicalZonePath, util.LogicalZoneCamelPath:
 				if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {

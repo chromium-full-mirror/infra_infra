@@ -194,6 +194,15 @@ const (
 	ServerMachineModelPath      string = "server_machine.model"
 	ServerMachineStoragePath    string = "server_machine.storage"
 
+	// AndroidHostLse
+	AndroidHostLseBiosVersionPath             string = "android_host_lse.bios_version"
+	AndroidHostLseKernelVersionPath           string = "android_host_lse.kernel_version"
+	AndroidHostLseOsVersionValuePath          string = "android_host_lse.os_version.value"
+	AndroidHostLseOsVersionImagePath          string = "android_host_lse.os_version.image"
+	AndroidHostLseSwitchInterfacePortNamePath string = "android_host_lse.switch_interface.port_name"
+	AndroidHostLseSwitchInterfaceSwitchPath   string = "android_host_lse.switch_interface.switch"
+	AndroidHostLseUsbHubPath                  string = "android_host_lse.usb_hub"
+
 	// MachineLSE
 	MachineLsePrototypePath string = "machine_lse_prototype"
 	SchedulablePath         string = "schedulable"
