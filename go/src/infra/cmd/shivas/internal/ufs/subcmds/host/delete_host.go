@@ -72,7 +72,7 @@ func (c *deleteHost) innerRun(a subcommands.Application, args []string, env subc
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
-	if err := utils.PrintExistingHost(ctx, ic, args[0]); err != nil {
+	if _, err := utils.PrintExistingHost(ctx, ic, args[0]); err != nil {
 		return err
 	}
 	prompt := utils.CLIPrompt(a.GetOut(), os.Stdin, false)

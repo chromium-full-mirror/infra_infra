@@ -54,6 +54,11 @@ var UpdateHostCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.nicName, "nic", "", "name of the nic to associate the ip to")
 		c.Flags.BoolVar(&c.deleteVlan, "delete-vlan", false, "if deleting the ip assignment for the host")
 		c.Flags.StringVar(&c.ip, "ip", "", "the ip to assign the host to")
+		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this device is connected to. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.switchPort, "switch-port", "", "the port of the switch that this device is connected to. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.usbHub, "usb-hub", "", cmdhelp.UsbHubHelpText)
+		c.Flags.StringVar(&c.biosVersion, "bios", "", "the bios version of the machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.kernelVersion, "kernel", "", "the kernel version of the machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 
 		return c
@@ -75,11 +80,16 @@ type updateHost struct {
 	nicName          string
 	deleteVlan       bool
 	ip               string
+	switchName       string
+	switchPort       string
 	state            string
 	prototype        string
 	osVersion        string
 	osImage          string
 	vmCapacity       int
+	usbHub           string
+	biosVersion      string
+	kernelVersion    string
 	tags             []string
 	description      string
 	deploymentTicket string
@@ -131,11 +141,13 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
 			return errors.New("machines field is empty in json. It is a required parameter for json input.")
 		}
-	} else {
-		c.parseArgs(machinelse)
 	}
-	if err := utils.PrintExistingHost(ctx, ic, machinelse.Name); err != nil {
+	oldMachinelse, err := utils.PrintExistingHost(ctx, ic, c.hostName)
+	if err != nil {
 		return err
+	}
+	if c.newSpecsFile == "" {
+		c.parseArgs(oldMachinelse, machinelse)
 	}
 
 	var networkOptions map[string]*ufsAPI.NetworkOption
@@ -154,21 +166,32 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 	if !ufsUtil.ValidateTags(machinelse.Tags) {
 		return fmt.Errorf(ufsAPI.InvalidTags)
 	}
+	paths := map[string]string{
+		"machine":     ufsUtil.MachinesPath,
+		"prototype":   ufsUtil.MachineLsePrototypePath,
+		"vm-capacity": ufsUtil.ChromeBrowserMachineLseVmCapacityPath,
+		"tag":         ufsUtil.TagsPath,
+		"state":       ufsUtil.ResourceStatePath,
+		"desc":        ufsUtil.DescriptionPath,
+		"ticket":      ufsUtil.DeploymentTicketPath,
+		"vdc":         ufsUtil.ChromeBrowserMachineLseVirtualDatacenterPath,
+		"switch":      ufsUtil.AndroidHostLseSwitchInterfaceSwitchPath,
+		"switch-port": ufsUtil.AndroidHostLseSwitchInterfacePortNamePath,
+		"usb-hub":     ufsUtil.AndroidHostLseUsbHubPath,
+		"bios":        ufsUtil.AndroidHostLseBiosVersionPath,
+		"kernel":      ufsUtil.AndroidHostLseKernelVersionPath,
+	}
+	if oldMachinelse.GetChromeBrowserMachineLse() != nil {
+		paths["os"] = ufsUtil.ChromeBrowserMachineLseOsVersionValuePath
+		paths["os-image"] = ufsUtil.ChromeBrowserMachineLseOsVersionImagePath
+	} else if oldMachinelse.GetAndroidHostLse() != nil {
+		paths["os"] = ufsUtil.AndroidHostLseOsVersionValuePath
+		paths["os-image"] = ufsUtil.AndroidHostLseOsVersionImagePath
+	}
 	res, err := ic.UpdateMachineLSE(ctx, &ufsAPI.UpdateMachineLSERequest{
 		MachineLSE:     machinelse,
 		NetworkOptions: networkOptions,
-		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"machine":     ufsUtil.MachinesPath,
-			"prototype":   ufsUtil.MachineLsePrototypePath,
-			"os":          ufsUtil.ChromeBrowserMachineLseOsVersionValuePath,
-			"os-image":    ufsUtil.ChromeBrowserMachineLseOsVersionImagePath,
-			"vm-capacity": ufsUtil.ChromeBrowserMachineLseVmCapacityPath,
-			"tag":         ufsUtil.TagsPath,
-			"state":       ufsUtil.ResourceStatePath,
-			"desc":        ufsUtil.DescriptionPath,
-			"ticket":      ufsUtil.DeploymentTicketPath,
-			"vdc":         ufsUtil.ChromeBrowserMachineLseVirtualDatacenterPath,
-		}),
+		UpdateMask:     utils.GetUpdateMask(&c.Flags, paths),
 	})
 	if err != nil {
 		return err
@@ -196,7 +219,7 @@ func (c *updateHost) printRes(ctx context.Context, ic ufsAPI.FleetClient, res *u
 	}
 }
 
-func (c *updateHost) parseArgs(lse *ufspb.MachineLSE) {
+func (c *updateHost) parseArgs(oldLse, lse *ufspb.MachineLSE) {
 	lse.Name = c.hostName
 	lse.Hostname = c.hostName
 	lse.MachineLsePrototype = c.prototype
@@ -212,37 +235,68 @@ func (c *updateHost) parseArgs(lse *ufspb.MachineLSE) {
 	} else {
 		lse.DeploymentTicket = c.deploymentTicket
 	}
-	if c.osVersion != "" || c.osImage != "" || c.vmCapacity != 0 || c.vdc != "" {
-		lse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
-			ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-				OsVersion: &ufspb.OSVersion{},
-			},
-		}
-		if c.vmCapacity == -1 {
-			lse.GetChromeBrowserMachineLse().VmCapacity = 0
-		} else {
-			lse.GetChromeBrowserMachineLse().VmCapacity = int32(c.vmCapacity)
-		}
-		if c.osVersion == utils.ClearFieldValue {
-			lse.GetChromeBrowserMachineLse().GetOsVersion().Value = ""
-		} else {
-			lse.GetChromeBrowserMachineLse().GetOsVersion().Value = c.osVersion
-		}
-		if c.osImage == utils.ClearFieldValue {
-			lse.GetChromeBrowserMachineLse().GetOsVersion().Image = ""
-		} else {
-			lse.GetChromeBrowserMachineLse().GetOsVersion().Image = c.osImage
-		}
-		if c.vdc == utils.ClearFieldValue {
-			lse.GetChromeBrowserMachineLse().VirtualDatacenter = ""
-		} else {
-			lse.GetChromeBrowserMachineLse().VirtualDatacenter = c.vdc
-		}
-	}
 	if c.description == utils.ClearFieldValue {
 		lse.Description = ""
 	} else {
 		lse.Description = c.description
+	}
+	osVersion := &ufspb.OSVersion{}
+	if c.osVersion == utils.ClearFieldValue {
+		osVersion.Value = ""
+	} else if c.osVersion != "" {
+		osVersion.Value = c.osVersion
+	}
+	if c.osImage == utils.ClearFieldValue {
+		osVersion.Image = ""
+	} else if c.osImage != "" {
+		osVersion.Image = c.osImage
+	}
+	if oldLse.GetChromeBrowserMachineLse() != nil {
+		lse.Lse = &ufspb.MachineLSE_ChromeBrowserMachineLse{
+			ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
+				OsVersion: osVersion,
+			},
+		}
+		if c.vmCapacity == -1 {
+			lse.GetChromeBrowserMachineLse().VmCapacity = 0
+		} else if c.vmCapacity != 0 {
+			lse.GetChromeBrowserMachineLse().VmCapacity = int32(c.vmCapacity)
+		}
+		if c.vdc == utils.ClearFieldValue {
+			lse.GetChromeBrowserMachineLse().VirtualDatacenter = ""
+		} else if c.vdc != "" {
+			lse.GetChromeBrowserMachineLse().VirtualDatacenter = c.vdc
+		}
+	} else if oldLse.GetAndroidHostLse() != nil {
+		lse.Lse = &ufspb.MachineLSE_AndroidHostLse{
+			AndroidHostLse: &ufspb.AndroidHostLSE{
+				OsVersion:       osVersion,
+				SwitchInterface: &ufspb.SwitchInterface{},
+				UsbHub:          ufsUtil.ToUsbHub(c.usbHub),
+				BiosVersion:     c.biosVersion,
+				KernelVersion:   c.kernelVersion,
+			},
+		}
+		if c.switchName == utils.ClearFieldValue {
+			lse.GetAndroidHostLse().GetSwitchInterface().Switch = ""
+		} else if c.switchName != "" {
+			lse.GetAndroidHostLse().GetSwitchInterface().Switch = c.switchName
+		}
+		if c.switchPort == utils.ClearFieldValue {
+			lse.GetAndroidHostLse().GetSwitchInterface().PortName = ""
+		} else if c.switchPort != "" {
+			lse.GetAndroidHostLse().GetSwitchInterface().PortName = c.switchPort
+		}
+		if c.biosVersion == utils.ClearFieldValue {
+			lse.GetAndroidHostLse().BiosVersion = ""
+		} else if c.biosVersion != "" {
+			lse.GetAndroidHostLse().BiosVersion = c.biosVersion
+		}
+		if c.kernelVersion == utils.ClearFieldValue {
+			lse.GetAndroidHostLse().KernelVersion = ""
+		} else if c.kernelVersion != "" {
+			lse.GetAndroidHostLse().KernelVersion = c.kernelVersion
+		}
 	}
 }
 
@@ -300,17 +354,39 @@ func (c *updateHost) validateArgs() error {
 		if c.vdc != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-vdc' cannot be specified at the same time.")
 		}
+		if c.switchName != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-switch' cannot be specified at the same time.")
+		}
+		if c.switchPort != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-switch-port' cannot be specified at the same time.")
+		}
+		if c.usbHub != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-usb-hub' cannot be specified at the same time.")
+		}
+		if c.biosVersion != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-bios' cannot be specified at the same time.")
+		}
+		if c.kernelVersion != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON input file is already specified. '-kernel' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.hostName == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-name' is required, no mode ('-f' or '-i') is specified.")
 		}
-		if c.nicName == "" && c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.state == "" && c.deploymentTicket == "" &&
-			c.osVersion == "" && c.prototype == "" && c.tags == nil && c.vmCapacity == 0 && c.description == "" && c.machineName == "" && c.osImage == "" && c.vdc == "" {
+		if c.nicName == "" && c.vlanName == "" && !c.deleteVlan && c.ip == "" &&
+			c.state == "" && c.deploymentTicket == "" && c.osVersion == "" &&
+			c.prototype == "" && c.tags == nil && c.vmCapacity == 0 &&
+			c.description == "" && c.machineName == "" && c.osImage == "" &&
+			c.vdc == "" && c.switchName == "" && c.switchPort == "" &&
+			c.biosVersion == "" && c.kernelVersion == "" && c.usbHub == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid state, please check help info for '-state'.", c.state)
+		}
+		if c.usbHub != "" && !ufsUtil.IsUsbHub(c.usbHub) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid USB hub, please check help info for '-usb-hub'.", c.usbHub)
 		}
 	}
 	return nil

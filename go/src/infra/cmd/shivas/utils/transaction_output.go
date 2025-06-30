@@ -192,21 +192,21 @@ func PrintExistingSwitch(ctx context.Context, ic ufsAPI.FleetClient, name string
 }
 
 // PrintExistingHost prints the old host in update/delete operations
-func PrintExistingHost(ctx context.Context, ic ufsAPI.FleetClient, name string) error {
+func PrintExistingHost(ctx context.Context, ic ufsAPI.FleetClient, name string) (*ufspb.MachineLSE, error) {
 	res, err := ic.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),
 	})
 	if err != nil {
-		return errors.Annotate(err, "Failed to get host").Err()
+		return nil, errors.Annotate(err, "Failed to get host").Err()
 	}
 	if res == nil {
-		return errors.Reason("The returned resp is empty").Err()
+		return nil, errors.Reason("The returned resp is empty").Err()
 	}
 	res.Name = ufsUtil.RemovePrefix(res.Name)
 	fmt.Println("The host before delete/update:")
 	PrintProtoJSON(res, !NoEmitMode(false))
 	printDHCP(ctx, ic, name)
-	return nil
+	return res, nil
 }
 
 // PrintExistingAttachedDeviceHost prints the old attached device host in update/delete operations.
