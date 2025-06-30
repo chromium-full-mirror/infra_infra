@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -33,6 +32,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/consoleserver"
 	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
 	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
+	omnilab_pubsub "go.chromium.org/infra/fleetconsole/omnilab/omnilab-pubsub"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -73,6 +73,9 @@ var ACLMap rpcacl.Map = map[string]string{
 	"/discovery.Discovery/Describe":                                         rpcacl.All,
 	"/grpc.health.v1.Health/Watch":                                          rpcacl.All,
 	"/grpc.health.v1.Health/Check":                                          rpcacl.All,
+
+	// ************** REPAIR METRICS *********************
+	"/fleetconsole.FleetConsole/UpdateAndroidDevices": "mdb/fleet-console-eng",
 }
 
 func ServerMain(srv *server.Server) error {
@@ -95,10 +98,13 @@ func ServerMain(srv *server.Server) error {
 		return err
 	})
 
-	// Instead of anypb.Any there should be the actual proto file sent by the pubsub, this is a place holder
-	pubsub.RegisterJSONPBHandler("update-android-devices", func(ctx context.Context, msg pubsub.Message, tp *anypb.Any) error {
+	pubsub.RegisterJSONPBHandler("update-android-devices", func(ctx context.Context, msg pubsub.Message, tp *omnilab_pubsub.MonitoredRecord) error {
 		logging.Infof(ctx, "Pubsub message received: %v", tp)
-		return nil
+
+		_, err := consoleFrontend.UpdateAndroidDevices(ctx, &fleetconsolerpc.UpdateAndroidDevicesRequest{
+			Host: tp,
+		})
+		return errors.Annotate(err, "PUBSUB update-android-devices:").Err()
 	})
 
 	logging.Infof(srv.Context, "End initialization of console server.")

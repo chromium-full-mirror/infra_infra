@@ -20,12 +20,12 @@ func TestSelectClauseBuilder(t *testing.T) {
 			assert.Loosely(t, fieldClauseBuilder.fieldSelectClause, should.Equal("field"))
 		})
 		t.Run("CountAll", func(t *ftt.Test) {
-			var field any
+			var field int
 			fieldClauseBuilder := CountAll(&field)
 			assert.Loosely(t, fieldClauseBuilder.fieldSelectClause, should.Equal("COUNT(*)"))
 		})
 		t.Run("CountWhereEquals", func(t *ftt.Test) {
-			var field any
+			var field int
 			fieldClauseBuilder := CountIf("field", &field).Equals("1")
 			assert.Loosely(t, fieldClauseBuilder.fieldSelectClause, should.Equal("SUM(CASE WHEN field = \"1\" THEN 1 ELSE 0 END)"))
 		})
