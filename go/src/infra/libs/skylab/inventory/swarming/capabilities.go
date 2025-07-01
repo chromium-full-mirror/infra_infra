@@ -154,6 +154,9 @@ func otherCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels
 	if v := c.GetFormFactor(); v != inventory.HardwareCapabilities_FORM_FACTOR_UNSPECIFIED {
 		dims["label-form_factor"] = []string{v.String()}
 	}
+	if v := c.GetGscChip(); v != inventory.HardwareCapabilities_GSC_CHIP_UNKNOWN {
+		dims["label-gsc_chip"] = []string{v.String()}
+	}
 }
 
 func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -203,6 +206,15 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Di
 			*c.FormFactor = inventory.HardwareCapabilities_FormFactor(p)
 		}
 		delete(d, "label-form_factor")
+	}
+	if v, ok := getLastStringValue(d, "label-gsc_chip"); ok {
+		if p, ok := inventory.HardwareCapabilities_GscChip_value[v]; ok {
+			if c.GscChip == nil {
+				c.GscChip = new(inventory.HardwareCapabilities_GscChip)
+			}
+			*c.GscChip = inventory.HardwareCapabilities_GscChip(p)
+		}
+		delete(d, "label-gsc_chip")
 	}
 	return d
 }

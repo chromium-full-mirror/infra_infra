@@ -622,6 +622,22 @@ func setFingerprintSensor(l *inventory.SchedulableLabels, s *chromeosLab.DutStat
 	c.FingerprintSensor = &(s.FingerprintSensor)
 }
 
+func setGscChip(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
+	c := l.GetCapabilities()
+	var gscChip inventory.HardwareCapabilities_GscChip
+	switch s.GetGscChip() {
+	case chromeosLab.DutState_GSC_CHIP_H1:
+		gscChip = inventory.HardwareCapabilities_GSC_CHIP_H1
+	case chromeosLab.DutState_GSC_CHIP_DT:
+		gscChip = inventory.HardwareCapabilities_GSC_CHIP_DT
+	case chromeosLab.DutState_GSC_CHIP_NT:
+		gscChip = inventory.HardwareCapabilities_GSC_CHIP_NT
+	default:
+		gscChip = inventory.HardwareCapabilities_GSC_CHIP_UNKNOWN
+	}
+	c.GscChip = &gscChip
+}
+
 func setHardwareState(s chromeosLab.HardwareState) *inventory.HardwareState {
 	target := inventory.HardwareState_HARDWARE_UNKNOWN
 	if s != chromeosLab.HardwareState_HARDWARE_UNKNOWN {
@@ -666,6 +682,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	setFingerprintBoard(l, s)
 	setFingerprintMcu(l, s)
 	setFingerprintSensor(l, s)
+	setGscChip(l, s)
 }
 
 // TODO(echoyang@): Add CBX branding

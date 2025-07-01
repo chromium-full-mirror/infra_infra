@@ -146,6 +146,7 @@ capabilities {
   cbx: 0
   cbx_branding: 0
   form_factor: 1
+  gsc_chip: 2
 }
 board: "boardval"
 bot_size: 1
@@ -334,6 +335,7 @@ capabilities {
   cbx: 0
   cbx_branding: 0
   form_factor: 1
+  gsc_chip: 2
 }
 board: "boardval"
 bot_size: 1
@@ -432,6 +434,7 @@ var fullDimensions = Dimensions{
 	"label-fingerprint_sensor":      {"fingerprintsensorval"},
 	"label-flashrom":                {"True"},
 	"label-form_factor":             {"FORM_FACTOR_CLAMSHELL"},
+	"label-gsc_chip":                {"GSC_CHIP_DT"},
 	"label-gpu_family":              {"gpufamilyval"},
 	"label-gpu_id":                  {"gpuidval"},
 	"label-graphics":                {"graphicsval"},

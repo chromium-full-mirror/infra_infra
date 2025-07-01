@@ -133,6 +133,11 @@ func otherCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 			labels = append(labels, "cbx_branding:hard")
 		}
 	}
+	if v := c.GetGscChip(); v != inventory.HardwareCapabilities_GSC_CHIP_UNKNOWN {
+		const plen = 9 // len("GSC_CHIP_")
+		chip := strings.ToLower(v.String()[plen:])
+		labels = append(labels, "gsc_chip:"+chip)
+	}
 	return labels
 }
 
@@ -225,6 +230,14 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, labels []string)
 			} else if v == "hard" {
 				*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING
 			}
+		case "gsc_chip":
+			vn := "GSC_CHIP_" + strings.ToUpper(v)
+			type t = inventory.HardwareCapabilities_GscChip
+			vals := inventory.HardwareCapabilities_GscChip_value
+			if c.GscChip == nil {
+				c.GscChip = new(inventory.HardwareCapabilities_GscChip)
+			}
+			*c.GscChip = t(vals[vn])
 		default:
 			switch {
 			case strings.HasPrefix(k, "hw_video_acc_"):

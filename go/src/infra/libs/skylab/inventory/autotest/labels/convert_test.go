@@ -151,6 +151,7 @@ capabilities {
   cbx: 1
   cbx_branding: 2
   form_factor: 0
+  gsc_chip: 2
 }
 board: "boardval"
 bot_size: 0
@@ -255,6 +256,7 @@ var fullLabels = []string{
 	"flashrom",
 	"gpu_family:gpufamilyval",
 	"graphics:graphicsval",
+	"gsc_chip:dt",
 	"hangout_app",
 	"hmr_state:WORKING",
 	"hotwording",

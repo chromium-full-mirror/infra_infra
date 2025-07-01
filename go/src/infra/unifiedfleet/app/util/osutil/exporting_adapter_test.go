@@ -359,6 +359,7 @@ var devUFSState = chromeosLab.DutState{
 	FingerprintBoard:         "test_fingerprint_board",
 	FingerprintMcu:           "test_fingerprint_mcu",
 	FingerprintSensor:        "test_fingerprint_sensor",
+	GscChip:                  chromeosLab.DutState_GSC_CHIP_H1,
 }
 
 var labstationMachine = ufspb.Machine{
@@ -579,6 +580,7 @@ common {
 			fingerprint_board: "test_fingerprint_board"
 			fingerprint_mcu: "test_fingerprint_mcu"
 			fingerprint_sensor: "test_fingerprint_sensor"
+			gsc_chip: GSC_CHIP_H1
 			form_factor: FORM_FACTOR_CHROMEBASE
 			gpu_family: "test_gpu"
 			gpu_id: "test_gpu_id"
@@ -832,6 +834,7 @@ common {
 			fingerprint_board: "test_fingerprint_board"
 			fingerprint_mcu: "test_fingerprint_mcu"
 			fingerprint_sensor: "test_fingerprint_sensor"
+			gsc_chip: GSC_CHIP_H1
 			flashrom: false
 			gpu_family: ""
 			gpu_id: "test_gpu_id"
