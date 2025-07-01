@@ -409,6 +409,17 @@ message HardwareCapabilities {
   optional string fingerprint_sensor = 27;
   optional bool flashrom = 14;
 
+  // The GSC chip on the DUT.
+  // The value is determined based on VID:PID values.
+  // More details can be found in b/369829759.
+  enum GscChip {
+    GSC_CHIP_UNKNOWN = 0;
+    GSC_CHIP_H1 = 1;
+    GSC_CHIP_DT = 2;
+    GSC_CHIP_NT = 3;
+  }
+  optional GscChip gsc_chip = 28;
+
   // Next tag: 8
   enum FormFactor {
     FORM_FACTOR_UNSPECIFIED = 0;
