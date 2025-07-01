@@ -20,22 +20,32 @@ import (
 
 // verify verifies LSNexus APIs.
 func verify(ctx context.Context, logger *log.Logger, a *args) error {
-	lsnexusTestServerAddr, stopLsNexusTestServer, err := lsnexusTesting.StartServer(
-		a.workingDir,
-		a.board,
-		a.model,
-		nil,
-		a.servoSerial,
-		a.servodContainer,
-		int32(a.servodPort),
-		a.bolsAddr,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to start LSNexus test server: %w", err)
-	}
-	defer stopLsNexusTestServer() // Ensure the test server is stopped
+	var lsnexusTestServerAddr string
+	var err error
 
-	logger.Printf("LSNexus test server started at: %s for verification", lsnexusTestServerAddr)
+	// If no address is provided, start a local test server.
+	if a.lsNexusAddr == "" {
+		var stopLsNexusTestServer func()
+		lsnexusTestServerAddr, stopLsNexusTestServer, err = lsnexusTesting.StartServer(
+			a.workingDir,
+			a.board,
+			a.model,
+			nil,
+			a.servoSerial,
+			a.servodContainer,
+			int32(a.servodPort),
+			a.bolsAddr,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to start LSNexus test server: %w", err)
+		}
+		defer stopLsNexusTestServer() // Ensure the locally started server is stopped.
+		logger.Printf("LSNexus test server started at: %s for verification", lsnexusTestServerAddr)
+	} else {
+		// Use the provided server address.
+		lsnexusTestServerAddr = a.lsNexusAddr
+		logger.Printf("Connecting to existing LSNexus server at: %s for verification", lsnexusTestServerAddr)
+	}
 
 	// Connect to the LSNexus test server we just started
 	conn, err := grpc.NewClient(lsnexusTestServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -53,9 +63,11 @@ func verify(ctx context.Context, logger *log.Logger, a *args) error {
 		return fmt.Errorf("failed to verify file related APIs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
 	}
 
-	logger.Println("Verifying DownloadServoLogs API...")
-	if _, err := cl.DownloadServoLogs(ctx, &lsnexus.DownloadServoLogsRequest{}); err != nil {
-		return fmt.Errorf("failed to download servo logs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
+	if a.lsNexusAddr == "" {
+		logger.Println("Verifying DownloadServoLogs API...")
+		if _, err := cl.DownloadServoLogs(ctx, &lsnexus.DownloadServoLogsRequest{}); err != nil {
+			return fmt.Errorf("failed to download servo logs via LSNexus at %s: %w", lsnexusTestServerAddr, err)
+		}
 	}
 
 	logger.Println("LSNexus verification completed successfully.")

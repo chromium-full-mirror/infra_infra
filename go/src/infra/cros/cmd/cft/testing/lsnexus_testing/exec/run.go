@@ -103,11 +103,47 @@ func runCLI(ctx context.Context, d []string) int {
 	return 0
 }
 
+// runLSNexusServer is the entry point for running lsnexus_testing in server mode.
+func runLSNexusServer(ctx context.Context, d []string) int {
+	t := time.Now()
+	defaultWorkingDir := filepath.Join(defaultRootPath, t.Format("20060102-150405"))
+
+	a := args{}
+
+	fs := flag.NewFlagSet("Run lsnexus_testing in server mode", flag.ExitOnError)
+	fs.StringVar(&a.workingDir, "working_dir", defaultWorkingDir, fmt.Sprintf("Working directory. Default value is %s", defaultWorkingDir))
+	fs.StringVar(&a.bolsAddr, "bols_addr", "", "The address of BOLS.")
+	fs.StringVar(&a.lsNexusAddr, "lsnexus_addr", "", "The address of LSNexus.")
+	fs.StringVar(&a.servodContainer, "servod_container", "", "The container of BOLS.")
+	fs.IntVar(&a.servodPort, "servod_port", 0, "The servod port.")
+	fs.StringVar(&a.servoSerial, "servo_serial", "", "The serial of the servo.")
+	fs.StringVar(&a.board, "board", "", "The board of the DUT")
+	fs.StringVar(&a.model, "model", "", "The model of the DUT")
+	fs.Parse(d)
+
+	os.MkdirAll(filepath.Join(a.workingDir, "data"), 0755)
+
+	logFile, err := createLogFile(filepath.Join(a.workingDir, "log"))
+	if err != nil {
+		log.Fatalln("Failed to create log file", err)
+	}
+	defer logFile.Close()
+
+	logger := newLogger(logFile)
+	logger.Println("lsnexus_testing server version ", Version)
+	if err := startServer(ctx, logger, &a); err != nil {
+		logger.Fatalln("Failed to run server: ", err)
+	}
+
+	return 0
+}
+
 // Specify run mode for CLI.
 type runMode string
 
 const (
 	runCli     runMode = "cli"
+	runServer  runMode = "server"
 	runVersion runMode = "version"
 	runHelp    runMode = "help"
 )
@@ -122,6 +158,9 @@ func getRunMode() (runMode, error) {
 		switch strings.ToLower(os.Args[1]) {
 		case "cli":
 			return runCli, nil
+
+		case "server":
+			return runServer, nil
 		}
 		return runHelp, fmt.Errorf("unknown subcommand %s", os.Args[1])
 	}
@@ -137,6 +176,9 @@ func LSNexusTestingInternal(ctx context.Context) int {
 	case runCli:
 		log.Printf("Running CLI mode!")
 		return runCLI(ctx, os.Args[2:])
+	case runServer:
+		log.Printf("Running Server mode!")
+		return runLSNexusServer(ctx, os.Args[2:])
 	case runVersion:
 		log.Printf("lsnexus_testing version: %s", Version)
 		return 0
