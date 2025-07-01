@@ -47,6 +47,11 @@ var (
 		nil,
 		field.String("name"),
 	)
+	cronTabLastSuccessTimestamp = metric.NewInt("chromeos/ufs/dumper/last_success_timestamp",
+		"timestamp of the last successful run",
+		nil,
+		field.String("name"),
+	)
 )
 
 // estimateTriggerTime checks to see if start + interval > start + quanta. If that happens, (ex: Hourly mode
@@ -216,6 +221,7 @@ func Run(ctx context.Context, cronTab *CronTab) {
 			logging.Errorf(ctx, "Iteration failed: %s", err)
 		} else {
 			cronTabTriggerCounter.Add(ctx, 1, cronTab.Name)
+			cronTabLastSuccessTimestamp.Set(ctx, time.Now().UnixMicro(), cronTab.Name)
 		}
 		count++
 	}
