@@ -219,6 +219,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Fingerprint:         createDUTFingerprint(ds),
 			OsRestriction:       osRestriction,
 			Pasit:               createPasit(ds, p.GetPasit()),
+			GscChip:             convertGscChip(ds.GetGscChip()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -852,6 +853,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		if amt := chromeos.GetAmtManager(); amt != nil {
 			state.AmtManagerState = convertAMTManagerStateToUFS(amt.GetState())
 		}
+		state.GscChip = convertGSCChipToUFS(chromeos.GetGscChip())
 
 		state.CameraState = convertHardwareStateToUFS(chromeos.GetCamera().GetState())
 		state.FingerprintBoard = chromeos.GetFingerprint().GetBoard()

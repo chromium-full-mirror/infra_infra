@@ -633,6 +633,28 @@ func convertOSRestriction(v ufslab.DeviceUnderTest_OSRestriction) tlw.ChromeOS_O
 	return tlw.ChromeOS_OSR_ANY
 }
 
+var gscChips = map[ufslab.DutState_GscChip]tlw.ChromeOS_GscChip{
+	ufslab.DutState_GSC_CHIP_H1: tlw.ChromeOS_GSC_CHIP_H1,
+	ufslab.DutState_GSC_CHIP_DT: tlw.ChromeOS_GSC_CHIP_DT,
+	ufslab.DutState_GSC_CHIP_NT: tlw.ChromeOS_GSC_CHIP_NT,
+}
+
+func convertGscChip(v ufslab.DutState_GscChip) tlw.ChromeOS_GscChip {
+	if r, ok := gscChips[v]; ok {
+		return r
+	}
+	return tlw.ChromeOS_GSC_CHIP_UNKNOWN
+}
+
+func convertGSCChipToUFS(v tlw.ChromeOS_GscChip) ufslab.DutState_GscChip {
+	for us, ls := range gscChips {
+		if ls == v {
+			return us
+		}
+	}
+	return ufslab.DutState_GSC_CHIP_UNKNOWN
+}
+
 // pasitStates maps the ufs peripheral states to tlw pasit states.
 var pasitStates = map[ufslab.PeripheralState]tlw.Pasit_State{
 	ufslab.PeripheralState_WORKING: tlw.Pasit_STATE_WORKING,
