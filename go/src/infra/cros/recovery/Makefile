@@ -1,17 +1,16 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-.PHONY: default
+.PHONY: default build gen test testf trees
+
 default: build
 
-.PHONY:
 build:
 	@go vet ./...
 	@go test ./...
 	go build ./...
 
-.PHONY: test
 test:
 	CGO_ENABLED=1 go test -race ./...
 	go test ../cmd/paris/...
@@ -19,18 +18,17 @@ test:
 	go test ../../cmd/mallet/...
 
 # quick test running
-.PHONY: testf
 testf:
 	go test ./...
 	go test ../cmd/paris/...
 	go test ../cmd/labpack/...
 	go test ../../cmd/mallet/...
 
-.PHONY: gen trees
 gen:
 	# Generate proto files
 	@find . -name '*.pb.go' -delete
 	go generate ./...
+
 trees:
 	# Generate config tree files
 	RECOVERY_GENERATE_CONFIG_TREE=ON go test -run TestConfigTreeChanges
