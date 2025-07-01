@@ -97,11 +97,11 @@ func readDeviceInfo(ctx context.Context, runner execs.Runner, devicePath string)
 	if err != nil {
 		log.Debugf(ctx, "Read Device Info: %q", err)
 	}
-	vidPid, err := fsReadVidPid(ctx, runner, devicePath)
+	servo.VidPid, err = fsReadVidPid(ctx, runner, devicePath)
 	if err != nil {
 		log.Debugf(ctx, "Read Device Info: %q", err)
 	}
-	if servo.Type, err = convertVidPidToServoType(vidPid); err != nil {
+	if servo.Type, err = convertVidPidToServoType(servo.VidPid); err != nil {
 		log.Debugf(ctx, "Read Device Info: %q", err)
 	}
 	servo.UsbHubPort, err = readServoFs(ctx, runner, devicePath, servoHubFileName)
@@ -204,7 +204,7 @@ func RetrieveServoTopology(ctx context.Context, runner execs.Runner, servoSerial
 	servoTopology := &tlw.ServoTopology{}
 	devices, err := ListOfDevices(ctx, runner, servoSerial)
 	if err != nil {
-		errors.Annotate(err, "retrieve servo topology").Err()
+		return servoTopology, errors.Annotate(err, "retrieve servo topology").Err()
 	}
 	for _, d := range devices {
 		if topology.IsItemGood(ctx, d) {

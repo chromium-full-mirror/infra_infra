@@ -334,6 +334,8 @@ func convertServoTopologyItemFromUFS(i *ufslab.ServoTopologyItem) *tlw.ServoTopo
 		Serial:       i.GetSerial(),
 		UsbHubPort:   i.GetUsbHubPort(),
 		FwVersion:    i.GetFwVersion(),
+		SysfsPath:    i.GetSysfsPath(),
+		VidPid:       i.GetVidPid(),
 	}
 }
 
@@ -362,6 +364,8 @@ func convertServoTopologyItemToUFS(i *tlw.ServoTopologyItem) *ufslab.ServoTopolo
 		Serial:       i.Serial,
 		UsbHubPort:   i.UsbHubPort,
 		FwVersion:    i.FwVersion,
+		SysfsPath:    i.GetSysfsPath(),
+		VidPid:       i.GetVidPid(),
 	}
 }
 
