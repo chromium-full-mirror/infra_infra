@@ -77,8 +77,8 @@ func getClass(expression *ttcpSyntax.ClassExpression, collection *ttcpSyntax.Col
 //   - add:
 //   - If true, only the devices that fit the class criteria will be in the returned list.
 //   - If false, only the device that do NOT fit the class criteria will be in the returned list.
-func filterDevices(deviceInfo []*deviceinfo.TargetVariant, class *ttcpSyntax.Class, add bool) []*deviceinfo.TargetVariant {
-	positiveDevices := applyClass(class.Expression, deviceInfo)
+func filterDevices(deviceInfo []*deviceinfo.TargetVariant, class *ttcpSyntax.Class, add bool, pool string) []*deviceinfo.TargetVariant {
+	positiveDevices := applyClass(class.Expression, deviceInfo, pool)
 	filterDevices := []*deviceinfo.TargetVariant{}
 	for _, dev := range deviceInfo {
 		_, ok := positiveDevices[dev.Id()]
@@ -125,7 +125,16 @@ func filterDevices(deviceInfo []*deviceinfo.TargetVariant, class *ttcpSyntax.Cla
 //     can reference.
 //
 // Type: map[string]map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
-var solvedString = sync.Map{}
+var (
+	// Type: map[deviceinfo.TargetId]*ExtendedSolvedDevice
+	solvedStringCache = sync.Map{}
+	// Lock the solvedStringCache down by pool.
+	// Type: map[string]sync.Mutex{}
+	solvedStringCacheLocksByPool = sync.Map{}
+	// Track the expiration of the cache per pool.
+	// Type: time.Time
+	solvedStringCacheExpiration = sync.Map{}
+)
 
 func EvalExpression(
 	expression *ttcpSyntax.CategoryExpression,
@@ -145,7 +154,7 @@ func EvalExpression(
 				"Unable to resolve the opt in class.",
 				err)
 		}
-		devicesInfo = filterDevices(devicesInfo, cls, true)
+		devicesInfo = filterDevices(devicesInfo, cls, true, pool)
 	}
 
 	if optOut != nil {
@@ -155,7 +164,7 @@ func EvalExpression(
 				"Unable to resolve the opt in class.",
 				err)
 		}
-		devicesInfo = filterDevices(devicesInfo, cls, false)
+		devicesInfo = filterDevices(devicesInfo, cls, false, pool)
 	}
 
 	// TODO(b:297298647) implement efficient solving that avoids the creation of the classes that do not have a
@@ -178,7 +187,7 @@ func EvalExpression(
 	classes := []*ttcpSolver.SolvedClass{}
 	for _, cls := range flatten.Classes {
 		exp := cls.GetValue()
-		classSolution := applyClass(exp.Expression, devicesInfo)
+		classSolution := applyClass(exp.Expression, devicesInfo, pool)
 		// Only append if the ClassSolution finds matches. Otherwise we are eating time for nothing practical.
 		if len(classSolution) > 0 {
 			if useSwarmingInventory {
@@ -331,11 +340,16 @@ func extractBoardModelMap(extendedDevicesInfo map[deviceinfo.TargetId]*ExtendedS
 	return results
 }
 
-func applyClass(exp *ttcpSyntax.Expression, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyClass(exp *ttcpSyntax.Expression, deviceInfo []*deviceinfo.TargetVariant, pool string) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	sh, _ := proto.Marshal(exp)
 	expHash := string(sh)
-	v, hwExists := solvedString.Load(expHash)
-	if hwExists {
+	cacheKey := fmt.Sprint(pool, expHash)
+	lock, _ := solvedStringCacheLocksByPool.LoadOrStore(cacheKey, &sync.Mutex{})
+	lock.(*sync.Mutex).Lock()
+	defer lock.(*sync.Mutex).Unlock()
+	v, hwExists := solvedStringCache.Load(expHash)
+	solvedStringExpiration, _ := solvedStringCacheExpiration.LoadOrStore(cacheKey, time.Now().Add(8*time.Hour))
+	if hwExists && time.Now().Before(solvedStringExpiration.(time.Time)) {
 		return v.(map[deviceinfo.TargetId]*ExtendedSolvedDevice)
 	}
 
@@ -344,17 +358,18 @@ func applyClass(exp *ttcpSyntax.Expression, deviceInfo []*deviceinfo.TargetVaria
 	case *ttcpSyntax.Expression_True:
 		solution = applyTrue(deviceInfo)
 	case *ttcpSyntax.Expression_Or:
-		solution = applyOr(operator.Or, deviceInfo)
+		solution = applyOr(operator.Or, deviceInfo, pool)
 	case *ttcpSyntax.Expression_And:
-		solution = applyAnd(operator.And, deviceInfo)
+		solution = applyAnd(operator.And, deviceInfo, pool)
 	case *ttcpSyntax.Expression_Not:
-		solution = applyNot(operator.Not, deviceInfo)
+		solution = applyNot(operator.Not, deviceInfo, pool)
 	case *ttcpSyntax.Expression_Property:
 		solution = applyPropertyCondition(operator.Property, deviceInfo)
 	default:
 		log.Fatalf("applyClass is not implemented for the expression type:%T", operator)
 	}
-	solvedString.Store(expHash, solution)
+	solvedStringCache.Store(cacheKey, solution)
+	solvedStringCacheExpiration.Store(cacheKey, time.Now().Add(8*time.Hour))
 	return solution
 }
 
@@ -370,14 +385,14 @@ func applyTrue(deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*
 	return result
 }
 
-func applyOr(operator *ttcpSyntax.Or, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyOr(operator *ttcpSyntax.Or, deviceInfo []*deviceinfo.TargetVariant, pool string) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	if len(operator.SubExpressions) == 0 {
 		return result
 	}
 	solvedSubExpressions := []map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, subExp := range operator.SubExpressions {
-		solvedSubExpressions = append(solvedSubExpressions, applyClass(subExp, deviceInfo))
+		solvedSubExpressions = append(solvedSubExpressions, applyClass(subExp, deviceInfo, pool))
 	}
 
 	for id, solvedDevice := range solvedSubExpressions[0] {
@@ -401,7 +416,7 @@ func applyOr(operator *ttcpSyntax.Or, deviceInfo []*deviceinfo.TargetVariant) ma
 	return result
 }
 
-func applyAnd(operator *ttcpSyntax.And, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+func applyAnd(operator *ttcpSyntax.And, deviceInfo []*deviceinfo.TargetVariant, pool string) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	if len(operator.SubExpressions) == 0 {
 		return result
@@ -409,7 +424,7 @@ func applyAnd(operator *ttcpSyntax.And, deviceInfo []*deviceinfo.TargetVariant) 
 
 	solvedSubExpressions := []map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, subExp := range operator.SubExpressions {
-		solvedSubExpressions = append(solvedSubExpressions, applyClass(subExp, deviceInfo))
+		solvedSubExpressions = append(solvedSubExpressions, applyClass(subExp, deviceInfo, pool))
 	}
 	for id, solvedDevice := range solvedSubExpressions[0] {
 		result[id] = solvedDevice
@@ -432,8 +447,8 @@ func applyAnd(operator *ttcpSyntax.And, deviceInfo []*deviceinfo.TargetVariant) 
 	return result
 }
 
-func applyNot(operator *ttcpSyntax.Not, deviceInfo []*deviceinfo.TargetVariant) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
-	solvedSubExpression := applyClass(operator.SubExpression, deviceInfo)
+func applyNot(operator *ttcpSyntax.Not, deviceInfo []*deviceinfo.TargetVariant, pool string) map[deviceinfo.TargetId]*ExtendedSolvedDevice {
+	solvedSubExpression := applyClass(operator.SubExpression, deviceInfo, pool)
 	result := map[deviceinfo.TargetId]*ExtendedSolvedDevice{}
 	for _, info := range deviceInfo {
 		_, present := solvedSubExpression[info.Id()]

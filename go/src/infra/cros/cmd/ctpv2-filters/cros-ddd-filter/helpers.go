@@ -118,7 +118,7 @@ func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, invent
 	lock.(*sync.Mutex).Lock()
 	defer lock.(*sync.Mutex).Unlock()
 	v, solutionFound := solutionCache.Load(cacheKey)
-	solutionExpiration, _ := solutionCacheExpiration.LoadOrStore(pool, time.Now().Add(8*time.Hour))
+	solutionExpiration, _ := solutionCacheExpiration.LoadOrStore(cacheKey, time.Now().Add(8*time.Hour))
 	if solutionFound && time.Now().Before(solutionExpiration.(time.Time)) {
 		return v.(*solver_proto.SolvedCategory), nil
 	}
@@ -145,7 +145,7 @@ func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, invent
 		return nil, err
 	}
 	solutionCache.Store(cacheKey, solution)
-	solutionCacheExpiration.Store(pool, time.Now().Add(8*time.Hour))
+	solutionCacheExpiration.Store(cacheKey, time.Now().Add(8*time.Hour))
 	return solution, nil
 }
 
