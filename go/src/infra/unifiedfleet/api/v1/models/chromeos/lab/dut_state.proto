@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 37
+// Next Tag: 38
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -131,6 +131,17 @@ message DutState {
 
   // The type of Fingerprint sensor on the DUT.
   string fingerprint_sensor = 35;
+
+  // The GSC chip on the DUT.
+  // The value is determined based on VID:PID values.
+  // More details can be found in b/369829759.
+  enum GscChip {
+    GSC_CHIP_UNKNOWN = 0;
+    GSC_CHIP_H1 = 1;
+    GSC_CHIP_DT = 2;
+    GSC_CHIP_NT = 3;
+  }
+  GscChip gsc_chip = 37;
 }
 
 // Next Tag: 35
