@@ -253,6 +253,7 @@ const (
 
 	// Drac
 	DisplayNamePath string = "display_name"
+	PasswordPath    string = "password"
 	// Non-standard paths for backwards compatibility.
 	DisplayNameCamelPath string = "displayName"
 

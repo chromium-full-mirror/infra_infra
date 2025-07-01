@@ -399,7 +399,8 @@ func TestUpdateDrac(t *testing.T) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-7.1",
 			}
-			registration.CreateMachine(ctx, machine1)
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
 			drac := &ufspb.Drac{
 				Name:    "drac-7",
 				Machine: "machine-7.1",
@@ -408,8 +409,8 @@ func TestUpdateDrac(t *testing.T) {
 					PortName: "25",
 				},
 			}
-			_, err := registration.CreateDrac(ctx, drac)
-			assert.Loosely(t, err, should.BeNil)
+			_, err = registration.CreateDrac(ctx, drac)
+			assert.NoErr(t, err)
 
 			drac1 := &ufspb.Drac{
 				Name:       "drac-7",
@@ -417,13 +418,15 @@ func TestUpdateDrac(t *testing.T) {
 				SwitchInterface: &ufspb.SwitchInterface{
 					PortName: "75",
 				},
+				Password: "drac-7-password",
 			}
-			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress"}})
-			assert.Loosely(t, err, should.BeNil)
+			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress", "password"}})
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetSwitchInterface().GetSwitch(), should.Match("switch-7"))
-			assert.Loosely(t, resp.GetMacAddress(), should.Match("drac-7-macaddress"))
-			assert.Loosely(t, resp.GetSwitchInterface().GetPortName(), should.Equal("75"))
+			assert.That(t, resp.GetSwitchInterface().GetSwitch(), should.Equal("switch-7"))
+			assert.That(t, resp.GetMacAddress(), should.Equal("drac-7-macaddress"))
+			assert.That(t, resp.GetSwitchInterface().GetPortName(), should.Equal("75"))
+			assert.That(t, resp.GetPassword(), should.Equal("drac-7-password"))
 		})
 
 		t.Run("Partial Update drac mac address and new machine(same realm and not associated to any drac) - succeed", func(t *ftt.Test) {

@@ -21,7 +21,7 @@ import (
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/model/registration"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateDrac creates a new drac in datastore.
@@ -130,7 +130,7 @@ func UpdateDrac(ctx context.Context, drac *ufspb.Drac, mask *field_mask.FieldMas
 				}
 
 				// check permission for the new machine realm
-				if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
+				if err := util.CheckPermission(ctx, util.RegistrationsUpdate, machine.GetRealm()); err != nil {
 					return err
 				}
 				// Fill the rack/zone to drac OUTPUT only fields
@@ -166,7 +166,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 	// update the fields in the existing drac
 	for _, path := range mask.Paths {
 		switch path {
-		case ufsUtil.MachinePath:
+		case util.MachinePath:
 			// Check if user provided new machine to associate the drac
 			if drac.GetMachine() != oldDrac.GetMachine() {
 				// A machine can have only one drac. If there is a old drac associated with this machine already, error out.
@@ -186,7 +186,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 					return oldDrac, errors.Annotate(err, "UpdateDrac - get browser machine %s failed", drac.GetMachine()).Err()
 				}
 				// check permission for the new machine realm
-				if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
+				if err := util.CheckPermission(ctx, util.RegistrationsUpdate, machine.GetRealm()); err != nil {
 					return oldDrac, err
 				}
 				oldDrac.Machine = drac.GetMachine()
@@ -194,11 +194,13 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 				oldDrac.Rack = machine.GetLocation().GetRack()
 				oldDrac.Zone = machine.GetLocation().GetZone().String()
 			}
-		case ufsUtil.DisplayNamePath, ufsUtil.DisplayNameCamelPath:
+		case util.DisplayNamePath, util.DisplayNameCamelPath:
 			oldDrac.DisplayName = drac.GetDisplayName()
-		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
+		case util.MacAddressPath, util.MacAddressCamelPath:
 			oldDrac.MacAddress = drac.GetMacAddress()
-		case ufsUtil.SwitchInterfaceSwitchPath, ufsUtil.SwitchPath:
+		case util.PasswordPath:
+			oldDrac.Password = drac.GetPassword()
+		case util.SwitchInterfaceSwitchPath, util.SwitchPath:
 			if oldDrac.GetSwitchInterface() == nil {
 				oldDrac.SwitchInterface = &ufspb.SwitchInterface{
 					Switch: drac.GetSwitchInterface().GetSwitch(),
@@ -206,7 +208,7 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 			} else {
 				oldDrac.GetSwitchInterface().Switch = drac.GetSwitchInterface().GetSwitch()
 			}
-		case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.PortNameCamelPath:
+		case util.SwitchInterfacePortNamePath, util.PortNameCamelPath:
 			if oldDrac.GetSwitchInterface() == nil {
 				oldDrac.SwitchInterface = &ufspb.SwitchInterface{
 					PortName: drac.GetSwitchInterface().GetPortName(),
@@ -214,9 +216,9 @@ func processDracUpdateMask(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb
 			} else {
 				oldDrac.GetSwitchInterface().PortName = drac.GetSwitchInterface().GetPortName()
 			}
-		case ufsUtil.TagsPath:
+		case util.TagsPath:
 			oldDrac.Tags = mergeTags(oldDrac.GetTags(), drac.GetTags())
-		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
+		case util.ResourceStatePath, util.ResourceStateCamelPath:
 			oldDrac.ResourceState = drac.GetResourceState()
 		}
 	}
@@ -379,7 +381,7 @@ func ReplaceDrac(ctx context.Context, oldDrac *ufspb.Drac, newDrac *ufspb.Drac) 
 // checks if the machine and resources referenced by the drac does not exist
 func validateCreateDrac(ctx context.Context, drac *ufspb.Drac, machine *ufspb.Machine) error {
 	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsCreate, machine.GetRealm()); err != nil {
+	if err := util.CheckPermission(ctx, util.RegistrationsCreate, machine.GetRealm()); err != nil {
 		return err
 	}
 	// Check if Drac already exists
@@ -423,7 +425,7 @@ func validateUpdateDrac(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb.Dr
 		return status.Errorf(codes.InvalidArgument, "machine %s not found", oldDrac.GetMachine())
 	}
 	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
+	if err := util.CheckPermission(ctx, util.RegistrationsUpdate, machine.GetRealm()); err != nil {
 		return err
 	}
 	// Aggregate resource to check if does not exist
@@ -468,7 +470,7 @@ func validateUpdateDracHost(ctx context.Context, drac *ufspb.Drac, vlanName, ipv
 		return errors.Annotate(err, "unable to get machine %s", oldDrac.GetMachine()).Err()
 	}
 	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsUpdate, machine.GetRealm()); err != nil {
+	if err := util.CheckPermission(ctx, util.RegistrationsUpdate, machine.GetRealm()); err != nil {
 		return err
 	}
 	if drac.GetMacAddress() == "" {
@@ -487,30 +489,30 @@ func validateDracUpdateMask(ctx context.Context, drac *ufspb.Drac, mask *field_m
 		// validate the give field mask
 		for _, path := range mask.Paths {
 			switch path {
-			case ufsUtil.NamePath:
+			case util.NamePath:
 				return status.Error(codes.InvalidArgument, "validateDracUpdateMask - name cannot be updated, delete and create a new drac instead")
-			case ufsUtil.DisplayNamePath, ufsUtil.DisplayNameCamelPath:
+			case util.DisplayNamePath, util.DisplayNameCamelPath:
 				if drac.GetDisplayName() == "" {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - display name cannot be empty")
 				}
-			case ufsUtil.SwitchInterfaceSwitchPath, ufsUtil.SwitchPath:
+			case util.SwitchInterfaceSwitchPath, util.SwitchPath:
 				fallthrough
-			case ufsUtil.SwitchInterfacePortNamePath, ufsUtil.PortNameCamelPath:
+			case util.SwitchInterfacePortNamePath, util.PortNameCamelPath:
 				// Check switch interface validity in processDracUpdateMask later.
 				if drac.GetSwitchInterface() == nil {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - switch interface cannot be empty/nil.")
 				}
-			case ufsUtil.MachinePath:
+			case util.MachinePath:
 				if drac.GetMachine() == "" {
 					return status.Error(codes.InvalidArgument, "validateDracUpdateMask - machine cannot be empty")
 				}
-			case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
+			case util.MacAddressPath, util.MacAddressCamelPath:
 				if err := validateMacAddress(ctx, drac.GetName(), drac.GetMacAddress()); err != nil {
 					return err
 				}
-			case ufsUtil.TagsPath:
-				// valid fields, nothing to validate.
-			case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
+			case util.PasswordPath:
+			case util.TagsPath:
+			case util.ResourceStatePath, util.ResourceStateCamelPath:
 				// valid fields, nothing to validate.
 			default:
 				return status.Errorf(codes.InvalidArgument, "validateDracUpdateMask - unsupported update mask path %q", path)
@@ -526,7 +528,7 @@ func getDracHistoryClient(m *ufspb.Drac) *HistoryClient {
 			Hostname: m.Name,
 		},
 		stUdt: &stateUpdater{
-			ResourceName: ufsUtil.AddPrefix(ufsUtil.DracCollection, m.Name),
+			ResourceName: util.AddPrefix(util.DracCollection, m.Name),
 		},
 	}
 }
@@ -538,7 +540,7 @@ func validateDeleteDrac(ctx context.Context, drac *ufspb.Drac) error {
 		return errors.Annotate(err, "validateDeleteDrac - unable to get machine %s", drac.GetMachine()).Err()
 	}
 	// Check permission
-	if err := ufsUtil.CheckPermission(ctx, ufsUtil.RegistrationsDelete, machine.GetRealm()); err != nil {
+	if err := util.CheckPermission(ctx, util.RegistrationsDelete, machine.GetRealm()); err != nil {
 		return err
 	}
 	return nil
