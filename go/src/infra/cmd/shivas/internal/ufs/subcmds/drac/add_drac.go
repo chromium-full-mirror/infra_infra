@@ -45,6 +45,7 @@ var AddDracCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.displayName, "display-name", "", "the display name of the drac")
 		c.Flags.StringVar(&c.dracName, "name", "", "the name of the drac to add")
 		c.Flags.StringVar(&c.macAddress, "mac", "", "the mac address of the drac to add")
+		c.Flags.StringVar(&c.password, "password", "", "the password of the drac to add")
 		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this drac is connected to")
 		c.Flags.StringVar(&c.switchPort, "switch-port", "", "the port of the switch that this drac is connected to")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
@@ -65,6 +66,7 @@ type addDrac struct {
 	displayName string
 	dracName    string
 	macAddress  string
+	password    string
 	switchName  string
 	switchPort  string
 	tags        []string
@@ -145,6 +147,7 @@ func (c *addDrac) parseArgs(drac *ufspb.Drac) {
 	drac.DisplayName = c.displayName
 	drac.Machine = c.machineName
 	drac.MacAddress = c.macAddress
+	drac.Password = c.password
 	drac.SwitchInterface = &ufspb.SwitchInterface{
 		Switch:   c.switchName,
 		PortName: c.switchPort,
@@ -174,6 +177,9 @@ func (c *addDrac) validateArgs() error {
 		}
 		if c.machineName != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-machine' cannot be specified at the same time.")
+		}
+		if c.password != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-password' cannot be specified at the same time.")
 		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {

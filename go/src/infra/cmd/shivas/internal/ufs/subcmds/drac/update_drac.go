@@ -46,6 +46,7 @@ var UpdateDracCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.displayName, "display-name", "", "the display name of the drac")
 		c.Flags.StringVar(&c.dracName, "name", "", "name of the drac to update")
 		c.Flags.StringVar(&c.macAddress, "mac", "", "the mac address of the drac to add."+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.password, "password", "", "the password of the drac to add."+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.switchName, "switch", "", "the name of the switch that this drac is connected to. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.switchPort, "switch-port", "", "the port of the switch that this drac is connected to. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
@@ -67,6 +68,7 @@ type updateDrac struct {
 	displayName string
 	dracName    string
 	macAddress  string
+	password    string
 	switchName  string
 	switchPort  string
 	tags        []string
@@ -140,6 +142,7 @@ func (c *updateDrac) innerRun(a subcommands.Application, args []string, env subc
 			"machine":      ufsUtil.MachinePath,
 			"display-name": ufsUtil.DisplayNamePath,
 			"mac":          ufsUtil.MacAddressPath,
+			"password":     ufsUtil.PasswordPath,
 			"switch":       ufsUtil.SwitchInterfaceSwitchPath,
 			"switch-port":  ufsUtil.SwitchInterfacePortNamePath,
 			"tag":          ufsUtil.TagsPath,
@@ -175,6 +178,11 @@ func (c *updateDrac) parseArgs(drac *ufspb.Drac) {
 		drac.MacAddress = ""
 	} else {
 		drac.MacAddress = c.macAddress
+	}
+	if c.password == utils.ClearFieldValue {
+		drac.Password = ""
+	} else {
+		drac.Password = c.password
 	}
 	drac.SwitchInterface = &ufspb.SwitchInterface{}
 	drac.Machine = c.machineName
@@ -224,6 +232,9 @@ func (c *updateDrac) validateArgs() error {
 		if c.state != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-state' cannot be specified at the same time.")
 		}
+		if c.password != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-password' cannot be specified at the same time.")
+		}
 	}
 	if c.newSpecsFile == "" && !c.interactive {
 		if c.dracName == "" {
@@ -231,7 +242,8 @@ func (c *updateDrac) validateArgs() error {
 		}
 		if c.vlanName == "" && !c.deleteVlan && c.ip == "" && c.displayName == "" &&
 			c.machineName == "" && c.switchName == "" && c.switchPort == "" &&
-			c.macAddress == "" && len(c.tags) == 0 && c.state == "" {
+			c.macAddress == "" && len(c.tags) == 0 && c.state == "" &&
+			c.password == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.state != "" && !ufsUtil.IsUFSState(ufsUtil.RemoveStatePrefix(c.state)) {
