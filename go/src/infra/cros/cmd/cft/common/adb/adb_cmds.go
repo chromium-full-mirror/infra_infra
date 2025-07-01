@@ -75,7 +75,7 @@ func AdbCmd(args []string, log *log.Logger, retryCount, deadlineSeconds int) (st
 		break
 	}
 
-	return outStr, nil
+	return outStr, err
 }
 
 func RetrySetupAdb(log *log.Logger, addr string, timeout time.Duration) error {
