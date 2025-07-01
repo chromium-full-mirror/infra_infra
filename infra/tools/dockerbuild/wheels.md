@@ -728,6 +728,20 @@ wheel: <
 
 * *universal*
 
+## **altgraph-py3**
+
+### 0.17.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/altgraph-py3"
+  version: "version:0.17.4"
+>
+```
+
+
+* *universal*
+
 ## **ansicon**
 
 ### 1.89.0

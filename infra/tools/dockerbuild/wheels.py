@@ -1286,6 +1286,7 @@ SPECS.update({
         Universal('absl-py', '2.1.0', pyversions=['py3']),
         Universal('aenum', '2.1.2', pyversions=['py3']),
         Universal('altgraph', '0.16.1'),
+        Universal('altgraph', '0.17.4', pyversions=['py3']),
         Universal('ansicon', '1.89.0'),
         Universal('anytree', '2.8.0'),
         Universal('apipkg', '1.5'),
