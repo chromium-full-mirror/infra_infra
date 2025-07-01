@@ -829,7 +829,7 @@ message Camera {
 }
 
 // ChromeOS specific DUT details
-// NEXT TAG: 39
+// NEXT TAG: 40
 message ChromeOS {
   // Is OS based on Android.
   // If not then based on Chrome.
@@ -978,6 +978,17 @@ message ChromeOS {
 
   // PASIT
   Pasit pasit = 38;
+
+  // The GSC chip on the DUT.
+  // The value is determined based on VID:PID values.
+  // More details can be found in b/369829759.
+  enum GscChip {
+    GSC_CHIP_UNKNOWN = 0;
+    GSC_CHIP_H1 = 1;
+    GSC_CHIP_DT = 2;
+    GSC_CHIP_NT = 3;
+  }
+  GscChip gsc_chip = 39;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.
