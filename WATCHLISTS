@@ -37,7 +37,7 @@
     'rotang': ['chops-tfs-team+reviews@google.com'],
     'rotation_proxy': ['chops-tfs-team+reviews@google.com'],
     'sheriff_o_matic': ['chops-tfs-team+reviews@google.com'],
-    'siso': ['chrome-build-team@google.com'],
+    'siso': ['chrome-build-team@google.com', 'chromium-toolchains@engflow.com'],
     'tree_status': ['chops-tfs-team+reviews@google.com'],
   },
 }
