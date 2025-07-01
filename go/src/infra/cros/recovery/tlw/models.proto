@@ -320,6 +320,9 @@ message ServoTopologyItem {
   string sysfs_path = 5;
   // This is the version of servo device.
   string fw_version = 6;
+  // This is vendor and product ids of the servo device.
+  // e.g. `18d1:5014`
+  string vid_pid = 7;
 }
 
 // HardwareState describes the state of hardware components.
