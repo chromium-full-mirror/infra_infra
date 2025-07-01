@@ -11,11 +11,11 @@ import (
 	"context"
 	"os"
 
-	"google.golang.org/grpc"
+	"go.chromium.org/infra/cros/cmd/labservice/server"
 )
 
 var handledSignals = []os.Signal{}
 
-func handleSignal(ctx context.Context, gs *grpc.Server, sig os.Signal) {
+func handleSignal(ctx context.Context, s *server.Server, sig os.Signal) {
 	panic("not implemented for windows")
 }

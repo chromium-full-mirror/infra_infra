@@ -12,19 +12,19 @@ import (
 	"os"
 
 	"golang.org/x/sys/unix"
-	"google.golang.org/grpc"
 
 	"go.chromium.org/infra/cros/cmd/labservice/internal/log"
+	"go.chromium.org/infra/cros/cmd/labservice/server"
 )
 
 var handledSignals = []os.Signal{unix.SIGINT, unix.SIGHUP, unix.SIGTERM, unix.SIGQUIT}
 
-func handleSignal(ctx context.Context, gs *grpc.Server, sig os.Signal) {
+func handleSignal(ctx context.Context, s *server.Server, sig os.Signal) {
 	log.Infof(ctx, "Got signal %s", sig)
+	var graceful bool
 	switch sig {
 	case unix.SIGINT, unix.SIGHUP:
-		gs.GracefulStop()
-	default:
-		gs.Stop()
+		graceful = true
 	}
+	s.Stop(graceful)
 }

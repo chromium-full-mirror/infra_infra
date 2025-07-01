@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package main
+package server
 
 import (
 	"google.golang.org/grpc/codes"
@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs/cache"
 )
 
-// A server implements the lab service RPCs.
-type server struct {
+// inventoryServer implements the lab service RPCs.
+type inventoryServer struct {
 	labapi.UnimplementedInventoryServiceServer
 
 	// The client needs a context which is request specific, so the client
@@ -25,38 +25,33 @@ type server struct {
 	cacheLocator *cache.Locator
 }
 
-func newServer(c *serverConfig) *server {
+// newInventoryServer creates a new inventory server.
+func newInventoryServer(c *Config) *inventoryServer {
 	l := cache.NewLocator()
-	l.SetPreferredServices(c.preferredCachingServices)
-	return &server{
+	l.SetPreferredServices(c.PreferredCachingServices)
+	return &inventoryServer{
 		ufsClientFactory: ufs.ClientFactory{
-			Service:            c.ufsService,
-			ServiceAccountPath: c.serviceAccountPath,
+			Service:            c.UFSService,
+			ServiceAccountPath: c.ServiceAccountPath,
 		},
 		cacheLocator: l,
 	}
 }
 
-// A serverConfig configures newServer.
-type serverConfig struct {
-	preferredCachingServices []string
-	serviceAccountPath       string
-	ufsService               string
-}
-
-func (s *server) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi.InventoryService_GetDutTopologyServer) error {
+// GetDutTopology gets the DUT topology for a given DUT.
+func (s *inventoryServer) GetDutTopology(req *labapi.GetDutTopologyRequest, stream labapi.InventoryService_GetDutTopologyServer) error {
 	ctx := stream.Context()
 	id := req.GetId().GetValue()
 	if id == "" {
 		return status.Errorf(codes.InvalidArgument, "no id provided")
 	}
-	c, err := s.ufsClientFactory.NewClient(ctx)
+	ufsClient, err := s.ufsClientFactory.NewClient(ctx)
 	if err != nil {
 		return status.Errorf(codes.Unknown, "%s", err)
 	}
 	// Cache locator is global and shared concurrently,
 	// while ufs client is per request for call context
-	inv := ufs.NewInventory(c, s.cacheLocator)
+	inv := ufs.NewInventory(ufsClient, s.cacheLocator)
 	dt, err := inv.GetDutTopology(ctx, id)
 	if err != nil {
 		// GetDutTopology adds the gRPC status.
