@@ -252,7 +252,7 @@ func (r *runner) LaunchAndWait(ctx context.Context, c trservice.Client, workingD
 func (r *runner) launchTasks(ctx context.Context, c trservice.Client) error {
 	for t, ts := range r.requestTaskSets {
 		if err := ts.LaunchTasks(ctx, c); err != nil {
-			return errors.Annotate(err, "launch tasks for %s", t).Err()
+			return errors.Fmt("launch tasks for %s: %w", t, err)
 		}
 	}
 	return nil
@@ -284,7 +284,7 @@ func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client, log
 				}
 				taskSetStatus = true
 			} else {
-				return false, errors.Annotate(err, "check tasks and retry for %s", t).Err()
+				return false, errors.Fmt("check tasks and retry for %s: %w", t, err)
 			}
 		}
 		lastSeenRuntimePerTask[t].allDone = taskSetStatus

@@ -59,17 +59,17 @@ func ValidateDependencies(ctx context.Context, c trservice.Client, argsGenerator
 
 	args, err := argsGenerator.GenerateArgs(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "validate dependencies").Err()
+		return nil, errors.Fmt("validate dependencies: %w", err)
 	}
 	if vmlab.ShouldRun(&args) {
 		return nil, nil
 	}
 	ok, rejected, err := c.ValidateArgs(ctx, &args)
 	if err != nil {
-		return nil, errors.Annotate(err, "validate dependencies").Err()
+		return nil, errors.Fmt("validate dependencies: %w", err)
 	}
 	if !ok {
-		return rejected, errors.Reason("no swarming bots with requested dimensions").Tag(InvalidDependencies).Err()
+		return rejected, InvalidDependencies.Apply(errors.New("no swarming bots with requested dimensions"))
 	}
 	return nil, nil
 }
@@ -90,16 +90,16 @@ func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerat
 	t := &Build{argsGenerator: argsGenerator}
 	args, err := t.argsGenerator.GenerateArgs(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+		return nil, errors.Fmt("new task for %s: %w", t.name(), err)
 	}
 	if argsModifier != nil {
 		if err := argsModifier.ModifyArgs(ctx, args); err != nil {
-			return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+			return nil, errors.Fmt("new task for %s: %w", t.name(), err)
 		}
 	}
 	ref, err := c.LaunchTask(ctx, &args)
 	if err != nil {
-		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
+		return nil, errors.Fmt("new task for %s: %w", t.name(), err)
 	}
 	t.Args = args
 	t.TaskReference = ref
@@ -193,7 +193,7 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 	// If BuildBucketTransientFailure is true, this will fall through to below and
 	// be considered as an "Incomplete" build.
 	if err != nil && (resp == nil || !resp.BuildBucketTransientFailure) {
-		return errors.Annotate(err, "refresh task").Err()
+		return errors.Fmt("refresh task: %w", err)
 	}
 
 	b.swarmingTaskID = c.SwarmingTaskID(b.TaskReference)

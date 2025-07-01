@@ -115,17 +115,17 @@ type swarmingClient interface {
 func NewClient(ctx context.Context, cfg *config.Config, rdbHost string) (Client, error) {
 	sc, err := newSwarmingClient(ctx, cfg.SkylabSwarming)
 	if err != nil {
-		return nil, errors.Annotate(err, "create test_runner service client").Err()
+		return nil, errors.Fmt("create test_runner service client: %w", err)
 	}
 	bbc, err := newBBClient(ctx, cfg.TestRunner.Buildbucket)
 	if err != nil {
-		return nil, errors.Annotate(err, "create test_runner service client").Err()
+		return nil, errors.Fmt("create test_runner service client: %w", err)
 	}
 
 	ufsclient, err := NewUFSClient(ctx)
 	rc, err := newRecorderClient(ctx, rdbHost)
 	if err != nil {
-		return nil, errors.Annotate(err, "create test_runner service client").Err()
+		return nil, errors.Fmt("create test_runner service client: %w", err)
 	}
 	return &clientImpl{
 		swarmingClient: sc,
@@ -149,7 +149,7 @@ func NewClient(ctx context.Context, cfg *config.Config, rdbHost string) (Client,
 func newBBClient(ctx context.Context, cfg *config.Config_Buildbucket) (buildbucketpb.BuildsClient, error) {
 	hClient, err := httpClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "create buildbucket client").Err()
+		return nil, errors.Fmt("create buildbucket client: %w", err)
 	}
 	pClient := &prpc.Client{
 		C:    hClient,
@@ -161,7 +161,7 @@ func newBBClient(ctx context.Context, cfg *config.Config_Buildbucket) (buildbuck
 func newRecorderClient(ctx context.Context, host string) (resultpb.RecorderClient, error) {
 	hClient, err := httpClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "create recorder client").Err()
+		return nil, errors.Fmt("create recorder client: %w", err)
 	}
 	pClient := &prpc.Client{
 		C:    hClient,
@@ -177,7 +177,7 @@ func httpClient(ctx context.Context) (*http.Client, error) {
 	})
 	h, err := a.Client()
 	if err != nil {
-		return nil, errors.Annotate(err, "create http client").Err()
+		return nil, errors.Fmt("create http client: %w", err)
 	}
 	return h, nil
 }
@@ -206,7 +206,7 @@ func swarmingHTTPClient(ctx context.Context, authJSONPath string) (*http.Client,
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, options)
 	h, err := a.Client()
 	if err != nil {
-		return nil, errors.Annotate(err, "create http client").Err()
+		return nil, errors.Fmt("create http client: %w", err)
 	}
 	return h, nil
 }
@@ -215,7 +215,7 @@ func swarmingHTTPClient(ctx context.Context, authJSONPath string) (*http.Client,
 func NewUFSClient(ctx context.Context) (ufsapi.FleetClient, error) {
 	hClient, err := httpClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "create UFS client").Err()
+		return nil, errors.Fmt("create UFS client: %w", err)
 	}
 
 	options := *prpc.DefaultOptions()
@@ -238,7 +238,7 @@ func NewUFSClient(ctx context.Context) (ufsapi.FleetClient, error) {
 func (c *clientImpl) ValidateArgs(ctx context.Context, args *request.Args) (botExists bool, rejectedTaskDims []types.TaskDimKeyVal, err error) {
 	dims, err := args.StaticDimensions()
 	if err != nil {
-		err = errors.Annotate(err, "validate dependencies").Err()
+		err = errors.Fmt("validate dependencies: %w", err)
 		return
 	}
 	// Take out dut_state dim before checking bot availability
@@ -253,7 +253,7 @@ func (c *clientImpl) ValidateArgs(ctx context.Context, args *request.Args) (botE
 	logging.Infof(ctx, "Checking if bot exists for dims: %v", potentialRejectedTaskDims)
 	botExists, err = c.swarmingClient.BotExists(ctx, dimsWithoutDutState)
 	if err != nil {
-		err = errors.Annotate(err, "validate dependencies").Err()
+		err = errors.Fmt("validate dependencies: %w", err)
 		return
 	}
 	if !botExists {
@@ -297,7 +297,7 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 	}
 	req, err := args.NewBBRequest(builderId)
 	if err != nil {
-		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()
+		return "", errors.Fmt("launch task for %s: %w", args.TestRunnerRequest.GetTest().GetAutotest().GetName(), err)
 	}
 	// Clear dimensions in the request as the GCE builders populate all required
 	// dimensions for VM tests
@@ -329,7 +329,7 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 
 	resp, err := c.bbClient.ScheduleBuild(ctx, req)
 	if err != nil {
-		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()
+		return "", errors.Fmt("launch task for %s: %w", args.TestRunnerRequest.GetTest().GetAutotest().GetName(), err)
 	}
 
 	c.inheritResultdbInvocation(ctx, resp.Id)
@@ -394,7 +394,7 @@ var getBuildFieldMask = []string{
 func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchResultsResponse, error) {
 	task, ok := c.knownTasks[t]
 	if !ok {
-		return nil, errors.Reason("fetch results: could not find task among launched tasks").Err()
+		return nil, errors.New("fetch results: could not find task among launched tasks")
 	}
 
 	// Check Build status.
@@ -407,7 +407,7 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 			nil,
 			test_platform.TaskState_LIFE_CYCLE_ABORTED,
 			true,
-		}, errors.Annotate(err, "fetch results for build %d", task.bbID).Err()
+		}, errors.Fmt("fetch results for build %d: %w", task.bbID, err)
 	}
 
 	// Build status changes, call GetBuild to get more info on the build.
@@ -422,7 +422,7 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 				nil,
 				test_platform.TaskState_LIFE_CYCLE_ABORTED,
 				true,
-			}, errors.Annotate(err, "fetch results for build %d", task.bbID).Err()
+			}, errors.Fmt("fetch results for build %d: %w", task.bbID, err)
 		}
 		task.bbStatus = b.Status
 	}
@@ -440,7 +440,7 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 
 	res, err := extractResult(b)
 	if err != nil {
-		return nil, errors.Annotate(err, "fetch results for build %d", task.bbID).Err()
+		return nil, errors.Fmt("fetch results for build %d: %w", task.bbID, err)
 	}
 
 	return &FetchResultsResponse{
@@ -480,11 +480,11 @@ func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error
 	}
 	pb, err := decompress(cr)
 	if err != nil {
-		return nil, errors.Annotate(err, "extract results from build %d", from.Id).Err()
+		return nil, errors.Fmt("extract results from build %d: %w", from.Id, err)
 	}
 	var r skylab_test_runner.Result
 	if err := proto.Unmarshal(pb, &r); err != nil {
-		return nil, errors.Annotate(err, "extract results from build %d", from.Id).Err()
+		return nil, errors.Fmt("extract results from build %d: %w", from.Id, err)
 	}
 	return &r, nil
 }
@@ -492,15 +492,15 @@ func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error
 func decompress(from string) ([]byte, error) {
 	bs, err := base64.StdEncoding.DecodeString(from)
 	if err != nil {
-		return nil, errors.Annotate(err, "decompress").Err()
+		return nil, errors.Fmt("decompress: %w", err)
 	}
 	reader, err := zlib.NewReader(bytes.NewReader(bs))
 	if err != nil {
-		return nil, errors.Annotate(err, "decompress").Err()
+		return nil, errors.Fmt("decompress: %w", err)
 	}
 	bs, err = ioutil.ReadAll(reader)
 	if err != nil {
-		return nil, errors.Annotate(err, "decompress").Err()
+		return nil, errors.Fmt("decompress: %w", err)
 	}
 	return bs, nil
 }

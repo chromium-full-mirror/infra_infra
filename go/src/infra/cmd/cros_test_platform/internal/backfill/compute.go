@@ -36,8 +36,8 @@ func requestWithTestPlan(r *test_platform.Request, tp *test_platform.Request_Tes
 
 func computePlan(enumeration *steps.EnumerationResponse, execution *steps.ExecuteResponse) (*test_platform.Request_TestPlan, error) {
 	if len(enumeration.GetAutotestInvocations()) != len(execution.GetConsolidatedResults()) {
-		return nil, errors.Reason("unequal test enumeration and result counts: %d vs %d",
-			len(enumeration.GetAutotestInvocations()), len(execution.GetConsolidatedResults())).Err()
+		return nil, errors.Fmt("unequal test enumeration and result counts: %d vs %d",
+			len(enumeration.GetAutotestInvocations()), len(execution.GetConsolidatedResults()))
 	}
 
 	var rinvs []*test_platform.Request_Enumeration_AutotestInvocation

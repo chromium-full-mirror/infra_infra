@@ -77,7 +77,7 @@ func (c *updateRun) innerRun(a subcommands.Application) error {
 func executableDir() (string, error) {
 	p, err := os.Executable()
 	if err != nil {
-		return "", errors.Annotate(err, "get executable directory").Err()
+		return "", errors.Fmt("get executable directory: %w", err)
 	}
 	return filepath.Dir(p), nil
 }
@@ -85,14 +85,14 @@ func executableDir() (string, error) {
 func findCIPDRootDir(dir string) (string, error) {
 	a, err := filepath.Abs(dir)
 	if err != nil {
-		return "", errors.Annotate(err, "find CIPD root dir").Err()
+		return "", errors.Fmt("find CIPD root dir: %w", err)
 	}
 	for d := a; d != "/"; d = filepath.Dir(d) {
 		if isCIPDRootDir(d) {
 			return d, nil
 		}
 	}
-	return "", errors.Reason("find CIPD root dir: no CIPD root above %s", dir).Err()
+	return "", errors.Fmt("find CIPD root dir: no CIPD root above %s", dir)
 }
 
 func isCIPDRootDir(dir string) bool {

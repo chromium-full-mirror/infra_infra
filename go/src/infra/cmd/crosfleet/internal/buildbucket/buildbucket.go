@@ -162,7 +162,7 @@ func (c *client) ScheduleBuild(ctx context.Context, props map[string]any, dims m
 	}
 	build, err := c.client.ScheduleBuild(ctx, request)
 	if err != nil {
-		return nil, errors.Annotate(err, "schedule build").Err()
+		return nil, errors.Fmt("schedule build: %w", err)
 	}
 	return build, nil
 }
@@ -425,7 +425,7 @@ func (c *client) GetBuild(ctx context.Context, ID int64, fields ...string) (*bui
 	}
 	build, err := c.client.GetBuild(ctx, request)
 	if err != nil {
-		return nil, errors.Annotate(err, "get build").Err()
+		return nil, errors.Fmt("get build: %w", err)
 	}
 	return build, nil
 }

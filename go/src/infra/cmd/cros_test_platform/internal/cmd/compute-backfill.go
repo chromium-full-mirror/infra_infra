@@ -72,13 +72,13 @@ func (c *computeBackfillRun) innerRun(ctx context.Context, args []string) error 
 
 func (c *computeBackfillRun) processCLIArgs(args []string) error {
 	if len(args) > 0 {
-		return errors.Reason("have %d positional args, want 0", len(args)).Err()
+		return errors.Fmt("have %d positional args, want 0", len(args))
 	}
 	if c.inputPath == "" {
-		return errors.Reason("-input_json not specified").Err()
+		return errors.New("-input_json not specified")
 	}
 	if c.outputPath == "" {
-		return errors.Reason("-output_json not specified").Err()
+		return errors.New("-output_json not specified")
 	}
 	return nil
 }
@@ -100,7 +100,7 @@ func (c *computeBackfillRun) writeResponses(ctx context.Context, resps map[strin
 func (c *computeBackfillRun) computeFor(r *steps.ComputeBackfillRequest) (*steps.ComputeBackfillResponse, error) {
 	resp, err := backfill.Compute(r)
 	if err != nil {
-		return nil, errors.Annotate(err, "compute for %s", r).Err()
+		return nil, errors.Fmt("compute for %s: %w", r, err)
 	}
 	return resp, nil
 }

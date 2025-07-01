@@ -147,7 +147,7 @@ type errorProneLaunchTaskClient struct {
 
 // LaunchTask implements Client interface.
 func (c errorProneLaunchTaskClient) LaunchTask(ctx context.Context, args *request.Args) (trservice.TaskReference, error) {
-	return "", errors.Reason("simulated error from fake client").Err()
+	return "", errors.New("simulated error from fake client")
 }
 
 func TestFetchResultsError(t *testing.T) {
@@ -169,7 +169,7 @@ type errorProneFetchResultsClient struct {
 
 // FetchResults implements Client interface.
 func (c errorProneFetchResultsClient) FetchResults(context.Context, trservice.TaskReference) (*trservice.FetchResultsResponse, error) {
-	return nil, errors.Reason("simulated error from fake client").Err()
+	return nil, errors.New("simulated error from fake client")
 }
 
 func TestTaskURL(t *testing.T) {

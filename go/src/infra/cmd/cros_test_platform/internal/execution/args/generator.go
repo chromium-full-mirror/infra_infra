@@ -77,13 +77,13 @@ func (g *Generator) CheckConsistency() error {
 	rb := g.Params.GetSoftwareAttributes().GetBuildTarget().GetName()
 	eb := el.GetBoard()
 	if nonEmptyAndDifferent(rb, eb) {
-		return errors.Reason("incompatible board dependency: request (%s) vs. enumeration (%s)", rb, eb).Err()
+		return errors.Fmt("incompatible board dependency: request (%s) vs. enumeration (%s)", rb, eb)
 	}
 
 	rm := g.Params.GetHardwareAttributes().GetModel()
 	em := el.GetModel()
 	if nonEmptyAndDifferent(rm, em) {
-		return errors.Reason("incompatible model dependency: request (%s) vs. enumeration (%s)", rm, em).Err()
+		return errors.Fmt("incompatible model dependency: request (%s) vs. enumeration (%s)", rm, em)
 	}
 
 	return nil
@@ -132,19 +132,19 @@ const provisionableDimensionExpiration = time.Minute
 func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 	isClient, err := g.isClientTest()
 	if err != nil {
-		return request.Args{}, errors.Annotate(err, "create request args").Err()
+		return request.Args{}, errors.Fmt("create request args: %w", err)
 	}
 
 	// TODO(crbug.com/1162347) Delete after test_runner starts using structured
 	// dependencies.
 	provisionableDimensions, err := g.provisionableDimensions()
 	if err != nil {
-		return request.Args{}, errors.Annotate(err, "create request args").Err()
+		return request.Args{}, errors.Fmt("create request args: %w", err)
 	}
 
 	timeout, err := g.timeout()
 	if err != nil {
-		return request.Args{}, errors.Annotate(err, "create request args").Err()
+		return request.Args{}, errors.Fmt("create request args: %w", err)
 	}
 
 	kv := g.keyvals(ctx)
@@ -161,7 +161,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 
 	labels, err := g.inventoryLabels()
 	if err != nil {
-		return request.Args{}, errors.Annotate(err, "create request args").Err()
+		return request.Args{}, errors.Fmt("create request args: %w", err)
 	}
 
 	trr := &skylab_test_runner.Request{}
@@ -169,12 +169,12 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 	if g.Params.RunViaCft {
 		cft_trr, err = g.cftTestRunnerRequest(ctx)
 		if err != nil {
-			return request.Args{}, errors.Annotate(err, "create request args").Err()
+			return request.Args{}, errors.Fmt("create request args: %w", err)
 		}
 	} else {
 		trr, err = g.testRunnerRequest(ctx)
 		if err != nil {
-			return request.Args{}, errors.Annotate(err, "create request args").Err()
+			return request.Args{}, errors.Fmt("create request args: %w", err)
 		}
 	}
 
@@ -274,7 +274,7 @@ func (g *Generator) isClientTest() (bool, error) {
 	case buildapi.AutotestTest_EXECUTION_ENVIRONMENT_SERVER:
 		return false, nil
 	default:
-		return false, errors.Reason("unknown exec environment %s", g.Invocation.Test.ExecutionEnvironment).Err()
+		return false, errors.Fmt("unknown exec environment %s", g.Invocation.Test.ExecutionEnvironment)
 	}
 }
 
@@ -311,7 +311,7 @@ func (g *Generator) inventoryLabels() (*inventory.SchedulableLabels, error) {
 		case *test_platform.Request_Params_Scheduling_ManagedPool_:
 			pool, ok := poolMap[v.ManagedPool]
 			if !ok {
-				return nil, errors.Reason("unknown managed pool %s", v.ManagedPool.String()).Err()
+				return nil, errors.Fmt("unknown managed pool %s", v.ManagedPool.String())
 			}
 			inv.CriticalPools = append(inv.CriticalPools, pool)
 		case *test_platform.Request_Params_Scheduling_UnmanagedPool:
@@ -361,7 +361,7 @@ func (g *Generator) provisionableDimensions() ([]string, error) {
 	deps := g.Params.SoftwareDependencies
 	builds, err := extractBuilds(deps)
 	if err != nil {
-		return nil, errors.Annotate(err, "get provisionable dimensions").Err()
+		return nil, errors.Fmt("get provisionable dimensions: %w", err)
 	}
 
 	var dims []string
@@ -382,11 +382,11 @@ func (g *Generator) provisionableDimensions() ([]string, error) {
 
 func (g *Generator) timeout() (time.Duration, error) {
 	if g.Params.Time == nil {
-		return 0, errors.Reason("get timeout: nil params.time").Err()
+		return 0, errors.New("get timeout: nil params.time")
 	}
 	duration, err := ptypes.Duration(g.Params.Time.MaximumDuration)
 	if err != nil {
-		return 0, errors.Annotate(err, "get timeout").Err()
+		return 0, errors.Fmt("get timeout: %w", err)
 	}
 	return duration, nil
 }
@@ -645,41 +645,41 @@ func extractBuilds(deps []*test_platform.Request_Params_SoftwareDependency) (*bu
 		switch d := dep.Dep.(type) {
 		case *test_platform.Request_Params_SoftwareDependency_ChromeosBuild:
 			if already := b.ChromeOS; already != "" {
-				return nil, errors.Reason("duplicate ChromeOS builds (%s, %s)", already, d.ChromeosBuild).Err()
+				return nil, errors.Fmt("duplicate ChromeOS builds (%s, %s)", already, d.ChromeosBuild)
 			}
 			b.ChromeOS = d.ChromeosBuild
 		case *test_platform.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket:
 			if already := b.ChromeOSBucket; already != "" {
-				return nil, errors.Reason("duplicate ChromeOS buckets (%s, %s)", already, d.ChromeosBuildGcsBucket).Err()
+				return nil, errors.Fmt("duplicate ChromeOS buckets (%s, %s)", already, d.ChromeosBuildGcsBucket)
 			}
 			b.ChromeOSBucket = d.ChromeosBuildGcsBucket
 		case *test_platform.Request_Params_SoftwareDependency_RoFirmwareBuild:
 			if already := b.FirmwareRO; already != "" {
-				return nil, errors.Reason("duplicate RO Firmware builds (%s, %s)", already, d.RoFirmwareBuild).Err()
+				return nil, errors.Fmt("duplicate RO Firmware builds (%s, %s)", already, d.RoFirmwareBuild)
 			}
 			b.FirmwareRO = d.RoFirmwareBuild
 		case *test_platform.Request_Params_SoftwareDependency_RwFirmwareBuild:
 			if already := b.FirmwareRW; already != "" {
-				return nil, errors.Reason("duplicate RW Firmware builds (%s, %s)", already, d.RwFirmwareBuild).Err()
+				return nil, errors.Fmt("duplicate RW Firmware builds (%s, %s)", already, d.RwFirmwareBuild)
 			}
 			b.FirmwareRW = d.RwFirmwareBuild
 		case *test_platform.Request_Params_SoftwareDependency_LacrosGcsPath:
 			if already := b.LacrosGCSPath; already != "" {
-				return nil, errors.Reason("duplicate Lacros paths (%s, %s)", already, d.LacrosGcsPath).Err()
+				return nil, errors.Fmt("duplicate Lacros paths (%s, %s)", already, d.LacrosGcsPath)
 			}
 			b.LacrosGCSPath = d.LacrosGcsPath
 		case *test_platform.Request_Params_SoftwareDependency_AndroidImageVersion:
 			if already := b.AndroidImageVersion; already != "" {
-				return nil, errors.Reason("duplicate Android image version (%s, %s)", already, d.AndroidImageVersion).Err()
+				return nil, errors.Fmt("duplicate Android image version (%s, %s)", already, d.AndroidImageVersion)
 			}
 			b.AndroidImageVersion = d.AndroidImageVersion
 		case *test_platform.Request_Params_SoftwareDependency_GmsCorePackage:
 			if already := b.GmsCorePackage; already != "" {
-				return nil, errors.Reason("duplicate GmsCore package version (%s, %s)", already, d.GmsCorePackage).Err()
+				return nil, errors.Fmt("duplicate GmsCore package version (%s, %s)", already, d.GmsCorePackage)
 			}
 			b.GmsCorePackage = d.GmsCorePackage
 		default:
-			return nil, errors.Reason("unknown dep %+v", dep).Err()
+			return nil, errors.Fmt("unknown dep %+v", dep)
 		}
 	}
 	return b, nil
@@ -688,7 +688,7 @@ func extractBuilds(deps []*test_platform.Request_Params_SoftwareDependency) (*bu
 func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.Request, error) {
 	isClient, err := g.isClientTest()
 	if err != nil {
-		return nil, errors.Annotate(err, "create test runner request").Err()
+		return nil, errors.Fmt("create test runner request: %w", err)
 	}
 	kv := g.keyvals(ctx)
 	ta := g.testargs()
@@ -732,7 +732,7 @@ func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.
 func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDependency) (*testapi.ProvisionState, error) {
 	builds, err := extractBuilds(softwareDeps)
 	if err != nil {
-		return nil, errors.Annotate(err, "create cft test runner request: extractBuilds").Err()
+		return nil, errors.Fmt("create cft test runner request: extractBuilds: %w", err)
 	}
 
 	imagePath := ""
@@ -749,10 +749,10 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 	if (builds.AndroidImageVersion != "" && builds.AndroidImageVersion != "None") || (builds.GmsCorePackage != "" && builds.GmsCorePackage != "None") {
 		provisionMetadata, err = buildAndroidProvisionMetadata(builds)
 		if err != nil {
-			return nil, errors.Annotate(err, "create cft test runner request: buildAndroidProvisionMetadata").Err()
+			return nil, errors.Fmt("create cft test runner request: buildAndroidProvisionMetadata: %w", err)
 		}
 	} else if imagePath == "" {
-		return nil, errors.NewMultiError(errors.Reason("create cft test runner request: empty imagePath").Err())
+		return nil, errors.NewMultiError(errors.New("create cft test runner request: empty imagePath"))
 	}
 
 	provisionState := &testapi.ProvisionState{

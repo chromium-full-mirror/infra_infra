@@ -176,7 +176,7 @@ func newFakeParseTestControlFn(canned map[string]*testMetadata) parseTestControl
 	return func(text string) (*testMetadata, errors.MultiError) {
 		tm, ok := canned[text]
 		if !ok {
-			return nil, errors.NewMultiError(errors.Reason("uncanned control file: %s", text).Err())
+			return nil, errors.NewMultiError(errors.Fmt("uncanned control file: %s", text))
 		}
 		return tm, nil
 	}
@@ -202,7 +202,7 @@ func newFakeParseSuiteControlFn(canned map[string]*api.AutotestSuite) parseSuite
 	return func(text string) (*api.AutotestSuite, errors.MultiError) {
 		as, ok := canned[text]
 		if !ok {
-			return nil, errors.NewMultiError(errors.Reason("uncanned control file: %s", text).Err())
+			return nil, errors.NewMultiError(errors.Fmt("uncanned control file: %s", text))
 		}
 		return as, nil
 	}

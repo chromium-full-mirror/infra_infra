@@ -115,7 +115,7 @@ func testNames(ts []*test_platform.Request_Test) (stringset.Set, error) {
 		case *test_platform.Request_Test_Autotest_:
 			ns.Add(h.Autotest.Name)
 		default:
-			return nil, errors.Reason("unknown harness %+v", h).Err()
+			return nil, errors.Fmt("unknown harness %+v", h)
 		}
 	}
 	return ns, nil

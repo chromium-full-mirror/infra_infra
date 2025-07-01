@@ -220,7 +220,7 @@ func (r *RequestTaskSet) LaunchTasks(ctx context.Context, c trservice.Client) er
 
 		task, err := r.createNewBuildWithRetry(ctx, &c, ag, ts.Name)
 		if err != nil {
-			return errors.Annotate(err, "Error during new test_runner build creation for %s", ts.Name).Err()
+			return errors.Fmt("Error during new test_runner build creation for %s: %w", ts.Name, err)
 		}
 		ts.NotifyTask(task)
 		r.getInvocationStep(iid).NotifyNewTask(task)
@@ -312,7 +312,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		rerr := task.Refresh(ctx, c)
 		tr := task.Result()
 		if rerr != nil {
-			return false, errors.Annotate(rerr, "tick for task %s", tr.LogUrl).Err()
+			return false, errors.Fmt("tick for task %s: %w", tr.LogUrl, rerr)
 		}
 
 		// If the task is running then update out execution limit tracking log.
@@ -379,7 +379,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		}
 		nt, err := task.Retry(ctx, c, int32(r.retryCounter.RetryCount(iid)+1))
 		if err != nil {
-			return false, errors.Annotate(err, "tick for task %s: retry test", tr.LogUrl).Err()
+			return false, errors.Fmt("tick for task %s: retry test: %w", tr.LogUrl, err)
 		}
 		newTasks[iid] = nt
 		ts.NotifyTask(nt)

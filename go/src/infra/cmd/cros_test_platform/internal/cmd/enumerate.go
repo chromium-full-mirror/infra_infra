@@ -80,7 +80,7 @@ func (c *enumerateRun) innerRun(ctx context.Context, args []string) error {
 		return err
 	}
 	if len(taggedRequests) == 0 {
-		return errors.Reason("zero requests").Err()
+		return errors.New("zero requests")
 	}
 
 	workspace, err := ioutil.TempDir("", "enumerate")
@@ -157,14 +157,14 @@ func matchesUserErrorPatterns(err error) bool {
 
 func validateEnumeration(ts []*steps.EnumerationResponse_AutotestInvocation) ([]*steps.EnumerationResponse_AutotestInvocation, errors.MultiError) {
 	if len(ts) == 0 {
-		return ts, errors.NewMultiError(errors.Reason("No test found in control files for provided suite.").Err())
+		return ts, errors.NewMultiError(errors.New("No test found in control files for provided suite."))
 	}
 
 	vts := make([]*steps.EnumerationResponse_AutotestInvocation, 0, len(ts))
 	var merr errors.MultiError
 	for _, t := range ts {
 		if err := validateInvocation(t); err != nil {
-			merr = append(merr, errors.Annotate(err, "validate %s", t).Err())
+			merr = append(merr, errors.Fmt("validate %s: %w", t, err))
 		} else {
 			vts = append(vts, t)
 		}
@@ -181,23 +181,23 @@ func errorsOrNil(merr errors.MultiError) errors.MultiError {
 
 func validateInvocation(t *steps.EnumerationResponse_AutotestInvocation) error {
 	if t.GetTest().GetName() == "" {
-		return errors.Reason("empty name").Err()
+		return errors.New("empty name")
 	}
 	if t.GetTest().GetExecutionEnvironment() == api.AutotestTest_EXECUTION_ENVIRONMENT_UNSPECIFIED {
-		return errors.Reason("unspecified execution environment").Err()
+		return errors.New("unspecified execution environment")
 	}
 	return nil
 }
 
 func (c *enumerateRun) validateArgs(args []string) error {
 	if len(args) > 0 {
-		return errors.Reason("have %d positional args, want 0", len(args)).Err()
+		return errors.Fmt("have %d positional args, want 0", len(args))
 	}
 	if c.inputPath == "" {
-		return errors.Reason("-input_json not specified").Err()
+		return errors.New("-input_json not specified")
 	}
 	if c.outputPath == "" {
-		return errors.Reason("-output_json not specified").Err()
+		return errors.New("-output_json not specified")
 	}
 	return nil
 }
@@ -217,12 +217,12 @@ func (c *enumerateRun) gsPath(requests []*steps.EnumerationRequest) (gs.Path, er
 
 	m := requests[0].GetMetadata().GetTestMetadataUrl()
 	if m == "" {
-		return "", errors.Reason("empty request.metadata.test_metadata_url in %s", requests[0]).Err()
+		return "", errors.Fmt("empty request.metadata.test_metadata_url in %s", requests[0])
 	}
 	for _, r := range requests[1:] {
 		o := r.GetMetadata().GetTestMetadataUrl()
 		if o != m {
-			return "", errors.Reason("mismatched test metadata URLs: %s vs %s", m, o).Err()
+			return "", errors.Fmt("mismatched test metadata URLs: %s vs %s", m, o)
 		}
 	}
 	return gs.Path(m), nil
@@ -231,15 +231,15 @@ func (c *enumerateRun) gsPath(requests []*steps.EnumerationRequest) (gs.Path, er
 func (c *enumerateRun) downloadArtifacts(ctx context.Context, gsDir gs.Path, workspace string) (artifacts.LocalPaths, error) {
 	outDir := filepath.Join(workspace, "artifacts")
 	if err := os.Mkdir(outDir, 0750); err != nil {
-		return artifacts.LocalPaths{}, errors.Annotate(err, "download artifacts").Err()
+		return artifacts.LocalPaths{}, errors.Fmt("download artifacts: %w", err)
 	}
 	client, err := c.newGSClient(ctx)
 	if err != nil {
-		return artifacts.LocalPaths{}, errors.Annotate(err, "download artifacts").Err()
+		return artifacts.LocalPaths{}, errors.Fmt("download artifacts: %w", err)
 	}
 	lp, err := artifacts.DownloadFromGoogleStorage(ctx, client, gsDir, outDir)
 	if err != nil {
-		return artifacts.LocalPaths{}, errors.Annotate(err, "download artifacts").Err()
+		return artifacts.LocalPaths{}, errors.Fmt("download artifacts: %w", err)
 	}
 	return lp, err
 }
@@ -247,7 +247,7 @@ func (c *enumerateRun) downloadArtifacts(ctx context.Context, gsDir gs.Path, wor
 func (c *enumerateRun) newGSClient(ctx context.Context) (gs.Client, error) {
 	t, err := newAuthenticatedTransport(ctx, &c.authFlags)
 	if err != nil {
-		return nil, errors.Annotate(err, "create GS client").Err()
+		return nil, errors.Fmt("create GS client: %w", err)
 	}
 	return gs.NewProdClient(ctx, t)
 }
@@ -273,10 +273,10 @@ func (c *enumerateRun) getEnumeration(ctx context.Context, tag string, tm *api.T
 func (c *enumerateRun) computeMetadata(ctx context.Context, tag string, localPaths artifacts.LocalPaths, workspace string) (*api.TestMetadataResponse, error) {
 	extracted := filepath.Join(workspace, "extracted")
 	if err := os.Mkdir(extracted, 0750); err != nil {
-		return nil, errors.Annotate(err, "compute metadata for %s", tag).Err()
+		return nil, errors.Fmt("compute metadata for %s: %w", tag, err)
 	}
 	if err := artifacts.ExtractControlFiles(localPaths, extracted); err != nil {
-		return nil, errors.Annotate(err, "compute metadata for %s", tag).Err()
+		return nil, errors.Fmt("compute metadata for %s: %w", tag, err)
 	}
 
 	tm, warnings := testspec.Get(extracted)

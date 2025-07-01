@@ -285,11 +285,11 @@ func structPBToTestRunnerRequest(from *structpb.Value) (*skylab_test_runner.Requ
 	m := jsonpb.Marshaler{}
 	json, err := m.MarshalToString(from)
 	if err != nil {
-		return nil, errors.Annotate(err, "structPBToTestRunnerRequest").Err()
+		return nil, errors.Fmt("structPBToTestRunnerRequest: %w", err)
 	}
 	var req skylab_test_runner.Request
 	if err := jsonpb.UnmarshalString(json, &req); err != nil {
-		return nil, errors.Annotate(err, "structPBToTestRunnerRequest").Err()
+		return nil, errors.Fmt("structPBToTestRunnerRequest: %w", err)
 	}
 	return &req, nil
 }
@@ -374,7 +374,7 @@ func TestFetchRequestBuildBucketFailure_TaskLaunchedGetBuildStatusFails(t *testi
 	tf.bb.EXPECT().GetBuildStatus(
 		gomock.Any(),
 		gomock.Any(),
-	).Return(nil, errors.Reason("Transient failure").Err())
+	).Return(nil, errors.New("Transient failure"))
 
 	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
 	assert.Loosely(t, err, should.BeNil)
@@ -403,7 +403,7 @@ func TestFetchRequestBuildBucketFailure_TaskLaunchGetBuildFails(t *testing.T) {
 	tf.bb.EXPECT().GetBuild(
 		gomock.Any(),
 		gomock.Any(),
-	).Return(nil, errors.Reason("Transient failure").Err())
+	).Return(nil, errors.New("Transient failure"))
 
 	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
 	assert.Loosely(t, err, should.BeNil)

@@ -50,7 +50,7 @@ func hostnameToBotID(ctx context.Context, swarmingBotsClient swarmingapi.BotsCli
 	}
 	bots := botsListReply.GetItems()
 	if len(bots) == 0 {
-		return "", errors.Reason(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname)).Err()
+		return "", errors.New(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname))
 	}
 	return bots[0].BotId, nil
 }
@@ -71,7 +71,7 @@ func hostnameToPool(ctx context.Context, swarmingBotsClient swarmingapi.BotsClie
 	}
 	bots := botsListReply.GetItems()
 	if len(bots) == 0 {
-		return "", "", errors.Reason(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname)).Err()
+		return "", "", errors.New(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname))
 	}
 	dims := bots[0].GetDimensions()
 	pool := []string{}

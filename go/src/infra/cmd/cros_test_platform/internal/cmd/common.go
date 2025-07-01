@@ -29,7 +29,7 @@ var (
 func newAuthenticatedTransport(ctx context.Context, f *authcli.Flags) (http.RoundTripper, error) {
 	o, err := f.Options()
 	if err != nil {
-		return nil, errors.Annotate(err, "create authenticated transport").Err()
+		return nil, errors.Fmt("create authenticated transport: %w", err)
 	}
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, o)
 	return a.Transport()
@@ -38,11 +38,11 @@ func newAuthenticatedTransport(ctx context.Context, f *authcli.Flags) (http.Roun
 func readRequest(inFile string, request proto.Message) error {
 	r, err := os.Open(inFile)
 	if err != nil {
-		return errors.Annotate(err, "read request").Err()
+		return errors.Fmt("read request: %w", err)
 	}
 	defer r.Close()
 	if err := unmarshaller.Unmarshal(r, request); err != nil {
-		return errors.Annotate(err, "read request").Err()
+		return errors.Fmt("read request: %w", err)
 	}
 	return nil
 }
@@ -66,11 +66,11 @@ func exitCode(err error) int {
 func writeResponseWithError(ctx context.Context, outFile string, response proto.Message, errorSoFar error) error {
 	w, err := os.Create(outFile)
 	if err != nil {
-		return errors.MultiError{errorSoFar, errors.Annotate(err, "write response").Err()}
+		return errors.MultiError{errorSoFar, errors.Fmt("write response: %w", err)}
 	}
 	defer w.Close()
 	if err := marshaller.Marshal(w, response); err != nil {
-		return errors.MultiError{errorSoFar, errors.Annotate(err, "write response").Err()}
+		return errors.MultiError{errorSoFar, errors.Fmt("write response: %w", err)}
 	}
 	logResponse(ctx, response)
 	return partialErrorTag.Apply(errorSoFar)

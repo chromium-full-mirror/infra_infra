@@ -15,16 +15,16 @@ import (
 func describe(ctx context.Context, pkg, version string) (*cipd.InstanceDescription, error) {
 	client, err := cipd.NewClientFromEnv(ctx, cipd.ClientOptions{})
 	if err != nil {
-		return nil, errors.Annotate(err, "describe package").Err()
+		return nil, errors.Fmt("describe package: %w", err)
 	}
 	defer client.Close(ctx)
 	pin, err := client.ResolveVersion(ctx, pkg, version)
 	if err != nil {
-		return nil, errors.Annotate(err, "describe package").Err()
+		return nil, errors.Fmt("describe package: %w", err)
 	}
 	d, err := client.DescribeInstance(ctx, pin, nil)
 	if err != nil {
-		return nil, errors.Annotate(err, "describe package").Err()
+		return nil, errors.Fmt("describe package: %w", err)
 	}
 	return d, nil
 }

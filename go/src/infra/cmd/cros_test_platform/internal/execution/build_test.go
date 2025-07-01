@@ -289,12 +289,12 @@ type nonTransientBBErrorClient struct {
 
 // FetchResults implements Client interface.
 func (c transientBBErrorClient) FetchResults(context.Context, trservice.TaskReference) (*trservice.FetchResultsResponse, error) {
-	return &trservice.FetchResultsResponse{BuildBucketTransientFailure: true}, errors.Reason("simulated error from fake client").Err()
+	return &trservice.FetchResultsResponse{BuildBucketTransientFailure: true}, errors.New("simulated error from fake client")
 }
 
 // FetchResults implements Client interface.
 func (c nonTransientBBErrorClient) FetchResults(context.Context, trservice.TaskReference) (*trservice.FetchResultsResponse, error) {
-	return &trservice.FetchResultsResponse{BuildBucketTransientFailure: false}, errors.Reason("simulated error from fake client").Err()
+	return &trservice.FetchResultsResponse{BuildBucketTransientFailure: false}, errors.New("simulated error from fake client")
 }
 
 func TestRefreshWithTransientBuildBuckerError(t *testing.T) {

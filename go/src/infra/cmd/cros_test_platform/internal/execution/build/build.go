@@ -58,7 +58,7 @@ func (r *RequestStepUpdater) NewInvocationStep(name string) *InvocationStepUpdat
 // RequestStepUpdater should not be used once Close() has been called.
 func (r *RequestStepUpdater) Close(status bbpb.Status, summaryMarkdown string) error {
 	if r.finalized {
-		return errors.Reason("RequestStepUpdater: finalized called more than once").Err()
+		return errors.New("RequestStepUpdater: finalized called more than once")
 	}
 	for _, i := range r.invocations {
 		if !i.closed {
