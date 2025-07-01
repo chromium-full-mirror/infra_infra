@@ -9,8 +9,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/sqldb"
 
@@ -20,7 +18,7 @@ import (
 )
 
 // GetDeviceDimensions returns dimensions of all devices
-func (frontend *FleetConsoleFrontend) GetRepairMetricsDimensions(ctx context.Context, req *emptypb.Empty) (_ *fleetconsolerpc.GetRepairMetricsDimensionsResponse, err error) {
+func (frontend *FleetConsoleFrontend) GetRepairMetricsDimensions(ctx context.Context, req *fleetconsolerpc.GetRepairMetricsDimensionsRequest) (_ *fleetconsolerpc.GetRepairMetricsDimensionsResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
 	db := sqldb.MustGetDB(ctx)

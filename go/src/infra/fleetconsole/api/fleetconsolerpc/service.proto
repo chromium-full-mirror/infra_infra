@@ -69,7 +69,7 @@ service FleetConsole {
 
   rpc CountRepairMetrics(CountRepairMetricsRequest) returns (CountRepairMetricsResponse) {}
 
-  rpc GetRepairMetricsDimensions(google.protobuf.Empty) returns (GetRepairMetricsDimensionsResponse);
+  rpc GetRepairMetricsDimensions(GetRepairMetricsDimensionsRequest) returns (GetRepairMetricsDimensionsResponse);
 }
 
 // PingRequest intentionally contains nothing.
@@ -397,6 +397,7 @@ message UpdateAndroidDevicesResponse {}
 
 enum Platform {
   ANDROID = 0;
+  CHROMEOS = 1;
 }
 
 message ListRepairMetricsRequest {
@@ -445,6 +446,10 @@ message CountRepairMetricsResponse {
   int32 offline_hosts = 2;
   int32 total_devices = 3;
   int32 offline_devices = 4;
+}
+
+message GetRepairMetricsDimensionsRequest {
+  Platform platform = 1;
 }
 
 message GetRepairMetricsDimensionsResponse {

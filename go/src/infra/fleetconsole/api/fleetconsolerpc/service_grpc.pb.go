@@ -85,7 +85,7 @@ type FleetConsoleClient interface {
 	UpdateAndroidDevices(ctx context.Context, in *UpdateAndroidDevicesRequest, opts ...grpc.CallOption) (*UpdateAndroidDevicesResponse, error)
 	ListRepairMetrics(ctx context.Context, in *ListRepairMetricsRequest, opts ...grpc.CallOption) (*ListRepairMetricsResponse, error)
 	CountRepairMetrics(ctx context.Context, in *CountRepairMetricsRequest, opts ...grpc.CallOption) (*CountRepairMetricsResponse, error)
-	GetRepairMetricsDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error)
+	GetRepairMetricsDimensions(ctx context.Context, in *GetRepairMetricsDimensionsRequest, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -276,7 +276,7 @@ func (c *fleetConsoleClient) CountRepairMetrics(ctx context.Context, in *CountRe
 	return out, nil
 }
 
-func (c *fleetConsoleClient) GetRepairMetricsDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error) {
+func (c *fleetConsoleClient) GetRepairMetricsDimensions(ctx context.Context, in *GetRepairMetricsDimensionsRequest, opts ...grpc.CallOption) (*GetRepairMetricsDimensionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetRepairMetricsDimensionsResponse)
 	err := c.cc.Invoke(ctx, FleetConsole_GetRepairMetricsDimensions_FullMethodName, in, out, cOpts...)
@@ -326,7 +326,7 @@ type FleetConsoleServer interface {
 	UpdateAndroidDevices(context.Context, *UpdateAndroidDevicesRequest) (*UpdateAndroidDevicesResponse, error)
 	ListRepairMetrics(context.Context, *ListRepairMetricsRequest) (*ListRepairMetricsResponse, error)
 	CountRepairMetrics(context.Context, *CountRepairMetricsRequest) (*CountRepairMetricsResponse, error)
-	GetRepairMetricsDimensions(context.Context, *emptypb.Empty) (*GetRepairMetricsDimensionsResponse, error)
+	GetRepairMetricsDimensions(context.Context, *GetRepairMetricsDimensionsRequest) (*GetRepairMetricsDimensionsResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -391,7 +391,7 @@ func (UnimplementedFleetConsoleServer) ListRepairMetrics(context.Context, *ListR
 func (UnimplementedFleetConsoleServer) CountRepairMetrics(context.Context, *CountRepairMetricsRequest) (*CountRepairMetricsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CountRepairMetrics not implemented")
 }
-func (UnimplementedFleetConsoleServer) GetRepairMetricsDimensions(context.Context, *emptypb.Empty) (*GetRepairMetricsDimensionsResponse, error) {
+func (UnimplementedFleetConsoleServer) GetRepairMetricsDimensions(context.Context, *GetRepairMetricsDimensionsRequest) (*GetRepairMetricsDimensionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRepairMetricsDimensions not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
@@ -740,7 +740,7 @@ func _FleetConsole_CountRepairMetrics_Handler(srv interface{}, ctx context.Conte
 }
 
 func _FleetConsole_GetRepairMetricsDimensions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetRepairMetricsDimensionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -752,7 +752,7 @@ func _FleetConsole_GetRepairMetricsDimensions_Handler(srv interface{}, ctx conte
 		FullMethod: FleetConsole_GetRepairMetricsDimensions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FleetConsoleServer).GetRepairMetricsDimensions(ctx, req.(*emptypb.Empty))
+		return srv.(FleetConsoleServer).GetRepairMetricsDimensions(ctx, req.(*GetRepairMetricsDimensionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
