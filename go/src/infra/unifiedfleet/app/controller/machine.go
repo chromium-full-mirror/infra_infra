@@ -483,6 +483,8 @@ func processMachineUpdateMask(ctx context.Context, oldMachine, machine *ufspb.Ma
 			oldMachine.SerialNumber = machine.GetSerialNumber()
 		case util.ResourceStatePath, util.ResourceStateCamelPath:
 			oldMachine.ResourceState = machine.GetResourceState()
+		case util.AssetTagPath:
+			oldMachine.AssetTag = machine.GetAssetTag()
 		case util.DescriptionPath:
 			oldMachine.GetChromeBrowserMachine().Description = machine.GetChromeBrowserMachine().GetDescription()
 		case util.ServerMachineModelPath:
@@ -1328,10 +1330,9 @@ func validateMachineUpdateMask(oldMachine, machine *ufspb.Machine, mask *field_m
 				return status.Error(codes.InvalidArgument, "validateMachineUpdateMask - andreiboard cannot be empty/nil.")
 			}
 		case util.TagsPath:
-		case util.SerialNumberCamelPath:
-		case util.SerialNumberPath:
-		case util.ResourceStateCamelPath:
-		case util.ResourceStatePath:
+		case util.SerialNumberPath, util.SerialNumberCamelPath:
+		case util.ResourceStatePath, util.ResourceStateCamelPath:
+		case util.AssetTagPath:
 		case util.ServerMachineModelPath:
 		case util.ServerMachineMemoryPath:
 		case util.ServerMachineStoragePath:

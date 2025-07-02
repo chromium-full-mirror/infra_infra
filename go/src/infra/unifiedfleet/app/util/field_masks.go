@@ -70,6 +70,9 @@ const (
 	InfoReferenceBoardPath     string = "info.reference_board"
 	ModelPath                  string = "model"
 
+	// Machine
+	AssetTagPath string = "asset_tag"
+
 	// DUT
 	DutAteHostPath              string = "dut.ateHost"
 	DutAudioAtrusPath           string = "dut.audio.atrus"

@@ -739,20 +739,21 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			chromePlatform := &ufspb.ChromePlatform{
 				Name: "chromePlatform-4",
 			}
 			_, err = configuration.CreateChromePlatform(ctx, chromePlatform)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			_, err = registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-4",
 			})
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			machine1 := &ufspb.Machine{
-				Name: "machine-3",
+				Name:     "machine-3",
+				AssetTag: "machine-3-asset-tag",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{
 						ChromePlatform: "chromePlatform-4",
@@ -763,12 +764,13 @@ func TestUpdateMachine(t *testing.T) {
 					},
 				},
 			}
-			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"platform", "kvm"}})
-			assert.Loosely(t, err, should.BeNil)
+			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"platform", "kvm", "asset_tag"}})
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetChromeBrowserMachine().GetChromePlatform(), should.Match("chromePlatform-4"))
-			assert.Loosely(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetKvm(), should.Match("kvm-4"))
-			assert.Loosely(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetPortName(), should.Match("A1"))
+			assert.That(t, resp.GetAssetTag(), should.Equal("machine-3-asset-tag"))
+			assert.That(t, resp.GetChromeBrowserMachine().GetChromePlatform(), should.Equal("chromePlatform-4"))
+			assert.That(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetKvm(), should.Equal("kvm-4"))
+			assert.That(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetPortName(), should.Equal("A1"))
 		})
 
 		t.Run("Partial Update machine - update serial number", func(t *ftt.Test) {
