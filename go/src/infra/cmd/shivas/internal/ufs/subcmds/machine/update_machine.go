@@ -46,6 +46,7 @@ var UpdateMachineCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.kvmPort, "kvm-port", "", "the port of the kvm that this machine uses"+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.serialNumber, "serial", "", "the serial number for this machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.assetTag, "asset", "", "the asset tag for this machine. This is unrelated to Asset entities. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.model, "model", "", "the model for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.cpuType, "cpu-type", "", "the cpu type for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.driveModel, "drive-model", "", "the drive type for this machine. "+cmdhelp.ClearFieldHelpText)
@@ -76,8 +77,8 @@ type updateMachine struct {
 	kvm              string
 	kvmPort          string
 	deploymentTicket string
-	tags             []string
 	serialNumber     string
+	assetTag         string
 	state            string
 	model            string
 	cpuType          string
@@ -85,6 +86,7 @@ type updateMachine struct {
 	storage          string
 	memory           string
 	description      string
+	tags             []string
 }
 
 func (c *updateMachine) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -163,6 +165,7 @@ func (c *updateMachine) innerRun(a subcommands.Application, args []string, env s
 			"ticket":      ufsUtil.DeploymentTicketPath,
 			"tag":         ufsUtil.TagsPath,
 			"serial":      ufsUtil.SerialNumberPath,
+			"asset":       ufsUtil.AssetTagPath,
 			"state":       ufsUtil.ResourceStatePath,
 			"desc":        ufsUtil.DescriptionPath,
 			"model":       ufsUtil.ServerMachineModelPath,
@@ -204,6 +207,11 @@ func (c *updateMachine) parseArgs(machine *ufspb.Machine) {
 		machine.SerialNumber = ""
 	} else {
 		machine.SerialNumber = c.serialNumber
+	}
+	if c.assetTag == utils.ClearFieldValue {
+		machine.AssetTag = ""
+	} else {
+		machine.AssetTag = c.assetTag
 	}
 	machine.ResourceState = ufsUtil.ToUFSState(c.state)
 	if c.model != "" || c.cpuType != "" || c.driveModel != "" || c.memory != "" || c.storage != "" {
@@ -298,6 +306,9 @@ func (c *updateMachine) validateArgs() error {
 		if c.serialNumber != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-serial' cannot be specified at the same time.")
 		}
+		if c.assetTag != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-asset' cannot be specified at the same time.")
+		}
 		if len(c.tags) > 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe interactive/JSON mode is specified. '-tag' cannot be specified at the same time.")
 		}
@@ -331,7 +342,8 @@ func (c *updateMachine) validateArgs() error {
 			len(c.tags) == 0 && c.platform == "" && c.deploymentTicket == "" &&
 			c.kvm == "" && c.kvmPort == "" && c.serialNumber == "" &&
 			c.description == "" && c.model == "" && c.cpuType == "" &&
-			c.driveModel == "" && c.storage == "" && c.memory == "" {
+			c.driveModel == "" && c.storage == "" && c.memory == "" &&
+			c.assetTag == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.zoneName != "" && !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zoneName)) {

@@ -39,6 +39,7 @@ var AddMachineCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.machineName, "name", "", "the name of the machine to add")
 		c.Flags.StringVar(&c.zoneName, "zone", "", cmdhelp.ZoneHelpText)
 		c.Flags.StringVar(&c.rackName, "rack", "", "the rack to add the machine to")
+		c.Flags.StringVar(&c.assetTag, "asset", "", "the asset tag for this machine. This is unrelated to Asset entities")
 		c.Flags.StringVar(&c.platform, "platform", "", "the platform of this machine")
 		c.Flags.StringVar(&c.kvm, "kvm", "", "the name of the kvm that this machine uses")
 		c.Flags.StringVar(&c.kvmPort, "kvm-port", "", "the port of the kvm that this machine uses")
@@ -65,6 +66,8 @@ type addMachine struct {
 	machineName      string
 	zoneName         string
 	rackName         string
+	serialNumber     string
+	assetTag         string
 	platform         string
 	kvm              string
 	kvmPort          string
@@ -75,7 +78,6 @@ type addMachine struct {
 	storage          string
 	memory           string
 	tags             []string
-	serialNumber     string
 }
 
 func (c *addMachine) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -150,6 +152,7 @@ func (c *addMachine) parseArgs(req *ufsAPI.MachineRegistrationRequest) {
 		Realm:        ufsUtil.ToUFSRealm(c.zoneName),
 		Tags:         c.tags,
 		SerialNumber: c.serialNumber,
+		AssetTag:     c.assetTag,
 	}
 	if ufsUtil.IsInBrowserZone(ufsZone.String()) {
 		req.Machine.Device = &ufspb.Machine_ChromeBrowserMachine{
@@ -208,6 +211,9 @@ func (c *addMachine) validateArgs() error {
 		}
 		if c.serialNumber != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-serial' cannot be specified at the same time.")
+		}
+		if c.assetTag != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-asset' cannot be specified at the same time.")
 		}
 		if c.model != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe JSON mode is specified. '-model' cannot be specified at the same time.")
