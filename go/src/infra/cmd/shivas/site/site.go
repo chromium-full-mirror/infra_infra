@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
@@ -30,6 +31,8 @@ type Environment struct {
 	LogdogService          string
 	QueenService           string
 }
+
+var TSMonFlags = tsmon.NewFlags()
 
 // Prod is the environment for prod.
 func Prod(isLocal bool) Environment {
@@ -94,6 +97,9 @@ type CommonFlags struct {
 
 // Register sets up the common flags.
 func (f *CommonFlags) Register(fl *flag.FlagSet) {
+	// Register the tsmon flags and set flush to manual
+	TSMonFlags.Flush = tsmon.FlushManual
+	TSMonFlags.Register(fl)
 	fl.BoolVar(&f.verbose, "verbose", false, "log more details")
 }
 
