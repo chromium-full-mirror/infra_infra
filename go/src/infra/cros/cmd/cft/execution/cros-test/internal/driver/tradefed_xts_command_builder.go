@@ -25,9 +25,9 @@ const (
 	defaultCSuitePackagesFile = "/google/data/ro/teams/app-compatibility/test-resources/package-lists/vic-top-100.txt"
 )
 
-func getTestRunner() string {
+func getTestRunner(testType string) string {
 	if isAospTradefed() {
-		return tfAospTestRunner
+		return fmt.Sprintf("%s-%s", testType, tfAospTestRunner)
 	} else {
 		return tfGoogleTestRunner
 	}
@@ -54,7 +54,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
 	servo *labapi.Servo, lsnexus *labapi.IpEndpoint) []string {
 
-	cmd := []string{getTestRunner()}
+	cmd := []string{getTestRunner(testType)}
 
 	plan, err := extractMetadataFlag(metadata, planMetadataFlag)
 	if err != nil {
