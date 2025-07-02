@@ -24,6 +24,10 @@ func ValuesString(lenValues int, numberOfArgs int) string {
 // ValuesStringWithOffset works just like [ValuesString] but you can also provide an offset
 // E.G: ValuesStringWithOffset(4, 2, 100) = "($101, $102), ($103, $104)"
 func ValuesStringWithOffset(lenValues int, numberOfArgs int, offset int) string {
+	if lenValues == 0 {
+		return "()"
+	}
+
 	if numberOfArgs == 0 {
 		numberOfArgs = lenValues
 	}

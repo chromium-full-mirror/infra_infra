@@ -113,6 +113,10 @@ func queryDbCountRepairMetrics(ctx context.Context, db *sql.DB, filters string) 
 }
 
 func queryHostsCount(ctx context.Context, db *sql.DB, filterBy *filterBy) (int32, int32, error) {
+	if len(filterBy.uniqueHostGroups) == 0 {
+		return 0, 0, nil
+	}
+
 	q := fmt.Sprintf(`
 		SELECT
 			COUNT(*) as total_hosts,
@@ -131,6 +135,10 @@ func queryHostsCount(ctx context.Context, db *sql.DB, filterBy *filterBy) (int32
 }
 
 func queryDevicesCount(ctx context.Context, db *sql.DB, filterBy *filterBy) (int32, int32, error) {
+	if len(filterBy.uniqueHostGroups) == 0 || len(filterBy.uniqueRunTargets) == 0 || len(filterBy.uniqueLabNames) == 0 {
+		return 0, 0, nil
+	}
+
 	q := fmt.Sprintf(`
 		SELECT
 			COUNT(*) as total_devices,
