@@ -48,6 +48,8 @@ const (
 	NeedsManualRepair State = "needs_manual_repair"
 	// Device is not fixable due issues with hardware and has to be replaced
 	NeedsReplacement State = "needs_replacement"
+	// Device is not detected.
+	Missing State = "missing"
 	// Device state when state is not present or cannot be read from UFS.
 	Unknown State = "unknown"
 )
@@ -178,6 +180,7 @@ var stateToUFS = map[State]ufsProto.State{
 	ManualRepair:      ufsProto.State_STATE_DEPLOYED_TESTING,
 	NeedsManualRepair: ufsProto.State_STATE_DISABLED,
 	NeedsReplacement:  ufsProto.State_STATE_DECOMMISSIONED,
+	Missing:           ufsProto.State_STATE_MISSING,
 }
 
 var stateFromUFS = map[ufsProto.State]State{
@@ -191,6 +194,7 @@ var stateFromUFS = map[ufsProto.State]State{
 	ufsProto.State_STATE_DEPLOYED_TESTING:     ManualRepair,
 	ufsProto.State_STATE_DISABLED:             NeedsManualRepair,
 	ufsProto.State_STATE_DECOMMISSIONED:       NeedsReplacement,
+	ufsProto.State_STATE_MISSING:              Missing,
 }
 
 var ValidDUTStateStrings = []string{
@@ -204,4 +208,5 @@ var ValidDUTStateStrings = []string{
 	string(ManualRepair),
 	string(NeedsManualRepair),
 	string(NeedsReplacement),
+	string(Missing),
 }
