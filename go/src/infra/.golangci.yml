@@ -495,8 +495,7 @@ issues:
   max-same-issues: 0
   # Make issues output unique by line.
   # Default: true
-  # TODO(tikuta): Disable this after https://github.com/golangci/golangci-lint/issues/5863
-  uniq-by-line: true
+  uniq-by-line: false
 
 formatters:
   enable:
