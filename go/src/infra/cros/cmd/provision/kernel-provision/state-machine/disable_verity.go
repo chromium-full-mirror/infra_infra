@@ -66,7 +66,7 @@ func (s *DisableVerityState) Execute(ctx context.Context, log *log.Logger) (*any
 }
 
 func (s *DisableVerityState) Next() commonutils.ServiceState {
-	return NewEnterFastbootdState(s.service)
+	return NewEnableDevSwitchState(s.service)
 }
 
 func (s *DisableVerityState) Name() string {
