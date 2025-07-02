@@ -8,12 +8,14 @@ package statemachine
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/gbb"
 	commonutils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/kernel-provision/service"
 )
@@ -29,7 +31,21 @@ func NewKernelProvisionInitState(service *service.KernelProvisionService) common
 }
 
 func (s *KernelProvisionInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
+	if err := s.storeOriginalGBBFlags(ctx, log); err != nil {
+		return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, err
+	}
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
+}
+
+// storeOriginalGBBFlags gets the DUT's GBB flags, and stores them in the KernelProvisionService.
+func (s *KernelProvisionInitState) storeOriginalGBBFlags(ctx context.Context, log *log.Logger) error {
+	gbbFlags, err := gbb.GetGBBFlags(ctx, log, s.service.DUT.GetChromeos().GetSsh().GetAddress())
+	if err != nil {
+		return fmt.Errorf("getting gbb flags: %w", err)
+	}
+	log.Printf("GBB flags before kernel provisioning: %s", gbbFlags)
+	s.service.OriginalGBBFlags = gbbFlags
+	return nil
 }
 
 func (s *KernelProvisionInitState) Next() commonutils.ServiceState {

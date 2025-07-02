@@ -26,6 +26,8 @@ type KernelProvisionService struct {
 	LocalArtifactPaths map[string]string
 	// FastbootPath contains the local path to the downloaded fastboot executable.
 	FastbootPath string
+	// OriginalGBBFlags contains the DUT's GBB flags before provisioning the kernel.
+	OriginalGBBFlags string
 }
 
 func NewKernelProvisionService(kp *api.KernelPrebuilts, osImagePath *storage_path.StoragePath, dut *labapi.Dut) *KernelProvisionService {
