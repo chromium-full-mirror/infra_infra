@@ -81,10 +81,11 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 						owner_id,
 						leased_time,
 						expiration_time,
-						last_updated_time
+						last_updated_time,
+						user_payload
 					)
 				VALUES
-					($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW())
+					($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW(), $9)
 				RETURNING
 					id,
 					idempotency_key,
@@ -105,6 +106,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 					"DEVICE_TYPE_PHYSICAL",
 					"test-owner-id-1",
 					time.Minute,
+					[]byte(nil),
 				).
 				WillReturnRows(rows)
 
@@ -116,9 +118,10 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				DeviceAddress:  "1.1.1.1:1",
 				DeviceType:     "DEVICE_TYPE_PHYSICAL",
 				OwnerID:        "test-owner-id-1",
+				UserPayload:    nil,
 			}, time.Minute)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, newRec, should.Equal(DeviceLeaseRecord{
+			assert.Loosely(t, newRec, should.Match(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DutID:           "test-dut-id",
@@ -199,7 +202,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 
 			record, err := GetDeviceLeaseRecordByID(ctx, db, "test-lease-record-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, *record, should.Equal(DeviceLeaseRecord{
+			assert.Loosely(t, *record, should.Match(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DutID:           "test-dut-id",
@@ -329,7 +332,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 
 			record, err := GetDeviceLeaseRecordByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
+			assert.Loosely(t, record, should.Match(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DutID:           "test-dut-id",
@@ -389,7 +392,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 
 			record, err := GetDeviceLeaseRecordByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
 			assert.Loosely(t, err, should.ErrLike("no rows in result set"))
-			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{}))
+			assert.Loosely(t, record, should.Match(DeviceLeaseRecord{}))
 		})
 	})
 }

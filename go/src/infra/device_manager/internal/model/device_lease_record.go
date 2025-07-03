@@ -45,6 +45,8 @@ type DeviceLeaseRecord struct {
 	ReleasedTime    time.Time
 	ExpirationTime  time.Time
 	LastUpdatedTime time.Time
+
+	UserPayload []byte
 }
 
 // CreateDeviceLeaseRecord creates a DeviceLeaseRecord in the database.
@@ -67,10 +69,11 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 				owner_id,
 			 	leased_time,
 				expiration_time,
-				last_updated_time
+				last_updated_time,
+				user_payload
 			)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW())
+			($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW(), $9)
 		RETURNING
 			id,
 			idempotency_key,
@@ -90,6 +93,7 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 		record.DeviceType,
 		record.OwnerID,
 		leaseDur,
+		record.UserPayload,
 	).Scan(
 		&newRecord.ID,
 		&newRecord.IdempotencyKey,

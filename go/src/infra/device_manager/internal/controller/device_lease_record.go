@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -75,6 +76,10 @@ func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, dev
 		}, nil
 	}
 
+	userPayload, err := json.Marshal(r.GetUserPayload())
+	if err != nil {
+		return nil, lucierr.Fmt("lease device %q: marshal user payload: %w", deviceID, err)
+	}
 	newRecord := model.DeviceLeaseRecord{
 		ID:             uuid.New().String(),
 		IdempotencyKey: r.GetIdempotencyKey(),
@@ -82,6 +87,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, dev
 		DeviceID:       updatedDevice.ID,
 		DeviceAddress:  updatedDevice.DeviceAddress,
 		DeviceType:     updatedDevice.DeviceType,
+		UserPayload:    userPayload,
 	}
 	createdRecord, err := model.CreateDeviceLeaseRecord(ctx, tx, newRecord, r.GetLeaseDuration().AsDuration())
 	if err != nil {
@@ -489,7 +495,7 @@ func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		err = lucierr.Annotate(err, "ExpireLeases: starting database transaction").Err()
+		err = lucierr.Fmt("ExpireLeases: starting database transaction: %w", err)
 		logging.Errorf(ctx, err.Error())
 		return err
 	}
