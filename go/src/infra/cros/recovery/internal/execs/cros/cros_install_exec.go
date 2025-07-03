@@ -305,7 +305,16 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		if androidInstall {
 			osVersion := recoveryVersion.GetOsVersion()
 			board := dut.GetBoard()
-			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
+			branch, err := extractBranch(recoveryVersion.GetOsImagePath())
+			if err != nil {
+				branch = "trunk_staging-userdebug"
+			}
+
+			//The specific path is required for install script and it required provide
+			// 1) Path to ota archive file.
+			//		Like `android-build/builds/13334867/brya-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz`
+			// 2) Addr-path to cache service.
+			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-%s/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, branch, cachingIPAddr)
 		} else if crosInstall {
 			// The path is modified path which look like `chromeos-image-archive/nami-kernelnext-release/R137-16253.0.0`
 			// where `chromeos-image-archive` is defined by envoroment where it runs.
@@ -404,6 +413,27 @@ func isTimeToForceDownloadImageToUsbKeyExec(ctx context.Context, info *execs.Exe
 		return nil
 	}
 	return errors.Reason("is time to force download image to usbkey: Fail count: %d", repairFailedCount).Err()
+}
+
+// extractBranch extracts the branch name from the OS image path.
+// The osImage path is expected to be in the format:
+// android-build/build_explorer/artifacts_list/%s/%s-[BRANCH]/%s-ota-%s.zip
+// Eg:
+// extractBranch("android-build/build_explorer/artifacts_list/P70315493/betty-trunk_staging-userdebug/11811312-ota-11811312.zip") = "trunk_staging-userdebug", nil
+func extractBranch(osImagePath string) (string, error) {
+	err := fmt.Errorf("could not extract branch from %q", osImagePath)
+
+	parts := strings.Split(osImagePath, "/")
+	if len(parts) < 5 {
+		return "", err
+	}
+
+	subParts := strings.SplitN(parts[4], "-", 2)
+	if len(subParts) < 2 {
+		return "", err
+	}
+	return subParts[1], nil
+
 }
 
 func init() {
