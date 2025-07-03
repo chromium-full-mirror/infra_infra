@@ -714,7 +714,7 @@ func (fs *FleetServerImpl) GetDeviceData(ctx context.Context, req *ufsAPI.GetDev
 		return nil, grpcStatus.Error(codes.NotFound, "no valid device found")
 	}
 
-	stateRecord, err := state.GetStateRecord(ctx, req.GetHostname())
+	stateRecord, err := state.GetStateRecord(ctx, util.AddPrefix(util.HostCollection, req.GetHostname()))
 	if err != nil {
 		// The detailed state info is not critical for most of cases.
 		logging.Errorf(ctx, "GetDeviceData: failed to get state record: %s", err.Error())
