@@ -25,7 +25,11 @@ func UpdateAndroidDevices(ctx context.Context, tx *sql.Tx, labResource *omnilab_
 	if err != nil {
 		return err
 	}
-	//TODO (pietroscutta): Delete devices in the same host not in the devices list
+
+	err = deleteAndroidDevicesOfHostNotInList(ctx, tx, host.hostname, devices)
+	if err != nil {
+		return err
+	}
 
 	err = updateAndroidHostsTable(ctx, tx, host)
 	if err != nil {
