@@ -1697,6 +1697,9 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	// DevboardTypeHelpText help text for devboard type filters
 	DevboardTypeHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidDevboardTypeStr(), ", "))
 
+	// ResourceTypeFilterHelpText help text for resource type filters for list command
+	ResourceTypeFilterHelpText string = fmt.Sprintf("\nValid type filters: [%s]\n", strings.Join(ufsUtil.ValidResourceTypeStr(), ", "))
+
 	// AddRPMLongDesc long description for AddRPMCmd
 	AddRPMLongDesc string = `Add a rpm to UFS.
 

@@ -176,3 +176,8 @@ func PrintTSVSchedulingUnits(msgs []proto.Message, keysOnly bool) {
 func PrintTSVDefaultWifis(msgs []proto.Message, keysOnly bool) {
 	printTSVs(msgs, keysOnly, cachingServiceOutputStrs)
 }
+
+// PrintTSVDeviceLabels prints the tsv format of DeviceLabels
+func PrintTSVDeviceLabels(msgs []proto.Message, keysOnly bool) {
+	printTSVs(msgs, keysOnly, deviceLabelsOutputStrs)
+}

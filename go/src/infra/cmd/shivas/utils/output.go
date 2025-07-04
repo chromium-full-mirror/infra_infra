@@ -85,6 +85,7 @@ var (
 	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
 	OwnershipDataByHostTitle   = []string{"Name", "Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
 	DefaultWifiTitle           = []string{"Name", "Project", "SecretName"}
+	DeviceLabelsTitle          = []string{"Name", "ResourceType"}
 )
 
 // TimeFormat for all timestamps handled by shivas
@@ -2324,6 +2325,56 @@ func PrintDefaultWifisJSON(res []proto.Message, emit bool) {
 	cs := make([]*ufspb.DefaultWifi, len(res))
 	for i, r := range res {
 		cs[i] = r.(*ufspb.DefaultWifi)
+	}
+	fmt.Print("[")
+	for i, s := range cs {
+		s.Name = ufsUtil.RemovePrefix(s.Name)
+		PrintProtoJSON(s, emit)
+		if i < len(cs)-1 {
+			fmt.Print(",")
+			fmt.Println()
+		}
+	}
+	fmt.Println("]")
+}
+
+// PrintDeviceLabels prints the all DeviceLabels in table form.
+func PrintDeviceLabels(res []proto.Message, keysOnly bool) {
+	cs := make([]*ufspb.DeviceLabels, len(res))
+	for i, r := range res {
+		cs[i] = r.(*ufspb.DeviceLabels)
+	}
+	defer tw.Flush()
+	for _, c := range cs {
+		printDeviceLabels(c, keysOnly)
+	}
+}
+
+func printDeviceLabels(cs *ufspb.DeviceLabels, keysOnly bool) {
+	if keysOnly {
+		fmt.Fprintln(tw, ufsUtil.RemovePrefix(cs.Name))
+		return
+	}
+	var out string
+	for _, s := range deviceLabelsOutputStrs(cs) {
+		out += fmt.Sprintf("%s\t", s)
+	}
+	fmt.Fprintln(tw, out)
+}
+
+func deviceLabelsOutputStrs(pm proto.Message) []string {
+	m := pm.(*ufspb.DeviceLabels)
+	return []string{
+		ufsUtil.RemovePrefix(m.Name),
+		m.GetResourceType().String(),
+	}
+}
+
+// PrintDeviceLabelsJSON prints the DeviceLabels details in json format.
+func PrintDeviceLabelsJSON(res []proto.Message, emit bool) {
+	cs := make([]*ufspb.DeviceLabels, len(res))
+	for i, r := range res {
+		cs[i] = r.(*ufspb.DeviceLabels)
 	}
 	fmt.Print("[")
 	for i, s := range cs {

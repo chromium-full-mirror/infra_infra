@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/chromeplatform"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/defaultwifi"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/devboard"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/devicelabels"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/drac"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/dut"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/host"
@@ -108,6 +109,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		lsedeployment.GetMachineLSEDeploymentCmd,
 		ownership.GetOwnershipDataCmd,
 		peripherals.GetPasitHostCmd,
+		devicelabels.GetDeviceLabelsCmd,
 	}
 }
 
