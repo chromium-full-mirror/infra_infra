@@ -221,19 +221,19 @@ func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Ste
 	// extra file stream log for the logcat logs.
 	//
 	// CLEAN(b/408454320): Remove once adb-logcat is containerized.
-	if identifier == "foil-provision_primary" {
-		containerLog := step.Log(fmt.Sprintf("%s-logcat Log", identifier))
+	// if identifier == "foil-provision_primary" {
+	// 	containerLog := step.Log(fmt.Sprintf("%s-logcat Log", identifier))
 
-		logCatTaskDone, logCatWG, err := common.StreamLogcatAsync(ctx, logsLoc, containerLog)
-		if err != nil {
-			logging.Infof(ctx, "Warning: error during reading container log: %s", err)
-			return
-		}
+	// 	logCatTaskDone, logCatWG, err := common.StreamLogcatAsync(ctx, logsLoc, containerLog)
+	// 	if err != nil {
+	// 		logging.Infof(ctx, "Warning: error during reading container log: %s", err)
+	// 		return
+	// 	}
 
-		ex.LogChannels = append(ex.LogChannels, logCatTaskDone)
-		ex.WaitGroups = append(ex.WaitGroups, logCatWG)
+	// 	ex.LogChannels = append(ex.LogChannels, logCatTaskDone)
+	// 	ex.WaitGroups = append(ex.WaitGroups, logCatWG)
 
-	}
+	// }
 
 	return
 }
