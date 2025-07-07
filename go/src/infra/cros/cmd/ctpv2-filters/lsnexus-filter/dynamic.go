@@ -21,6 +21,7 @@ import (
 	dynamiccommon "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
 	dynamichelpers "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/test_plan"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision
@@ -75,7 +76,8 @@ func insertContainerForChromeos(req *api.InternalTestplan,
 	defer func() {
 		*count++
 	}()
-	container := createContainerForDevice(*count, log, commonParams)
+
+	container := createContainerForDevice(*count, log, commonParams, test_plan.IsAlRun(req))
 	if container == nil {
 		return
 	}
@@ -202,7 +204,7 @@ func attachLsNexusContainerToCrosTestDevice(req *api.InternalTestplan, log *log.
 
 // createContainerForDevice will create a container for Chromeos devices.
 // The container will be marked with the identifier of the device it corresponds to.
-func createContainerForDevice(count int, log *log.Logger, commonParams *common.CommonFilterParams) *api.ContainerRequest {
+func createContainerForDevice(count int, log *log.Logger, commonParams *common.CommonFilterParams, isAl bool) *api.ContainerRequest {
 	deviceIdentifer := dynamiccommon.NewPrimaryDeviceIdentifier()
 	if count > 0 {
 		deviceIdentifer = dynamiccommon.NewCompanionDeviceIdentifier(dynamichelpers.Board.WithIndex(count).AsPlaceholder())
@@ -225,5 +227,11 @@ func createContainerForDevice(count int, log *log.Logger, commonParams *common.C
 		lsnexusArtifactDir,
 		fmt.Sprintf("%s %s", lsnexus, lsnexusArgs),
 	)
+
+	if isAl {
+		log.Printf("AL run detected")
+		containerBuilder.Network = "adb-network"
+	}
+
 	return containerBuilder.Build()
 }
