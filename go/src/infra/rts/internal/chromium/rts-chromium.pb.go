@@ -11,9 +11,9 @@
 package chromium
 
 import (
+	proto "go.chromium.org/infra/rts/presubmit/eval/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	proto "go.chromium.org/infra/rts/presubmit/eval/proto"
 	reflect "reflect"
 	sync "sync"
 )
