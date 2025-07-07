@@ -22,6 +22,5 @@ per-file go.*=gregorynisbet@google.com
 per-file go.*=juahurta@google.com
 
 # APAC
-per-file go.*=bryner@google.com
 per-file go.*=jwata@google.com
 per-file go.*=tikuta@chromium.org
