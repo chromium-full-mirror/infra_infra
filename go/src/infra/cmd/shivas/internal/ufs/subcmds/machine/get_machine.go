@@ -140,6 +140,22 @@ func (c *getMachine) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
+
+	if c.outputFlags.JSON() {
+		for _, m := range res {
+			machine, ok := m.(*ufspb.Machine)
+			if !ok || (machine == nil) {
+				continue
+			}
+
+			drac := machine.GetChromeBrowserMachine().GetDracObject()
+			if drac == nil {
+				continue
+			}
+			_ = utils.SetDracNetwork(ctx, ic, []proto.Message{drac})[0]
+		}
+	}
+
 	return utils.PrintEntities(ctx, ic, res, utils.PrintMachinesJSON, printMachineFull, printMachineNormal,
 		c.outputFlags.JSON(), emit, full, c.outputFlags.Tsv(), c.keysOnly)
 }
