@@ -164,6 +164,8 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		}
 		host = leaseInfo.Device.Name
 	} else {
+		// RBE doesn't support swarming dimension dut_name so remove dut_name,corresponding dut_id should be sufficient.
+		delete(botDims, deviceNameLabelName)
 		uc, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
 		if err != nil {
 			return err
