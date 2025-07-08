@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/proto"
+
 	"go.chromium.org/luci/common/errors"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
@@ -89,11 +91,64 @@ func PrintExistingDevboardMachine(ctx context.Context, ic ufsAPI.FleetClient, na
 	return res, nil
 }
 
+func SetDracNetwork(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message) []*ufspb.Drac {
+	entities := make([]*ufspb.Drac, len(msgs))
+	names := make([]string, len(msgs))
+	entityMap := make(map[string]*ufspb.Drac, len(msgs))
+	for i, r := range msgs {
+		if drac := r.(*ufspb.Drac); drac != nil {
+			entities[i] = drac
+			entities[i].Name = ufsUtil.RemovePrefix(drac.Name)
+			names[i] = drac.GetName()
+			entityMap[drac.GetName()] = drac
+		}
+	}
+	if len(entityMap) == 0 {
+		return entities
+	}
+
+	// Some DRACs don't have DHCP entries. If we try to get 100 entries at once,
+	// the whole request might fail if even one entry is missing. So, if that
+	// happens, we'll request each entry individually instead.
+	const batchSize = 100
+	do := func(batchNames []string) error {
+		// Ignore errors: not all dracs has associated DHCP record.
+		res, err := ic.BatchGetDHCPConfigs(ctx, &ufsAPI.BatchGetDHCPConfigsRequest{
+			Names: batchNames,
+		})
+		if err != nil {
+			return err
+		}
+		for _, d := range res.GetDhcpConfigs() {
+			if drac, ok := entityMap[d.GetHostname()]; ok {
+				drac.Ip = d.GetIp()
+				drac.Vlan = d.GetVlan()
+			}
+		}
+		return nil
+	}
+	for i := 0; i < len(entities); i += batchSize {
+		end := i + batchSize
+		if end > len(entities) {
+			end = len(entities)
+		}
+		batch := names[i:end]
+		if err := do(batch); err != nil {
+			// failed as batch, not try each separate.
+			for _, name := range batch {
+				_ = do([]string{name})
+			}
+		}
+	}
+	return entities
+}
+
 // PrintExistingDrac prints the old drac in update/delete operations
 func PrintExistingDrac(ctx context.Context, ic ufsAPI.FleetClient, name string) error {
 	res, err := ic.GetDrac(ctx, &ufsAPI.GetDracRequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.DracCollection, name),
 	})
+
 	if err != nil {
 		return errors.Annotate(err, "Failed to get drac").Err()
 	}
@@ -101,8 +156,11 @@ func PrintExistingDrac(ctx context.Context, ic ufsAPI.FleetClient, name string) 
 		return errors.Reason("The returned resp is empty").Err()
 	}
 	res.Name = ufsUtil.RemovePrefix(res.Name)
+
+	dracs := SetDracNetwork(ctx, ic, []proto.Message{res})
+
 	fmt.Println("The drac before delete/update:")
-	PrintProtoJSON(res, !NoEmitMode(false))
+	PrintProtoJSON(dracs[0], !NoEmitMode(false))
 	return nil
 }
 

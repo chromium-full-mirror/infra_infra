@@ -20,7 +20,6 @@ import (
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
-	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -139,7 +138,7 @@ func (c *getDrac) getSingle(ctx context.Context, ic ufsAPI.FleetClient, name str
 		Name: ufsUtil.AddPrefix(ufsUtil.DracCollection, name),
 	})
 	if err == nil {
-		setNetwork(ctx, ic, []proto.Message{res})
+		utils.SetDracNetwork(ctx, ic, []proto.Message{res})
 	}
 	return res, err
 }
@@ -159,64 +158,12 @@ func listDracs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageT
 	for i, m := range res.GetDracs() {
 		protos[i] = m
 	}
-	setNetwork(ctx, ic, protos)
+	utils.SetDracNetwork(ctx, ic, []proto.Message{res})
 	return protos, res.GetNextPageToken(), nil
 }
 
-func setNetwork(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message) []*ufspb.Drac {
-	entities := make([]*ufspb.Drac, len(msgs))
-	names := make([]string, len(msgs))
-	entityMap := make(map[string]*ufspb.Drac, len(msgs))
-	for i, r := range msgs {
-		if drac := r.(*ufspb.Drac); drac != nil {
-			entities[i] = drac
-			entities[i].Name = ufsUtil.RemovePrefix(drac.Name)
-			names[i] = drac.GetName()
-			entityMap[drac.GetName()] = drac
-		}
-	}
-	if len(entityMap) == 0 {
-		return entities
-	}
-
-	// Some DRACs don't have DHCP entries. If we try to get 100 entries at once,
-	// the whole request might fail if even one entry is missing. So, if that
-	// happens, we'll request each entry individually instead.
-	const batchSize = 100
-	do := func(batchNames []string) error {
-		// Ignore errors: not all dracs has associated DHCP record.
-		res, err := ic.BatchGetDHCPConfigs(ctx, &ufsAPI.BatchGetDHCPConfigsRequest{
-			Names: batchNames,
-		})
-		if err != nil {
-			return err
-		}
-		for _, d := range res.GetDhcpConfigs() {
-			if drac, ok := entityMap[d.GetHostname()]; ok {
-				drac.Ip = d.GetIp()
-				drac.Vlan = d.GetVlan()
-			}
-		}
-		return nil
-	}
-	for i := 0; i < len(entities); i += batchSize {
-		end := i + batchSize
-		if end > len(entities) {
-			end = len(entities)
-		}
-		batch := names[i:end]
-		if err := do(batch); err != nil {
-			// failed as batch, not try each separate.
-			for _, name := range batch {
-				do([]string{name})
-			}
-		}
-	}
-	return entities
-}
-
 func printDracFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Message, tsv bool) error {
-	dracs := setNetwork(ctx, ic, msgs)
+	dracs := utils.SetDracNetwork(ctx, ic, msgs)
 	if tsv {
 		for _, d := range dracs {
 			utils.PrintTSVDracFull(d)
