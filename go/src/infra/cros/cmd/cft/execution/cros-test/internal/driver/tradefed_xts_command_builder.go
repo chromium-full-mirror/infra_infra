@@ -128,10 +128,9 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 			ctsParams = append(ctsParams, "--ghidra-preparer:disable")
 		}
 		if testType == "csuite" {
-			cmd = append(cmd, "--no-throw-if-extra-not-found")
+			cmd = append(cmd, "--no-throw-if-extra-not-found", "-l", "VERBOSE")
 			ctsParams = append(ctsParams, "--compatibility:enable-module-dynamic-download",
-				"--dynamic-download-args com.android.csuite.config.AppRemoteFileResolver:uri-template=pstash://{package}",
-				"--dynamic-download-args pstash:include-obb=true",
+				"--dynamic-download-args com.android.csuite.config.AppRemoteFileResolver:uri-template=/google/data/ro/teams/app-compatibility/test-resources/apks/vic-top-apps/cutf64-240621/{package}",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:collect-app-version:true",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:screenshot-after-launch:true",
 				"--compatibility:test-arg=com.android.tradefed.testtype.HostTest:set-option:app-launch-timeout-ms:20000",
