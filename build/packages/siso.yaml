@@ -1,5 +1,5 @@
 package: infra/build/siso/${platform}
-description: siso - an experimental build tool that aims to significantly speed up Chromium's build
+description: siso - a build tool that aims to significantly speed up Chromium's build
 platforms:
   - linux-386
   - linux-amd64
