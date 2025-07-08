@@ -12,7 +12,6 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -22,6 +21,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	rpc "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -47,11 +47,11 @@ var (
 	GetPasitHostCmd    = pasitHostCmd(actionGet, DefaultPasitHostCommand)
 )
 
-// pasitHostCmd creates command for adding, removing, or replacing a DUTs pasit host topology
+// pasitHostCmd creates command for adding, removing, or replacing a DUTs pasit topology
 func pasitHostCmd(mode action, command string) *subcommands.Command {
 	return &subcommands.Command{
 		UsageLine: fmt.Sprintf("%s -dut {DUT name}", command),
-		ShortDesc: "Manage Testbed PASIT host",
+		ShortDesc: "Manage Testbed PASIT",
 		LongDesc:  cmdhelp.PasitHostLongDesc,
 		CommandRun: func() subcommands.CommandRun {
 			c := managePasitHostCmd{mode: mode}
@@ -68,7 +68,7 @@ func pasitHostCmd(mode action, command string) *subcommands.Command {
 	}
 }
 
-// managePasitHostCmd supports adding, replacing, or deleting a DUTs pasit host topology.
+// managePasitHostCmd supports adding, replacing, or deleting a DUTs pasit topology.
 type managePasitHostCmd struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
@@ -79,11 +79,11 @@ type managePasitHostCmd struct {
 	dutName   string
 	hostFile  string
 	normalize bool
-	hostObj   *labapi.PasitHost
+	hostObj   *lab.Pasit
 	mode      action
 }
 
-// Run executed the PASIT host topology management subcommand.
+// Run executed the PASIT topology management subcommand.
 func (c *managePasitHostCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.run(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
@@ -129,23 +129,23 @@ func (c *managePasitHostCmd) run(a subcommands.Application, args []string, env s
 		return errors.Annotate(err, "not a dut").Err()
 	}
 	if c.commonFlags.Verbose() {
-		fmt.Println("New PASIT host: ", c.hostObj)
+		fmt.Println("New PASIT: ", c.hostObj)
 	}
 
 	peripherals := lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 	if c.mode == actionGet {
 		if c.outputFlags.JSON() {
-			utils.PrintProtoJSON(peripherals.PasitHost2, !utils.NoEmitMode(false))
+			utils.PrintProtoJSON(peripherals.Pasit, !utils.NoEmitMode(false))
 		} else {
 			data := prototext.MarshalOptions{
 				Multiline: true,
-			}.Format(peripherals.PasitHost2)
-			fmt.Printf("PASIT host data: \n---\n%v---\n", data)
+			}.Format(peripherals.Pasit)
+			fmt.Printf("%v\n", data)
 		}
 		return nil
 	}
 
-	peripherals.PasitHost2 = c.hostObj
+	peripherals.Pasit = c.hostObj
 	_, err = client.UpdateMachineLSE(ctx, &rpc.UpdateMachineLSERequest{MachineLSE: lse})
 	return err
 }
@@ -181,7 +181,7 @@ func (c *managePasitHostCmd) cleanAndValidateFlags() error {
 			return errors.Reason(errFileMissing).Err()
 		}
 
-		c.hostObj = &labapi.PasitHost{}
+		c.hostObj = &lab.Pasit{}
 		if strings.HasSuffix(c.hostFile, ".json") {
 			if err := utils.ParseJSONFile(c.hostFile, c.hostObj); err != nil {
 				return errors.Annotate(err, "json parse error").Err()
@@ -200,7 +200,7 @@ func (c *managePasitHostCmd) cleanAndValidateFlags() error {
 // validateNewToplogy verifies that the requested host topology object does is valid.
 func (c *managePasitHostCmd) validateNewHost() error {
 	if c.normalize {
-		c.hostObj = proto.Clone(c.hostObj).(*labapi.PasitHost)
+		c.hostObj = proto.Clone(c.hostObj).(*lab.Pasit)
 		c.normalizeIDs()
 	}
 
@@ -230,7 +230,7 @@ func (c *managePasitHostCmd) validateNewHost() error {
 // it has the correct type (DUT).
 func (c *managePasitHostCmd) validateHostID() error {
 	for _, h := range c.hostObj.GetDevices() {
-		if h.GetId() == c.dutName && h.Type != labapi.PasitHost_Device_DUT {
+		if h.GetId() == c.dutName && h.Type != lab.Pasit_Device_DUT {
 			return errors.Reason(errInvalidHost).Err()
 		}
 	}

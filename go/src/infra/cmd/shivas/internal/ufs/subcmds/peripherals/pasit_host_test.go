@@ -8,52 +8,52 @@ import (
 	"strings"
 	"testing"
 
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
-var exampleHost = &labapi.PasitHost{
+var exampleHost = &lab.Pasit{
 	Hostname: "pasit-host1",
-	Devices: []*labapi.PasitHost_Device{
+	Devices: []*lab.Pasit_Device{
 		{
 			Id:   "1912901",
-			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+			Type: lab.Pasit_Device_SWITCH_FIXTURE,
 		},
 		{
 			Id:   "2001901",
-			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+			Type: lab.Pasit_Device_SWITCH_FIXTURE,
 		},
 		{
 			Id:   "2007902",
-			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+			Type: lab.Pasit_Device_SWITCH_FIXTURE,
 		},
 		{
 			Id:   "J45SW01",
-			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+			Type: lab.Pasit_Device_SWITCH_FIXTURE,
 		},
 		{
 			Id:    "dock_1",
 			Model: "DOCK_XXYY",
-			Type:  labapi.PasitHost_Device_DOCKING_STATION,
+			Type:  lab.Pasit_Device_DOCKING_STATION,
 		},
 		{
 			Id:    "monitor_1",
 			Model: "MONITOR_XXYY",
-			Type:  labapi.PasitHost_Device_MONITOR,
+			Type:  lab.Pasit_Device_MONITOR,
 		},
 		{
 			Id:   "camera_1",
-			Type: labapi.PasitHost_Device_CAMERA,
+			Type: lab.Pasit_Device_CAMERA,
 		},
 		{
 			Id:   "network_1",
-			Type: labapi.PasitHost_Device_NETWORK,
+			Type: lab.Pasit_Device_NETWORK,
 		},
 		{
 			Id:   "chromeosX-rackX-rowY-hostN",
-			Type: labapi.PasitHost_Device_DUT,
+			Type: lab.Pasit_Device_DUT,
 		},
 	},
-	Connections: []*labapi.PasitHost_Connection{
+	Connections: []*lab.Pasit_Connection{
 		{
 			Type:     "USBC",
 			ParentId: "chromeosX-rackX-rowY-hostN",
@@ -108,17 +108,17 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 		},
 		{
 			want: []string{errDUTNotInHost},
-			cmd:  &managePasitHostCmd{dutName: "dut", hostObj: &labapi.PasitHost{}},
+			cmd:  &managePasitHostCmd{dutName: "dut", hostObj: &lab.Pasit{}},
 		},
 		{
 			want: []string{errIDMissing},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "",
@@ -127,7 +127,7 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 							Id: "id2",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "dut",
 							ChildId:  "id2",
@@ -140,20 +140,20 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errDuplicateID},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id: "id1",
 						},
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "dut",
 							ChildId:  "id2",
@@ -166,17 +166,17 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errMissingDevice},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "id1",
 							ChildId:  "id2",
@@ -189,17 +189,17 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errMissingChild},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "id1",
 							ChildId:  "",
@@ -212,17 +212,17 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errMissingParent},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "",
 							ChildId:  "id2",
@@ -235,17 +235,17 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errChildEqualsParent},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
 						},
 					},
-					Connections: []*labapi.PasitHost_Connection{
+					Connections: []*lab.Pasit_Connection{
 						{
 							ParentId: "id1",
 							ChildId:  "id1",
@@ -258,11 +258,11 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errNoDevices},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 					},
 				},
@@ -272,11 +272,11 @@ func TestPasitCleanAndValidateFlags(t *testing.T) {
 			want: []string{errNoConnections},
 			cmd: &managePasitHostCmd{
 				dutName: "dut",
-				hostObj: &labapi.PasitHost{
-					Devices: []*labapi.PasitHost_Device{
+				hostObj: &lab.Pasit{
+					Devices: []*lab.Pasit_Device{
 						{
 							Id:   "dut",
-							Type: labapi.PasitHost_Device_DUT,
+							Type: lab.Pasit_Device_DUT,
 						},
 						{
 							Id: "id1",
