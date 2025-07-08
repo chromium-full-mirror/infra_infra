@@ -278,8 +278,8 @@ func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *ap
 
 	// Stop CTR and result processing commands
 	mainConfigs = append(mainConfigs,
-		ContainerCloseLogs_ContainerExecutor.WithRequired(true),
 		CtrStop_CtrExecutor.WithRequired(true),
+		ContainerCloseLogs_ContainerExecutor.WithRequired(true),
 	)
 
 	if platform != common.BotProviderGce {
