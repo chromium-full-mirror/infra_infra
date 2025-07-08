@@ -329,7 +329,7 @@ message ResourceRequest {
   optional DateOnly config_actual_delivery_date = 25;
 
   // Expected ETA for the resource request.
-  optional DateOnly expected_eta = 8;
+  optional DateOnly expected_eta = 8; // DEPRECATED
 
   // Status of the Fulfillment bug for the resource request.
   optional Status fulfillment_status = 9;
@@ -348,6 +348,10 @@ message ResourceRequest {
   optional string execution_status = 38;
   repeated string resource_groups = 39;
   optional string resource_request_bug_id = 40;
+
+  optional DateOnly resource_request_actual_delivery_date = 41;
+  optional DateOnly resource_request_target_delivery_date = 42;
+
 }
 
 message CountResourceRequestsRequest {
