@@ -24,13 +24,15 @@ type shardFunc func(builderName string, tests []string, shard testShard) []strin
 
 func testShardFunc(t *testing.T, f shardFunc) {
 	for _, b := range testweights.SupportedBuilders() {
-		t.Run(fmt.Sprintf("Builder=%s", b), func(t *testing.T) {
-			for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
-				t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
-					testShardFuncByN(t, f, b, n)
-				})
-			}
-		})
+		for _, b := range []string{b, b + "-test_only"} {
+			t.Run(fmt.Sprintf("Builder=%s", b), func(t *testing.T) {
+				for _, n := range []int{1, 2, 3, 4, 5, 10, 12} {
+					t.Run(fmt.Sprintf("Shards=%d", n), func(t *testing.T) {
+						testShardFuncByN(t, f, b, n)
+					})
+				}
+			})
+		}
 	}
 }
 
@@ -822,5 +824,6 @@ func testNames() []string {
 		"cmd/go:racebench",
 		"cmd/go/internal/cfg:racebench",
 		"cmd/internal/notsha256:racebench",
+		"my/unknown/test/package", // Just to make sure this ends up in the output.
 	}
 }

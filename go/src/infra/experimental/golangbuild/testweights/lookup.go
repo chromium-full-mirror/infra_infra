@@ -6,8 +6,13 @@
 // for golangbuild.
 package testweights
 
+import "strings"
+
 // For returns a weight for the test by name.
 func For(builderName, testName string) float64 {
+	// allWeights only contains the top-level builder, but we will likely
+	// be called by a test_only builder.
+	builderName = strings.TrimSuffix(builderName, "-test_only")
 	if builderWeights, ok := allWeights[builderName]; ok {
 		if weight, ok := builderWeights[testName]; ok {
 			return weight
