@@ -17,6 +17,7 @@ import (
 
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/libs/fleet/admintask"
 	"go.chromium.org/infra/libs/fleet/device"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
@@ -28,11 +29,12 @@ type repairDuts struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	onlyVerify    bool
-	latestVersion bool
+	onlyVerify    bool // runs only verify actions instead of full repair
+	latestVersion bool // uses the latest version of CIPD when scheduling. By default use prod.
 	deepRepair    bool
 	bbBucket      string
 	bbBuilder     string
+	useAdminLib   bool // use the new admin task library implementation (beta)
 }
 
 // RepairDutsCmd contains repair-duts command specification
@@ -52,6 +54,8 @@ var RepairDutsCmd = &subcommands.Command{
 		//TODO(macdisi): add validation for bucket and builder parameters, allowlist or otherwise
 		c.Flags.StringVar(&c.bbBucket, "bucket", "labpack_runner", "Buildbucket bucket to use.")
 		c.Flags.StringVar(&c.bbBuilder, "builder", "repair", "Buildbucket builder to use.")
+		//TODO: b/394429368 - remove this flag once the new admin task library is stable
+		c.Flags.BoolVar(&c.useAdminLib, "admin-lib", false, "Use the new admin task library implementation (beta).")
 		return c
 	},
 }
@@ -65,6 +69,8 @@ func (c *repairDuts) Run(a subcommands.Application, args []string, env subcomman
 	return 0
 }
 
+// innerRun is the core logic for the repair-duts subcommand
+// creates clients, prepares environment, schedules tasks, prints links to swarming UI
 func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
 	if len(args) == 0 {
 		return errors.Reason("at least one hostname has to be provided").Err()
@@ -94,51 +100,103 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		return errors.Annotate(err, "getting auth opts").Err()
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
+
+	var adminClient *admintask.Client
+	if c.useAdminLib {
+		adminClient = &admintask.Client{
+			UFSClient:               ic,
+			BBClient:                bc,
+			AdminServiceAddress:     e.AdminService,
+			InventoryServiceAddress: e.UnifiedFleetService,
+			InventoryNamespace:      ns,
+			Version:                 buildbucket.CipdVersion(c.latestVersion),
+		}
+	}
+
+	tags := []string{
+		sessionTag,
+		"task:recovery",
+		utils.ShivasClientTag,
+		"qs_account:unmanaged_p0",
+		fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+	}
+
 	for _, dutName := range args {
-		hive := ufsUtil.GetHiveForDut(dutName, utils.GetHive(ctx, ic, dutName))
-		builderName, taskName := c.getBuilderAndTaskName()
-		realBuilderName := buildbucket.BuilderNamePerHive(builderName, hive)
-		adminParams, err := utils.PrepareAdminParams(ctx, dutName, realBuilderName, e.AdminService, ic, authOpts)
-		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", dutName, err)
-			continue
-		}
 
-		di, err := device.GetDeviceInfo(ctx, ic, dutName)
-		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: failed to get device info %s\n", dutName, err)
-			continue
-		}
-		url, _, err := buildbucket.CreateTask(
-			ctx,
-			bc,
-			adminParams.SchedukeClient,
-			buildbucket.CipdVersion(c.latestVersion),
-			&buildbucket.Params{
-				UnitName:       dutName,
-				UnitID:         di.ID,
-				TaskName:       taskName,
-				BuilderName:    realBuilderName,
-				BuilderBucket:  c.bbBucket,
-				EnableRecovery: !c.onlyVerify,
-				AdminService:   adminParams.AdminService,
-				// NOTE: We use the UFS service, not the Inventory service here.
-				InventoryService:   e.UnifiedFleetService,
-				InventoryNamespace: adminParams.ContextNamespace,
-				UpdateInventory:    true,
-				ExtraTags: []string{
-					sessionTag,
-					"task:recovery",
-					utils.ShivasClientTag,
-					"qs_account:unmanaged_p0",
-					fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+		var url string
+		var taskErr error
+
+		if adminClient != nil {
+			sc, err := utils.SchedukeClient(ctx, ic, authOpts, dutName)
+			if err != nil {
+				fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", dutName, err)
+				continue
+			}
+			adminClient.SchedukeClient = sc
+
+			repairTaskRequest := &admintask.RepairTaskRequest{
+				Task: admintask.Task{
+					UpdateInventory: true,
+					ExtraTags:       tags,
+					BuilderName:     c.bbBuilder,
+					BuilderBucket:   c.bbBucket,
 				},
-			},
-			"shivas",
-		)
+				UnitName:   dutName,
+				DeepRepair: c.deepRepair,
+				OnlyVerify: c.onlyVerify,
+			}
 
-		if err != nil {
-			fmt.Fprintf(a.GetOut(), "%s: %s\n", dutName, err.Error())
+			result, err := adminClient.ScheduleRepairTask(
+				ctx,
+				repairTaskRequest,
+			)
+			taskErr = err
+
+			if result != nil {
+				url = result.TaskURL
+			}
+		} else {
+			hive := ufsUtil.GetHiveForDut(dutName, utils.GetHive(ctx, ic, dutName))
+			builderName, taskName := c.getBuilderAndTaskName()
+			realBuilderName := buildbucket.BuilderNamePerHive(builderName, hive)
+
+			adminParams, err := utils.PrepareAdminParams(ctx, dutName, realBuilderName, e.AdminService, ic, authOpts)
+			if err != nil {
+				fmt.Fprintf(a.GetErr(), "%s: failed to prepare admin params %s\n", dutName, err)
+				continue
+			}
+
+			di, err := device.GetDeviceInfo(ctx, ic, dutName)
+			if err != nil {
+				fmt.Fprintf(a.GetErr(), "%s: failed to get device info %s\n", dutName, err)
+				continue
+			}
+
+			url, _, taskErr = buildbucket.CreateTask(
+				ctx,
+				bc,
+				adminParams.SchedukeClient,
+				buildbucket.CipdVersion(c.latestVersion),
+				&buildbucket.Params{
+					UnitName:       dutName,
+					UnitID:         di.ID,
+					TaskName:       taskName,
+					BuilderName:    realBuilderName,
+					BuilderBucket:  c.bbBucket,
+					EnableRecovery: !c.onlyVerify,
+					AdminService:   adminParams.AdminService,
+					// NOTE: We use the UFS service, not the Inventory service here.
+					InventoryService:   e.UnifiedFleetService,
+					InventoryNamespace: adminParams.ContextNamespace,
+					UpdateInventory:    true,
+					ExtraTags:          tags,
+				},
+				"shivas",
+			)
+		}
+
+		if taskErr != nil {
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", dutName, taskErr.Error())
 		} else {
 			fmt.Fprintf(a.GetOut(), "%s: %s\n", dutName, url)
 		}

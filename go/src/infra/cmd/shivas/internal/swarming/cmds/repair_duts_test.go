@@ -5,7 +5,14 @@
 package tasks
 
 import (
+	"bytes"
+	"io"
 	"testing"
+
+	"github.com/maruel/subcommands"
+
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
@@ -67,4 +74,41 @@ func TestGetBuilderAndTaskName(t *testing.T) {
 			}
 		})
 	}
+}
+
+type mockApplication struct {
+	subcommands.Application
+	stderr bytes.Buffer
+	stdout bytes.Buffer
+}
+
+func (m *mockApplication) GetErr() io.Writer {
+	return &m.stderr
+}
+func (m *mockApplication) GetOut() io.Writer {
+	return &m.stdout
+}
+func (m *mockApplication) GetName() string {
+	return "shivas"
+}
+
+func TestInnerRun(t *testing.T) {
+	t.Parallel()
+
+	// Test case: no DUT names provided
+	// expecting an error as no DUT names are provided.
+	t.Run("no dut names", func(t *testing.T) {
+		c := &repairDuts{}
+		app := &mockApplication{}
+		args := []string{} // no dut names
+
+		err := c.innerRun(app, args, nil)
+		assert.ErrIsLike(t, err, "at least one hostname has to be provided")
+		assert.That(t, app.stderr.String(), should.Equal(""))
+		assert.That(t, app.stdout.String(), should.Equal(""))
+	})
+
+	// Note: assertions for stdout and mock expectations are not added
+	// as the test environment is not set up to mock various dependencies for auth.
+	// Integration will be comprehensively tested manually with local Shivas build
 }
