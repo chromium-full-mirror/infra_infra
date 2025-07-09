@@ -22,6 +22,11 @@ build:
 	go build -o=consoleadmin ./cmd/consoleadmin
 	go build -o=fleetconsoleserver ./cmd/fleetconsoleserver
 
+# Regenerate protos for Fleet Console Server
+.PHONY: gen
+gen:
+	go generate api/fleetconsolerpc/gen.go
+
 .PHONY: run
 run:
 	go run ./cmd/fleetconsoleserver \
