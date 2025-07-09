@@ -80,9 +80,10 @@ func computeVariants(requests []*requestTestCaseVariants, pool string, authHelpe
 		option.WithTokenSource(tokenSource))
 
 	solutions := map[string]*solver_proto.SolvedCategory{}
+	solvedStrings := map[string]map[deviceinfo.TargetId]*solver.ExtendedSolvedDevice{}
 
 	for _, request := range requests {
-		solution, err := serviceRequest(logger, request, inventoryInfo, pool)
+		solution, err := serviceRequest(logger, solvedStrings, request, inventoryInfo, pool)
 		if err != nil {
 			logger.Println("Error during solving: ", err)
 			return map[string]*solver_proto.SolvedCategory{}, err
@@ -106,7 +107,7 @@ var (
 	solutionCacheExpiration = sync.Map{}
 )
 
-func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, inventoryInfo []*deviceinfo.TargetVariant, pool string) (*solver_proto.SolvedCategory, error) {
+func serviceRequest(logger *log.Logger, solvedStrings map[string]map[deviceinfo.TargetId]*solver.ExtendedSolvedDevice, request *requestTestCaseVariants, inventoryInfo []*deviceinfo.TargetVariant, pool string) (*solver_proto.SolvedCategory, error) {
 	logger.Println("SERVICING REQUEST: ", request)
 	// Load and parse the TTCP request that specifies the dimension constraints on the desired variants
 	if request.variantsStr == "" {
@@ -129,6 +130,7 @@ func serviceRequest(logger *log.Logger, request *requestTestCaseVariants, invent
 
 	// Compute the solution (Set of requests variants)
 	solution, err := solver.EvalExpression(
+		solvedStrings,
 		variants,
 		solver.ClassFilterOnlyTestable,
 		inventoryInfo,

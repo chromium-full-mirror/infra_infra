@@ -22,6 +22,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/datasets/hwid/db"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/errors"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/inventory/deviceinfo"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/cros-ddd-filter/ttcp/libs/solver"
 )
 
@@ -179,6 +180,7 @@ func computeVariants(cliArgs CliArgs) *solver_proto.SolvedCategory {
 
 	// Compute the solution (Set of requests variants)
 	solution, err := solver.EvalExpression(
+		map[string]map[deviceinfo.TargetId]*solver.ExtendedSolvedDevice{},
 		variants,
 		classFilter,
 		inventoryInfo,
