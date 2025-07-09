@@ -155,6 +155,9 @@ def run_all(package_root):
     return 1
   _clean_go_bin()
 
+  _print_and_run(['go', 'version'])
+  _print_and_run(['go', 'env'])
+
   # Always run every applicable action so we give the user as much information
   # as possible.
   results = [
