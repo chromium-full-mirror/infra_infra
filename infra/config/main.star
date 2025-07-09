@@ -14,7 +14,6 @@ Includes CI configs for the following subprojects:
   * WPT autoroller crons.
   * Chromium Gerrit plugins.
   * Chromium tarball publisher.
-  * Chromium LKGR finder cron.
   * https://chromium.googlesource.com/chromium/tools/build
   * https://chromium.googlesource.com/chromium/tools/depot_tools
   * https://chromium.googlesource.com/infra/infra
@@ -221,7 +220,6 @@ luci.bucket(
     constraints = luci.bucket_constraints(
         pools = ["luci.infra.cron"],
         service_accounts = [
-            "chromium-lkgr-finder-builder@chops-service-accounts.iam.gserviceaccount.com",
             "chromium-tarball-builder@chops-service-accounts.iam.gserviceaccount.com",
         ],
     ),
@@ -279,7 +277,6 @@ exec("//subprojects/depot_tools.star")
 exec("//subprojects/expect_tests.star")
 exec("//subprojects/gerrit-plugins.star")
 exec("//subprojects/infra.star")
-exec("//subprojects/lkgr.star")
 exec("//subprojects/luci-go.star")
 exec("//subprojects/luci-py.star")
 exec("//subprojects/python-adb.star")
