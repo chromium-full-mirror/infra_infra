@@ -19,7 +19,7 @@ import (
 
 // UpdateAndroidDevices receives a LabResource message and process it.
 // Maybe this shouldn't be part of FleetConsoleFrontend
-func (f *FleetConsoleFrontend) UpdateAndroidDevices(ctx context.Context, req *fleetconsolerpc.UpdateAndroidDevicesRequest) (_ *fleetconsolerpc.UpdateAndroidDevicesResponse, err error) {
+func (frontend *FleetConsoleFrontend) UpdateAndroidDevices(ctx context.Context, req *fleetconsolerpc.UpdateAndroidDevicesRequest) (_ *fleetconsolerpc.UpdateAndroidDevicesResponse, err error) {
 	defer func() {
 		if err != nil {
 			logging.Errorf(ctx, "UpdateAndroidDevices: %v", err)
