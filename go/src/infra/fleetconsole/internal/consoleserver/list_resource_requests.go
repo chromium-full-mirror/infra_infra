@@ -86,7 +86,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		Name:                              "resourceRequests/" + rrID,
 		ResourceDetails:                   row[rri.ResourceDetailsColumn].(string),
 		ExpectedEta:                       expectedEta,
-		FulfillmentStatus:                 rri.MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
+		FulfillmentStatus:                 rri.MapStatus(row[rri.FulfillmentStatusColumn]),
 		ProcurementTargetStartDate:        BigQueryValueToDate(row[rri.ProcurementTargetStartDateColumn]),
 		ProcurementActualStartDate:        BigQueryValueToDate(row[rri.ProcurementActualStartDateColumn]),
 		ProcurementTargetDeliveryDate:     BigQueryValueToDate(row[rri.ProcurementTargetDeliveryDateColumn]),
@@ -103,10 +103,10 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		ConfigActualStartDate:             BigQueryValueToDate(row[rri.ConfigActualStartDateColumn]),
 		ConfigTargetDeliveryDate:          BigQueryValueToDate(row[rri.ConfigTargetDeliveryDateColumn]),
 		ConfigActualDeliveryDate:          BigQueryValueToDate(row[rri.ConfigActualDeliveryDateColumn]),
-		MaterialSourcingStatus:            rri.MapFulfillmentStatus(row[rri.MaterialSourcingStatusColumn].(string)),
-		BuildStatus:                       rri.MapFulfillmentStatus(row[rri.BuildStatusColumn].(string)),
-		QaStatus:                          rri.MapFulfillmentStatus(row[rri.QAStatusColumn].(string)),
-		ConfigStatus:                      rri.MapFulfillmentStatus(row[rri.ConfigStatusColumn].(string)),
+		MaterialSourcingStatus:            rri.MapStatus(row[rri.MaterialSourcingStatusColumn].(string)),
+		BuildStatus:                       rri.MapStatus(row[rri.BuildStatusColumn].(string)),
+		QaStatus:                          rri.MapStatus(row[rri.QAStatusColumn].(string)),
+		ConfigStatus:                      rri.MapStatus(row[rri.ConfigStatusColumn].(string)),
 		Customer:                          bigQueryNullableString(row[rri.CustomerColumn]),
 		ResourceGroup:                     bigQueryNullableString(row[rri.ResourceGroupColumn]),
 		ResourceName:                      bigQueryNullableString(row[rri.ResourceNameColumn]),
@@ -120,6 +120,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		ResourceRequestBugId:              bigQueryNullableString(row[rri.ResourceRequestBugIdColumn]),
 		ResourceRequestTargetDeliveryDate: BigQueryValueToDate(row[rri.ResourceRequestTargetDeliveryDateColumn]),
 		ResourceRequestActualDeliveryDate: BigQueryValueToDate(row[rri.ResourceRequestActualDeliveryDateColumn]),
+		ResourceRequestStatus:             rri.MapStatus(row[rri.ResourceRequestStatusColumn]),
 	}
 }
 

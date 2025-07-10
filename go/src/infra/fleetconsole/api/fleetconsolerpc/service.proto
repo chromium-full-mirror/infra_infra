@@ -348,10 +348,9 @@ message ResourceRequest {
   optional string execution_status = 38;
   repeated string resource_groups = 39;
   optional string resource_request_bug_id = 40;
-
   optional DateOnly resource_request_actual_delivery_date = 41;
   optional DateOnly resource_request_target_delivery_date = 42;
-
+  optional Status resource_request_status = 43;
 }
 
 message CountResourceRequestsRequest {

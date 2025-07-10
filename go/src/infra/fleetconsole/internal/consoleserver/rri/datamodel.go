@@ -35,6 +35,7 @@ const (
 	ConfigActualStartDateColumn             = "config_actual_start_date"
 	ConfigTargetDeliveryDateColumn          = "config_target_delivery_date"
 	ConfigActualDeliveryDateColumn          = "config_actual_delivery_date"
+	ResourceRequestStatusColumn             = "resource_request_status"
 	MaterialSourcingStatusColumn            = "material_sourcing_status"
 	BuildStatusColumn                       = "build_status"
 	QAStatusColumn                          = "qa_status"
@@ -98,10 +99,11 @@ func GetResourceRequestsTable(isProd bool) *queryutils.Table {
 		queryutils.NewColumn(ExecutionStatusColumn).Build(),
 		queryutils.NewColumn(ResourceGroupsColumn).Build(),
 		queryutils.NewColumn(ResourceRequestBugIdColumn).Build(),
+		queryutils.NewColumn(ResourceRequestStatusColumn).Build(),
 	).Build()
 }
 
-func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceRequest_Status {
+func MapStatus(status bigquery.Value) *fleetconsolerpc.ResourceRequest_Status {
 	if status == nil {
 		return nil
 	}
