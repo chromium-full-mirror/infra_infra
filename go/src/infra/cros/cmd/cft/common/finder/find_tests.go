@@ -20,22 +20,36 @@ type tagMatcher struct {
 	excludes         map[string]struct{}
 	testNames        map[string]struct{}
 	testNameExcludes map[string]struct{}
+	// Points a tag into a group of OR'd tags
+	tagToTagGroup map[string]string
 }
 
+// newTagMatcher loops through the available criteria to match against
+// and converts the structure into a SetMap to reduce complexity from O(n) to O(1)
+// when checking against the pools of available tests for a match.
 func newTagMatcher(criteria *api.TestSuite_TestCaseTagCriteria) *tagMatcher {
 	tags := make(map[string]struct{})
+	tagToTagGroup := make(map[string]string)
+	// Loop through the tags to include. Split apart tags symbolized by an OR statement
+	// and point each individual piece back to its parent tag.
+	// ["A || B", "C"] -> {"A": "A || B", "B": "A || B", "C": "C"}
 	for _, tag := range criteria.Tags {
 		tags[tag] = struct{}{}
+		for _, OrTag := range strings.Split(tag, "||") {
+			tagToTagGroup[strings.Trim(OrTag, " ")] = tag
+		}
 	}
+	// Convert the exclusion tags to a SetMap for O(1) search.
 	excludes := make(map[string]struct{})
 	for _, tag := range criteria.TagExcludes {
 		excludes[tag] = struct{}{}
 	}
+	// Convert the included test names to a SetMap for O(1) search.
 	testNames := make(map[string]struct{})
 	for _, testName := range criteria.TestNames {
 		testNames[testName] = struct{}{}
 	}
-
+	// Convert the excluded test names to a SetMap for O(1) search.
 	testNameExcludes := make(map[string]struct{})
 	for _, testNameExclude := range criteria.TestNameExcludes {
 		testNameExcludes[testNameExclude] = struct{}{}
@@ -45,6 +59,7 @@ func newTagMatcher(criteria *api.TestSuite_TestCaseTagCriteria) *tagMatcher {
 		excludes:         excludes,
 		testNames:        testNames,
 		testNameExcludes: testNameExcludes,
+		tagToTagGroup:    tagToTagGroup,
 	}
 }
 
@@ -85,8 +100,8 @@ func (tm *tagMatcher) match(md *api.TestCaseMetadata) bool {
 		if _, ok := tm.excludes[tag.Value]; ok {
 			return false
 		}
-		if _, ok := tm.tags[tag.Value]; ok {
-			matchedTags[tag.Value] = struct{}{}
+		if tagGroup, ok := tm.tagToTagGroup[tag.Value]; ok {
+			matchedTags[tagGroup] = struct{}{}
 		}
 	}
 
