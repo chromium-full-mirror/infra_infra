@@ -66,7 +66,7 @@ If you are unable to use Docker, you can set up a local PostgreSQL database usin
 
 Create a tunnel to the dev alloydb vpc
 
-```sh
+```bash
 ./scripts/setup_dev_db_tunnel.sh
 ```
 
@@ -81,7 +81,7 @@ make run-dev-db
 
 To make calls to your local service, you can use `prpc` command line tool.
 
-```sh
+```bash
 prpc call localhost:8800 fleetconsole.FleetConsole.PingDB <<EOF
 {}
 EOF
@@ -158,7 +158,7 @@ alembic upgrade head
 
 Create a tunnel to the dev db vpc
 
-```
+```bash
 ./scripts/setup_dev_db_tunnel.sh
 ```
 
@@ -170,7 +170,7 @@ alembic -x env=dev upgrade head
 
 If you get an error make sure you are logged in gcloud cli for your application-default
 
-```sh
+```bash
 gcloud auth application-default login
 ```
 
@@ -178,7 +178,7 @@ gcloud auth application-default login
 
 Create a tunnel to the prod db vpc
 
-```
+```bash
 ./scripts/setup_prod_db_tunnel.sh
 ```
 
@@ -190,7 +190,7 @@ alembic -x env=prod upgrade head
 
 If you get an error make sure you are logged in gcloud cli for your application-default
 
-```sh
+```bash
 gcloud auth application-default login
 ```
 
