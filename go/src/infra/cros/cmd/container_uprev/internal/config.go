@@ -419,6 +419,10 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/autovm_test_shifter_filter/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 			CloudRunConfig: &cloudrun.Config{},
 		},
 		{
