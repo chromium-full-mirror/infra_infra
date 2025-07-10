@@ -62,17 +62,33 @@ If you are unable to use Docker, you can set up a local PostgreSQL database usin
     make run-local-db
     ```
 
+### Hot reloading
+
+To run the server in development mode with hot-reloading, first install the necessary tools:
+
+```sh
+make tools
+```
+
+Then, run the server with:
+
+```sh
+make dev-local-db
+```
+
+This will automatically rebuild and restart the server when you make changes to the code.
+
 ### Connecting to the dev db
 
 Create a tunnel to the dev alloydb vpc
 
-```bash
+```sh
 ./scripts/setup_dev_db_tunnel.sh
 ```
 
 You can now run the web server
 
-```bash
+```sh
 make build
 make run-dev-db
 ```
@@ -81,7 +97,7 @@ make run-dev-db
 
 To make calls to your local service, you can use `prpc` command line tool.
 
-```bash
+```sh
 prpc call localhost:8800 fleetconsole.FleetConsole.PingDB <<EOF
 {}
 EOF
@@ -132,7 +148,7 @@ Run go test ./...
 
 In order to run migrations you need python installed. You can either do that using your OS package manager or using the version distributed in depot_tools:
 
-```bash
+```sh
 alias python=/your/infra/directory/depot_tools/vpython3
 ```
 
@@ -140,7 +156,7 @@ alias python=/your/infra/directory/depot_tools/vpython3
 
 Create a virtualenv and install Alembic database migration tool:
 
-```bash
+```sh
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -150,7 +166,7 @@ The necessary tools to manage the Postgres or AlloyDB database are installed.
 
 You can now apply the migrations:
 
-```bash
+```sh
 alembic upgrade head
 ```
 
@@ -158,19 +174,19 @@ alembic upgrade head
 
 Create a tunnel to the dev db vpc
 
-```bash
+```sh
 ./scripts/setup_dev_db_tunnel.sh
 ```
 
 Run migrations specifying `env=dev`
 
-```bash
+```sh
 alembic -x env=dev upgrade head
 ```
 
 If you get an error make sure you are logged in gcloud cli for your application-default
 
-```bash
+```sh
 gcloud auth application-default login
 ```
 
@@ -178,19 +194,19 @@ gcloud auth application-default login
 
 Create a tunnel to the prod db vpc
 
-```bash
+```sh
 ./scripts/setup_prod_db_tunnel.sh
 ```
 
 Run migrations specifying `env=prod`
 
-```bash
+```sh
 alembic -x env=prod upgrade head
 ```
 
 If you get an error make sure you are logged in gcloud cli for your application-default
 
-```bash
+```sh
 gcloud auth application-default login
 ```
 
@@ -204,7 +220,7 @@ If you need to deploy changes in infrastructure that is done via terraform.
 
 from a piper workspace
 
-```bash
+```sh
 alias terraform='/google/bin/releases/g3terraform/runner_main -tf_label=terraform_1_10_4'
 
 cd google3/configs/cloud/gong/services/chrome_cloud/chrome_fleet/fleet_console/envs
@@ -223,7 +239,7 @@ When a new cl is submitted it's automatically uploaded to dev.
 
 To push to prod
 
-```bash
+```sh
 cd /your/infra/directory/data/cloud-run
 ./scripts/promote.py --canary --stable --commit fleet-console
 
@@ -232,7 +248,7 @@ git cl upload
 
 If you need to make change to the deployment environment
 
-```bash
+```sh
 cd /your/infra/directory/data/cloud-run/projects/fleet-console/
 
 cd dev/ # For dev
@@ -249,7 +265,7 @@ git cl upload
 
 From a piper workspace
 
-```bash
+```sh
 cd google3/configs/cloud/gong/org_hierarchy/google.com/teams/chrome-teams/cros-test-infra/
 
 cd dev/project.fleet-console-dev/ # To deploy to dev

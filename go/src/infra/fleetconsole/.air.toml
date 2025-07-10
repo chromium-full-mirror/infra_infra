@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Config file for air.
+#
+# See https://github.com/cosmtrek/air for more information.
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  bin = "./tmp/fleetconsoleserver"
+  cmd = "go build -o ./tmp/fleetconsoleserver ./cmd/fleetconsoleserver"
+  include_ext = ["go", "toml"]
+  exclude_dir = ["tmp"]
+
+[run]
+  cmd = "./tmp/fleetconsoleserver"

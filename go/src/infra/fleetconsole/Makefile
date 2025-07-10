@@ -17,6 +17,14 @@ test:
 	go build -o=consoleadmin ./cmd/consoleadmin
 	go build -o=fleetconsoleserver ./cmd/fleetconsoleserver
 
+.PHONY: tools
+tools:
+	go install github.com/cosmtrek/air@v1.51.0
+
+.PHONY: dev-local-db
+dev-local-db:
+	air -- -sqldb-connection-url=$(LOCAL_DB_CONNECTION_URL) -sqldb-password-secret=$(LOCAL_DB_PASSWORD_SECRET)
+
 .PHONY: build
 build:
 	go build -o=consoleadmin ./cmd/consoleadmin
@@ -62,3 +70,7 @@ exec-dev-db:
 	./fleetconsoleserver \
 		-sqldb-connection-url=$(DEV_DB_CONNECTION_URL) \
 		-sqldb-password-secret=$(DEV_DB_PASSWORD_SECRET)
+
+.PHONY: clean
+clean:
+	rm -rf ./tmp

@@ -8,3 +8,9 @@ fleetconsoleserver
 
 # Python virtual environment
 venv
+
+# Air binary
+air
+
+# Air temp directory
+tmp
