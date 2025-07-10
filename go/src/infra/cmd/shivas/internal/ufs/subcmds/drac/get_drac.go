@@ -158,7 +158,7 @@ func listDracs(ctx context.Context, ic ufsAPI.FleetClient, pageSize int32, pageT
 	for i, m := range res.GetDracs() {
 		protos[i] = m
 	}
-	utils.SetDracNetwork(ctx, ic, []proto.Message{res})
+	utils.SetDracNetwork(ctx, ic, protos)
 	return protos, res.GetNextPageToken(), nil
 }
 
