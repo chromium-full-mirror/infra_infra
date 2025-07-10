@@ -721,7 +721,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	}
 
 	// Add the request to the SuiteLimits cache to begin being tracked.
-	err = suitelimits.AddRequestTask(cmd.RequestKey, suiteName, target, getPool(cmd.InternalTestPlan.SuiteInfo), scheduledBuild.GetId())
+	err = suitelimits.AddRequestTask(rootCtx, cmd.RequestKey, suiteName, target, getPool(cmd.InternalTestPlan.SuiteInfo), scheduledBuild.GetId(), cmd.IsAlRun)
 	if err != nil {
 		logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
 		return
@@ -772,7 +772,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				lastLeaseExtensionTime = time.Now()
 			}
 
-			overLimit, err := suitelimits.UpdateTotalTime(cmd.RequestKey, suiteName, target, scheduledBuild.GetId())
+			overLimit, err := suitelimits.UpdateTotalTime(rootCtx, cmd.RequestKey, suiteName, target, scheduledBuild.GetId())
 			if err != nil {
 				logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
 				return
@@ -782,7 +782,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			// time and it does not have an active exemption, cancel all child
 			// tasks.
 			if overLimit {
-				err := suitelimits.CancelTasks(ctx, cmd.RequestKey, target, bbClient)
+				err := suitelimits.CancelTasks(rootCtx, cmd.RequestKey, target, bbClient)
 				if err != nil {
 					logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
 					return

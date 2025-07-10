@@ -6,9 +6,10 @@ package suitelimits
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 // trackingMetric is the entry to be used when outputting logs for the suite
@@ -42,24 +43,24 @@ func LogMetrics(ctx context.Context) {
 		if list, ok := suiteLogs[metric.suiteName]; ok {
 			suiteLogs[metric.suiteName] = append(list, metric)
 		} else {
-			fmt.Printf("Suite Metrics: Log created for request %s\n", metric.suiteName)
+			logging.Infof(ctx, "Suite Metrics: Log created for request %s\n", metric.suiteName)
 			suiteLogs[metric.suiteName] = []trackingMetric{metric}
 		}
 	}
 
-	flushMetrics(suiteLogs)
+	flushMetrics(ctx, suiteLogs)
 }
 
 // flushMetrics writes all logs to local csv files.
-func flushMetrics(suiteLogs map[string][]trackingMetric) {
-	incrementalLogs = flushIncrementalUpdates(suiteLogs)
+func flushMetrics(ctx context.Context, suiteLogs map[string][]trackingMetric) {
+	incrementalLogs = flushIncrementalUpdates(ctx, suiteLogs)
 
 	finalTotalLogs = flushTotals()
 }
 
 // flushIncrementalUpdates converts the received metric updates to csv form and
 // writes to local storage.
-func flushIncrementalUpdates(suiteLogs map[string][]trackingMetric) map[string][][]string {
+func flushIncrementalUpdates(ctx context.Context, suiteLogs map[string][]trackingMetric) map[string][][]string {
 	incrementalMap := map[string][][]string{}
 
 	// Flush the incremental updates
@@ -71,7 +72,7 @@ func flushIncrementalUpdates(suiteLogs map[string][]trackingMetric) map[string][
 		}
 
 		// Create the data array for the CSV writer.
-		fmt.Printf("Suite Metrics: FLUSHING %d logs\n", len(suiteLogs))
+		logging.Infof(ctx, "Suite Metrics: FLUSHING %d logs\n", len(suiteLogs))
 		for _, log := range logs {
 			data = append(data, []string{
 				log.requestKey,

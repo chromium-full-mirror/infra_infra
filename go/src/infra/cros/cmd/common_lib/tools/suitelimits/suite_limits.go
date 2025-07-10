@@ -15,6 +15,7 @@ import (
 	"time"
 
 	buildbucket "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/logging"
 )
 
 const (
@@ -62,7 +63,7 @@ var (
 //  2. Explicit exemption granted in the config file
 //
 // NOTE: must only be called within a mutex locked outer function.
-func IsExempt(entry *suiteLimitEntry) bool {
+func IsExempt(ctx context.Context, entry *suiteLimitEntry) bool {
 	// If exemption is already granted then skip checking eligibility again.
 	if entry.exemptionGranted {
 		return true
@@ -71,6 +72,7 @@ func IsExempt(entry *suiteLimitEntry) bool {
 	// If the pool is running in a private pool then we will not enact
 	// SuiteLimit's rules on it.
 	if entry.pool != dutPoolQuota && entry.pool != managedPoolQuota && entry.pool != quota && entry.pool != schedukePool {
+		logging.Infof(ctx, "suite entry %s is running in a private pool %s and is exempted from SuiteLimits", entry.suiteName, entry.pool)
 		entry.exemptionGranted = true
 		return true
 	}
@@ -79,23 +81,25 @@ func IsExempt(entry *suiteLimitEntry) bool {
 	// enact SuiteLimit's rules on it.
 	for _, exemption := range exemptions {
 		if entry.suiteName == exemption.suiteName {
+			logging.Infof(ctx, "suite entry %s has an explicit exemption and is exempted from SuiteLimits", entry.suiteName)
 			entry.exemptionGranted = true
 			return true
 		}
 	}
 
 	// If non of the approved exemptions have applied for this request then it
-	// is not exempt from Suite Limit's
+	// is not exempt from Suite Limits.
+	logging.Infof(ctx, "suite entry %s is running in the shared pool and has no exemption given", entry.suiteName)
 	return false
 }
 
 // AddRequestTask adds a new tracking bbid for the request set with the start
 // time set to the current time.time value when the addition is made.
-func AddRequestTask(requestKey, suiteName, hwTarget, pool string, taskBBID int64) error {
+func AddRequestTask(ctx context.Context, requestKey, suiteName, hwTarget, pool string, taskBBID int64, isAL bool) error {
 	suiteLimitsTracker.access.Lock()
 	defer suiteLimitsTracker.access.Unlock()
 
-	fmt.Printf("Adding BBID %d to requestKey %s and target %s tracking for pool %s\n", taskBBID, requestKey, hwTarget, pool)
+	logging.Infof(ctx, "Adding BBID %d to requestKey %s and target %s tracking for pool %s. Traffic is AL: %t\n", taskBBID, requestKey, hwTarget, pool, isAL)
 
 	// If this is the first addition of the suite into the map then create the
 	// full path to the entry.
@@ -106,12 +110,16 @@ func AddRequestTask(requestKey, suiteName, hwTarget, pool string, taskBBID int64
 	if _, ok := suiteLimitsTracker.cache[RequestKey(requestKey)][HWTarget(hwTarget)]; !ok {
 		newEntry := &suiteLimitEntry{
 			suiteName:       suiteName,
-			totalDUTHours:   hour,
+			totalDUTHours:   0,
+			pool:            pool,
 			perTaskLastSeen: map[int64]time.Time{},
 		}
+
 		// At initial map insertion, check if the entry qualifies for a
 		// SuiteLimits exemption.
-		newEntry.exemptionGranted = IsExempt(newEntry)
+		//
+		// NOTE: For now all AL testing is exempt from SuiteLimits.
+		newEntry.exemptionGranted = isAL || IsExempt(ctx, newEntry)
 
 		suiteLimitsTracker.cache[RequestKey(requestKey)][HWTarget(hwTarget)] = newEntry
 	}
@@ -138,7 +146,7 @@ func AddRequestTask(requestKey, suiteName, hwTarget, pool string, taskBBID int64
 // UpdateTotalTime updates the total request time of the passed in unique
 // request set by the amount of time it's been since the passed in BBID has been
 // seen.
-func UpdateTotalTime(requestKey, suiteName, taskName string, taskBBID int64) (bool, error) {
+func UpdateTotalTime(ctx context.Context, requestKey, suiteName, taskName string, taskBBID int64) (bool, error) {
 	suiteLimitsTracker.access.Lock()
 	defer suiteLimitsTracker.access.Unlock()
 
@@ -183,7 +191,7 @@ func UpdateTotalTime(requestKey, suiteName, taskName string, taskBBID int64) (bo
 	// If the suite has exceeded the limit and is non-exempt return true to
 	// signal the cancel tasks start.
 	if !requestEntry.exemptionGranted && int(requestEntry.totalDUTHours.Seconds()) >= DutHourMaximumSeconds {
-		fmt.Printf("no exemption granted and total dut time of %f seconds exceeded %d maximum\n", requestEntry.totalDUTHours.Seconds(), DutHourMaximumSeconds)
+		logging.Infof(ctx, "no exemption granted and total dut time of %f seconds exceeded %d maximum\n", requestEntry.totalDUTHours.Seconds(), DutHourMaximumSeconds)
 		return true, nil
 	}
 
