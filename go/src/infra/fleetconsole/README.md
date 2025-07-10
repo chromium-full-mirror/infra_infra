@@ -12,6 +12,7 @@ From the root directory for this repo.
 ### With a local db
 
 First start the db using docker docker:
+
 ```sh
 docker compose up -d
 ```
@@ -22,20 +23,55 @@ It also runs pgadmin so if you want to connect to the db via pgadmin visit
 If this is your first time you will have to [run migrations](#migrations-local)
 
 You can now run the web server:
+
 ```sh
 make build
 make run-local-db
 ```
 
+### Without Docker (macOS with Homebrew)
+
+If you are unable to use Docker, you can set up a local PostgreSQL database using Homebrew.
+
+1. **Install PostgreSQL:**
+
+    ```sh
+    brew install postgresql
+    ```
+
+2. **Start the PostgreSQL service:**
+
+    ```sh
+    brew services start postgresql
+    ```
+
+3. **Set the password for the default `postgres` user:**
+    The application expects the password to be `password`.
+
+    ```sh
+    psql -d postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
+    ```
+
+4. **Run database migrations:**
+    Follow the instructions in the [Run migrations](#migrations-local) section.
+
+5. **Run the web server:**
+
+    ```sh
+    make build
+    make run-local-db
+    ```
+
 ### Connecting to the dev db
 
 Create a tunnel to the dev alloydb vpc
 
-```
+```sh
 ./scripts/setup_dev_db_tunnel.sh
 ```
 
 You can now run the web server
+
 ```bash
 make build
 make run-dev-db
@@ -44,7 +80,8 @@ make run-dev-db
 ### Making calls to the local service
 
 To make calls to your local service, you can use `prpc` command line tool.
-```
+
+```sh
 prpc call localhost:8800 fleetconsole.FleetConsole.PingDB <<EOF
 {}
 EOF
@@ -53,7 +90,7 @@ EOF
 ### Run the web client
 
 * See: [Milo UI docs on running / building code](https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/milo/ui/docs/guides/local_development_workflows.md)
-* Client code dir: https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/milo/ui/src/fleet/
+* Client code dir: <https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/milo/ui/src/fleet/>
 
 ## How to manually test
 
@@ -94,6 +131,7 @@ Run go test ./...
 ## Run migrations
 
 In order to run migrations you need python installed. You can either do that using your OS package manager or using the version distributed in depot_tools:
+
 ```bash
 alias python=/your/infra/directory/depot_tools/vpython3
 ```
@@ -111,6 +149,7 @@ pip install -r requirements.txt
 The necessary tools to manage the Postgres or AlloyDB database are installed.
 
 You can now apply the migrations:
+
 ```bash
 alembic upgrade head
 ```
@@ -124,11 +163,14 @@ Create a tunnel to the dev db vpc
 ```
 
 Run migrations specifying `env=dev`
+
 ```bash
 alembic -x env=dev upgrade head
 ```
+
 If you get an error make sure you are logged in gcloud cli for your application-default
-```bash
+
+```sh
 gcloud auth application-default login
 ```
 
@@ -141,14 +183,16 @@ Create a tunnel to the prod db vpc
 ```
 
 Run migrations specifying `env=prod`
+
 ```bash
 alembic -x env=prod upgrade head
 ```
+
 If you get an error make sure you are logged in gcloud cli for your application-default
-```bash
+
+```sh
 gcloud auth application-default login
 ```
-
 
 ## How to deploy
 
@@ -159,6 +203,7 @@ Deployment configs are hosted in the [infradata repo](https://chrome-internal.go
 If you need to deploy changes in infrastructure that is done via terraform.
 
 from a piper workspace
+
 ```bash
 alias terraform='/google/bin/releases/g3terraform/runner_main -tf_label=terraform_1_10_4'
 
@@ -177,6 +222,7 @@ terraform apply
 When a new cl is submitted it's automatically uploaded to dev.
 
 To push to prod
+
 ```bash
 cd /your/infra/directory/data/cloud-run
 ./scripts/promote.py --canary --stable --commit fleet-console
@@ -185,6 +231,7 @@ git cl upload
 ```
 
 If you need to make change to the deployment environment
+
 ```bash
 cd /your/infra/directory/data/cloud-run/projects/fleet-console/
 
@@ -201,12 +248,14 @@ git cl upload
 ### Latchkey config
 
 From a piper workspace
+
 ```bash
 cd google3/configs/cloud/gong/org_hierarchy/google.com/teams/chrome-teams/cros-test-infra/
 
 cd dev/project.fleet-console-dev/ # To deploy to dev
 cd prod/project.fleet-console-prod/ # To deploy to prod
 ```
+
 From here you can simply make the required edits and submit a new cl
 
 ## Links
