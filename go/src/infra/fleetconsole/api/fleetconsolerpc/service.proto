@@ -49,6 +49,9 @@ service FleetConsole {
   // ExportDevicesToCSV exports the devices in the csv format.
   rpc ExportDevicesToCSV(ExportDevicesToCSVRequest) returns (ExportDevicesToCSVResponse) {}
 
+  // ScheduleAutorepair schedules an autorepair for the specified devices.
+  rpc ScheduleAutorepair(ScheduleAutorepairRequest) returns (ScheduleAutorepairResponse) {}
+
   // ************** RESOURCE REQUEST INSIGHTS *********************
 
   // ListResourceRequests returns Resource Requests provided by BigQuery
@@ -252,6 +255,37 @@ message Column {
 
 message ExportDevicesToCSVResponse {
   string csv_data = 1;
+}
+
+message ScheduleAutorepairRequest {
+  // The list of device names to schedule autorepair for.
+  repeated string unit_names = 1;
+
+  // The list of autorepair flags to apply to the devices.
+  repeated AutorepairFlag flags = 2;
+  enum AutorepairFlag {
+    FLAG_UNSPECIFIED = 0;
+    DEEP_REPAIR = 1;
+  }
+}
+
+message ScheduleAutorepairResult {
+  string unit_name = 1;
+
+  oneof result {
+    // The task URL of the scheduled task if successful.
+    string task_url = 2;
+    // The error message if the task failed to schedule.
+    string error_message = 3;
+  }
+}
+
+message ScheduleAutorepairResponse {
+  // The ID of the admin session.
+  string session_id = 1;
+  // The results for each device in the request
+  // The order of the results is the same as the order of the unit_names in the request.
+  repeated ScheduleAutorepairResult results = 2;
 }
 
 // ************** RESOURCE REQUEST INSIGHTS *********************

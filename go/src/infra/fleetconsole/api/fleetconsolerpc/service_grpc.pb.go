@@ -36,6 +36,7 @@ const (
 	FleetConsole_PingDB_FullMethodName                                     = "/fleetconsole.FleetConsole/PingDB"
 	FleetConsole_CleanExit_FullMethodName                                  = "/fleetconsole.FleetConsole/CleanExit"
 	FleetConsole_ExportDevicesToCSV_FullMethodName                         = "/fleetconsole.FleetConsole/ExportDevicesToCSV"
+	FleetConsole_ScheduleAutorepair_FullMethodName                         = "/fleetconsole.FleetConsole/ScheduleAutorepair"
 	FleetConsole_ListResourceRequests_FullMethodName                       = "/fleetconsole.FleetConsole/ListResourceRequests"
 	FleetConsole_CountResourceRequests_FullMethodName                      = "/fleetconsole.FleetConsole/CountResourceRequests"
 	FleetConsole_GetResourceRequestsMultiselectFilterValues_FullMethodName = "/fleetconsole.FleetConsole/GetResourceRequestsMultiselectFilterValues"
@@ -73,6 +74,8 @@ type FleetConsoleClient interface {
 	CleanExit(ctx context.Context, in *CleanExitRequest, opts ...grpc.CallOption) (*CleanExitResponse, error)
 	// ExportDevicesToCSV exports the devices in the csv format.
 	ExportDevicesToCSV(ctx context.Context, in *ExportDevicesToCSVRequest, opts ...grpc.CallOption) (*ExportDevicesToCSVResponse, error)
+	// ScheduleAutorepair schedules an autorepair for the specified devices.
+	ScheduleAutorepair(ctx context.Context, in *ScheduleAutorepairRequest, opts ...grpc.CallOption) (*ScheduleAutorepairResponse, error)
 	// ListResourceRequests returns Resource Requests provided by BigQuery
 	ListResourceRequests(ctx context.Context, in *ListResourceRequestsRequest, opts ...grpc.CallOption) (*ListResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
@@ -216,6 +219,16 @@ func (c *fleetConsoleClient) ExportDevicesToCSV(ctx context.Context, in *ExportD
 	return out, nil
 }
 
+func (c *fleetConsoleClient) ScheduleAutorepair(ctx context.Context, in *ScheduleAutorepairRequest, opts ...grpc.CallOption) (*ScheduleAutorepairResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ScheduleAutorepairResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_ScheduleAutorepair_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *fleetConsoleClient) ListResourceRequests(ctx context.Context, in *ListResourceRequestsRequest, opts ...grpc.CallOption) (*ListResourceRequestsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListResourceRequestsResponse)
@@ -314,6 +327,8 @@ type FleetConsoleServer interface {
 	CleanExit(context.Context, *CleanExitRequest) (*CleanExitResponse, error)
 	// ExportDevicesToCSV exports the devices in the csv format.
 	ExportDevicesToCSV(context.Context, *ExportDevicesToCSVRequest) (*ExportDevicesToCSVResponse, error)
+	// ScheduleAutorepair schedules an autorepair for the specified devices.
+	ScheduleAutorepair(context.Context, *ScheduleAutorepairRequest) (*ScheduleAutorepairResponse, error)
 	// ListResourceRequests returns Resource Requests provided by BigQuery
 	ListResourceRequests(context.Context, *ListResourceRequestsRequest) (*ListResourceRequestsResponse, error)
 	// CountResourceRequests provides counts for RRI summary header
@@ -372,6 +387,9 @@ func (UnimplementedFleetConsoleServer) CleanExit(context.Context, *CleanExitRequ
 }
 func (UnimplementedFleetConsoleServer) ExportDevicesToCSV(context.Context, *ExportDevicesToCSVRequest) (*ExportDevicesToCSVResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportDevicesToCSV not implemented")
+}
+func (UnimplementedFleetConsoleServer) ScheduleAutorepair(context.Context, *ScheduleAutorepairRequest) (*ScheduleAutorepairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ScheduleAutorepair not implemented")
 }
 func (UnimplementedFleetConsoleServer) ListResourceRequests(context.Context, *ListResourceRequestsRequest) (*ListResourceRequestsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListResourceRequests not implemented")
@@ -631,6 +649,24 @@ func _FleetConsole_ExportDevicesToCSV_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_ScheduleAutorepair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ScheduleAutorepairRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).ScheduleAutorepair(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_ScheduleAutorepair_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).ScheduleAutorepair(ctx, req.(*ScheduleAutorepairRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FleetConsole_ListResourceRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListResourceRequestsRequest)
 	if err := dec(in); err != nil {
@@ -811,6 +847,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExportDevicesToCSV",
 			Handler:    _FleetConsole_ExportDevicesToCSV_Handler,
+		},
+		{
+			MethodName: "ScheduleAutorepair",
+			Handler:    _FleetConsole_ScheduleAutorepair_Handler,
 		},
 		{
 			MethodName: "ListResourceRequests",
