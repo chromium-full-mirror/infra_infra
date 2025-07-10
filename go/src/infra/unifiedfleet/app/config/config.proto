@@ -8,7 +8,9 @@ package ufs.config;
 
 option go_package = "go.chromium.org/infra/unifiedfleet/app/config";
 
-// Next Tag: 31
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/state.proto";
+
+// Next Tag: 32
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1 [deprecated=true];
@@ -66,6 +68,9 @@ message Config {
   // bots managed by this app.
   Swarming swarming = 29;
   MaintenanceConfigs maintenance_configs = 30;
+
+  // The priority of state change requests from various users.
+  StateChangeReqPriority state_change_req_priority = 31;
 }
 
 message OSNetworkConfig {
@@ -196,4 +201,33 @@ message Swarming {
 
   // BotPool is the swarming pool containing skylab bots.
   string bot_pool = 2;
+}
+
+message StateChangeReqPriority {
+  // Priority defines the priority for a state change requests (i.e.
+  // the request user and state value).
+  // Example:
+  // Priority {
+  //   user_regexp: ".*@example.com",
+  //   included_states: STATE_RESERVED,
+  //   included_states: STATE_DISABLED,
+  //   priority: 100,
+  // }
+  // means if a request initiated from user '.*@example.com' and tries to set
+  // the state to STATE_RESERVED or STATE_DISABLED will have the priority of 100.
+  message Priority {
+    string user_regexp = 1;
+
+    // The states to be included in this priority config. Default is all states
+    // defined by UFS model.
+    repeated unifiedfleet.api.v1.models.State included_states = 2;
+    // The states to be excluded from the included_states (or all UFS defined
+    // states) in this priority config. Default is None.
+    repeated unifiedfleet.api.v1.models.State excluded_states =  3;
+
+    // The priority of the request. The bigger of the value, the higher of the
+    // priority. The lowest priority is 0.
+    uint32 priority = 4;
+  }
+  repeated Priority priorities = 1;
 }
