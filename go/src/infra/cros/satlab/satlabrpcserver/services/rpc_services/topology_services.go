@@ -86,16 +86,6 @@ func (s *SatlabRpcServiceServer) AddTopology(ctx context.Context, in *pb.AddTopo
 		return nil, err
 	}
 
-	// Needed to populate old PasitHost2 to new Pasit.
-	// TODO (b/421860961) remove once crrev.com/c/6542328/6 will be merged.
-	rdr := &pb.RepairDutsRequest{
-		Hostnames: []string{in.GetHostname()},
-		Deep:      false,
-	}
-	if _, err := s.RepairDuts(ctx, rdr); err != nil {
-		return nil, err
-	}
-
 	return &pb.AddTopologyResponse{}, nil
 }
 
