@@ -79,7 +79,8 @@ def builder(
 
         # Scheduler parameters.
         triggered_by = None,
-        schedule = None):
+        schedule = None,
+        **kwargs):
     """A generic code search builder.
 
     Args:
@@ -98,6 +99,7 @@ def builder(
       short_name: a short name for the console.
       triggered_by: a list of builders that trigger this one.
       schedule: if given, run the builder periodically under this schedule.
+      **kwargs: Additional keyword arguments.
     """
 
     # Add mastername property so that the gen recipes can find the right
@@ -123,6 +125,13 @@ def builder(
         "metrics_project": "chromium-reclient-metrics",
         "project": "rbe-chromium-trusted",
     }
+    if kwargs.get("siso_configs", None):
+        properties["$build/siso"]["configs"] = kwargs.get("siso_configs")
+    if kwargs.get("siso_remote_linking", None):
+        properties["$build/siso"]["configs"].append("remote-link")
+    if kwargs.get("siso_output_local_strategy", None):
+        properties["$build/siso"]["output_local_strategy"] = \
+            kwargs.get("siso_output_local_strategy")
 
     luci.builder(
         name = name,
@@ -161,7 +170,8 @@ def chromium_genfiles(
         cpu_cores = None,
         cpu = None,
         machine_type = None,
-        xcode_build_version = None):
+        xcode_build_version = None,
+        **kwargs):
     """A builder for generating kzips for chromium/src.
 
       In recipe_properties, you can specify the following parameters:
@@ -173,6 +183,8 @@ def chromium_genfiles(
       - build_config: Kythe build config to specify in the kzip.
       - gen_repo_branch: Which branch in the generated files repo to sync to.
       - gen_repo_out_dir: Which directory under src/out to write gen files to.
+      - **kwargs: Additional keyword arguments that will be forwarded on to
+        builder.
     """
     builder(
         name = name,
@@ -195,6 +207,7 @@ def chromium_genfiles(
         short_name = short_name,
         # Gen builders are triggered by the initiator's recipe.
         triggered_by = "codesearch-gen-chromium-initiator",
+        **kwargs
     )
 
 # buildifier: disable=function-docstring
@@ -357,6 +370,12 @@ chromium_genfiles(
         "build_config": "chromeos",
     },
     machine_type = "n1-standard-8|n2-standard-8",
+    siso_configs = [
+        "builder",
+        "no-remote-timeout",
+    ],
+    siso_remote_linking = True,
+    siso_output_local_strategy = "greedy",
 )
 
 chromium_genfiles(
