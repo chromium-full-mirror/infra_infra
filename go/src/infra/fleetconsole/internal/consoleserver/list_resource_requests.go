@@ -121,6 +121,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		ResourceRequestTargetDeliveryDate: BigQueryValueToDate(row[rri.ResourceRequestTargetDeliveryDateColumn]),
 		ResourceRequestActualDeliveryDate: BigQueryValueToDate(row[rri.ResourceRequestActualDeliveryDateColumn]),
 		ResourceRequestStatus:             rri.MapStatus(row[rri.ResourceRequestStatusColumn]),
+		ResourceRequestBugStatus:          bigQueryNullableString(row[rri.ResourceRequestBugStatusColumn]),
 	}
 }
 

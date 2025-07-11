@@ -30,21 +30,22 @@ func (frontend *FleetConsoleFrontend) GetResourceRequestsMultiselectFilterValues
 	}
 
 	var (
-		rrId                   any
-		resourceDetails        any
-		materialSourcingStatus any
-		buildStatus            any
-		qaStatus               any
-		configStatus           any
-		customer               any
-		resourceName           any
-		acceptedQuantity       any
-		criticality            any
-		requestApproval        any
-		resourcePm             any
-		fulfillmentChannel     any
-		executionStatus        any
-		resourceGroups         any
+		rrId                     any
+		resourceDetails          any
+		materialSourcingStatus   any
+		buildStatus              any
+		qaStatus                 any
+		configStatus             any
+		customer                 any
+		resourceName             any
+		acceptedQuantity         any
+		criticality              any
+		requestApproval          any
+		resourcePm               any
+		fulfillmentChannel       any
+		executionStatus          any
+		resourceGroups           any
+		resourceRequestBugStatus any
 	)
 
 	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable(frontend.IsProdEnvironment()))
@@ -67,6 +68,7 @@ func (frontend *FleetConsoleFrontend) GetResourceRequestsMultiselectFilterValues
 		queryutils.Select(rri.FulfillmentChannelColumn, &fulfillmentChannel),
 		queryutils.Select(rri.ExecutionStatusColumn, &executionStatus),
 		queryutils.Select(rri.ResourceGroupsColumn, &resourceGroups),
+		queryutils.Select(rri.ResourceRequestBugStatusColumn, &resourceRequestBugStatus),
 	)
 
 	query, reader, err := queryBuilder.ToBigQueryQuery(bqClient)
@@ -100,6 +102,7 @@ func (frontend *FleetConsoleFrontend) GetResourceRequestsMultiselectFilterValues
 	fulfillmentChannelSet := make(map[string]struct{})
 	executionStatusSet := make(map[string]struct{})
 	resourceGroupsSet := make(map[string]struct{})
+	resourceRequestBugStatusSet := make(map[string]struct{})
 
 	addToStrSet := func(set map[string]struct{}, bqVal any) {
 		if bqVal == nil {
@@ -128,6 +131,7 @@ func (frontend *FleetConsoleFrontend) GetResourceRequestsMultiselectFilterValues
 		addToStrSet(resourcePmSet, resourcePm)
 		addToStrSet(fulfillmentChannelSet, fulfillmentChannel)
 		addToStrSet(executionStatusSet, executionStatus)
+		addToStrSet(resourceRequestBugStatusSet, resourceRequestBugStatus)
 
 		if acceptedQuantity != nil {
 			if aqVal, ok := acceptedQuantity.(int64); ok {
@@ -170,20 +174,21 @@ func (frontend *FleetConsoleFrontend) GetResourceRequestsMultiselectFilterValues
 	resourceDetailsList := mapKeysToSortedStrSlice(resourceDetailsSet)
 
 	return &fleetconsolerpc.GetResourceRequestsMultiselectFilterValuesResponse{
-		RrIds:                  rrIdList,
-		ResourceDetails:        resourceDetailsList,
-		MaterialSourcingStatus: mapKeysToSortedStrSlice(materialSourcingStatusSet),
-		BuildStatus:            mapKeysToSortedStrSlice(buildStatusSet),
-		QaStatus:               mapKeysToSortedStrSlice(qaStatusSet),
-		ConfigStatus:           mapKeysToSortedStrSlice(configStatusSet),
-		Customer:               mapKeysToSortedStrSlice(customerSet),
-		ResourceName:           mapKeysToSortedStrSlice(resourceNameSet),
-		AcceptedQuantity:       mapKeysToSortedInt32Slice(acceptedQuantitySet),
-		Criticality:            mapKeysToSortedStrSlice(criticalitySet),
-		RequestApproval:        mapKeysToSortedStrSlice(requestApprovalSet),
-		ResourcePm:             mapKeysToSortedStrSlice(resourcePmSet),
-		FulfillmentChannel:     mapKeysToSortedStrSlice(fulfillmentChannelSet),
-		ExecutionStatus:        mapKeysToSortedStrSlice(executionStatusSet),
-		ResourceGroups:         mapKeysToSortedStrSlice(resourceGroupsSet),
+		RrIds:                    rrIdList,
+		ResourceDetails:          resourceDetailsList,
+		MaterialSourcingStatus:   mapKeysToSortedStrSlice(materialSourcingStatusSet),
+		BuildStatus:              mapKeysToSortedStrSlice(buildStatusSet),
+		QaStatus:                 mapKeysToSortedStrSlice(qaStatusSet),
+		ConfigStatus:             mapKeysToSortedStrSlice(configStatusSet),
+		Customer:                 mapKeysToSortedStrSlice(customerSet),
+		ResourceName:             mapKeysToSortedStrSlice(resourceNameSet),
+		AcceptedQuantity:         mapKeysToSortedInt32Slice(acceptedQuantitySet),
+		Criticality:              mapKeysToSortedStrSlice(criticalitySet),
+		RequestApproval:          mapKeysToSortedStrSlice(requestApprovalSet),
+		ResourcePm:               mapKeysToSortedStrSlice(resourcePmSet),
+		FulfillmentChannel:       mapKeysToSortedStrSlice(fulfillmentChannelSet),
+		ExecutionStatus:          mapKeysToSortedStrSlice(executionStatusSet),
+		ResourceGroups:           mapKeysToSortedStrSlice(resourceGroupsSet),
+		ResourceRequestBugStatus: mapKeysToSortedStrSlice(resourceRequestBugStatusSet),
 	}, nil
 }

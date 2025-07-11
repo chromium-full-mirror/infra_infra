@@ -51,6 +51,7 @@ const (
 	ExecutionStatusColumn                   = "execution_status"
 	ResourceGroupsColumn                    = "resource_groups"
 	ResourceRequestBugIdColumn              = "resource_request_bug_id"
+	ResourceRequestBugStatusColumn          = "rr_bug_status"
 
 	InProgressStatus = "IN_PROGRESS"
 	NotStartedStatus = "NOT_STARTED"
@@ -100,6 +101,7 @@ func GetResourceRequestsTable(isProd bool) *queryutils.Table {
 		queryutils.NewColumn(ResourceGroupsColumn).Build(),
 		queryutils.NewColumn(ResourceRequestBugIdColumn).Build(),
 		queryutils.NewColumn(ResourceRequestStatusColumn).Build(),
+		queryutils.NewColumn(ResourceRequestBugStatusColumn).Build(),
 	).Build()
 }
 
