@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
 	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // passportAddressNotInScopeExec verifies that the container is known to the current scope.
@@ -143,20 +144,20 @@ func passportResetAllUSBTestersExec(ctx context.Context, info *execs.ExecInfo) e
 		return errors.Annotate(err, "reset passport usb testers: get switch client").Err()
 	}
 
-	testers, err := client.GetTesters(ctx, &passport.GetTestersRequest{})
-	if err != nil {
-		return errors.Annotate(err, "reset passport usb testers: get testers").Err()
-	}
+	for _, tester := range info.GetChromeos().GetPasit().GetDevices() {
+		if tester.GetType() != tlw.Pasit_Device_USB_TESTER {
+			continue
+		}
+		id := strings.ToUpper(tester.GetId())
 
-	for _, tester := range testers.GetTesters() {
-		if _, err := client.OpenTester(ctx, &passport.OpenTesterRequest{Id: tester.Id}); err != nil {
-			return errors.Annotate(err, "reset passport usb testers: open tester %q", tester.Id).Err()
+		if _, err := client.OpenTester(ctx, &passport.OpenTesterRequest{Id: id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: open tester %q", id).Err()
 		}
-		if _, err := client.HardResetTester(ctx, &passport.HardResetTesterRequest{Id: tester.Id}); err != nil {
-			return errors.Annotate(err, "reset passport usb testers: hard reset tester %q", tester.Id).Err()
+		if _, err := client.HardResetTester(ctx, &passport.HardResetTesterRequest{Id: id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: hard reset tester %q", id).Err()
 		}
-		if _, err := client.CloseTester(ctx, &passport.CloseTesterRequest{Id: tester.Id}); err != nil {
-			return errors.Annotate(err, "reset passport usb testers: close tester %q", tester.Id).Err()
+		if _, err := client.CloseTester(ctx, &passport.CloseTesterRequest{Id: id}); err != nil {
+			return errors.Annotate(err, "reset passport usb testers: close tester %q", id).Err()
 		}
 	}
 
