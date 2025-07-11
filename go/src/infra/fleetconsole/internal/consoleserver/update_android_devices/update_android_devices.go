@@ -26,7 +26,7 @@ func UpdateAndroidDevices(ctx context.Context, tx *sql.Tx, labResource *omnilab_
 		return err
 	}
 
-	err = deleteAndroidDevicesOfHostNotInList(ctx, tx, host.hostname, devices)
+	err = deleteAndroidDevicesOfHostNotInList(ctx, tx, host.host_group, devices)
 	if err != nil {
 		return err
 	}

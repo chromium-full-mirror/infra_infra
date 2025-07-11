@@ -17,12 +17,15 @@ import (
 const FIELDS_PER_DEVICE = 5
 
 func updateAndroidDevicesTable(ctx context.Context, tx *sql.Tx, devices []device) error {
+	if len(devices) == 0 {
+		return nil
+	}
+
 	query := fmt.Sprintf(`
 		INSERT INTO android_devices
 			(id, lab_name, host_group, run_target, state)
 		VALUES %s
 		ON CONFLICT (id) DO UPDATE SET
-			id=EXCLUDED.id,
 			lab_name=EXCLUDED.lab_name,
 			host_group=EXCLUDED.host_group,
 			run_target=EXCLUDED.run_target,

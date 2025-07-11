@@ -12,15 +12,17 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 )
 
-func deleteAndroidDevicesOfHostNotInList(ctx context.Context, tx *sql.Tx, hostname string, devices []device) error {
+func deleteAndroidDevicesOfHostNotInList(ctx context.Context, tx *sql.Tx, hostGroup string, devices []device) error {
 	if len(devices) == 0 {
-		return nil
+		q := "DELETE FROM android_devices WHERE host_group = $1"
+		_, err := tx.ExecContext(ctx, q, hostGroup)
+		return err
 	}
 
-	q := fmt.Sprintf("DELETE FROM android_devices WHERE host = $1 AND id NOT IN %s", queryutils.ValuesStringWithOffset(len(devices), 0, 1))
+	q := fmt.Sprintf("DELETE FROM android_devices WHERE host_group = $1 AND id NOT IN %s", queryutils.ValuesStringWithOffset(len(devices), 0, 1))
 
 	args := make([]any, len(devices)+1)
-	args[0] = hostname
+	args[0] = hostGroup
 	for i, d := range devices {
 		args[i+1] = d.id
 	}

@@ -33,7 +33,6 @@ func TestUpdateAndroidDevicesTable(t *testing.T) {
 				(id, lab_name, host_group, run_target, state)
 			VALUES ($1, $2, $3, $4, $5)
 			ON CONFLICT (id) DO UPDATE SET
-				id=EXCLUDED.id,
 				lab_name=EXCLUDED.lab_name,
 				host_group=EXCLUDED.host_group,
 				run_target=EXCLUDED.run_target,

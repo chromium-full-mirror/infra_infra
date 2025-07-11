@@ -24,7 +24,7 @@ func TestDeleteAndroidDevicesOfHostNotInList(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 
 		mock.ExpectBegin()
-		mock.ExpectExec(regexp.QuoteMeta("DELETE FROM android_devices WHERE host = $1 AND id NOT IN ($2, $3)")).WithArgs(
+		mock.ExpectExec(regexp.QuoteMeta("DELETE FROM android_devices WHERE host_group = $1 AND id NOT IN ($2, $3)")).WithArgs(
 			"host1", "device1", "device2",
 		).WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
