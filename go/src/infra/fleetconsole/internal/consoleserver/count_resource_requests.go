@@ -23,7 +23,7 @@ func (frontend *FleetConsoleFrontend) CountResourceRequests(ctx context.Context,
 		return nil, err
 	}
 
-	var total, ffInProgress, ffComplete, msInProgress, buildInProgress, qaInProgress, configInProgress int32
+	var total, ffInProgress, ffComplete, msInProgress, buildInProgress, qaInProgress, configInProgress any
 
 	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable(frontend.IsProdEnvironment())).
 		SetSqlLangType(queryutils.BigQueryLangType).
@@ -59,12 +59,12 @@ func (frontend *FleetConsoleFrontend) CountResourceRequests(ctx context.Context,
 	}
 
 	return &fleetconsolerpc.CountResourceRequestsResponse{
-		Total:            total,
-		InProgress:       ffInProgress,
-		Completed:        ffComplete,
-		MaterialSourcing: msInProgress,
-		Build:            buildInProgress,
-		Qa:               qaInProgress,
-		Config:           configInProgress,
+		Total:            int32(total.(int64)),
+		InProgress:       int32(ffInProgress.(int64)),
+		Completed:        int32(ffComplete.(int64)),
+		MaterialSourcing: int32(msInProgress.(int64)),
+		Build:            int32(buildInProgress.(int64)),
+		Qa:               int32(qaInProgress.(int64)),
+		Config:           int32(configInProgress.(int64)),
 	}, nil
 }

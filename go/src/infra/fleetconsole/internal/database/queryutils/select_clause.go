@@ -7,8 +7,6 @@ package queryutils
 import (
 	"fmt"
 	"strings"
-
-	"golang.org/x/exp/constraints"
 )
 
 type SelectClause struct {
@@ -29,12 +27,10 @@ func Select(field string, binding *any) *FieldSelectClause {
 		binding:           binding,
 	}
 }
-
-func CountAll[T constraints.Integer | constraints.Float](binding *T) *FieldSelectClause {
-	var bAny any = binding
+func CountAll(binding *any) *FieldSelectClause {
 	return &FieldSelectClause{
 		fieldSelectClause: "COUNT(*)",
-		binding:           &bAny,
+		binding:           binding,
 	}
 }
 
@@ -43,11 +39,10 @@ type ConditionalCountClause struct {
 	binding *any
 }
 
-func CountIf[T constraints.Integer | constraints.Float](field string, binding *T) *ConditionalCountClause {
-	var bAny any = binding
+func CountIf(field string, binding *any) *ConditionalCountClause {
 	return &ConditionalCountClause{
 		field:   field,
-		binding: &bAny,
+		binding: binding,
 	}
 }
 

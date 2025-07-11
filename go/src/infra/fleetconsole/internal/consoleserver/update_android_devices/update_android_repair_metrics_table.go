@@ -53,17 +53,15 @@ func updateAndroidRepairMetricsTable(
 }
 
 func calculateSlo(ctx context.Context, tx *sql.Tx, runTargetLabNameHostGroup runTargetsLabNamesHostGroups) (fleetconsolerpc.RepairMetric_Priority, int, int, int) {
-	var gone, fastboot, unavailable, available, allocated, offline, total float64
-
 	qBuilder, err := queryutils.NewQueryBuilder(androidrepairmetricsdb.AndroidDevicesTable).
 		WithCustomSelectClause(
-			queryutils.CountIf("LOWER(state)", &gone).In("gone", "offline"),
-			queryutils.CountIf("LOWER(state)", &fastboot).In("fastboot"),
-			queryutils.CountIf("LOWER(state)", &unavailable).In("unavailable", "unknown"),
-			queryutils.CountIf("LOWER(state)", &available).In("available", "idle", "online"),
-			queryutils.CountIf("LOWER(state)", &allocated).In("allocated", "busy"),
-			queryutils.CountIf("LOWER(state)", &offline).In("offline", "gone", "missing"),
-			queryutils.CountAll(&total),
+			queryutils.CountIf("LOWER(state)", nil).In("gone", "offline"),
+			queryutils.CountIf("LOWER(state)", nil).In("fastboot"),
+			queryutils.CountIf("LOWER(state)", nil).In("unavailable", "unknown"),
+			queryutils.CountIf("LOWER(state)", nil).In("available", "idle", "online"),
+			queryutils.CountIf("LOWER(state)", nil).In("allocated", "busy"),
+			queryutils.CountIf("LOWER(state)", nil).In("offline", "gone", "missing"),
+			queryutils.CountAll(nil),
 		).
 		WithWhereClause(fmt.Sprintf(`lab_name = "%s" host_group = "%s" run_target = "%s"`,
 			runTargetLabNameHostGroup.labName,
@@ -80,6 +78,8 @@ func calculateSlo(ctx context.Context, tx *sql.Tx, runTargetLabNameHostGroup run
 		logging.Errorf(ctx, "failed to build query for android devices: %v", err)
 		return fleetconsolerpc.RepairMetric_MISSING_DATA, -1, -1, -1
 	}
+
+	var gone, fastboot, unavailable, available, allocated, offline, total float64
 
 	err = tx.QueryRowContext(ctx, q.Statement, q.Parameters...).
 		Scan(&gone, &fastboot, &unavailable, &available, &allocated, &offline, &total)
