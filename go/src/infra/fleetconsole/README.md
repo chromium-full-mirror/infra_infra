@@ -140,6 +140,12 @@ To see more commands available in the CLI run:
 ./consoleadmin help
 ```
 
+To populate your local database with test data run:
+
+```sh
+./consoleadmin repopulate-cache -local
+```
+
 ## How to run tests
 
 Run go test ./...
