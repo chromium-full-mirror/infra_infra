@@ -32,6 +32,7 @@ func TestArchiveInfos(t *testing.T) {
 			name             string
 			rootDir          string
 			resultFileDir    string
+			zipFilename      string
 			metadata         *api.XtsArchiverMetadata
 			wantInstr        []ArchiveInfo
 			wantErr          error
@@ -102,7 +103,85 @@ func TestArchiveInfos(t *testing.T) {
 				},
 			},
 			{
-				name:          "success with AL run",
+				name:          "success with archiving results for AL run",
+				rootDir:       filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				resultFileDir: filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				metadata: &api.XtsArchiverMetadata{
+					AlRun:                   true,
+					ApfeGcsPrefix:           "gs://apfe-bucket",
+					ResultsGcsPrefix:        "gs://result-bucket",
+					Build:                   "brya-userdebug/P454321",
+					Product:                 "brya.brya",
+					ParentSwarmingTaskId:    "parent_job_id",
+					EnableAlResultsArchiver: true,
+				},
+				createResultFile: true,
+				createZipFile:    true,
+				wantInstr: []ArchiveInfo{
+					{
+						Name:        fmt.Sprintf("results:al_project/tradefed_%s", nowStr),
+						Source:      filepath.Join(tempDir, "cros-test", "result", "tradefed", "test_result.xml.gz"),
+						Destination: fmt.Sprintf("gs://result-bucket/al_project/tradefed_%s/", nowStr),
+					},
+				},
+			},
+			{
+				name:          "success with archiving APFE for AL run",
+				rootDir:       filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				resultFileDir: filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				zipFilename:   "subprocess-results_12345.zip",
+				metadata: &api.XtsArchiverMetadata{
+					AlRun:                   true,
+					ApfeGcsPrefix:           "gs://apfe-bucket",
+					ResultsGcsPrefix:        "gs://result-bucket",
+					Build:                   "brya-userdebug/P454321",
+					Product:                 "brya.brya",
+					ParentSwarmingTaskId:    "parent_job_id",
+					EnableAlResultsArchiver: true,
+					EnableAlApfeArchiver:    true,
+				},
+				createResultFile: true,
+				createZipFile:    true,
+				wantInstr: []ArchiveInfo{
+					{
+						Name:        fmt.Sprintf("apfe:al_project/brya.brya-release/P454321/parent_job_id/tradefed_%s", nowStr),
+						Source:      filepath.Join(tempDir, "cros-test", "result", "tradefed", "subprocess-results_12345.zip"),
+						Destination: fmt.Sprintf("gs://apfe-bucket/al_project/brya.brya-release/P454321/parent_job_id/tradefed_%s/", nowStr),
+					},
+					{
+						Name:        fmt.Sprintf("results:al_project/tradefed_%s", nowStr),
+						Source:      filepath.Join(tempDir, "cros-test", "result", "tradefed", "test_result.xml.gz"),
+						Destination: fmt.Sprintf("gs://result-bucket/al_project/tradefed_%s/", nowStr),
+					},
+				},
+			},
+			{
+				name:          "AL run with enabled APFE archiver but non matching zip file",
+				rootDir:       filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				resultFileDir: filepath.Join(tempDir, "cros-test", "result", "tradefed"),
+				zipFilename:   "test_result.zip",
+				metadata: &api.XtsArchiverMetadata{
+					AlRun:                   true,
+					ApfeGcsPrefix:           "gs://apfe-bucket",
+					ResultsGcsPrefix:        "gs://result-bucket",
+					Build:                   "brya-userdebug/P454321",
+					Product:                 "brya.brya",
+					ParentSwarmingTaskId:    "parent_job_id",
+					EnableAlResultsArchiver: true,
+					EnableAlApfeArchiver:    true,
+				},
+				createResultFile: true,
+				createZipFile:    true,
+				wantInstr: []ArchiveInfo{
+					{
+						Name:        fmt.Sprintf("results:al_project/tradefed_%s", nowStr),
+						Source:      filepath.Join(tempDir, "cros-test", "result", "tradefed", "test_result.xml.gz"),
+						Destination: fmt.Sprintf("gs://result-bucket/al_project/tradefed_%s/", nowStr),
+					},
+				},
+			},
+			{
+				name:          "skips AL run with disabled archiver",
 				rootDir:       filepath.Join(tempDir, "cros-test", "result", "tradefed"),
 				resultFileDir: filepath.Join(tempDir, "cros-test", "result", "tradefed"),
 				metadata: &api.XtsArchiverMetadata{
@@ -115,13 +194,6 @@ func TestArchiveInfos(t *testing.T) {
 				},
 				createResultFile: true,
 				createZipFile:    true,
-				wantInstr: []ArchiveInfo{
-					{
-						Name:        fmt.Sprintf("results:al_project/tradefed_%s", nowStr),
-						Source:      filepath.Join(tempDir, "cros-test", "result", "tradefed", "test_result.xml.gz"),
-						Destination: fmt.Sprintf("gs://result-bucket/al_project/tradefed_%s/", nowStr),
-					},
-				},
 			},
 			{
 				name:    "non-release build",
@@ -141,6 +213,9 @@ func TestArchiveInfos(t *testing.T) {
 			t.Run(tc.name, func(t *ftt.Test) {
 				if tc.createZipFile {
 					zipPath := fmt.Sprintf("%s.zip", tc.resultFileDir)
+					if tc.zipFilename != "" {
+						zipPath = filepath.Join(tc.resultFileDir, tc.zipFilename)
+					}
 					if err := os.MkdirAll(tc.resultFileDir, 0755); err != nil {
 						t.Fatalf("failed to create directory structure for file: %v", err)
 					}
@@ -514,7 +589,7 @@ func TestParseJobResultsFilePath(t *testing.T) {
 				path:        "/cros-test/results/tradefed",
 				isALRun:     true,
 				wantHarness: "tradefed",
-				wantPkg:     AL_PROJECT_PREFIX,
+				wantPkg:     "",
 				wantTs:      now.Format(AL_PACKAGE_TIMESTAMP_FORMAT),
 			},
 			{
@@ -571,79 +646,151 @@ func createTGZFile(t testing.TB, tgzFile, xmlFilename string) {
 	}
 }
 
-func TestIsReleaseBuild(t *testing.T) {
-	ftt.Run("Test isReleaseBuild", t, func(t *ftt.Test) {
+func TestIsChromeOSReleaseBuild(t *testing.T) {
+	ftt.Run("Test isChromeOSReleaseBuild", t, func(t *ftt.Test) {
 		testCases := []struct {
 			build     string
-			isALRun   bool
 			isRelease bool
 		}{
 			{
 				build:     "brya-release/R99-12345.0.0",
-				isALRun:   false,
 				isRelease: true,
 			},
 			{
 				build:     "brya-release/R99-12345.0.0-test",
-				isALRun:   false,
 				isRelease: true,
 			},
 			{
 				build:     "a-very-long-board.name-release/R99-12345.0.0",
-				isALRun:   false,
 				isRelease: true,
 			},
 			{
 				build:     "brya-release.staging/R99-12345.0.0",
-				isALRun:   false,
 				isRelease: false,
 			},
 			{
 				build:     "trybot-brya-release/R99-12345.0.0",
-				isALRun:   false,
 				isRelease: false,
 			},
 			{
 				build:     "brya-kernelnext/R99-12345.0.0",
-				isALRun:   false,
 				isRelease: false,
 			},
 			{
 				build:     "brya/R99-12345.0.0",
-				isALRun:   false,
-				isRelease: false,
-			},
-			{
-				build:     "brya-userdebug/P12345",
-				isALRun:   true,
-				isRelease: true,
-			},
-			{
-				build:     "brya-trunk-userdebug/P12345",
-				isALRun:   true,
-				isRelease: true,
-			},
-			{
-				build:     "brya-next-userdebug/P12345",
-				isALRun:   true,
-				isRelease: true,
-			},
-			{
-				build:     "brya-trunk_staging-userdebug/P12345",
-				isALRun:   true,
-				isRelease: false,
-			},
-			{
-				build:     "brya-trunk_food-userdebug/P12345",
-				isALRun:   true,
 				isRelease: false,
 			},
 		}
 
 		for _, tc := range testCases {
 			t.Run(tc.build, func(t *ftt.Test) {
-				gotIsRelease := isReleaseBuild(tc.build, tc.isALRun)
+				gotIsRelease := isChromeOSReleaseBuild(tc.build)
 				assert.Loosely(t, gotIsRelease, should.Equal(tc.isRelease))
+			})
+		}
+	})
+}
+
+func TestIsResultsArchiverEnabled(t *testing.T) {
+	ftt.Run("Test isResultsArchiverEnabled", t, func(t *ftt.Test) {
+		testCases := []struct {
+			name     string
+			metadata *api.XtsArchiverMetadata
+			want     bool
+		}{
+			{
+				name: "ChromeOS release build",
+				metadata: &api.XtsArchiverMetadata{
+					Build: "brya-release/R99-12345.0.0",
+					AlRun: false,
+				},
+				want: true,
+			},
+			{
+				name: "ChromeOS non-release build",
+				metadata: &api.XtsArchiverMetadata{
+					Build: "brya-nonrelease/R99-12345.0.0",
+					AlRun: false,
+				},
+				want: false,
+			},
+			{
+				name: "AL run with archiver enabled",
+				metadata: &api.XtsArchiverMetadata{
+					AlRun:                   true,
+					EnableAlResultsArchiver: true,
+				},
+				want: true,
+			},
+			{
+				name: "AL run with archiver disabled",
+				metadata: &api.XtsArchiverMetadata{
+					AlRun:                   true,
+					EnableAlResultsArchiver: false,
+				},
+				want: false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *ftt.Test) {
+				got := isResultsArchiverEnabled(tc.metadata)
+				assert.Loosely(t, got, should.Equal(tc.want))
+			})
+		}
+	})
+}
+
+func TestIsAPFEArchiverEnabled(t *testing.T) {
+	ftt.Run("Test isAPFEArchiverEnabled", t, func(t *ftt.Test) {
+		testCases := []struct {
+			name        string
+			packageName string
+			metadata    *api.XtsArchiverMetadata
+			want        bool
+		}{
+			{
+				name:        "collect-tests-only run",
+				packageName: "some-package-with-tradefed-run-collect-tests-only-in-it",
+				metadata:    &api.XtsArchiverMetadata{},
+				want:        false,
+			},
+			{
+				name:        "collect-tests-only AL run with APFE archiver enabled",
+				packageName: "some-package-with-tradefed-run-collect-tests-only-in-it",
+				metadata:    &api.XtsArchiverMetadata{AlRun: true, EnableAlApfeArchiver: true},
+				want:        false,
+			},
+			{
+				name:        "ChromeOS run",
+				packageName: "some-package",
+				metadata:    &api.XtsArchiverMetadata{AlRun: false},
+				want:        true,
+			},
+			{
+				name:        "AL run with APFE archiver enabled",
+				packageName: "some-package",
+				metadata:    &api.XtsArchiverMetadata{AlRun: true, EnableAlApfeArchiver: true},
+				want:        true,
+			},
+			{
+				name:        "AL run with APFE archiver disabled",
+				packageName: "some-package",
+				metadata:    &api.XtsArchiverMetadata{AlRun: true, EnableAlApfeArchiver: false},
+				want:        false,
+			},
+			{
+				name:        "ChromeOS run with AL APFE archiver disabled",
+				packageName: "some-package",
+				metadata:    &api.XtsArchiverMetadata{AlRun: false, EnableAlApfeArchiver: false},
+				want:        true,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *ftt.Test) {
+				got := isAPFEArchiverEnabled(tc.packageName, tc.metadata)
+				assert.Loosely(t, got, should.Equal(tc.want))
 			})
 		}
 	})

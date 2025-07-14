@@ -117,30 +117,43 @@ func TestArchiveXTSResultsWithALResult(t *testing.T) {
 		gsClient := storage.NewGSTestClient(mockStorage)
 		tempDir := t.TempDir()
 		resultDir := filepath.Join(tempDir, "test_prefix", "cros-test", "results", "tradefed")
+		zipPath := filepath.Join(resultDir, "subprocess-results_12345.zip")
 		gs := &GcsPublishService{
 			Client:                      gsClient,
 			LocalArtifactPath:           tempDir,
 			ServiceAccountCredsFilePath: "/path/to/credentials",
 			XtsArchiverMetadata: &api.XtsArchiverMetadata{
-				AlRun:                true,
-				ApfeGcsPrefix:        "gs://apfe-bucket",
-				ResultsGcsPrefix:     "gs://result-bucket",
-				Build:                "brya-trunk-userdebug/P1454321",
-				Product:              "brya.brya",
-				ParentSwarmingTaskId: "parent_job_id",
+				AlRun:                   true,
+				ApfeGcsPrefix:           "gs://apfe-bucket",
+				ResultsGcsPrefix:        "gs://result-bucket",
+				Build:                   "brya-trunk-userdebug/P1454321",
+				Product:                 "brya.brya",
+				ParentSwarmingTaskId:    "parent_job_id",
+				EnableAlResultsArchiver: true,
+				EnableAlApfeArchiver:    true,
 			},
 		}
 		wantMockCalls := []*gomock.Call{
 			mockStorage.EXPECT().Write(
-				gomock.Any(), filepath.Join(resultDir, "test_result.xml.gz"),
+				gomock.Any(),
+				zipPath,
+				storage.GSObject{
+					Bucket: "apfe-bucket",
+					Object: fmt.Sprintf("al_project/brya.brya-release/P1454321/parent_job_id/tradefed_%s/subprocess-results_12345.zip", testclock.TestTimeUTC.Format(AL_PACKAGE_TIMESTAMP_FORMAT)),
+				}).Return(nil),
+			mockStorage.EXPECT().Write(
+				gomock.Any(),
+				filepath.Join(resultDir, "test_result.xml.gz"),
 				storage.GSObject{
 					Bucket: "result-bucket",
 					Object: fmt.Sprintf("al_project/tradefed_%s/test_result.xml.gz", testclock.TestTimeUTC.Format(AL_PACKAGE_TIMESTAMP_FORMAT)),
-				}).Return(nil)}
+				}).Return(nil),
+		}
 
 		if err := os.MkdirAll(resultDir, 0755); err != nil {
 			t.Fatalf("failed to create directory structure for file: %v", err)
 		}
+		createFile(t, zipPath)
 		resultPath := filepath.Join(resultDir, "test_result.xml")
 		createFile(t, resultPath)
 		defer os.RemoveAll(resultDir)
