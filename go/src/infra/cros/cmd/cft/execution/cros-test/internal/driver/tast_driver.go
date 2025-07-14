@@ -302,7 +302,6 @@ var allowedTastFlag = map[string]struct{}{
 	downloadDataFlag:         {},
 	excludeSkippedFlag:       {},
 	extraAllowedBucketsFlag:  {},
-	testRetriesFlag:          {},
 	testRepeatsFlag:          {},
 	extraUseFlagsFlag:        {},
 	failForTestsFlag:         {},
@@ -394,9 +393,14 @@ func newTastArgs(primary *device.DutInfo,
 		runFlags = append(runFlags, flagValue{dutLabConfigFlag, labConfigFile})
 	}
 
+	setDefaultRetries := true
 	for _, a := range customTastArgs {
 		if a.GetFlag() == "" {
 			continue
+		}
+		if a.GetFlag() == testRepeatsFlag || a.GetFlag() == testRetriesFlag {
+			// Do not set default retries flag if overridden or repeat flag is set.
+			setDefaultRetries = false
 		}
 		runFlags = append(runFlags, flagValue{a.GetFlag(), a.GetValue()})
 	}
@@ -406,6 +410,11 @@ func newTastArgs(primary *device.DutInfo,
 			continue
 		}
 		runFlags = append(runFlags, flagValue{varFlag, fmt.Sprintf("%s=%s", a.GetFlag(), a.GetValue())})
+	}
+
+	if setDefaultRetries {
+		// TODO b/270193958 remove this hardcode for a var.
+		runFlags = append(runFlags, flagValue{testRetriesFlag, "1"})
 	}
 
 	return &runArgs{
