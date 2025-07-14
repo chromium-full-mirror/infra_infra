@@ -27,6 +27,7 @@ import (
 	version_compare "go.chromium.org/infra/libs/version"
 	"go.chromium.org/infra/unifiedfleet/app/acl"
 	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
 	"go.chromium.org/infra/unifiedfleet/app/external"
 	"go.chromium.org/infra/unifiedfleet/app/frontend"
 	"go.chromium.org/infra/unifiedfleet/app/untrusted"
@@ -80,6 +81,7 @@ func ServerMain(cfgLoader *config.Loader) func(*server.Server) error {
 		srv.RunInBackground("ufs.config", cfgLoader.ReloadLoop)
 
 		acl.Register(cfgLoader.Config())
+		controller.ParseStateChangePriorityCfg(cfgLoader.Config())
 		srv.Context = config.Use(srv.Context, cfgLoader.Config())
 		srv.Context = external.WithServerInterface(srv.Context)
 

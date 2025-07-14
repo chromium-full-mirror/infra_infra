@@ -6,6 +6,10 @@ package controller
 
 import (
 	"context"
+	"slices"
+	"strings"
+
+	"go.chromium.org/luci/common/errors"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
@@ -34,6 +38,79 @@ func (su *stateUpdater) deleteStateHelper(ctx context.Context) error {
 	state.DeleteStates(ctx, []string{su.ResourceName})
 	su.logChanges(LogStateChanges(old, nil))
 	return nil
+}
+
+// updateMachineLSEState updates the final state based on current state and
+// other factors.
+func (su *stateUpdater) updateMachineLSEState(ctx context.Context, machineLSE *ufspb.MachineLSE, originalState ufspb.State) error {
+	oldRecord, _ := state.GetStateRecord(ctx, su.ResourceName)
+	newRecord, err := resolveNewState(ctx, machineLSE, oldRecord)
+	if err != nil {
+		return errors.Fmt("decide machineLSE state: %w", err)
+	}
+	machineLSE.ResourceState = newRecord.GetState()
+	if !needToUpdateStateRecord(oldRecord, newRecord) {
+		return nil
+	}
+	state.DeleteStates(ctx, []string{su.ResourceName})
+	// As we may use a queued state change request, the newRecord.User may not be
+	// the current request user.
+	newRecord.ResourceName = su.ResourceName
+	if _, err := state.BatchUpdateStates(ctx, []*ufspb.StateRecord{newRecord}); err != nil {
+		return err
+	}
+	su.logChanges(LogStateChanges(oldRecord, newRecord))
+	return nil
+}
+
+// resolveNewState resolves the machineLSE state based on user requests and
+// other factors.
+// See go/ufs-browser-state-sync for the detail algorithm.
+func resolveNewState(ctx context.Context, machineLSE *ufspb.MachineLSE, oldRecord *ufspb.StateRecord) (*ufspb.StateRecord, error) {
+	user := util.CurrentUser(ctx)
+	askingState := machineLSE.GetResourceState()
+	// Currently only apply this rules to the Browser fleet.
+	if util.GetNamespaceFromCtx(ctx) != util.BrowserNamespace {
+		return &ufspb.StateRecord{User: user, State: askingState}, nil
+	}
+	if isHuman(ctx, user) {
+		// Reset PendingRequests here to respect the human decision.
+		return &ufspb.StateRecord{User: user, State: askingState}, nil
+	}
+	return resolveStateForServices(ctx, user, oldRecord, askingState), nil
+}
+
+func isHuman(ctx context.Context, email string) bool {
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return false
+	}
+	return parts[1] == "google.com"
+}
+
+// resolveStateForServices resolves the MachineLSE state for non-human users.
+func resolveStateForServices(ctx context.Context, user string, originalRecord *ufspb.StateRecord, askingState ufspb.State) *ufspb.StateRecord {
+	req, remainingReqs := getTopStateReq(ctx, user, askingState, originalRecord)
+
+	return &ufspb.StateRecord{
+		State:           req.State,
+		User:            req.User,
+		PendingRequests: remainingReqs,
+	}
+}
+
+// needToUpdateStateRecord checks two StateRecord for changes matter which need
+// to write back to datastore.
+func needToUpdateStateRecord(old, new *ufspb.StateRecord) bool {
+	switch {
+	case old.GetState() != new.GetState():
+		return true
+	case old.GetUser() != new.GetUser():
+		return true
+	case !slices.Equal(old.GetPendingRequests(), new.GetPendingRequests()):
+		return true
+	}
+	return false
 }
 
 func (su *stateUpdater) updateStateHelper(ctx context.Context, newS ufspb.State) error {
