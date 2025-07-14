@@ -47,9 +47,9 @@ func TestNewTastArgs(t *testing.T) {
 			{varsFileFlag, varsFileValue},
 			{systemServicesTimeoutFlag, defaultSysServicesTimeout},
 			{dutLabConfigFlag, dutLabConfigFile},
+			{testRetriesFlag, "2"},
 			{buildArtifactsURLFlag, buildArtifactsURLValue},
 			{varFlag, fmt.Sprintf("%s=%s", varName, varValue)},
-			{testRetriesFlag, "1"},
 		},
 	}
 
@@ -58,6 +58,7 @@ func TestNewTastArgs(t *testing.T) {
 		workDir1, reportsServerValue,
 		varsFileValue,
 		[]*api.Arg{
+			{Flag: testRetriesFlag, Value: "2"},
 			{Flag: buildArtifactsURLFlag, Value: buildArtifactsURLValue},
 		},
 		[]*api.Arg{
@@ -157,7 +158,6 @@ func TestNewTastArgsCompanions(t *testing.T) {
 			{varsFileFlag, varsFileValue},
 			{systemServicesTimeoutFlag, defaultSysServicesTimeout},
 			{buildArtifactsURLFlag, buildArtifactsURLValue},
-			{testRetriesFlag, "1"},
 		},
 		companions: companions,
 		androids:   androids,
