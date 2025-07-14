@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
 	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // NewFleetConsoleFrontend creates a new fleet console frontend.
@@ -24,7 +25,13 @@ func NewFleetConsoleFrontend() fleetconsolerpc.FleetConsoleServer {
 type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
-	cloudProject        string
+	cloudProject            string
+	bbclient                buildbucket.Client
+	adminServiceAddress     string
+	inventoryServiceAddress string
+	inventoryNamespace      string
+	cipdVersion             buildbucket.CIPDVersion
+
 	deviceManagerClient func(context.Context, bool) (*devicemanagerclient.Client, error)
 	ufsClient           func(context.Context, bool) (ufsclient.Client, error)
 }
@@ -48,7 +55,32 @@ func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.
 	consoleFrontend.ufsClient = ufsClient
 }
 
-// SetCloudProject sets the cloud project
+// SetCloudProject sets the cloud project.
 func SetCloudProject(consoleFrontend *FleetConsoleFrontend, cloudProject string) {
 	consoleFrontend.cloudProject = cloudProject
+}
+
+// SetBBClient sets the buildbucket client.
+func SetBBClient(consoleFrontend *FleetConsoleFrontend, bbclient buildbucket.Client) {
+	consoleFrontend.bbclient = bbclient
+}
+
+// SetAdminServiceAddress sets the admin service address.
+func SetAdminServiceAddress(consoleFrontend *FleetConsoleFrontend, adminServiceAddress string) {
+	consoleFrontend.adminServiceAddress = adminServiceAddress
+}
+
+// SetInventoryServiceAddress sets the inventory service address.
+func SetInventoryServiceAddress(consoleFrontend *FleetConsoleFrontend, inventoryServiceAddress string) {
+	consoleFrontend.inventoryServiceAddress = inventoryServiceAddress
+}
+
+// SetInventoryNamespace sets the inventory namespace.
+func SetInventoryNamespace(consoleFrontend *FleetConsoleFrontend, inventoryNamespace string) {
+	consoleFrontend.inventoryNamespace = inventoryNamespace
+}
+
+// SetCIPDVersion sets the CIPD version.
+func SetCIPDVersion(consoleFrontend *FleetConsoleFrontend, cipdVersion buildbucket.CIPDVersion) {
+	consoleFrontend.cipdVersion = cipdVersion
 }

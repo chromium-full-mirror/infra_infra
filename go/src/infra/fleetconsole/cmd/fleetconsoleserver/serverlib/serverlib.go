@@ -33,6 +33,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
 	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
 	omnilab_pubsub "go.chromium.org/infra/fleetconsole/omnilab/omnilab-pubsub"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -97,6 +98,36 @@ func ServerMain(srv *server.Server) error {
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
 	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
 
+	bbClient, err := GetBBClient(srv.Context)
+	if err != nil {
+		return errors.Annotate(err, "failed to get buildbucket client").Err()
+	}
+	consoleserver.SetBBClient(consoleFrontend, bbClient)
+
+	inventoryServiceAddress, err := GetInventoryServiceAddress(srv.Context, consoleFrontend.IsProdEnvironment())
+	if err != nil {
+		return errors.Annotate(err, "failed to get inventory service address").Err()
+	}
+	consoleserver.SetInventoryServiceAddress(consoleFrontend, inventoryServiceAddress)
+
+	adminServiceAddress, err := GetAdminServiceAddress(srv.Context)
+	if err != nil {
+		return errors.Annotate(err, "failed to get admin service address").Err()
+	}
+	consoleserver.SetAdminServiceAddress(consoleFrontend, adminServiceAddress)
+
+	inventoryNamespace, err := GetInventoryNamespace(srv.Context)
+	if err != nil {
+		return errors.Annotate(err, "failed to get inventory namespace").Err()
+	}
+	consoleserver.SetInventoryNamespace(consoleFrontend, inventoryNamespace)
+
+	cipdVersion, err := GetCIPDVersion(srv.Context)
+	if err != nil {
+		return errors.Annotate(err, "failed to get CIPD version").Err()
+	}
+	consoleserver.SetCIPDVersion(consoleFrontend, cipdVersion)
+
 	cron.RegisterHandler("ping-db", func(ctx context.Context) error {
 		_, err := consoleFrontend.PingDB(ctx, &fleetconsolerpc.PingDBRequest{})
 		return err
@@ -147,6 +178,29 @@ func ConfigureCORS(ctx context.Context, srv *server.Server) {
 	})
 }
 
+func GetBBClient(ctx context.Context) (buildbucket.Client, error) {
+	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+	if err != nil {
+		// TODO(phoebetang): Remove this logging once confirmed
+		logging.Infof(ctx, "error setting up Buildbucket client transport: %s", err)
+		return nil, nil
+	}
+
+	httpClient := &http.Client{
+		Transport: t,
+	}
+	prpcOpts := prpc.Options{}
+
+	client, err := buildbucket.NewClient(ctx, httpClient, &prpcOpts)
+	if err != nil {
+		// TODO(phoebetang): Remove this logging once confirmed
+		logging.Infof(ctx, "setting up Buildbucket client: %s", err)
+		return nil, nil
+	}
+	logging.Infof(ctx, "successfully set up buildbucket client")
+	return client, nil
+}
+
 func GetDeviceManagerClient(ctx context.Context, isProd bool) (*devicemanagerclient.Client, error) {
 	deviceManagerAddr := devicemanagerclient.DMDevURL
 	if isProd {
@@ -176,6 +230,19 @@ func GetDeviceManagerClient(ctx context.Context, isProd bool) (*devicemanagercli
 		return nil, errors.Annotate(err, "configuring device manager client").Err()
 	}
 	return deviceManagerClient, nil
+}
+
+func GetInventoryServiceAddress(ctx context.Context, isProd bool) (string, error) {
+	ufsAddr := ufsclient.UfsDevURL
+	if isProd {
+		ufsAddr = ufsclient.UfsProdURL
+	}
+	if *flags.UfsAddr != "" {
+		logging.Infof(ctx, "parsing ufs address from flag: %s", *flags.UfsAddr)
+		res := strings.Split(*flags.UfsAddr, ":")
+		ufsAddr = res[0]
+	}
+	return ufsAddr, nil
 }
 
 func GetUfsClient(ctx context.Context, isProd bool) (ufsclient.Client, error) {
@@ -214,4 +281,32 @@ func GetUfsClient(ctx context.Context, isProd bool) (ufsclient.Client, error) {
 
 	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
 	return ufsClient, nil
+}
+
+// GetAdminServiceAddress returns the Admin Service address.
+func GetAdminServiceAddress(ctx context.Context) (string, error) {
+	if *flags.AdminServiceAddr == "" {
+		// TODO(phoebetang): Remove this logging once confirmed
+		logging.Infof(ctx, "admin service address flag is empty")
+		return "", nil
+	}
+	logging.Infof(ctx, "parsing admin service address from flag: %s", *flags.AdminServiceAddr)
+	return *flags.AdminServiceAddr, nil
+}
+
+// GetInventoryNamespace returns the Inventory Namespace.
+func GetInventoryNamespace(ctx context.Context) (string, error) {
+	if *flags.InventoryNamespace == "" {
+		// TODO(phoebetang): Remove this logging once confirmed
+		logging.Infof(ctx, "inventory namespace flag is empty")
+		return "", nil
+	}
+	logging.Infof(ctx, "parsing inventory namespace from flag: %s", *flags.InventoryNamespace)
+	return *flags.InventoryNamespace, nil
+}
+
+// GetCIPDVersion returns the CIPD Version.
+func GetCIPDVersion(ctx context.Context) (buildbucket.CIPDVersion, error) {
+	logging.Infof(ctx, "parsing CIPD version from flag: %s", *flags.CIPDVersion)
+	return buildbucket.CIPDVersion(*flags.CIPDVersion), nil
 }
