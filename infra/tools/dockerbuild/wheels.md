@@ -742,6 +742,20 @@ wheel: <
 
 * *universal*
 
+## **annotated-types-py3**
+
+### 0.7.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/annotated-types-py3"
+  version: "version:0.7.0"
+>
+```
+
+
+* *universal*
+
 ## **ansicon**
 
 ### 1.89.0
@@ -750,6 +764,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/ansicon-py2_py3"
   version: "version:1.89.0"
+>
+```
+
+
+* *universal*
+
+## **anyio-py3**
+
+### 4.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/anyio-py3"
+  version: "version:4.9.0"
 >
 ```
 
@@ -4612,6 +4640,18 @@ wheel: <
 
 * *universal*
 
+### 0.16.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/h11-py3"
+  version: "version:0.16.0"
+>
+```
+
+
+* *universal*
+
 ## **h5py**
 
 ### 3.11.0
@@ -4665,6 +4705,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/httpagentparser-py2_py3"
   version: "version:1.9.3"
+>
+```
+
+
+* *universal*
+
+## **httpcore-py3**
+
+### 1.0.9
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/httpcore-py3"
+  version: "version:1.0.9"
 >
 ```
 
@@ -4729,6 +4783,34 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/httplib2-py3"
   version: "version:0.22.0"
+>
+```
+
+
+* *universal*
+
+## **httpx-py3**
+
+### 0.28.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/httpx-py3"
+  version: "version:0.28.1"
+>
+```
+
+
+* *universal*
+
+## **httpx_sse-py3**
+
+### 0.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/httpx_sse-py3"
+  version: "version:0.4.1"
 >
 ```
 
@@ -5557,6 +5639,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/mccabe-py2_py3"
   version: "version:0.7.0"
+>
+```
+
+
+* *universal*
+
+## **mcp-py3**
+
+### 1.9.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mcp-py3"
+  version: "version:1.9.4"
 >
 ```
 
@@ -8135,6 +8231,48 @@ wheel: <
 
 * *manylinux-x64-py3.11*
 
+## **pydantic-py3**
+
+### 2.11.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pydantic-py3"
+  version: "version:2.11.7"
+>
+```
+
+
+* *universal*
+
+## **pydantic-settings-py3**
+
+### 2.10.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pydantic-settings-py3"
+  version: "version:2.10.1"
+>
+```
+
+
+* *universal*
+
+## **pydantic_core-py3**
+
+### 2.33.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pydantic_core-py3"
+  version: "version:2.33.2"
+>
+```
+
+
+* *universal*
+
 ## **pydevd-pycharm**
 
 ### 232.6734.4
@@ -9428,6 +9566,20 @@ wheel: <
 
 * *universal*
 
+## **python-dotenv-py3**
+
+### 1.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/python-dotenv-py3"
+  version: "version:1.1.1"
+>
+```
+
+
+* *universal*
+
 ## **python-magic**
 
 ### 0.4.24
@@ -9436,6 +9588,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/python-magic-py2_py3"
   version: "version:0.4.24"
+>
+```
+
+
+* *universal*
+
+## **python-multipart-py3**
+
+### 0.0.20
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/python-multipart-py3"
+  version: "version:0.0.20"
 >
 ```
 
@@ -10261,6 +10427,34 @@ wheel: <
 
 * *universal*
 
+## **sse-starlette-py3**
+
+### 2.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/sse-starlette-py3"
+  version: "version:2.4.1"
+>
+```
+
+
+* *universal*
+
+## **starlette-py3**
+
+### 0.47.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/starlette-py3"
+  version: "version:0.47.1"
+>
+```
+
+
+* *universal*
+
 ## **tabulate-py3**
 
 ### 0.8.9
@@ -11031,6 +11225,20 @@ wheel: <
 
 * *universal*
 
+## **typing-inspection-py3**
+
+### 0.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typing-inspection-py3"
+  version: "version:0.4.1"
+>
+```
+
+
+* *universal*
+
 ## **tzdata**
 
 ### 2023.4
@@ -11269,6 +11477,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/urllib3-py3"
   version: "version:2.5.0"
+>
+```
+
+
+* *universal*
+
+## **uvicorn-py3**
+
+### 0.35.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/uvicorn-py3"
+  version: "version:0.35.0"
 >
 ```
 
