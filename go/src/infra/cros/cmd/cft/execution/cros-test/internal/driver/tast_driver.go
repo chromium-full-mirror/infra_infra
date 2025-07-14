@@ -303,6 +303,7 @@ var allowedTastFlag = map[string]struct{}{
 	excludeSkippedFlag:       {},
 	extraAllowedBucketsFlag:  {},
 	testRepeatsFlag:          {},
+	testRetriesFlag:          {},
 	extraUseFlagsFlag:        {},
 	failForTestsFlag:         {},
 	maxSysMsgLogSizeFlag:     {},
