@@ -42,9 +42,13 @@ const (
 	// files.
 	openWrtArchiveFileExt = ".tar.xz"
 
-	// openWrtImageFileExt is the file extension of all OpenWrt image binary
+	// openWrtBinImageFileExt is the file extension of old OpenWrt image binary
 	// files contained within image archive files.
-	openWrtImageFileExt = ".bin"
+	openWrtBinImageFileExt = ".bin"
+
+	// openWrtItbImageFileExt is the file extension of new OpenWrt image binary
+	// files contained within image archive files.
+	openWrtItbImageFileExt = ".itb"
 )
 
 // hostIsOpenWrtRouter checks if the remote host is an OpenWrt router.
@@ -543,9 +547,9 @@ func (c *OpenWrtRouterController) downloadImageToDevice(ctx context.Context, ima
 		"-J",
 		"--xz",
 
-		// Only extract image binary file.
+		// Only extract sysupgrade image file.
 		"--wildcards",
-		"*"+openWrtImageFileExt,
+		"*-sysupgrade*",
 
 		// List extracted files in stdout (paths will be relative).
 		"-v",
@@ -554,9 +558,15 @@ func (c *OpenWrtRouterController) downloadImageToDevice(ctx context.Context, ima
 		return "", errors.Annotate(err, "failed to extract binary from archive %q on router", archiveRouterPath).Err()
 	}
 	imageBinaryRouterPath := filepath.Join(tmpDir, strings.TrimSpace(tarRunOutput))
-	if !strings.HasSuffix(imageBinaryRouterPath, openWrtImageFileExt) {
+	switch {
+	case strings.HasSuffix(imageBinaryRouterPath, openWrtBinImageFileExt):
+		log.Infof(ctx, "Extracted OpenWrt binary image file %q from archive %q on router", imageBinaryRouterPath, imageArchiveGCSPath)
+	case strings.HasSuffix(imageBinaryRouterPath, openWrtItbImageFileExt):
+		log.Infof(ctx, "Extracted OpenWrt ITB image file %q from archive %q on router", imageBinaryRouterPath, imageArchiveGCSPath)
+	default:
 		return "", errors.Reason("invalid image binary file %q extracted from image archive %q on router", imageBinaryRouterPath, imageArchiveGCSPath).Err()
 	}
+
 	exists, err := ssh.TestFileExists(ctx, c.sshRunner, imageBinaryRouterPath)
 	if err != nil {
 		return "", err
