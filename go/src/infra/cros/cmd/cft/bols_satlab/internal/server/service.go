@@ -623,10 +623,24 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 	s.logger.Println("Receive SetServod Request")
-	rpsn, err := xmlrpc.SetServod(ctx, req)
+	containerName := req.GetStationId().GetContainerName()
+	port := req.GetStationId().GetServodPort()
+	control := req.GetControl()
+	value := req.GetValue()
+	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErrorf("failed to send set %s request to servod at port %d: %w",
-			req.GetControl(), req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErrorf("failed to create docker client: %w", err)
+	}
+
+	ipAddress, err := c.IPAddress(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to get IP address for container %q: %w", containerName, err)
+	}
+
+	rpsn, err := xmlrpc.SetServod(ctx, ipAddress, port, control, value)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to send set %s request to servod at %s:%d: %w",
+			control, ipAddress, port, err)
 	}
 	s.logger.Println("Served SetServod Request Successfully")
 	return rpsn, nil
@@ -645,10 +659,23 @@ func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersi
 
 func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
 	s.logger.Println("Receive EchoServod Request")
-	rpsn, err := xmlrpc.EchoServod(ctx, req)
+	containerName := req.GetStationId().GetContainerName()
+	port := req.GetStationId().GetServodPort()
+	echo := req.GetEcho()
+	c, err := dockerClient(ctx, containerName)
 	if err != nil {
-		return nil, s.logAndReturnErrorf("failed to send echo request to servod at port %d: %w",
-			req.GetStationId().GetServodPort(), err)
+		return nil, s.logAndReturnErrorf("failed to create docker client: %w", err)
+	}
+
+	ipAddress, err := c.IPAddress(ctx, containerName)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to get IP address for container %q: %w", containerName, err)
+	}
+
+	rpsn, err := xmlrpc.EchoServod(ctx, ipAddress, port, echo)
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to send echo request to servod at %s:%d: %w",
+			ipAddress, port, err)
 	}
 	s.logger.Println("Served EchoServod Request Successfully")
 	return rpsn, nil

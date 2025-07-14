@@ -512,7 +512,10 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 // SetServod sets value to a servod control.
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 	s.logger.Println("Receive SetServod Request")
-	rpsn, err := xmlrpc.SetServod(ctx, req)
+	port := req.GetStationId().GetServodPort()
+	control := req.GetControl()
+	value := req.GetValue()
+	rpsn, err := xmlrpc.SetServod(ctx, "localhost", port, control, value)
 	if err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to send set %s request to servod at port %d: %w",
@@ -538,11 +541,15 @@ func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersi
 // EchoServod calls echo method of servod.
 func (s *service) EchoServod(ctx context.Context, req *bols.EchoServodRequest) (*bols.EchoServodResponse, error) {
 	s.logger.Println("Receive EchoServod Request")
-	rpsn, err := xmlrpc.EchoServod(ctx, req)
+	port := req.GetStationId().GetServodPort()
+	echo := req.GetEcho()
+	// Per requirement, labstation always communicates with servod on localhost.
+	host := "localhost"
+	rpsn, err := xmlrpc.EchoServod(ctx, host, port, echo)
 	if err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to send echo request to servod at port %d: %w",
-				req.GetStationId().GetServodPort(), err))
+				port, err))
 	}
 	s.logger.Println("Served EchoServod Request Successfully")
 	return rpsn, nil

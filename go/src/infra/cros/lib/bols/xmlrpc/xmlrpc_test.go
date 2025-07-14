@@ -115,15 +115,8 @@ func TestSetServodDouble(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	req := &bols.SetServodRequest{
-		StationId: &bols.StationIdentifier{
-			ServodPort:    int32(port),
-			ContainerName: host,
-		},
-		Control: control,
-		Value:   &bols.ServodValue{Value: &bols.ServodValue_DoubleValue{DoubleValue: wanted}},
-	}
-	if _, err := SetServod(context.Background(), req); err != nil {
+	value := &bols.ServodValue{Value: &bols.ServodValue_DoubleValue{DoubleValue: wanted}}
+	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -144,15 +137,8 @@ func TestSetServodInt(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	req := &bols.SetServodRequest{
-		StationId: &bols.StationIdentifier{
-			ServodPort:    int32(port),
-			ContainerName: host,
-		},
-		Control: control,
-		Value:   &bols.ServodValue{Value: &bols.ServodValue_IntValue{IntValue: wanted}},
-	}
-	if _, err := SetServod(context.Background(), req); err != nil {
+	value := &bols.ServodValue{Value: &bols.ServodValue_IntValue{IntValue: wanted}}
+	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -173,15 +159,8 @@ func TestSetServodString(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	req := &bols.SetServodRequest{
-		StationId: &bols.StationIdentifier{
-			ServodPort:    int32(port),
-			ContainerName: host,
-		},
-		Control: control,
-		Value:   &bols.ServodValue{Value: &bols.ServodValue_StringValue{StringValue: wanted}},
-	}
-	if _, err := SetServod(context.Background(), req); err != nil {
+	value := &bols.ServodValue{Value: &bols.ServodValue_StringValue{StringValue: wanted}}
+	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -317,14 +296,7 @@ func TestEchoServod(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	rspn, err := EchoServod(context.Background(),
-		&bols.EchoServodRequest{
-			StationId: &bols.StationIdentifier{
-				ServodPort:    int32(port),
-				ContainerName: host,
-			},
-			Echo: msg,
-		})
+	rspn, err := EchoServod(context.Background(), host, int32(port), msg)
 	if err != nil {
 		t.Fatalf("failed to call EchoServod: %v", err)
 	}
