@@ -140,7 +140,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 			ctsParams = append(ctsParams, packages...)
 		}
 		if testType != "apts" {
-			ctsParams = append(ctsParams, "--no-use-device-build-info", "--include-test-log-tags",
+			ctsParams = append(ctsParams, "--use-device-build-info", "--include-test-log-tags",
 				"--result-reporter:disable-result-posting", "--result-reporter:no-disable",
 				"--post-boot-command", `"am switch-user 10"`, "--use-log-saver",
 			)
