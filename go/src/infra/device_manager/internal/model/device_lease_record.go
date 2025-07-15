@@ -375,13 +375,13 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 }
 
 // ListLeases retrieves DeviceLeaseRecords with pagination.
-func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, pageSize int, filter string) ([]DeviceLeaseRecord, database.PageToken, error) {
+func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, pageSize int, filter string, idType DeviceIDType, id string) ([]DeviceLeaseRecord, database.PageToken, error) {
 	// handle potential errors for negative page numbers or page sizes
 	if pageSize <= 0 {
 		pageSize = database.DefaultPageSize
 	}
 
-	query, args, err := buildListLeasesQuery(ctx, pageToken, pageSize, filter)
+	query, args, err := buildListLeasesQuery(ctx, pageToken, pageSize, filter, idType, id)
 	if err != nil {
 		return nil, "", fmt.Errorf("ListLeases: %w", err)
 	}
@@ -455,7 +455,7 @@ func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, p
 }
 
 // buildListLeasesQuery builds a ListLeases query using given params.
-func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string) (string, []any, error) {
+func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pageSize int, filter string, idType DeviceIDType, id string) (string, []any, error) {
 	var queryArgs []any
 	query := `
 		SELECT
@@ -471,17 +471,32 @@ func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pag
 			last_updated_time
 		FROM "DeviceLeaseRecords"`
 
+	var idFilter string
+	if id != "" {
+		switch idType {
+		case IDTypeDutID:
+			idFilter = fmt.Sprintf("dut_id = '%s'", id)
+		case IDTypeHostname:
+			idFilter = fmt.Sprintf("device_id = '%s'", id)
+		}
+	}
+
+	if filter != "" && idFilter != "" {
+		filter = fmt.Sprintf("%s AND %s", filter, idFilter)
+	} else if idFilter != "" {
+		filter = idFilter
+	}
+
 	if pageToken != "" {
 		decodedTime, err := database.DecodePageToken(ctx, pageToken)
 		if err != nil {
 			return "", queryArgs, fmt.Errorf("buildListLeasesQuery: %w", err)
 		}
-		filter = fmt.Sprintf("leased_time > %s%s", decodedTime, func() string {
-			if filter == "" {
-				return "" // No additional filter provided
-			}
-			return " AND " + filter
-		}())
+		if filter != "" {
+			filter = fmt.Sprintf("leased_time > '%s' AND %s", decodedTime, filter)
+		} else {
+			filter = fmt.Sprintf("leased_time > '%s'", decodedTime)
+		}
 	}
 
 	queryFilter, filterArgs := database.BuildQueryFilter(ctx, filter)
