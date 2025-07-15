@@ -14,6 +14,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update \
       ca-certificates \
       iproute2 \
       python-pip \
+      # sox is a test dependency for audio tests.\
+      sox \
       xxd
 
 # grab gsutil
