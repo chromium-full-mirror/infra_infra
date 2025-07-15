@@ -280,6 +280,11 @@ func UpdateDracHost(ctx context.Context, drac *ufspb.Drac, nwOpt *ufsAPI.Network
 		if _, err := hc.netUdt.addHostHelper(ctx, nwOpt.GetVlan(), nwOpt.GetIp(), drac.GetMacAddress()); err != nil {
 			return err
 		}
+
+		// 4. Update drac entry to update the update_time
+		if _, err := registration.BatchUpdateDracs(ctx, []*ufspb.Drac{drac}); err != nil {
+			return errors.Annotate(err, "UpdateDracHost - unable to batch update drac %s", drac.Name).Err()
+		}
 		return hc.SaveChangeEvents(ctx)
 	}
 

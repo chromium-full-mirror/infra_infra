@@ -655,6 +655,57 @@ func TestUpdateRPM(t *testing.T) {
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
+		t.Run("Update rpm IP - updateTime not updated", func(t *ftt.Test) {
+			t.Log("Running test: Update rpm IP - updateTime not updated")
+			rack := &ufspb.Rack{
+				Name: "rack-rpm-test-update-time",
+				Rack: &ufspb.Rack_ChromeBrowserRack{
+					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
+				},
+			}
+			_, err := registration.CreateRack(ctx, rack)
+			assert.Loosely(t, err, should.BeNil)
+
+			rpm := &ufspb.RPM{
+				Name:       "rpm-test-update-time",
+				Rack:       "rack-rpm-test-update-time",
+				MacAddress: "00:14:3d:14:c4:04",
+			}
+			resp, err := CreateRPM(ctx, rpm)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+
+			// Get the initial update time
+			rpm, err = registration.GetRPM(ctx, "rpm-test-update-time")
+			assert.Loosely(t, err, should.BeNil)
+			initialUpdateTime := rpm.GetUpdateTime().AsTime()
+
+			// Update the IP
+			vlan := &ufspb.Vlan{
+				Name:        "vlan-3",
+				VlanAddress: "192.168.42.0/22",
+			}
+			_, err = configuration.CreateVlan(ctx, vlan)
+			assert.Loosely(t, err, should.BeNil)
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			assert.Loosely(t, err, should.BeNil)
+			// Only import the first 20 as one single transaction cannot import all.
+			_, err = configuration.ImportIPs(ctx, ips[0:20])
+			assert.Loosely(t, err, should.BeNil)
+
+			err = UpdateRPMHost(ctx, rpm, &ufsAPI.NetworkOption{
+				Vlan: "vlan-3",
+				Ip:   "192.168.42.12",
+			})
+			assert.Loosely(t, err, should.BeNil)
+
+			// Get the rpm again and check the update time
+			rpm, err = registration.GetRPM(ctx, "rpm-test-update-time")
+			assert.Loosely(t, err, should.BeNil)
+			newUpdateTime := rpm.GetUpdateTime().AsTime()
+
+			assert.Loosely(t, newUpdateTime.After(initialUpdateTime), should.BeTrue)
+		})
 	})
 }
 

@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
@@ -739,6 +740,57 @@ func TestUpdateKVM(t *testing.T) {
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
+		t.Run("Update kvm IP - updateTime not updated", func(t *ftt.Test) {
+			t.Log("Running test: Update kvm IP - updateTime not updated")
+			rack := &ufspb.Rack{
+				Name: "rack-kvm-test-update-time",
+				Rack: &ufspb.Rack_ChromeBrowserRack{
+					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
+				},
+			}
+			_, err := registration.CreateRack(ctx, rack)
+			assert.Loosely(t, err, should.BeNil)
+
+			kvm := &ufspb.KVM{
+				Name:       "kvm-test-update-time",
+				Rack:       "rack-kvm-test-update-time",
+				MacAddress: "00:14:3d:14:c4:03",
+			}
+			resp, err := CreateKVM(ctx, kvm)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+
+			// Get the initial update time
+			kvm, err = registration.GetKVM(ctx, "kvm-test-update-time")
+			assert.Loosely(t, err, should.BeNil)
+			initialUpdateTime := kvm.GetUpdateTime().AsTime()
+
+			// Update the IP
+			vlan := &ufspb.Vlan{
+				Name:        "vlan-2",
+				VlanAddress: "192.168.41.0/22",
+			}
+			_, err = configuration.CreateVlan(ctx, vlan)
+			assert.Loosely(t, err, should.BeNil)
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			assert.Loosely(t, err, should.BeNil)
+			// Only import the first 20 as one single transaction cannot import all.
+			_, err = configuration.ImportIPs(ctx, ips[0:20])
+			assert.Loosely(t, err, should.BeNil)
+
+			err = UpdateKVMHost(ctx, kvm, &ufsAPI.NetworkOption{
+				Vlan: "vlan-2",
+				Ip:   "192.168.41.12",
+			})
+			assert.Loosely(t, err, should.BeNil)
+
+			// Get the kvm again and check the update time
+			kvm, err = registration.GetKVM(ctx, "kvm-test-update-time")
+			assert.Loosely(t, err, should.BeNil)
+			newUpdateTime := kvm.GetUpdateTime().AsTime()
+
+			assert.Loosely(t, newUpdateTime.After(initialUpdateTime), should.BeTrue)
+		})
 	})
 }
 

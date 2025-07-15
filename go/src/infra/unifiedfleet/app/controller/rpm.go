@@ -461,6 +461,11 @@ func UpdateRPMHost(ctx context.Context, rpm *ufspb.RPM, nwOpt *ufsAPI.NetworkOpt
 			return err
 		}
 
+		// 4. Update rpm entry to update the update_time
+		if _, err := registration.BatchUpdateRPMs(ctx, []*ufspb.RPM{rpm}); err != nil {
+			return errors.Annotate(err, "UpdateRPMHost - unable to batch update rpm %s", rpm.Name).Err()
+		}
+
 		if err := hc.stUdt.updateStateHelper(ctx, ufspb.State_STATE_DEPLOYING); err != nil {
 			return errors.Annotate(err, "Fail to update state to rpm %s", rpm.GetName()).Err()
 		}

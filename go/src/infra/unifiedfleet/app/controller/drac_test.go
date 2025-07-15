@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
@@ -914,6 +915,58 @@ func TestUpdateDrac(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetDisplayName(), should.Equal("e08c1cf7-020c-4ca1-874b-4d41e65f85d5"))
+		})
+
+		t.Run("Update drac IP - updateTime not updated", func(t *ftt.Test) {
+			t.Log("Running test: Update drac IP - updateTime not updated")
+			machine1 := &ufspb.Machine{
+				Name: "machine-27",
+				Device: &ufspb.Machine_ChromeBrowserMachine{
+					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.Loosely(t, err, should.BeNil)
+
+			drac := &ufspb.Drac{
+				Name:       "drac-27",
+				Machine:    "machine-27",
+				MacAddress: "00:14:3d:14:c4:02",
+			}
+			resp, err := CreateDrac(ctx, drac)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+
+			// Get the initial update time
+			drac, err = registration.GetDrac(ctx, "drac-27")
+			assert.Loosely(t, err, should.BeNil)
+			initialUpdateTime := drac.GetUpdateTime().AsTime()
+
+			// Update the IP
+			vlan := &ufspb.Vlan{
+				Name:        "vlan-1",
+				VlanAddress: "192.168.40.0/22",
+			}
+			_, err = configuration.CreateVlan(ctx, vlan)
+			assert.Loosely(t, err, should.BeNil)
+			ips, _, _, _, _, err := util.ParseVlan(vlan.GetName(), vlan.GetVlanAddress(), vlan.GetFreeStartIpv4Str(), vlan.GetFreeEndIpv4Str())
+			assert.Loosely(t, err, should.BeNil)
+			// Only import the first 20 as one single transaction cannot import all.
+			_, err = configuration.ImportIPs(ctx, ips[0:20])
+			assert.Loosely(t, err, should.BeNil)
+
+			err = UpdateDracHost(ctx, drac, &ufsAPI.NetworkOption{
+				Vlan: "vlan-1",
+				Ip:   "192.168.40.12",
+			})
+			assert.Loosely(t, err, should.BeNil)
+
+			// Get the drac again and check the update time
+			drac, err = registration.GetDrac(ctx, "drac-27")
+			assert.Loosely(t, err, should.BeNil)
+			newUpdateTime := drac.GetUpdateTime().AsTime()
+
+			assert.Loosely(t, newUpdateTime.After(initialUpdateTime), should.BeTrue)
 		})
 	})
 }
