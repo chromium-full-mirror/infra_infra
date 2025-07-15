@@ -119,7 +119,7 @@ func (q *QueryBuilder) simpleQuery(simple *aip160.Simple, argInfo *compositeArgI
 	}
 
 	if simple.Restriction != nil {
-		return q.restrictionQuery(simple.Restriction, argInfo, comparableOverride)
+		return q.restrictionQuery(simple.Restriction, comparableOverride)
 	} else if simple.Composite != nil {
 		return q.expressionQuery(simple.Composite, nil, comparableOverride)
 	} else {
@@ -130,7 +130,7 @@ func (q *QueryBuilder) simpleQuery(simple *aip160.Simple, argInfo *compositeArgI
 // restrictionQuery returns the SQL expression equivalent to the given
 // restriction.
 // The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo *compositeArgInfo, comparableOverride *ComparableOverride) (string, error) {
+func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, comparableOverride *ComparableOverride) (string, error) {
 	if err := q.validateRestrictionCore(restriction); err != nil {
 		return "", err
 	}
@@ -138,10 +138,6 @@ func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo
 	// Process composite arg.
 	// Currently it is limited to simple expressions like (value1 AND value2 OR ...)
 	if restriction.Arg.Composite != nil {
-		if argInfo != nil {
-			return "", fmt.Errorf("composite `args` are limited to simple expressions like (value1 AND value2 OR ...), nesting detected")
-		}
-
 		column, err := q.getColumnFromRestriction(restriction.Comparable.Member.Value)
 		if err != nil {
 			return "", err
@@ -205,12 +201,15 @@ func (q *QueryBuilder) handleSimpleComparison(restriction *aip160.Restriction, c
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", columnName, argSQL), nil
-	case ":": //TODO: this should work as IN on lists
-		argSQL, err = q.likeArgValue(columnName, restriction.Arg)
+	case ":":
+		if q.sqlLangType != BigQueryLangType {
+			return "", fmt.Errorf("has operator ':' is currently only supported for BigQuery queries")
+		}
+		argSQL, err = q.argValue(columnName, restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", columnName).Err()
 		}
-		return fmt.Sprintf("(%s LIKE %s)", columnName, argSQL), nil
+		return fmt.Sprintf("(%s IN UNNEST(%s))", argSQL, columnName), nil //UNNEST is a BigQuery specific function
 	default:
 		return "", fmt.Errorf("comparator operator '%s' not implemented yet for simple comparison", restriction.Comparator)
 	}
@@ -298,12 +297,6 @@ func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restrict
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", argInfo.column.name, arg), nil
-	} else if argInfo.comparator == ":" {
-		arg, err := q.likeComparableValue(argInfo.column.name, restriction.Comparable)
-		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
-		}
-		return fmt.Sprintf("(%s LIKE %s)", argInfo.column.name, arg), nil
 	} else {
 		return "", fmt.Errorf("comparator operator not implemented yet")
 	}
@@ -334,46 +327,6 @@ func (q *QueryBuilder) comparableValue(columnName string, comparable *aip160.Com
 	}
 
 	return q.bind(columnName, comparable.Member.Value), nil
-}
-
-// likeArgValue returns a SQL expression that, when passed to the
-// right hand side of a LIKE operator, performs substring matching against
-// the value of the argument.
-// The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) likeArgValue(columnName string, arg *aip160.Arg) (string, error) {
-	if arg.Composite != nil {
-		return "", fmt.Errorf("composite expressions are not allowed as RHS to has (:) operator")
-	}
-	if arg.Comparable == nil {
-		return "", fmt.Errorf("missing comparable in the argument")
-	}
-
-	return q.likeComparableValue(columnName, arg.Comparable)
-}
-
-// likeComparableValue returns a SQL expression that, when passed to the
-// right hand side of a LIKE operator, performs substring matching against
-// the value of the comparable.
-// The returned string is an injection-safe SQL expression.
-func (q *QueryBuilder) likeComparableValue(columnName string, comparable *aip160.Comparable) (string, error) {
-	if comparable.Member == nil {
-		return "", fmt.Errorf("invalid comparable")
-	}
-	if len(comparable.Member.Fields) > 0 {
-		return "", fmt.Errorf("fields are not allowed on the RHS of has (:) operator")
-	}
-	// Bind unsanitised user input to a parameter to protect against SQL injection.
-	return q.bind(columnName, "%"+quoteLike(comparable.Member.Value)+"%"), nil
-}
-
-// Turns a literal string into an escaped like expression.
-// This means strings like test_name will only match as expected, rather than
-// also matching test3name.
-func quoteLike(value string) string {
-	value = strings.ReplaceAll(value, "\\", "\\\\")
-	value = strings.ReplaceAll(value, "%", "\\%")
-	value = strings.ReplaceAll(value, "_", "\\_")
-	return value
 }
 
 // Checks whether value exist in the array specified in the json path

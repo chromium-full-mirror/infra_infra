@@ -33,14 +33,6 @@ func TestWhereClause(t *testing.T) {
 			assert.Loosely(t, q.whereClause, should.Equal(""))
 		})
 		t.Run("Simple filter", func(t *ftt.Test) {
-			t.Run("has operator", func(t *ftt.Test) {
-				q, err := NewQueryBuilder(table).WithWhereClause("dut_name:chromeos", nil)
-				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, q.parameters.values, should.Match([]QueryParameter{
-					{Name: "dut_name", Value: "%chromeos%"},
-				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_name LIKE $1)"))
-			})
 			t.Run("equals operator", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state = available", nil)
 				assert.Loosely(t, err, should.BeNil)
@@ -88,14 +80,6 @@ func TestWhereClause(t *testing.T) {
 					{Name: "test_date", Value: "2020-01-01"},
 				}))
 				assert.Loosely(t, q.whereClause, should.Equal("WHERE (test_date <= $1)"))
-			})
-			t.Run("composite to LIKE", func(t *ftt.Test) {
-				q, err := NewQueryBuilder(table).WithWhereClause("dut_state:(something)", nil)
-				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, q.parameters.values, should.Match([]QueryParameter{
-					{Name: "dut_state", Value: "%something%"},
-				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state LIKE $1)"))
 			})
 			t.Run("composite to equals", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state=(something)", nil)
@@ -166,6 +150,20 @@ func TestWhereClause(t *testing.T) {
 					{Name: "dut_state", Value: "c"},
 				}))
 				assert.Loosely(t, q.whereClause, should.Equal("WHERE ((dut_state = $1) AND ((dut_state = $2) OR (dut_state = $3)))"))
+			})
+
+			t.Run("has operator works in BigQuery", func(t *ftt.Test) {
+				q, err := NewQueryBuilder(table).SetSqlLangType(BigQueryLangType).WithWhereClause("dut_name:chromeos", nil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, q.parameters.values, should.Match([]QueryParameter{
+					{Name: "dut_name", Value: "chromeos"},
+				}))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (? IN UNNEST(dut_name))"))
+			})
+
+			t.Run("has operator errors in PostgreSQL", func(t *ftt.Test) {
+				_, err := NewQueryBuilder(table).SetSqlLangType(PostgresLangType).WithWhereClause("dut_name:chromeos", nil)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
 		})
 	})

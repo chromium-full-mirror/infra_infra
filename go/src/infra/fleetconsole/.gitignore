@@ -14,3 +14,6 @@ air
 
 # Air temp directory
 tmp
+
+# Debugger temp binary file
+__debug_bin*
