@@ -36,7 +36,8 @@ func TestGetServodDouble(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	rspn, err := GetServod(context.Background(), host, int32(port), "control")
+	cl := xmlrpc.New(host, port)
+	rspn, err := GetServod(context.Background(), cl, "control")
 	if err != nil {
 		t.Fatalf("failed to call GetServod: %v", err)
 	}
@@ -65,7 +66,8 @@ func TestGetServodInt(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	rspn, err := GetServod(context.Background(), host, int32(port), "control")
+	cl := xmlrpc.New(host, port)
+	rspn, err := GetServod(context.Background(), cl, "control")
 	if err != nil {
 		t.Fatalf("failed to call GetServod: %v", err)
 	}
@@ -93,7 +95,8 @@ func TestGetServodString(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	rspn, err := GetServod(context.Background(), host, int32(port), "control")
+	cl := xmlrpc.New(host, port)
+	rspn, err := GetServod(context.Background(), cl, "control")
 	if err != nil {
 		t.Fatalf("failed to call GetServod: %v", err)
 	}
@@ -115,8 +118,9 @@ func TestSetServodDouble(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
+	cl := xmlrpc.New(host, port)
 	value := &bols.ServodValue{Value: &bols.ServodValue_DoubleValue{DoubleValue: wanted}}
-	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
+	if _, err := SetServod(context.Background(), cl, control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -137,8 +141,9 @@ func TestSetServodInt(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
+	cl := xmlrpc.New(host, port)
 	value := &bols.ServodValue{Value: &bols.ServodValue_IntValue{IntValue: wanted}}
-	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
+	if _, err := SetServod(context.Background(), cl, control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -159,8 +164,9 @@ func TestSetServodString(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
+	cl := xmlrpc.New(host, port)
 	value := &bols.ServodValue{Value: &bols.ServodValue_StringValue{StringValue: wanted}}
-	if _, err := SetServod(context.Background(), host, int32(port), control, value); err != nil {
+	if _, err := SetServod(context.Background(), cl, control, value); err != nil {
 		t.Fatalf("failed to call SetServod: %v", err)
 	}
 	if errCode != nil {
@@ -256,13 +262,8 @@ func TestGetServodVersion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get host/port information: %v", err)
 	}
-	rspn, err := GetServodVersion(context.Background(),
-		&bols.GetServodVersionRequest{
-			StationId: &bols.StationIdentifier{
-				ServodPort:    int32(port),
-				ContainerName: host,
-			},
-		})
+	cl := xmlrpc.New(host, int(port))
+	rspn, err := GetServodVersion(context.Background(), cl)
 	if err != nil {
 		t.Fatalf("failed to call GetServodVersion: %v", err)
 	}

@@ -499,7 +499,8 @@ func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*b
 // GetServod gets a servod control value.
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
 	s.logger.Println("Receive GetServod Request")
-	rpsn, err := xmlrpc.GetServod(ctx, "localhost", req.GetStationId().GetServodPort(), req.GetControl())
+	cl := xmlrpcClient(req.GetStationId())
+	rpsn, err := xmlrpc.GetServod(ctx, cl, req.GetControl())
 	if err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to send get %s request to servod at port %d: %w",
@@ -510,12 +511,13 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 }
 
 // SetServod sets value to a servod control.
+// SetServod sets value to a servod control.
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 	s.logger.Println("Receive SetServod Request")
-	port := req.GetStationId().GetServodPort()
+	cl := xmlrpcClient(req.GetStationId())
 	control := req.GetControl()
 	value := req.GetValue()
-	rpsn, err := xmlrpc.SetServod(ctx, "localhost", port, control, value)
+	rpsn, err := xmlrpc.SetServod(ctx, cl, control, value)
 	if err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to send set %s request to servod at port %d: %w",
@@ -528,7 +530,8 @@ func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*b
 // GetServodVersion reads version of started servod.
 func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
 	s.logger.Println("Receive GetServodVersion Request")
-	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
+	cl := xmlrpcClient(req.GetStationId())
+	rpsn, err := xmlrpc.GetServodVersion(ctx, cl)
 	if err != nil {
 		return nil, s.logAndReturnErr(
 			fmt.Errorf("failed to get version of servod at port %d: %w",

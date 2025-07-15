@@ -576,7 +576,7 @@ func (s *service) GetServodStatus(ctx context.Context, req *bols.GetServodStatus
 func (s *service) HWInitServod(ctx context.Context, req *bols.HWInitServodRequest) (*bols.HWInitServodResponse, error) {
 	s.logger.Println("Receive HWInitServod Request")
 
-	cl, err := xmlrpcClient(req.GetStationId())
+	cl, err := xmlrpcClient(ctx, req.GetStationId())
 	if err != nil {
 		return nil, s.logAndReturnErrorf("failed create xmlrpc client: %w", err)
 	}
@@ -593,7 +593,7 @@ func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*b
 	s.logger.Printf("Receive DocServod Request for control %q", req.GetControl())
 	control := req.GetControl()
 
-	cl, err := xmlrpcClient(req.GetStationId())
+	cl, err := xmlrpcClient(ctx, req.GetStationId())
 	if err != nil {
 		return nil, s.logAndReturnErrorf("failed create xmlrpc client: %w", err)
 	}
@@ -611,8 +611,11 @@ func (s *service) DocServod(ctx context.Context, req *bols.DocServodRequest) (*b
 
 func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {
 	s.logger.Println("Receive GetServod Request")
-	rpsn, err := xmlrpc.GetServod(ctx, req.GetStationId().GetContainerName(),
-		req.GetStationId().GetServodPort(), req.GetControl())
+	cl, err := xmlrpcClient(ctx, req.GetStationId())
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to create xmlrpc client: %w", err)
+	}
+	rpsn, err := xmlrpc.GetServod(ctx, cl, req.GetControl())
 	if err != nil {
 		return nil, s.logAndReturnErrorf("failed to send get %s request to servod at port %d: %w",
 			req.GetControl(), req.GetStationId().GetServodPort(), err)
@@ -623,24 +626,17 @@ func (s *service) GetServod(ctx context.Context, req *bols.GetServodRequest) (*b
 
 func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*bols.SetServodResponse, error) {
 	s.logger.Println("Receive SetServod Request")
-	containerName := req.GetStationId().GetContainerName()
-	port := req.GetStationId().GetServodPort()
+	cl, err := xmlrpcClient(ctx, req.GetStationId())
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed to create xmlrpc client: %w", err)
+	}
 	control := req.GetControl()
 	value := req.GetValue()
-	c, err := dockerClient(ctx, containerName)
-	if err != nil {
-		return nil, s.logAndReturnErrorf("failed to create docker client: %w", err)
-	}
 
-	ipAddress, err := c.IPAddress(ctx, containerName)
+	rpsn, err := xmlrpc.SetServod(ctx, cl, control, value)
 	if err != nil {
-		return nil, s.logAndReturnErrorf("failed to get IP address for container %q: %w", containerName, err)
-	}
-
-	rpsn, err := xmlrpc.SetServod(ctx, ipAddress, port, control, value)
-	if err != nil {
-		return nil, s.logAndReturnErrorf("failed to send set %s request to servod at %s:%d: %w",
-			control, ipAddress, port, err)
+		return nil, s.logAndReturnErrorf("failed to send set %s request to servod at port %d: %w",
+			control, req.GetStationId().GetServodPort(), err)
 	}
 	s.logger.Println("Served SetServod Request Successfully")
 	return rpsn, nil
@@ -648,7 +644,11 @@ func (s *service) SetServod(ctx context.Context, req *bols.SetServodRequest) (*b
 
 func (s *service) GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
 	s.logger.Println("Receive GetServodVersion Request")
-	rpsn, err := xmlrpc.GetServodVersion(ctx, req)
+	cl, err := xmlrpcClient(ctx, req.GetStationId())
+	if err != nil {
+		return nil, s.logAndReturnErrorf("failed create xmlrpc client: %w", err)
+	}
+	rpsn, err := xmlrpc.GetServodVersion(ctx, cl)
 	if err != nil {
 		return nil, s.logAndReturnErrorf("failed to get version of servod at port %d: %w",
 			req.GetStationId().GetServodPort(), err)
@@ -1043,11 +1043,23 @@ func parseDirInfo(output string) ([]*bols.FileStat, error) {
 	return stats, nil
 }
 
-func xmlrpcClient(s *bols.StationIdentifier) (*servod_xmlrpc.XMLRpc, error) {
-	if s.GetContainerName() == "" {
-		return nil, errors.New("DocServod: container name is required for servod host")
+func xmlrpcClient(ctx context.Context, s *bols.StationIdentifier) (*servod_xmlrpc.XMLRpc, error) {
+	containerName := s.GetContainerName()
+	if containerName == "" {
+		return nil, errors.New("container name is required for servod host")
 	}
-	return servod_xmlrpc.New(s.GetContainerName(), int(s.GetServodPort())), nil
+	port := int(s.GetServodPort())
+	c, err := dockerClient(ctx, containerName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create docker client: %w", err)
+	}
+
+	ipAddress, err := c.IPAddress(ctx, containerName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get IP address for container %q: %w", containerName, err)
+	}
+
+	return servod_xmlrpc.New(ipAddress, port), nil
 }
 
 // logAndReturnErrorf logs an error with the caller's function name and returns it.

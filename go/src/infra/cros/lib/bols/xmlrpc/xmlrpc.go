@@ -17,8 +17,7 @@ import (
 )
 
 // GetServod gets a servod control value.
-func GetServod(ctx context.Context, host string, port int32, control string) (*bols.GetServodResponse, error) {
-	cl := xmlrpc.New(host, int(port))
+func GetServod(ctx context.Context, cl *xmlrpc.XMLRpc, control string) (*bols.GetServodResponse, error) {
 	resp, err := cl.Execute(ctx, xmlrpc.NewCall("get", string(control)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get control %q from servod: %w", control, err)
@@ -31,27 +30,19 @@ func GetServod(ctx context.Context, host string, port int32, control string) (*b
 }
 
 // SetServod sets a servod control value.
-func SetServod(ctx context.Context, host string, port int32, control string, servodValue *bols.ServodValue) (*bols.SetServodResponse, error) {
-	cl := xmlrpc.New(host, int(port))
+func SetServod(ctx context.Context, cl *xmlrpc.XMLRpc, control string, servodValue *bols.ServodValue) (*bols.SetServodResponse, error) {
 	call, err := servodValueToXMLRequest("set", control, servodValue)
 	if err != nil {
 		return nil, fmt.Errorf("failed to translate value from servod request: %w", err)
 	}
 	if _, err := cl.Execute(ctx, call); err != nil {
-		return nil, fmt.Errorf("failed to get control %q from servod: %w", control, err)
+		return nil, fmt.Errorf("failed to set control %q on servod: %w", control, err)
 	}
 	return &bols.SetServodResponse{}, nil
 }
 
 // GetServodVersion gets the servod control value.
-func GetServodVersion(ctx context.Context, req *bols.GetServodVersionRequest) (*bols.GetServodVersionResponse, error) {
-	host := req.GetStationId().GetContainerName()
-	if host == "" {
-		// If container name is empty, it means that it is running locally.
-		host = "localhost"
-	}
-	port := req.GetStationId().GetServodPort()
-	cl := xmlrpc.New(host, int(port))
+func GetServodVersion(ctx context.Context, cl *xmlrpc.XMLRpc) (*bols.GetServodVersionResponse, error) {
 	var version string
 	err := cl.Run(ctx, xmlrpc.NewCall("servod_version"), &version)
 	if err != nil {
