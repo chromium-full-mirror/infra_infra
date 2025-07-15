@@ -67,11 +67,21 @@ func newTagMatcher(criteria *api.TestSuite_TestCaseTagCriteria) *tagMatcher {
 func (tm *tagMatcher) matchAndreturn(md *api.TestCaseMetadata) []string {
 	matches := []string{}
 	for test := range tm.testNames {
+		tagToTagGroup := make(map[string]string)
+		// Loop through the tags to include. Split apart tags symbolized by an OR statement
+		// and point each individual piece back to its parent tag.
+		// ["A || B", "C"] -> {"A": "A || B", "B": "A || B", "C": "C"}
+		for tag := range tm.tags {
+			for _, OrTag := range strings.Split(tag, "||") {
+				tagToTagGroup[strings.Trim(OrTag, " ")] = tag
+			}
+		}
 		newMatcher := &tagMatcher{
 			tags:             tm.tags,
 			excludes:         tm.excludes,
 			testNames:        map[string]struct{}{test: {}},
 			testNameExcludes: tm.testNameExcludes,
+			tagToTagGroup:    tagToTagGroup,
 		}
 		if newMatcher.match(md) {
 			matches = append(matches, test)
