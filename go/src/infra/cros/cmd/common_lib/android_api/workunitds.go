@@ -253,7 +253,7 @@ func NewWorkUnitNode(ctx context.Context, parentWUId, invocationID string, nodeT
 	// Create the work unit "request" then insert it using the ATP API. The API
 	// will return a WU that has a registered WUID. We do not set that in code
 	// here.
-	workUnit := NewWorkUnit(parentWUId, invocationID, name, childRunNumber, childShardNumber, childAttemptNumber)
+	workUnit := NewWorkUnit(parentWUId, invocationID, name, childRunNumber, childShardNumber, childAttemptNumber, nodeType)
 	workUnit, err = service.WorkUnitService.Insert(ctx, workUnit)
 	if err != nil {
 		return nil, err

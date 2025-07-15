@@ -124,7 +124,13 @@ func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, opt
 }
 
 // NewWorkUnit is a helper function to generate a new WorkUnit.
-func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childShardNumber, childAttemptNumber int) *atp.WorkUnit {
+func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childShardNumber, childAttemptNumber int, nodeType WULayer) *atp.WorkUnit {
+
+	WUType := "TF_MODULE"
+	// Workunit type for the work unit passed to TF needs to be "TFC_COMMAND_TASKS".
+	if nodeType == WULayerAttempt {
+		WUType = "TFC_COMMAND_TASKS"
+	}
 	return &atp.WorkUnit{
 		InvocationId:       invocationID,
 		ParentId:           parentWUId,
@@ -133,6 +139,6 @@ func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childSha
 		ChildRunNumber:     int64(childRunNumber),
 		ChildShardNumber:   int64(childShardNumber),
 		ChildAttemptNumber: int64(childAttemptNumber),
-		Type:               "TF_MODULE",
+		Type:               WUType,
 	}
 }
