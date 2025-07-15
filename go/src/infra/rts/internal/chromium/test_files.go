@@ -25,10 +25,16 @@ func WriteTestFiles(ctx context.Context, bqClient *bigquery.Client, w io.Writer)
 		SELECT
 			tr.test_metadata.location.file_name as Path,
 			ARRAY_AGG(DISTINCT tr.test_metadata.name) as TestNames,
-			# Extract the test target. Examples:
+			# Extract the test target.
+			# Examples (note '\' is escaped as "\\" below to make valid go string literals):
+			# - "://chrome/test\\:browser_tests!gtest::Suite#Test" -> "browser_tests"
+			# - "://\\:blink_web_tests!webtest::foo/bar#test.html" -> "blink_web_tests"
+			#
+			# Also handles the legacy formats (can be deleted once migration to structured
+			# test IDs complete):
 			# - "ninja://chrome/test:browser_tests/foo/bar" -> "browser_tests"
 			# - "ninja://:blink_web_tests/foo/bar" -> "blink_web_tests"
-			ARRAY_AGG(DISTINCT REGEXP_EXTRACT(test_id, "ninja://[^:]*:([^/]+)/") IGNORE NULLS) TestTargets,
+			ARRAY_AGG(DISTINCT COALESCE(REGEXP_EXTRACT(test_id, "^://[^\\:]*\\:([^!]+)!"), REGEXP_EXTRACT(test_id, "^ninja://[^:]*:([^/]+)/")) IGNORE NULLS) TestTargets,
 		FROM chrome-luci-data.chromium.ci_test_results tr
 		WHERE partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
 			AND tr.test_metadata.location.file_name != ''
