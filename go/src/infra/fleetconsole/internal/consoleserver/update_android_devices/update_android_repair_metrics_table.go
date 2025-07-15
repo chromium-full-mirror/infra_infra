@@ -105,7 +105,8 @@ func calculateSlo(ctx context.Context, tx *sql.Tx, runTargetLabNameHostGroup run
 		return fleetconsolerpc.RepairMetric_MISSING_DATA, -1, -1, -1
 	}
 
-	if allocated >= maxDevicesAllocatedIn24Hours {
+	// the `!= O` check is needed in case the query doesn't find any row
+	if allocated > maxDevicesAllocatedIn24Hours && maxDevicesAllocatedIn24Hours != 0 {
 		logging.Errorf(ctx, "Something has gone wrong, allocated should never be greater than maxDevicesAllocatedIn24Hours")
 	}
 
