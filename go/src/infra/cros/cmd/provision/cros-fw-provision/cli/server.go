@@ -15,6 +15,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
@@ -71,6 +72,7 @@ func (ps *FWProvisionServer) Start() error {
 	server := grpc.NewServer()
 	api.RegisterGenericProvisionServiceServer(server, ps)
 	longrunning.RegisterOperationsServer(server, ps.manager)
+	reflection.Register(server)
 	ps.log.Println("provisionservice listen to request at ", l.Addr().String())
 
 	// Write port number to ~/.cftmeta for go/cft-port-discovery
