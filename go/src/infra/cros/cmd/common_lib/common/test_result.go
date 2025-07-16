@@ -426,3 +426,20 @@ func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPa
 func SanitizeGCSPrefix(prefix string) string {
 	return strings.TrimSuffix(prefix, "/")
 }
+
+// HasExecutionMetadataKey returns whether the key exist in the execution
+// metadata of the testSuites.
+func HasExecutionMetadataKey(testSuites []*testapi.TestSuite, key string) bool {
+	if len(testSuites) == 0 {
+		return false
+	}
+
+	// Only one test suite is scheduled
+	args := testSuites[0].GetExecutionMetadata().GetArgs()
+	for _, arg := range args {
+		if arg.GetFlag() == key {
+			return true
+		}
+	}
+	return false
+}

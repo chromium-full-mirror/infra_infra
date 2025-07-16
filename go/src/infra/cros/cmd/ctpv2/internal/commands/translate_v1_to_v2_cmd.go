@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -426,7 +427,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 					if arg.Key == "exclude_filters" {
 						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "cts-params", Value: excludeFormatting(value)})
 						continue
-					} else if arg.Key == common.InvocationDataFlag || arg.Key == "cts-params" {
+					} else if slices.Contains(common.KnownTestArgsToExecutionMetadata, arg.Key) {
 						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
 						continue
 					}

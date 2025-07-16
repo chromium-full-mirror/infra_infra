@@ -87,6 +87,9 @@ const (
 	ProdFilterEndpointSuffix               = "-771356732494.us-central1.run.app"
 	PartnerFilterEndpointSuffix            = "-986313285412.us-central1.run.app"
 	PartnerTaggedFilterEndpointSuffix      = "-2nx7zyup7q-uc.a.run.app"
+	CTSParamsFlag                          = "cts-params"
+	EnableXTSResultArchiverFlag            = "enable-xts-result-archiver"
+	EnableXTSAPAArchiverFlag               = "enable-xts-apa-archiver"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.
@@ -273,4 +276,12 @@ const (
 var (
 	// Arguments common to each filter for cloud run deployment.
 	FilterArgs = []string{"server", "-port", FilterCloudRunPort}
+
+	// Known test arg flags that will be added to execution metadata flags
+	KnownTestArgsToExecutionMetadata = []string{
+		InvocationDataFlag,
+		CTSParamsFlag,
+		EnableXTSResultArchiverFlag,
+		EnableXTSAPAArchiverFlag,
+	}
 )

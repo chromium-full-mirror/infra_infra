@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"testing"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/testing/ftt"
@@ -56,6 +57,118 @@ func TestGetTesthausURL(t *testing.T) {
 				wantTesthausURL := fmt.Sprintf("%s%s", TesthausURLPrefix, tc.wantTesthausPostfix)
 				gotTesthausURL := GetTesthausURL(tc.invocationName, tc.gcsURL)
 				assert.Loosely(t, gotTesthausURL, should.Equal(wantTesthausURL))
+			})
+		}
+	})
+}
+
+func TestHasExecutionMetadataKey(t *testing.T) {
+	t.Parallel()
+	ftt.Run("Test HasExecutionMetadataKey", t, func(t *ftt.Test) {
+		testCases := []struct {
+			name       string
+			testSuites []*api.TestSuite
+			key        string
+			want       bool
+		}{
+			{
+				name:       "nil test suites",
+				testSuites: nil,
+				key:        "some-key",
+				want:       false,
+			},
+			{
+				name:       "empty test suites",
+				testSuites: []*api.TestSuite{},
+				key:        "some-key",
+				want:       false,
+			},
+			{
+				name: "key exists",
+				testSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: "some-key", Value: "some-value"},
+							},
+						},
+					},
+				},
+				key:  "some-key",
+				want: true,
+			},
+			{
+				name: "key does not exist",
+				testSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{Flag: "other-key", Value: "other-value"},
+							},
+						},
+					},
+				},
+				key:  "some-key",
+				want: false,
+			},
+			{
+				name: "no args",
+				testSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{},
+						},
+					},
+				},
+				key:  "some-key",
+				want: false,
+			},
+			{
+				name: "nil args",
+				testSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: nil,
+						},
+					},
+				},
+				key:  "some-key",
+				want: false,
+			},
+			{
+				name: "nil execution metadata",
+				testSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: nil,
+					},
+				},
+				key:  "some-key",
+				want: false,
+			},
+			{
+				name: "multiple suites, key in first",
+				testSuites: []*api.TestSuite{
+					{ExecutionMetadata: &api.ExecutionMetadata{Args: []*api.Arg{{Flag: "some-key"}}}},
+					{ExecutionMetadata: &api.ExecutionMetadata{Args: []*api.Arg{{Flag: "other-key"}}}},
+				},
+				key:  "some-key",
+				want: true,
+			},
+			{
+				name: "multiple suites, key not in first",
+				testSuites: []*api.TestSuite{
+					{ExecutionMetadata: &api.ExecutionMetadata{Args: []*api.Arg{{Flag: "other-key"}}}},
+					{ExecutionMetadata: &api.ExecutionMetadata{Args: []*api.Arg{{Flag: "some-key"}}}},
+				},
+				key:  "some-key",
+				want: false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *ftt.Test) {
+				got := HasExecutionMetadataKey(tc.testSuites, tc.key)
+				assert.Loosely(t, got, should.Equal(tc.want))
 			})
 		}
 	})

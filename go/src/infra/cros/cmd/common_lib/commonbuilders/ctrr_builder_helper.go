@@ -867,10 +867,12 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 			HostType: _go.StoragePath_GS,
 		},
 		XtsArchiverMetadata: &api.XtsArchiverMetadata{
-			AlRun:                builder.IsALRun,
-			Product:              product,
-			Build:                builder.BuildString,
-			ParentSwarmingTaskId: parentJobID,
+			AlRun:                   builder.IsALRun,
+			Product:                 product,
+			Build:                   builder.BuildString,
+			ParentSwarmingTaskId:    parentJobID,
+			EnableAlResultsArchiver: common.HasExecutionMetadataKey(builder.TestSuites, common.EnableXTSResultArchiverFlag),
+			EnableAlApfeArchiver:    common.HasExecutionMetadataKey(builder.TestSuites, common.EnableXTSAPAArchiverFlag),
 		},
 		EnableXtsArchiver: slices.Contains(builder.BuildExperiments, common.EnableXTSArchiverExperiment),
 	})
