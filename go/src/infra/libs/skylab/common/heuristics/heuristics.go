@@ -87,7 +87,7 @@ func NormalizeServoNameToDeviceName(servo string) string {
 }
 
 // LooksLikeFieldMask checks whether a given string looks like a field mask.
-var LooksLikeFieldMask = regexp.MustCompile(`\A[a-z][A-Za-z0-9\.]*\z`).MatchString
+var LooksLikeFieldMask = regexp.MustCompile(`\A[a-z][A-Za-z0-9\.\_]*\z`).MatchString
 
 // TaskType is the high level type of a task such as repair or audit. It indicates what
 // implementation (legacy or paris) and what level of stability (prod vs canary) should be used.

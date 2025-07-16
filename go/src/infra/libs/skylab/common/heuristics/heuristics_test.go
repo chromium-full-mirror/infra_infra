@@ -161,8 +161,8 @@ func TestLooksLikeFieldMask(t *testing.T) {
 			out:  false,
 		},
 		{
-			name: "underscore",
-			in:   "invalid_field_mask",
+			name: "attherate",
+			in:   "invalid_field_mask@",
 			out:  false,
 		},
 		{
@@ -178,7 +178,7 @@ func TestLooksLikeFieldMask(t *testing.T) {
 		{
 			name: "a6E8_aaaa",
 			in:   "a6E8_aaaa",
-			out:  false,
+			out:  true,
 		},
 		{
 			name: "a6E8.aaaa",
