@@ -32,16 +32,16 @@ pins:
   digest: sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214
 - image: docker.io/library/ubuntu
   tag: "22.04"
-  digest: sha256:3c61d3759c2639d4b836d32a2d3c83fa0214e36f195a3421018dbaaf79cbe37f
+  digest: sha256:3d256b40acbf7859ab80126ea5dca7527b6f72d2288cbd90be1369cc10fa9dfc
 - image: docker.io/library/ubuntu
   tag: "24.04"
-  digest: sha256:440dcf6a5640b2ae5c77724e68787a906afb8ddee98bf86db94eea8528c2c076
+  digest: sha256:a328b84b92f71a85f459722a1c73c0363f9f8e3f66bf74a204bb35c605cf670c
 - image: docker.io/library/ubuntu
   tag: focal
   digest: sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214
 - image: docker.io/library/ubuntu
   tag: jammy
-  digest: sha256:3c61d3759c2639d4b836d32a2d3c83fa0214e36f195a3421018dbaaf79cbe37f
+  digest: sha256:3d256b40acbf7859ab80126ea5dca7527b6f72d2288cbd90be1369cc10fa9dfc
 - image: docker.io/library/ubuntu
   tag: xenial
   digest: sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6
