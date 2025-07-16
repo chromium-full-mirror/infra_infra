@@ -381,11 +381,13 @@ func GetDims(dims []string) (map[string]string, []*steps.ExecuteResponse_TaskRes
 // The board and model info is obtained from dutModel falling back to labels in
 // botDims, and the board variant is extracted from the build.
 // If any of the properties is missing, it will be left out of the product.
-// TODO: b/379711782 - Verify and update this logic for AL
-func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPair, build string) string {
+func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPair, build string, isALRun bool) string {
 	// Get primary board, model from DUT model falling back to bot dimensions
-	board := dutModel.GetBuildTarget()
-	model := dutModel.GetModelName()
+	var board, model string
+	if dutModel != nil {
+		board = dutModel.GetBuildTarget()
+		model = dutModel.GetModelName()
+	}
 
 	if board == "" || model == "" {
 		for _, dim := range botDims {
@@ -404,14 +406,17 @@ func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPa
 		return model
 	}
 
-	// Extract the variant from the build
+	// Extract the variant from the build for ChromeOS
 	// e.g. "-arc-t-release" from "brya-arc-t-release/R114-15437.0.0"
+	// TODO: b/425719003 - Support AL board variants when available
 	variant := ""
-	variantRegexp := regexp.MustCompile(fmt.Sprintf(`^%s(.*)\/.*`, board))
-	matches := variantRegexp.FindStringSubmatch(build)
-	if len(matches) > 1 {
-		// remove the "-release" suffix if present in the variant
-		variant = strings.TrimSuffix(matches[1], "-release")
+	if !isALRun {
+		variantRegexp := regexp.MustCompile(fmt.Sprintf(`^%s(.*)\/.*`, board))
+		matches := variantRegexp.FindStringSubmatch(build)
+		if len(matches) > 1 {
+			// remove the "-release" suffix if present in the variant
+			variant = strings.TrimSuffix(matches[1], "-release")
+		}
 	}
 
 	if model == "" {

@@ -90,7 +90,7 @@ func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 
 	botDims, _ := protoutil.BotDimensions(build)
 	cmd.IsALRun = sk.IsAlRun
-	cmd.Product = common.GetProductName(sk.PrimaryDutModel, botDims, buildName)
+	cmd.Product = common.GetProductName(sk.PrimaryDutModel, botDims, buildName, sk.IsAlRun)
 	cmd.Build = buildName
 	cmd.ParentSwarmingTaskID = parentTaskID
 	cmd.XTSResultsGCSPrefix = resultGCS

@@ -184,6 +184,7 @@ func TestGetProductName(t *testing.T) {
 			dutModel *labapi.DutModel
 			botDims  []*buildbucketpb.StringPair
 			build    string
+			isALRun  bool
 			wantName string
 		}{
 			{
@@ -194,6 +195,7 @@ func TestGetProductName(t *testing.T) {
 				},
 				botDims:  nil,
 				build:    "brya-arc-t/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "brya.gimble-arc-t",
 			},
 			{
@@ -204,6 +206,7 @@ func TestGetProductName(t *testing.T) {
 					{Key: "label-model", Value: "gimble"},
 				},
 				build:    "brya-kernelnext/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "brya.gimble-kernelnext",
 			},
 			{
@@ -214,6 +217,7 @@ func TestGetProductName(t *testing.T) {
 				},
 				botDims:  nil,
 				build:    "brya/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "brya.gimble",
 			},
 			{
@@ -224,6 +228,7 @@ func TestGetProductName(t *testing.T) {
 				},
 				botDims:  nil,
 				build:    "brya-kernelnext-release/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "brya.gimble-kernelnext",
 			},
 			{
@@ -231,6 +236,7 @@ func TestGetProductName(t *testing.T) {
 				dutModel: &labapi.DutModel{ModelName: "gimble"},
 				botDims:  nil,
 				build:    "brya/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "gimble",
 			},
 			{
@@ -238,6 +244,7 @@ func TestGetProductName(t *testing.T) {
 				dutModel: &labapi.DutModel{BuildTarget: "brya"},
 				botDims:  nil,
 				build:    "brya/R133-16104.0.0",
+				isALRun:  false,
 				wantName: "brya",
 			},
 			{
@@ -245,6 +252,7 @@ func TestGetProductName(t *testing.T) {
 				dutModel: &labapi.DutModel{BuildTarget: "brya", ModelName: "gimble"},
 				botDims:  nil,
 				build:    "",
+				isALRun:  false,
 				wantName: "brya.gimble",
 			},
 			{
@@ -254,6 +262,7 @@ func TestGetProductName(t *testing.T) {
 					{Key: "label-board", Value: "brya"},
 				},
 				build:    "brya/build7",
+				isALRun:  false,
 				wantName: "brya.gimble",
 			},
 			{
@@ -263,13 +272,52 @@ func TestGetProductName(t *testing.T) {
 					{Key: "label-model", Value: "gimble"},
 				},
 				build:    "brya/build8",
+				isALRun:  false,
 				wantName: "brya.gimble",
+			},
+			{
+				name: "AL run with variant in build string",
+				dutModel: &labapi.DutModel{
+					BuildTarget: "brya",
+					ModelName:   "gimble",
+				},
+				botDims:  nil,
+				build:    "brya-arc-t/R133-16104.0.0",
+				isALRun:  true,
+				wantName: "brya.gimble",
+			},
+			{
+				name:     "nil dutModel",
+				dutModel: nil,
+				botDims: []*buildbucketpb.StringPair{
+					{Key: "label-board", Value: "brya"},
+					{Key: "label-model", Value: "gimble"},
+				},
+				build:    "brya-kernelnext/R133-16104.0.0",
+				isALRun:  false,
+				wantName: "brya.gimble-kernelnext",
+			},
+			{
+				name:     "no board or model",
+				dutModel: &labapi.DutModel{},
+				botDims:  nil,
+				build:    "brya-kernelnext/R133-16104.0.0",
+				isALRun:  false,
+				wantName: "",
+			},
+			{
+				name:     "nil dutModel and botDims",
+				dutModel: nil,
+				botDims:  nil,
+				build:    "brya-kernelnext/R133-16104.0.0",
+				isALRun:  false,
+				wantName: "",
 			},
 		}
 
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *ftt.Test) {
-				got := GetProductName(tc.dutModel, tc.botDims, tc.build)
+				got := GetProductName(tc.dutModel, tc.botDims, tc.build, tc.isALRun)
 				assert.Loosely(t, got, should.Equal(tc.wantName))
 			})
 		}

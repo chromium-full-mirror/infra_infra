@@ -861,7 +861,7 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 		parentJobID = builder.Keyvals["parent_job_id"]
 	}
 
-	product := common.GetProductName(builder.PrimaryDut, builder.BotDims, builder.BuildString)
+	product := common.GetProductName(builder.PrimaryDut, builder.BotDims, builder.BuildString, builder.IsALRun)
 	gcsPublishMetadata, _ := anypb.New(&api.PublishGcsMetadata{
 		GcsPath: &_go.StoragePath{
 			HostType: _go.StoragePath_GS,
