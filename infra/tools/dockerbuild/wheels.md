@@ -2915,6 +2915,20 @@ wheel: <
 
 * *universal*
 
+## **genai-py3**
+
+### 2.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/genai-py3"
+  version: "version:2.1.0"
+>
+```
+
+
+* *universal*
+
 ## **gevent**
 
 ### 23.7.0
