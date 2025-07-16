@@ -78,6 +78,7 @@ var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/ListRepairMetrics":          "googlers",
 	"/fleetconsole.FleetConsole/CountRepairMetrics":         "googlers",
 	"/fleetconsole.FleetConsole/GetRepairMetricsDimensions": "googlers",
+	"/fleetconsole.FleetConsole/ScheduleAutorepair":         "googlers",
 
 	"/fleetconsole.FleetConsole/RepopulateCache":      "mdb/fleet-console-eng",
 	"/fleetconsole.FleetConsole/UpdateAndroidDevices": "mdb/fleet-console-eng",
