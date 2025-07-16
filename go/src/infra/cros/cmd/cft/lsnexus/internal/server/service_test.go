@@ -94,6 +94,69 @@ func TestStartServod(t *testing.T) {
 	}
 }
 
+func TestStopServod(t *testing.T) {
+	var port int32 = 9999
+	serial := "serial"
+	containerName := "container"
+	board := "board"
+	model := "model"
+	handler := func(ctx context.Context, req *bols.StopServodRequest) (*bols.StopServodResponse, error) {
+		if req.GetStationId().GetServodPort() != port {
+			return nil, fmt.Errorf("port number mismatched: got: %d wanted: %d",
+				req.GetStationId().GetServodPort(), port)
+		}
+		if req.GetStationId().GetServoSerial() != serial {
+			return nil, fmt.Errorf("servo serial mismatched: got: %s wanted: %s",
+				req.GetStationId().GetServoSerial(), serial)
+		}
+		if req.GetStationId().GetContainerName() != containerName {
+			return nil, fmt.Errorf("container name mismatched: got: %s wanted: %s",
+				req.GetStationId().GetContainerName(), containerName)
+		}
+		return &bols.StopServodResponse{}, nil
+	}
+	bolsService := &mockBolsService{
+		stopServodHandler: handler,
+	}
+	stopBols, bolsAddr, err := startMockBolsServer(bolsService)
+	if err != nil {
+		t.Fatalf("failed to start mock BOLS server: %v", err)
+	}
+	defer stopBols()
+	ctx := context.Background()
+	stopLsNexus, lsNexusAddr, err := startLSNexusServer(ctx, t.TempDir())
+	if err != nil {
+		t.Fatalf("failed to start LSNexus server: %v", err)
+	}
+	defer stopLsNexus()
+
+	conn, err := grpc.NewClient(lsNexusAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("failed to create LSNexus client: %v", err)
+	}
+
+	genericClient := testapi.NewGenericServiceClient(conn)
+	startRequest, err := createGenericStartRequest(map[string]proto.Message{
+		"bols_addr":        structpb.NewStringValue(bolsAddr),
+		"board":            structpb.NewStringValue(board),
+		"model":            structpb.NewStringValue(model),
+		"servod_serial":    structpb.NewStringValue(serial),
+		"servod_container": structpb.NewStringValue(containerName),
+		"servod_port":      structpb.NewNumberValue(float64(port)),
+	})
+	if err != nil {
+		t.Fatalf("failed to create generic start request: %v", err)
+	}
+	if _, err := genericClient.Start(ctx, startRequest); err != nil {
+		t.Fatalf("Failed to call Start: %v", err)
+	}
+
+	cl := lsnexus.NewLSNexusServiceClient(conn)
+	if _, err := cl.StopServod(ctx, &lsnexus.StopServodRequest{}); err != nil {
+		t.Fatalf("failed to call StopServod: %v", err)
+	}
+}
+
 func TestCallServodSet(t *testing.T) {
 	var port int32 = 9999
 	serial := "serial"
@@ -259,6 +322,7 @@ func TestCallServodGet(t *testing.T) {
 type mockBolsService struct {
 	bols.UnimplementedBolsServiceServer
 	startServodHandler func(context.Context, *bols.StartServodRequest) (*bols.StartServodResponse, error)
+	stopServodHandler  func(context.Context, *bols.StopServodRequest) (*bols.StopServodResponse, error)
 	getServodHandler   func(context.Context, *bols.GetServodRequest) (*bols.GetServodResponse, error)
 	setServodHandler   func(context.Context, *bols.SetServodRequest) (*bols.SetServodResponse, error)
 }
@@ -268,6 +332,13 @@ func (s *mockBolsService) StartServod(ctx context.Context, req *bols.StartServod
 		return s.startServodHandler(ctx, req)
 	}
 	return nil, status.Errorf(codes.Unimplemented, "method StartServod not implemented")
+}
+
+func (s *mockBolsService) StopServod(ctx context.Context, req *bols.StopServodRequest) (*bols.StopServodResponse, error) {
+	if s.stopServodHandler != nil {
+		return s.stopServodHandler(ctx, req)
+	}
+	return nil, status.Errorf(codes.Unimplemented, "method StopServod not implemented")
 }
 
 func (s *mockBolsService) GetServod(ctx context.Context, req *bols.GetServodRequest) (*bols.GetServodResponse, error) {

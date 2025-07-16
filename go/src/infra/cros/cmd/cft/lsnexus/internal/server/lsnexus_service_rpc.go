@@ -54,6 +54,25 @@ func (s *LsNexus) StartServod(ctx context.Context, req *lsnexus.StartServodReque
 	return &lsnexus.StartServodResponse{}, nil
 }
 
+func (s *LsNexus) StopServod(ctx context.Context, req *lsnexus.StopServodRequest) (*lsnexus.StopServodResponse, error) {
+	s.log("Serving StopServod request")
+	if s.cl == nil {
+		return nil, s.logAndReturnErr(errors.New("BOLS is not available"))
+	}
+	bolsReq := &bols.StopServodRequest{
+		StationId: &bols.StationIdentifier{
+			ServodPort:    int32(s.servodPort),
+			ServoSerial:   s.servodSerial,
+			ContainerName: s.servodContainer,
+		},
+	}
+	if _, err := s.cl.StopServod(ctx, bolsReq); err != nil {
+		return nil, s.logAndReturnErr(fmt.Errorf("failed to stop servod: %w", err))
+	}
+	s.log("Successfully served StopServod request")
+	return &lsnexus.StopServodResponse{}, nil
+}
+
 func (s *LsNexus) CallServod(ctx context.Context, req *lsnexus.CallServodRequest) (*lsnexus.CallServodResponse, error) {
 	s.log("Serving CallServod request")
 	if s.cl == nil {
