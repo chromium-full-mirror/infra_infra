@@ -363,21 +363,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "birman"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "phoenix"
-        },
-        "kernel": {
-          "version": "6.1"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "bluey"
         }
       },
@@ -828,21 +813,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "drallion-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "cml"
-        },
-        "kernel": {
-          "version": "6.12"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "dustbuster"
         }
       },
@@ -957,21 +927,6 @@
         },
         "kernel": {
           "version": "6.6"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "eve-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "kbl"
-        },
-        "kernel": {
-          "version": "6.12"
         }
       }
     },
@@ -1263,21 +1218,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "guybrush-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "cezanne"
-        },
-        "kernel": {
-          "version": "6.12"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "hana"
         }
       },
@@ -1413,21 +1353,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "hatch-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "cml"
-        },
-        "kernel": {
-          "version": "6.12"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "jacuzzi"
         }
       },
@@ -1467,6 +1392,21 @@
         },
         "kernel": {
           "version": "5.10"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "jedi"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": null
+        },
+        "kernel": {
+          "version": "6.12"
         }
       }
     },
@@ -1608,21 +1548,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "myst"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "phoenix"
-        },
-        "kernel": {
-          "version": "6.1"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "nami"
         }
       },
@@ -1698,6 +1623,21 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
+          "overlayName": "nirva"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "adln"
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
           "overlayName": "nissa"
         }
       },
@@ -1722,21 +1662,6 @@
         },
         "kernel": {
           "version": "6.6"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "nissa-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "adln"
-        },
-        "kernel": {
-          "version": "6.12"
         }
       }
     },
@@ -1848,21 +1773,6 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "octopus-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "glk"
-        },
-        "kernel": {
-          "version": "6.12"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "ovis"
         }
       },
@@ -1917,21 +1827,6 @@
         },
         "kernel": {
           "version": "5.15"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
-          "overlayName": "puff-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "cml"
-        },
-        "kernel": {
-          "version": "6.12"
         }
       }
     },
@@ -2276,7 +2171,7 @@
           "overlay": "whl"
         },
         "kernel": {
-          "version": "4.19"
+          "version": "5.10"
         }
       }
     },
@@ -2523,27 +2418,27 @@
     {
       "buildTarget": {
         "portageBuildTarget": {
-          "overlayName": "strongbad-kernelnext"
-        }
-      },
-      "package_summary": {
-        "chipset": {
-          "overlay": "qc7180"
-        },
-        "kernel": {
-          "version": "6.12"
-        }
-      }
-    },
-    {
-      "buildTarget": {
-        "portageBuildTarget": {
           "overlayName": "tael"
         }
       },
       "package_summary": {
         "chipset": {
           "overlay": null
+        },
+        "kernel": {
+          "version": "6.6"
+        }
+      }
+    },
+    {
+      "buildTarget": {
+        "portageBuildTarget": {
+          "overlayName": "tanjiro"
+        }
+      },
+      "package_summary": {
+        "chipset": {
+          "overlay": "mt8196"
         },
         "kernel": {
           "version": "6.6"

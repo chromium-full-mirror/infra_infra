@@ -1,8 +1,6 @@
 /scripts/ddd_cli/data/
 /scripts/chromiumos_root.py
 /local/
-/docs/protos/*
-/docs/datasets/*
 /ddd-venv/*
 cros-ddd-filter
 protos_doc_gen_bin
