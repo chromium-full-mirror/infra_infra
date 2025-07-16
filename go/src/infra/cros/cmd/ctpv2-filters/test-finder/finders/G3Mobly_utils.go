@@ -6,16 +6,14 @@ package finders
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 type TestInfo struct {
-	Name         string      `json:"name"`
-	Tags         []string    `json:"tags"`
-	ExtraInfo    []ExtraInfo `json:"extra_info"`
-	BugComponent []int32     `json:"bug_components"`
+	Name      string      `json:"name"`
+	Tags      []string    `json:"tags"`
+	ExtraInfo []ExtraInfo `json:"extra_info"`
 }
 
 type ExtraInfo struct {
@@ -51,8 +49,7 @@ func createTestCaseFromTestInfo(testInfo TestInfo) *api.TestCaseMetadata {
 			},
 		},
 		TestCaseInfo: &api.TestCaseInfo{
-			ExtraInfo:    createExtraInfo(testInfo),
-			BugComponent: createBugComponent(testInfo.BugComponent),
+			ExtraInfo: createExtraInfo(testInfo),
 		},
 		TestCaseExec: &api.TestCaseExec{
 			TestHarness: &api.TestHarness{
@@ -75,18 +72,4 @@ func createExtraInfo(testInfo TestInfo) map[string]string {
 	extraInfo := make(map[string]string)
 	extraInfo["executable_name"] = testInfo.ExtraInfo[0].ExecutableName
 	return extraInfo
-}
-
-func createBugComponent(bugComponents []int32) *api.BugComponent {
-	var bugComponentList []*api.BugComponent
-	for _, bugComponent := range bugComponents {
-		bugComponentList = append(bugComponentList, &api.BugComponent{
-			Value: fmt.Sprintf("%d", bugComponent),
-		})
-	}
-	if len(bugComponentList) == 0 {
-		return nil
-	}
-
-	return bugComponentList[0]
 }
