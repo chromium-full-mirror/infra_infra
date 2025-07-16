@@ -162,7 +162,9 @@ func processKVMUpdateMask(ctx context.Context, oldKVM *ufspb.KVM, kvm *ufspb.KVM
 				oldKVM.Zone = rack.GetLocation().GetZone().String()
 			}
 		case ufsUtil.ResourceStatePath, ufsUtil.ResourceStateCamelPath:
-			oldKVM.ResourceState = kvm.GetResourceState()
+			if kvm.GetResourceState() != ufspb.State_STATE_UNSPECIFIED {
+				oldKVM.ResourceState = kvm.GetResourceState()
+			}
 		case ufsUtil.ChromePlatformPath, ufsUtil.PlatformPath:
 			oldKVM.ChromePlatform = kvm.GetChromePlatform()
 		case ufsUtil.MacAddressPath, ufsUtil.MacAddressCamelPath:
@@ -220,7 +222,15 @@ func UpdateKVMHost(ctx context.Context, kvm *ufspb.KVM, nwOpt *ufsAPI.NetworkOpt
 			return errors.Annotate(err, "UpdateKVMHost - unable to batch update kvm %s", kvm.Name).Err()
 		}
 
-		if err := hc.stUdt.updateStateHelper(ctx, ufspb.State_STATE_DEPLOYING); err != nil {
+		// Get the old kvm - oldmachinelse - for change history logging
+		oldKVM, err := GetKVM(ctx, kvm.GetName())
+		if err != nil {
+			return errors.Annotate(err, "Failed to get old KVM").Err()
+		}
+		if kvm.GetResourceState() == ufspb.State_STATE_UNSPECIFIED {
+			kvm.ResourceState = oldKVM.GetResourceState()
+		}
+		if err := hc.stUdt.updateStateHelper(ctx, kvm.GetResourceState()); err != nil {
 			return errors.Annotate(err, "Fail to update state to kvm %s", kvm.GetName()).Err()
 		}
 		return hc.SaveChangeEvents(ctx)
