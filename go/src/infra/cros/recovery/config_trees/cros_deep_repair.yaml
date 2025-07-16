@@ -8588,6 +8588,11 @@ plans:
               exec_name: servo_set_servo_state
               exec_args:
                 - state:BROKEN
+        - name: Record Google Security chip information (Allow to fail)
+          exec_name: cros_read_gsc_chip
+          docs:
+            - Collect information about Google Security chip used in DUT.
+            - The action is not critical at this point and can become critilca later.
         - name: Set state:WORKING (ALWAYS_RUN)
           exec_name: servo_set_servo_state
           exec_args:

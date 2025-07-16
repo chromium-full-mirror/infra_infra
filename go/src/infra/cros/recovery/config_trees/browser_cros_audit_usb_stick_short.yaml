@@ -2057,6 +2057,7 @@ plans:
         - name: Record good servo type ('servo_update_servo_type_label')
           dependencies:
             - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Record Google Security chip information (Allow to fail) ('cros_read_gsc_chip')
         - name: Set state:WORKING ('servo_set_servo_state') (ALWAYS_RUN)
     - name: cros_audit
       criticalactions:

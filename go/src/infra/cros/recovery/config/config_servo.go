@@ -45,6 +45,7 @@ func servoRepairPlan() *Plan {
 			"Verify EC",
 			"Servo Poweron Default Set",
 			"Record good servo type",
+			"Record Google Security chip information",
 			"Set state:WORKING",
 		},
 		Actions: servoPlanActions(),
@@ -2042,6 +2043,14 @@ func servoPlanActions() map[string]*Action {
 			},
 			ExecName:               "cros_update_genesys_logic_firmware",
 			ExecTimeout:            &durationpb.Duration{Seconds: 610},
+			AllowFailAfterRecovery: true,
+		},
+		"Record Google Security chip information": {
+			Docs: []string{
+				"Collect information about Google Security chip used in DUT.",
+				"The action is not critical at this point and can become critilca later.",
+			},
+			ExecName:               "cros_read_gsc_chip",
 			AllowFailAfterRecovery: true,
 		},
 	}
