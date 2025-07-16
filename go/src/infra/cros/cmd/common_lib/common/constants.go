@@ -38,6 +38,8 @@ const (
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	HwTestTrInputPropertyName              = "$chromeos/cros_test_runner"
 	HwTestCtpv2InputPropertyName           = "$chromeos/ctpv2"
+	BadBuildsInputPropertyName             = "$chromeos/bad_builds"
+	BadBuildsInputChromeOsKey              = "chromeos_builds"
 	Ctpv2WithFifoPropertyName              = "$chromeos/migration"
 	Ctpv2WithFifoMapKey                    = "ctpv2_with_fifo"
 	CftServiceMetadataFileName             = ".cftmeta"

@@ -109,6 +109,9 @@ type HwTestStateKeeper struct {
 
 	//Curating logs to be consumed by AI for execution context
 	ExecutionAIContext string
+
+	// Chrome OS Bad Build Denial (See: http://b/407854984)
+	ChromeOsBadBuilds []map[string]string
 }
 
 func NewHwTestStateKeeper() *HwTestStateKeeper {

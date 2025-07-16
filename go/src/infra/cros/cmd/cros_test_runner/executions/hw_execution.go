@@ -44,6 +44,7 @@ import (
 var ioProps = build.RegisterSplitProperty[*steps.RunTestsRequest, *steps.RunTestsResponse]("")
 var ctrInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
 var trInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestTrInputPropertyName)
+var badBuildsInputProp = build.RegisterInputProperty[map[string][]map[string]string](common.BadBuildsInputPropertyName)
 
 // TODO : Re-structure different execution flow properly later.
 // HwExecution represents hw executions.
@@ -63,8 +64,12 @@ func HwExecution() {
 		logging.Infof(ctx, "have input %v", input)
 		ctrCipdInfo := ctrInputProp.GetInput(ctx)
 		trCipdInfo := trInputProp.GetInput(ctx)
+		chromeOsBadBuilds := badBuildsInputProp.GetInput(ctx)[common.BadBuildsInputChromeOsKey]
+
 		logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 		logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
+		logging.Infof(ctx, "chromeOsBadBuilds: %+v", chromeOsBadBuilds)
+
 		resp := &steps.RunTestsResponse{}
 		// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
 		var skylabResult *skylab_test_runner.Result
@@ -94,7 +99,7 @@ func HwExecution() {
 			}
 		} else {
 			// If the request is a CrosTestRunner non-dynamic request...
-			skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
+			skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, chromeOsBadBuilds)
 		}
 		if err != nil {
 			errString := err.Error()
@@ -152,7 +157,8 @@ func executeHwTests(
 	ctrCipdVersion string,
 	gsRoot string,
 	invocationName string,
-	buildState *build.State) (*skylab_test_runner.Result, error) {
+	buildState *build.State,
+	chromeOsBadBuilds []map[string]string) (*skylab_test_runner.Result, error) {
 
 	// Validation
 	if err := validateDeadline(ctx, req.GetDeadline()); err != nil {
@@ -205,6 +211,7 @@ func executeHwTests(
 	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(invocationName, gcsurl)
 	sk.ContainerImages = containerImagesMap
+	sk.ChromeOsBadBuilds = chromeOsBadBuilds
 
 	// Cros-provision uses servo-nexus as a container now.
 	// Hack the command/executor into non-dynamic.
