@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -216,33 +215,30 @@ func (b *BuildServiceImpl) FindMostStableBuildByBoardAndModel(ctx context.Contex
 	milestone, err := parser.ExtractMilestoneFrom(resp.GetMilestone())
 	os := buildToOS(milestone, resp.GetBuildVersion())
 	fw := resp.GetRwFirmwareVersion()
-
-	listMilestonesRequest := &moblabapipb.ListBuildsRequest{
-		Parent: ParseModelPath(board, model),
-		Filter: "type=firmware",
-	}
-	listMilestonesResponse := b.client.ListBuilds(ctx, listMilestonesRequest)
-	milestoneBuild, err := listMilestonesResponse.Next()
-	if err != nil {
-		return nil, err
-	}
-	fwMilestoneList := strings.Split(milestoneBuild.GetMilestone(), "/")
-	if len(fwMilestoneList) < 2 {
-		return nil, errors.New("Invalid milestone")
-	}
-	fwMilestone := fwMilestoneList[1]
 	fwBuildVersion, err := parser.ExtractFwBuildVersionFrom(fw)
 	if err != nil {
 		return nil, err
 	}
-	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, fwBuildVersion)
+
+	// We don't want to list all milestones and use the build version to filter the correct one.
+	// We can use `CheckBuildStageStatus` to get the correct milestone.
+	req := &moblabapipb.CheckBuildStageStatusRequest{
+		Name:   ParseBuildArtifactPath(board, model, fwBuildVersion, site.GetGCSImageBucket()),
+		Filter: "type=firmware",
+	}
+
+	res, err := b.client.CheckBuildStageStatus(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 
 	return &models.RecoveryVersion{
 		Board:     board,
 		Model:     model,
 		OsImage:   os,
 		FwVersion: fw,
-		FwImage:   fwImage,
+		// The source path includes the correct milestone and build
+		FwImage: res.SourceBuildArtifact.Path,
 	}, nil
 
 }
