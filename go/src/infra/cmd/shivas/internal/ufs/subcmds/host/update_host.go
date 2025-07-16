@@ -141,6 +141,7 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
 			return errors.New("machines field is empty in json. It is a required parameter for json input.")
 		}
+		fmt.Printf("New Resource state for host update request: %s\n", machinelse.GetResourceState().String())
 	}
 	oldMachinelse, err := utils.PrintExistingHost(ctx, ic, c.hostName)
 	if err != nil {

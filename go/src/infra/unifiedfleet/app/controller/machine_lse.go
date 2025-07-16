@@ -624,7 +624,9 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 			}
 			oldMachinelse.GetChromeBrowserMachineLse().VmCapacity = machinelse.GetChromeBrowserMachineLse().GetVmCapacity()
 		case util.ResourceStatePath, util.ResourceStateCamelPath:
-			oldMachinelse.ResourceState = machinelse.GetResourceState()
+			if machinelse.ResourceState != ufspb.State_STATE_UNSPECIFIED {
+				oldMachinelse.ResourceState = machinelse.GetResourceState()
+			}
 		case util.TagsPath:
 			oldMachinelse.Tags = mergeTags(oldMachinelse.GetTags(), machinelse.GetTags())
 		case util.DescriptionPath:
@@ -1466,7 +1468,6 @@ func UpdateMachineLSEHost(ctx context.Context, machinelseName string, nwOpt *ufs
 		if err := hc.netUdt.addLseHostHelper(ctx, nwOpt, machinelse); err != nil {
 			return errors.Annotate(err, "Fail to assign ip to host %s", machinelse.Name).Err()
 		}
-		machinelse.ResourceState = ufspb.State_STATE_DEPLOYING
 		if err := hc.stUdt.updateStateHelper(ctx, machinelse.ResourceState); err != nil {
 			return errors.Annotate(err, "Fail to update state to host %s", machinelse.GetName()).Err()
 		}
